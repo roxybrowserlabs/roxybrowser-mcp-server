@@ -1,0 +1,36 @@
+{
+  "name": "roxy-browser-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
+  "type": "module",
+  "main": "lib/index.js",
+  "bin": {
+    "roxy-browser-mcp": "lib/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node lib/index.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf lib"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "roxybrowser",
+    "browser-automation",
+    "cdp",
+    "chrome-devtools-protocol"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
