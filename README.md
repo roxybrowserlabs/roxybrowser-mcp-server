@@ -9,6 +9,10 @@ A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.
 - 🤖 **AI-Friendly**: Seamlessly integrates with AI assistants through MCP
 - 🎯 **Playwright Ready**: Works perfectly with [@playwright/mcp](https://github.com/microsoft/playwright-mcp)
 - 📊 **Workspace Support**: Manage browsers across different workspaces and projects
+- 🛠️ **Browser Creation**: Create browsers with layered complexity (Simple, Standard, Advanced, Template-based)
+- 🌐 **Proxy Management**: Built-in proxy validation, testing, and configuration tools
+- 📋 **Template System**: Predefined configurations for Gmail, Facebook, E-commerce, and more
+- 🔧 **Advanced Configuration**: Full control over fingerprints, proxies, and browser settings
 
 ## Quick Start
 
@@ -73,7 +77,9 @@ Add the server to your MCP client configuration:
 
 ### Available Tools
 
-#### 1. `roxy_list_workspaces`
+#### Browser Management Tools
+
+##### 1. `roxy_list_workspaces`
 Get all available workspaces and their projects.
 
 **Parameters:**
@@ -85,7 +91,7 @@ Get all available workspaces and their projects.
 AI: "List all RoxyBrowser workspaces"
 ```
 
-#### 2. `roxy_list_browsers`
+##### 2. `roxy_list_browsers`
 Get browsers in a specific workspace/project.
 
 **Parameters:**
@@ -100,7 +106,7 @@ Get browsers in a specific workspace/project.
 AI: "List browsers in workspace 1 project 5"
 ```
 
-#### 3. `roxy_open_browsers` ⭐
+##### 3. `roxy_open_browsers` ⭐
 Open multiple browsers and get their CDP WebSocket endpoints.
 
 **Parameters:**
@@ -119,7 +125,7 @@ AI: "Open 5 browsers from workspace 1 with IDs: abc123, def456, ghi789, jkl012, 
 - Process IDs
 - Ready-to-use playwright-mcp commands
 
-#### 4. `roxy_close_browsers`
+##### 4. `roxy_close_browsers`
 Close multiple browsers by their directory IDs.
 
 **Parameters:**
@@ -130,30 +136,157 @@ Close multiple browsers by their directory IDs.
 AI: "Close browsers with IDs: abc123, def456, ghi789"
 ```
 
-## Complete Workflow Example
+#### Browser Creation Tools 🆕
 
-Here's how to use RoxyBrowser MCP with Playwright MCP for Gmail automation:
+##### 5. `roxy_create_browser_simple` 
+Create a browser with simple configuration - perfect for quick setup.
+
+**Parameters:**
+- `workspaceId` (required): Workspace ID
+- `windowName` (optional): Browser window name
+- `projectId` (optional): Project ID
+- `proxyHost` (optional): Proxy server host
+- `proxyPort` (optional): Proxy server port
+- `proxyUserName` (optional): Proxy username
+- `proxyPassword` (optional): Proxy password
+- `proxyType` (optional): HTTP, HTTPS, or SOCKS5
+
+**Example:**
+```
+AI: "Create a simple browser in workspace 1 with proxy 192.168.1.100:8080"
+```
+
+##### 6. `roxy_create_browser_standard`
+Create a browser with standard configuration - covers most use cases.
+
+**Parameters:**
+- `workspaceId` (required): Workspace ID
+- `windowName` (optional): Browser window name
+- `projectId` (optional): Project ID
+- `os` (optional): Windows, macOS, Linux, IOS, Android
+- `osVersion` (optional): OS version
+- `coreVersion` (optional): Browser core version
+- `proxyInfo` (optional): Complete proxy configuration object
+- `openWidth` (optional): Window width
+- `openHeight` (optional): Window height
+- `language` (optional): Browser language
+- `timeZone` (optional): Browser timezone
+- `defaultOpenUrl` (optional): URLs to open by default
+
+**Example:**
+```
+AI: "Create a standard Windows 11 browser with 1920x1080 resolution and SOCKS5 proxy"
+```
+
+##### 7. `roxy_create_browser_advanced`
+Create a browser with complete configuration control - for expert users.
+
+**Parameters:**
+- All standard parameters plus:
+- `userAgent` (optional): Custom user agent
+- `searchEngine` (optional): Default search engine
+- `labelIds` (optional): Label IDs to assign
+- `proxyInfo` (optional): Full proxy configuration
+- `fingerInfo` (optional): Complete fingerprint configuration
+- `windowPlatformList` (optional): Platform account information
+
+**Example:**
+```
+AI: "Create an advanced browser with custom fingerprint settings and multiple platform accounts"
+```
+
+##### 8. `roxy_create_browser_from_template` ⭐
+Create browsers using predefined templates - ideal for batch creation.
+
+**Parameters:**
+- `workspaceId` (required): Workspace ID
+- `templateName` (required): gmail, facebook, ecommerce, social_media, general, or custom
+- `count` (optional): Number of browsers to create (default: 1, max: 50)
+- `namePrefix` (optional): Prefix for browser names
+- `projectId` (optional): Project ID
+- `proxyList` (optional): List of proxy configurations
+- `customConfig` (optional): Override template defaults
+
+**Example:**
+```
+AI: "Create 10 Gmail browsers with different proxies using the gmail template"
+```
+
+##### 9. `roxy_list_browser_templates`
+List available browser templates with descriptions.
+
+**Example:**
+```
+AI: "What browser templates are available?"
+```
+
+#### Proxy Management Tools 🆕
+
+##### 10. `roxy_validate_proxy_config`
+Validate proxy configuration before using it.
+
+**Parameters:**
+- `proxyInfo` (required): Proxy configuration to validate
+
+**Example:**
+```
+AI: "Validate this proxy configuration before creating browsers"
+```
+
+## Complete Workflow Examples
+
+### Example 1: Quick Gmail Automation Setup
 
 ```
-1. AI: "List workspaces to find my Gmail project"
-   → Uses roxy_list_workspaces
+1. AI: "Create 5 Gmail browsers using the gmail template in workspace 1"
+   → Uses roxy_create_browser_from_template
+   → Returns browser IDs ready for use
 
-2. AI: "List browsers in workspace 1 project 2" 
-   → Uses roxy_list_browsers to find available browser profiles
-
-3. AI: "Open 10 browsers from the Gmail project"
-   → Uses roxy_open_browsers
+2. AI: "Open all the Gmail browsers I just created"
+   → Uses roxy_open_browsers with the returned IDs
    → Returns CDP WebSocket URLs like: ws://127.0.0.1:52314/devtools/browser/xxx
 
-4. AI: "Connect to the first browser and automate Gmail"
+3. AI: "Connect to the first browser and automate Gmail"
    → Uses playwright-mcp with --cdp-endpoint flag
    → npx @playwright/mcp@latest --cdp-endpoint "ws://127.0.0.1:52314/devtools/browser/xxx"
 
-5. AI: "Navigate to gmail.com, login, and send emails"
+4. AI: "Navigate to gmail.com, login, and send emails"
    → Uses playwright-mcp tools: browser_navigate, browser_type, browser_click, etc.
 
-6. AI: "Close all browsers when done"
+5. AI: "Close all browsers when done"
    → Uses roxy_close_browsers
+```
+
+### Example 2: E-commerce with Proxy Setup
+
+```
+1. AI: "Validate my proxy configuration before creating browsers"
+   → Uses roxy_validate_proxy_config
+   → Confirms proxy settings are correct
+
+2. AI: "Create a standard e-commerce browser with SOCKS5 proxy in workspace 2"
+   → Uses roxy_create_browser_standard with proxy configuration
+   → Returns configured browser ID
+
+3. AI: "Open the e-commerce browser and start automation"
+   → Uses roxy_open_browsers → playwright-mcp integration
+   → Begin automated shopping tasks
+```
+
+### Example 3: Batch Social Media Management
+
+```
+1. AI: "List available browser templates"
+   → Uses roxy_list_browser_templates
+   → Shows social_media, facebook, etc.
+
+2. AI: "Create 20 social media browsers with different proxies"
+   → Uses roxy_create_browser_from_template with proxy list
+   → Batch creates browsers with distributed proxies
+
+3. AI: "Open first 5 browsers for Instagram automation"
+   → Uses roxy_open_browsers with selected IDs
+   → Ready for social media automation
 ```
 
 ## Integration with Playwright MCP

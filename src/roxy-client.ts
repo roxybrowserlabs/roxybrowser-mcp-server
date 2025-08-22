@@ -13,8 +13,12 @@ import {
   BrowserOpenParams,
   BrowserOpenResult,
   BrowserCloseParams,
+  BrowserCreateConfig,
+  BrowserCreateResult,
+  BrowserCreateBatchResult,
   RoxyApiError,
   ConfigError,
+  BrowserCreationError,
 } from './types.js';
 
 export class RoxyClient {
@@ -218,6 +222,138 @@ export class RoxyClient {
     results.push(...closeResults);
 
     return results;
+  }
+
+  /**
+   * Create a single browser
+   */
+  async createBrowser(config: BrowserCreateConfig): Promise<{ dirId: string }> {
+    return this.makeRequest<{ dirId: string }>('/browser/create', {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  }
+
+  /**
+   * Create multiple browsers in batch
+   */
+  async createBrowsers(
+    configs: BrowserCreateConfig[]
+  ): Promise<BrowserCreateBatchResult> {
+    const results: BrowserCreateResult[] = [];
+    const errors: Array<{ config: BrowserCreateConfig; error: string }> = [];
+
+    // Create browsers in parallel with reasonable concurrency
+    const BATCH_SIZE = 3;
+    for (let i = 0; i < configs.length; i += BATCH_SIZE) {
+      const batch = configs.slice(i, i + BATCH_SIZE);
+      
+      const batchPromises = batch.map(async (config, batchIndex) => {
+        try {
+          const result = await this.createBrowser(config);
+          return {
+            dirId: result.dirId,
+            windowName: config.windowName || `Browser-${i + batchIndex + 1}`,
+            success: true,
+          };
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          errors.push({ config, error: errorMsg });
+          return {
+            dirId: '',
+            windowName: config.windowName || `Browser-${i + batchIndex + 1}`,
+            success: false,
+            error: errorMsg,
+          };
+        }
+      });
+
+      const batchResults = await Promise.all(batchPromises);
+      results.push(...batchResults);
+
+      // Add small delay between batches to avoid overwhelming the API
+      if (i + BATCH_SIZE < configs.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    const failureCount = results.filter(r => !r.success).length;
+
+    // If there were errors and some successes, log warnings
+    if (errors.length > 0) {
+      console.warn(`${errors.length} browser creation(s) failed:`, errors);
+    }
+
+    return {
+      results,
+      successCount,
+      failureCount,
+      total: configs.length,
+    };
+  }
+
+  /**
+   * Get browser details by ID
+   */
+  async getBrowserDetail(workspaceId: number, dirId: string): Promise<any> {
+    const params = new URLSearchParams({
+      workspaceId: workspaceId.toString(),
+      dirId,
+    });
+    return this.makeRequest<any>(`/browser/detail?${params}`, {
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Update/modify existing browser
+   */
+  async updateBrowser(config: BrowserCreateConfig & { dirId: string }): Promise<void> {
+    await this.makeRequest<void>('/browser/mdf', {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  }
+
+  /**
+   * Delete browsers
+   */
+  async deleteBrowsers(workspaceId: number, dirIds: string[]): Promise<void> {
+    await this.makeRequest<void>('/browser/delete', {
+      method: 'POST',
+      body: JSON.stringify({ workspaceId, dirIds }),
+    });
+  }
+
+  /**
+   * Random fingerprint for browser
+   */
+  async randomBrowserFingerprint(workspaceId: number, dirId: string): Promise<void> {
+    await this.makeRequest<void>('/browser/random_env', {
+      method: 'POST',
+      body: JSON.stringify({ workspaceId, dirId }),
+    });
+  }
+
+  /**
+   * Clear browser local cache
+   */
+  async clearBrowserLocalCache(dirIds: string[]): Promise<void> {
+    await this.makeRequest<void>('/browser/clear_local_cache', {
+      method: 'POST',
+      body: JSON.stringify({ dirIds }),
+    });
+  }
+
+  /**
+   * Clear browser server cache
+   */
+  async clearBrowserServerCache(workspaceId: number, dirIds: string[]): Promise<void> {
+    await this.makeRequest<void>('/browser/clear_server_cache', {
+      method: 'POST',
+      body: JSON.stringify({ workspaceId, dirIds }),
+    });
   }
 
   /**
