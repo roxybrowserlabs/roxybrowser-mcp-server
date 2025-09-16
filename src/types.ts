@@ -152,6 +152,24 @@ export interface BrowserCloseToolResponse {
   failureCount: number;
 }
 
+/** Browser delete tool parameters */
+export interface BrowserDeleteToolParams {
+  workspaceId: number;  // Workspace ID
+  dirIds: string[];     // Array of browser directory IDs to delete
+}
+
+/** Browser delete tool response */
+export interface BrowserDeleteToolResponse {
+  results: {
+    dirId: string;
+    success: boolean;
+    error?: string;
+  }[];
+  successCount: number;
+  failureCount: number;
+  message: string;
+}
+
 // ========== Client Configuration ==========
 
 /** RoxyBrowser client configuration */

@@ -27,6 +27,8 @@ import {
   BrowserOpenToolResponse,
   BrowserCloseToolParams,
   BrowserCloseToolResponse,
+  BrowserDeleteToolParams,
+  BrowserDeleteToolResponse,
   BrowserCreateSimpleParams,
   BrowserCreateStandardParams,
   BrowserCreateAdvancedParams,
@@ -147,6 +149,25 @@ const TOOLS = [
         },
       },
       required: ['dirIds'],
+    },
+  },
+  {
+    name: 'roxy_delete_browsers',
+    description: 'Delete multiple browsers permanently by their directory IDs',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs to delete (required)',
+        },
+      },
+      required: ['workspaceId', 'dirIds'],
     },
   },
   {
@@ -472,6 +493,9 @@ class RoxyBrowserMCPServer {
 
           case 'roxy_close_browsers':
             return await this.handleCloseBrowsers(args);
+
+          case 'roxy_delete_browsers':
+            return await this.handleDeleteBrowsers(args);
 
           case 'roxy_create_browser_simple':
             return await this.handleCreateBrowserSimple(args);
@@ -904,6 +928,69 @@ class RoxyBrowserMCPServer {
         },
       ],
     };
+  }
+
+  private async handleDeleteBrowsers(args: any) {
+    const params: BrowserDeleteToolParams = args;
+    
+    if (!params.workspaceId || !params.dirIds || params.dirIds.length === 0) {
+      throw new Error('workspaceId and dirIds are required');
+    }
+
+    try {
+      await this.roxyClient.deleteBrowsers(params.workspaceId, params.dirIds);
+
+      const response: BrowserDeleteToolResponse = {
+        results: params.dirIds.map(dirId => ({
+          dirId,
+          success: true,
+        })),
+        successCount: params.dirIds.length,
+        failureCount: 0,
+        message: `Successfully deleted ${params.dirIds.length} browser(s)`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Browsers Deleted Successfully**\n\n` +
+                  `**Count:** ${response.successCount} browser(s)\n` +
+                  `**Workspace:** ${params.workspaceId}\n\n` +
+                  `**Deleted Browsers:**\n` +
+                  params.dirIds.map((dirId, index) => `  ${index + 1}. \`${dirId}\``).join('\n') +
+                  `\n\n⚠️ **Warning:** Deleted browsers cannot be recovered. All browser data, profiles, and configurations have been permanently removed.`,
+          },
+        ],
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      const response: BrowserDeleteToolResponse = {
+        results: params.dirIds.map(dirId => ({
+          dirId,
+          success: false,
+          error: errorMessage,
+        })),
+        successCount: 0,
+        failureCount: params.dirIds.length,
+        message: `Failed to delete browsers: ${errorMessage}`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `❌ **Browser Deletion Failed**\n\n` +
+                  `**Error:** ${errorMessage}\n` +
+                  `**Workspace:** ${params.workspaceId}\n` +
+                  `**Failed Browsers:** ${params.dirIds.length}\n\n` +
+                  `**Browser IDs:**\n` +
+                  params.dirIds.map((dirId, index) => `  ${index + 1}. \`${dirId}\``).join('\n'),
+          },
+        ],
+      };
+    }
   }
 
   async run() {
