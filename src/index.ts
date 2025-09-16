@@ -954,9 +954,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-  });
-}
+main().catch((error) => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});
