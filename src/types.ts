@@ -437,15 +437,357 @@ export interface BrowserCreateTemplateResponse {
 
 // ========== Error Types ==========
 
-/** RoxyBrowser API error */
+/** RoxyBrowser API error codes mapping */
+export enum RoxyApiErrorCode {
+  SUCCESS = 0,           // 成功
+  INVALID_PARAMS = 400,  // 参数错误
+  UNAUTHORIZED = 401,    // 认证失败
+  FORBIDDEN = 403,       // 权限不足
+  NOT_FOUND = 404,       // 资源不存在
+  TIMEOUT = 408,         // 请求超时
+  CONFLICT = 409,        // 资源冲突
+  SERVER_ERROR = 500,    // 服务器内部错误
+  BAD_GATEWAY = 502,     // 网关错误
+  SERVICE_UNAVAILABLE = 503, // 服务不可用
+  GATEWAY_TIMEOUT = 504, // 网关超时
+}
+
+/** Error information with troubleshooting guidance */
+export interface ErrorInfo {
+  code: number;
+  name: string;
+  description: string;
+  chineseMsg: string;
+  englishMsg: string;
+  category: 'network' | 'authentication' | 'configuration' | 'resource' | 'server' | 'browser' | 'proxy';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  troubleshooting: string[];
+  autoRecoverable: boolean;
+  retryable: boolean;
+}
+
+/** Error mapping for RoxyBrowser API */
+export const ROXY_ERROR_MAP: Record<number, ErrorInfo> = {
+  0: {
+    code: 0,
+    name: 'SUCCESS',
+    description: 'Operation completed successfully',
+    chineseMsg: '成功',
+    englishMsg: 'Success',
+    category: 'server',
+    severity: 'low',
+    troubleshooting: [],
+    autoRecoverable: true,
+    retryable: false,
+  },
+  400: {
+    code: 400,
+    name: 'INVALID_PARAMS',
+    description: 'Invalid parameters provided',
+    chineseMsg: '参数错误',
+    englishMsg: 'Invalid parameters',
+    category: 'configuration',
+    severity: 'medium',
+    troubleshooting: [
+      'Check all required parameters are provided',
+      'Verify parameter types and formats',
+      'Ensure workspace ID and directory IDs exist',
+      'Validate proxy configuration format',
+    ],
+    autoRecoverable: false,
+    retryable: false,
+  },
+  401: {
+    code: 401,
+    name: 'UNAUTHORIZED',
+    description: 'Authentication failed - invalid API key',
+    chineseMsg: '认证失败',
+    englishMsg: 'Authentication failed',
+    category: 'authentication',
+    severity: 'high',
+    troubleshooting: [
+      'Verify ROXY_API_KEY environment variable is set correctly',
+      'Check API key in RoxyBrowser: API → API配置 → API Key',
+      'Ensure API key has not expired or been regenerated',
+      'Confirm API is enabled in RoxyBrowser settings',
+    ],
+    autoRecoverable: false,
+    retryable: false,
+  },
+  403: {
+    code: 403,
+    name: 'FORBIDDEN',
+    description: 'Access denied - insufficient permissions',
+    chineseMsg: '权限不足',
+    englishMsg: 'Access denied',
+    category: 'authentication',
+    severity: 'high',
+    troubleshooting: [
+      'Check if API key has sufficient permissions',
+      'Verify workspace access rights',
+      'Ensure browser profiles are not locked by another process',
+      'Check RoxyBrowser license and feature availability',
+    ],
+    autoRecoverable: false,
+    retryable: false,
+  },
+  404: {
+    code: 404,
+    name: 'NOT_FOUND',
+    description: 'Resource not found',
+    chineseMsg: '资源不存在',
+    englishMsg: 'Resource not found',
+    category: 'resource',
+    severity: 'medium',
+    troubleshooting: [
+      'Verify workspace ID exists using roxy_list_workspaces',
+      'Check browser directory IDs using roxy_list_browsers',
+      'Ensure browser profiles have not been deleted',
+      'Confirm project IDs are valid',
+    ],
+    autoRecoverable: false,
+    retryable: false,
+  },
+  408: {
+    code: 408,
+    name: 'TIMEOUT',
+    description: 'Request timeout',
+    chineseMsg: '请求超时',
+    englishMsg: 'Request timeout',
+    category: 'network',
+    severity: 'medium',
+    troubleshooting: [
+      'Check network connectivity to RoxyBrowser',
+      'Increase ROXY_TIMEOUT environment variable',
+      'Verify RoxyBrowser is responsive and not overloaded',
+      'Reduce batch operation size',
+    ],
+    autoRecoverable: true,
+    retryable: true,
+  },
+  409: {
+    code: 409,
+    name: 'CONFLICT',
+    description: 'Resource conflict - browser already in use',
+    chineseMsg: '资源冲突',
+    englishMsg: 'Resource conflict',
+    category: 'browser',
+    severity: 'medium',
+    troubleshooting: [
+      'Check if browser is already open',
+      'Close conflicting browser instances',
+      'Wait for previous operations to complete',
+      'Use different browser profiles',
+    ],
+    autoRecoverable: false,
+    retryable: true,
+  },
+  500: {
+    code: 500,
+    name: 'SERVER_ERROR',
+    description: 'Internal server error',
+    chineseMsg: '服务器内部错误',
+    englishMsg: 'Internal server error',
+    category: 'server',
+    severity: 'high',
+    troubleshooting: [
+      'Check RoxyBrowser application logs',
+      'Restart RoxyBrowser application',
+      'Verify system resources (CPU, memory, disk space)',
+      'Update RoxyBrowser to latest version',
+    ],
+    autoRecoverable: false,
+    retryable: true,
+  },
+  502: {
+    code: 502,
+    name: 'BAD_GATEWAY',
+    description: 'Bad gateway - proxy or network issue',
+    chineseMsg: '网关错误',
+    englishMsg: 'Bad gateway',
+    category: 'network',
+    severity: 'high',
+    troubleshooting: [
+      'Check proxy configuration',
+      'Verify network connectivity',
+      'Test proxy connection independently',
+      'Try with different proxy or no proxy',
+    ],
+    autoRecoverable: false,
+    retryable: true,
+  },
+  503: {
+    code: 503,
+    name: 'SERVICE_UNAVAILABLE',
+    description: 'Service temporarily unavailable',
+    chineseMsg: '服务不可用',
+    englishMsg: 'Service unavailable',
+    category: 'server',
+    severity: 'high',
+    troubleshooting: [
+      'Wait and retry after a few seconds',
+      'Check if RoxyBrowser is starting up',
+      'Verify RoxyBrowser service status',
+      'Check system resource availability',
+    ],
+    autoRecoverable: true,
+    retryable: true,
+  },
+  504: {
+    code: 504,
+    name: 'GATEWAY_TIMEOUT',
+    description: 'Gateway timeout',
+    chineseMsg: '网关超时',
+    englishMsg: 'Gateway timeout',
+    category: 'network',
+    severity: 'medium',
+    troubleshooting: [
+      'Increase request timeout settings',
+      'Check network latency to proxy servers',
+      'Verify proxy server responsiveness',
+      'Consider using faster proxy servers',
+    ],
+    autoRecoverable: true,
+    retryable: true,
+  },
+};
+
+/** Network error patterns and their solutions */
+export const NETWORK_ERROR_PATTERNS: Array<{
+  pattern: RegExp;
+  category: string;
+  description: string;
+  troubleshooting: string[];
+}> = [
+  {
+    pattern: /ECONNREFUSED/i,
+    category: 'connection_refused',
+    description: 'Connection refused - RoxyBrowser API not accessible',
+    troubleshooting: [
+      'Ensure RoxyBrowser application is running',
+      'Check if API port (default 50000) is open',
+      'Verify API is enabled in RoxyBrowser settings',
+      'Check firewall settings',
+    ],
+  },
+  {
+    pattern: /ENOTFOUND|getaddrinfo/i,
+    category: 'host_not_found',
+    description: 'Host not found - DNS resolution failed',
+    troubleshooting: [
+      'Check ROXY_API_HOST configuration',
+      'Verify hostname spelling',
+      'Test DNS resolution',
+      'Use IP address instead of hostname',
+    ],
+  },
+  {
+    pattern: /ETIMEDOUT/i,
+    category: 'connection_timeout',
+    description: 'Connection timeout',
+    troubleshooting: [
+      'Check network connectivity',
+      'Increase timeout values',
+      'Verify target host is reachable',
+      'Check for network congestion',
+    ],
+  },
+  {
+    pattern: /ECONNRESET/i,
+    category: 'connection_reset',
+    description: 'Connection reset by peer',
+    troubleshooting: [
+      'Check server stability',
+      'Verify network equipment',
+      'Retry with exponential backoff',
+      'Check for rate limiting',
+    ],
+  },
+];
+
+/** Enhanced RoxyBrowser API error */
 export class RoxyApiError extends Error {
+  public readonly errorInfo?: ErrorInfo;
+  public readonly troubleshooting: string[];
+  public readonly category: string;
+  public readonly severity: string;
+  public readonly retryable: boolean;
+
   constructor(
     message: string,
     public code: number,
-    public response?: unknown
+    public response?: unknown,
+    public originalError?: Error
   ) {
     super(message);
     this.name = 'RoxyApiError';
+    
+    // Get error information from mapping
+    this.errorInfo = ROXY_ERROR_MAP[code];
+    this.troubleshooting = this.errorInfo?.troubleshooting || [];
+    this.category = this.errorInfo?.category || 'unknown';
+    this.severity = this.errorInfo?.severity || 'medium';
+    this.retryable = this.errorInfo?.retryable || false;
+
+    // Enhance message with Chinese translation if available
+    if (this.errorInfo) {
+      const enhancedMessage = `${message} (${this.errorInfo.chineseMsg})`;
+      this.message = enhancedMessage;
+    }
+  }
+
+  /** Get user-friendly error explanation */
+  getExplanation(): string {
+    if (!this.errorInfo) {
+      return `Error ${this.code}: ${this.message}`;
+    }
+
+    return `**${this.errorInfo.name}** (${this.code}): ${this.errorInfo.description}\n` +
+           `**中文说明**: ${this.errorInfo.chineseMsg}\n` +
+           `**分类**: ${this.errorInfo.category}\n` +
+           `**严重程度**: ${this.errorInfo.severity}`;
+  }
+
+  /** Get troubleshooting steps */
+  getTroubleshootingSteps(): string[] {
+    const steps = [...this.troubleshooting];
+    
+    // Add network-specific troubleshooting for network errors
+    if (this.originalError) {
+      const networkPattern = NETWORK_ERROR_PATTERNS.find(pattern => 
+        pattern.pattern.test(this.originalError!.message)
+      );
+      if (networkPattern) {
+        steps.unshift(`**网络错误检测**: ${networkPattern.description}`);
+        steps.push(...networkPattern.troubleshooting);
+      }
+    }
+
+    return steps;
+  }
+
+  /** Check if error is retryable */
+  isRetryable(): boolean {
+    return this.retryable;
+  }
+
+  /** Get retry strategy */
+  getRetryStrategy(): { shouldRetry: boolean; delayMs: number; maxRetries: number } {
+    if (!this.retryable) {
+      return { shouldRetry: false, delayMs: 0, maxRetries: 0 };
+    }
+
+    // Different retry strategies based on error type
+    switch (this.category) {
+      case 'network':
+        return { shouldRetry: true, delayMs: 2000, maxRetries: 3 };
+      case 'server':
+        return { shouldRetry: true, delayMs: 5000, maxRetries: 2 };
+      case 'browser':
+        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 };
+      default:
+        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 };
+    }
   }
 }
 

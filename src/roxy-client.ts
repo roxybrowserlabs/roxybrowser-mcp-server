@@ -1,6 +1,6 @@
 /**
  * RoxyBrowser API Client
- * 
+ *
  * HTTP client for RoxyBrowser REST API with authentication and error handling
  */
 
@@ -19,7 +19,7 @@ import {
   RoxyApiError,
   ConfigError,
   BrowserCreationError,
-} from './types.js';
+} from "./types.js";
 
 export class RoxyClient {
   private readonly config: Required<RoxyClientConfig>;
@@ -27,15 +27,15 @@ export class RoxyClient {
   constructor(config: RoxyClientConfig) {
     // Validate required configuration
     if (!config.apiKey?.trim()) {
-      throw new ConfigError('API key is required');
+      throw new ConfigError("API key is required");
     }
-    
+
     if (!config.apiHost?.trim()) {
-      throw new ConfigError('API host is required');
+      throw new ConfigError("API host is required");
     }
 
     this.config = {
-      apiHost: config.apiHost.replace(/\/$/, ''), // Remove trailing slash
+      apiHost: config.apiHost.replace(/\/$/, ""), // Remove trailing slash
       apiKey: config.apiKey,
       timeout: config.timeout ?? 30000,
     };
@@ -49,7 +49,7 @@ export class RoxyClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.config.apiHost}${endpoint}`;
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
@@ -57,8 +57,8 @@ export class RoxyClient {
       const response = await fetch(url, {
         ...options,
         headers: {
-          'Content-Type': 'application/json',
-          'token': this.config.apiKey, // RoxyBrowser uses 'token' header
+          "Content-Type": "application/json",
+          token: this.config.apiKey, // RoxyBrowser uses 'token' header
           ...options.headers,
         },
         signal: controller.signal,
@@ -67,10 +67,12 @@ export class RoxyClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        const responseText = await response.text().catch(() => "Unknown error");
         throw new RoxyApiError(
           `HTTP ${response.status}: ${response.statusText}`,
           response.status,
-          await response.text().catch(() => 'Unknown error')
+          responseText,
+          undefined // originalError
         );
       }
 
@@ -78,43 +80,69 @@ export class RoxyClient {
 
       // Check API response code
       if (data.code !== 0) {
+        // Enhanced error message with both Chinese and English
+        const errorMessage = data.msg || "API request failed";
         throw new RoxyApiError(
-          data.msg || 'API request failed',
+          errorMessage,
           data.code,
-          data
+          data,
+          undefined // originalError
         );
       }
 
       return data.data as T;
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error instanceof RoxyApiError) {
         throw error;
       }
 
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          throw new RoxyApiError(`Request timeout after ${this.config.timeout}ms`, 408);
+        if (error.name === "AbortError") {
+          throw new RoxyApiError(
+            `Request timeout after ${this.config.timeout}ms`,
+            408,
+            undefined,
+            error // originalError
+          );
         }
-        throw new RoxyApiError(`Network error: ${error.message}`, 0, error);
+
+        // Enhanced network error handling with pattern detection
+        throw new RoxyApiError(
+          `Network error: ${error.message}`,
+          0,
+          undefined,
+          error // originalError for pattern analysis
+        );
       }
 
-      throw new RoxyApiError('Unknown error occurred', 0, error);
+      throw new RoxyApiError(
+        "Unknown error occurred",
+        0,
+        error,
+        error instanceof Error ? error : undefined
+      );
     }
   }
 
   /**
    * Get list of workspaces and projects
    */
-  async getWorkspaces(pageIndex = 1, pageSize = 15): Promise<WorkspaceListResponse> {
+  async getWorkspaces(
+    pageIndex = 1,
+    pageSize = 15
+  ): Promise<WorkspaceListResponse> {
     const params = new URLSearchParams({
       page_index: pageIndex.toString(),
       page_size: pageSize.toString(),
     });
-    return this.makeRequest<WorkspaceListResponse>(`/browser/workspace?${params}`, {
-      method: 'GET',
-    });
+    return this.makeRequest<WorkspaceListResponse>(
+      `/browser/workspace?${params}`,
+      {
+        method: "GET",
+      }
+    );
   }
 
   /**
@@ -122,70 +150,128 @@ export class RoxyClient {
    */
   async getBrowsers(params: BrowserListParams): Promise<BrowserListResponse> {
     const searchParams = new URLSearchParams();
-    searchParams.append('workspaceId', params.workspaceId.toString());
-    if (params.dirIds) searchParams.append('dirIds', params.dirIds);
-    if (params.windowName) searchParams.append('windowName', params.windowName);
-    if (params.sortNums) searchParams.append('sortNums', params.sortNums);
-    if (params.os) searchParams.append('os', params.os);
-    if (params.projectIds) searchParams.append('projectIds', params.projectIds);
-    if (params.windowRemark) searchParams.append('windowRemark', params.windowRemark);
-    if (params.page_index) searchParams.append('page_index', params.page_index.toString());
-    if (params.page_size) searchParams.append('page_size', params.page_size.toString());
-    
-    return this.makeRequest<BrowserListResponse>(`/browser/list_v3?${searchParams}`, {
-      method: 'GET',
-    });
+    searchParams.append("workspaceId", params.workspaceId.toString());
+    if (params.dirIds) searchParams.append("dirIds", params.dirIds);
+    if (params.windowName) searchParams.append("windowName", params.windowName);
+    if (params.sortNums) searchParams.append("sortNums", params.sortNums);
+    if (params.os) searchParams.append("os", params.os);
+    if (params.projectIds) searchParams.append("projectIds", params.projectIds);
+    if (params.windowRemark)
+      searchParams.append("windowRemark", params.windowRemark);
+    if (params.page_index)
+      searchParams.append("page_index", params.page_index.toString());
+    if (params.page_size)
+      searchParams.append("page_size", params.page_size.toString());
+
+    return this.makeRequest<BrowserListResponse>(
+      `/browser/list_v3?${searchParams}`,
+      {
+        method: "GET",
+      }
+    );
   }
 
   /**
    * Open a single browser
    */
   async openBrowser(params: BrowserOpenParams): Promise<BrowserOpenResult> {
-    return this.makeRequest<BrowserOpenResult>('/browser/open', {
-      method: 'POST',
+    return this.makeRequest<BrowserOpenResult>("/browser/open", {
+      method: "POST",
       body: JSON.stringify(params),
     });
   }
 
   /**
-   * Open multiple browsers in batch
+   * Open multiple browsers in batch with enhanced error handling and retry logic
    */
   async openBrowsers(
     workspaceId: number,
     dirIds: string[],
-    args?: string[]
+    args?: string[],
+    options: { maxRetries?: number; retryDelay?: number } = {}
   ): Promise<BrowserOpenResult[]> {
+    const { maxRetries = 2, retryDelay = 1000 } = options;
     const results: BrowserOpenResult[] = [];
-    const errors: Array<{ dirId: string; error: string }> = [];
+    const allErrors: Array<{
+      dirId: string;
+      error: string;
+      retryable: boolean;
+    }> = [];
 
     // Open browsers in parallel with reasonable concurrency
     const BATCH_SIZE = 5;
     for (let i = 0; i < dirIds.length; i += BATCH_SIZE) {
       const batch = dirIds.slice(i, i + BATCH_SIZE);
-      
+
       const batchPromises = batch.map(async (dirId) => {
-        try {
-          const result = await this.openBrowser({ workspaceId, dirId, args });
-          return { dirId, result };
-        } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-          return { dirId, error: errorMsg };
+        let lastError: Error | null = null;
+
+        // Retry logic for each browser
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            const result = await this.openBrowser({ workspaceId, dirId, args });
+            return { dirId, result };
+          } catch (error) {
+            lastError =
+              error instanceof Error ? error : new Error("Unknown error");
+
+            // Check if error is retryable
+            if (error instanceof RoxyApiError && !error.isRetryable()) {
+              break; // Don't retry non-retryable errors
+            }
+
+            // Don't wait after the last attempt
+            if (attempt < maxRetries) {
+              await new Promise((resolve) =>
+                setTimeout(resolve, retryDelay * (attempt + 1))
+              );
+            }
+          }
         }
+
+        // All attempts failed
+        const isRetryable =
+          lastError instanceof RoxyApiError ? lastError.isRetryable() : true;
+        return {
+          dirId,
+          error: lastError?.message || "Unknown error",
+          retryable: isRetryable,
+        };
       });
 
       const batchResults = await Promise.all(batchPromises);
-      
+
       for (const item of batchResults) {
-        if ('result' in item && item.result) {
+        if ("result" in item && item.result) {
           results.push(item.result);
-        } else if ('error' in item) {
-          errors.push({ dirId: item.dirId, error: item.error });
+        } else if ("error" in item) {
+          allErrors.push({
+            dirId: item.dirId,
+            error: item.error,
+            retryable: "retryable" in item ? item.retryable : true,
+          });
         }
       }
     }
 
-    if (errors.length > 0) {
-      console.warn('Some browsers failed to open:', errors);
+    // Enhanced error reporting
+    if (allErrors.length > 0) {
+      const retryableErrors = allErrors.filter((e) => e.retryable);
+      const nonRetryableErrors = allErrors.filter((e) => !e.retryable);
+
+      console.warn(
+        `Browser opening completed with ${allErrors.length} errors:`
+      );
+      if (retryableErrors.length > 0) {
+        console.warn(
+          `  - ${retryableErrors.length} retryable errors (could retry later)`
+        );
+      }
+      if (nonRetryableErrors.length > 0) {
+        console.warn(
+          `  - ${nonRetryableErrors.length} non-retryable errors (require intervention)`
+        );
+      }
     }
 
     return results;
@@ -195,8 +281,8 @@ export class RoxyClient {
    * Close a single browser
    */
   async closeBrowser(params: BrowserCloseParams): Promise<void> {
-    await this.makeRequest<void>('/browser/close', {
-      method: 'POST',
+    await this.makeRequest<void>("/browser/close", {
+      method: "POST",
       body: JSON.stringify(params),
     });
   }
@@ -204,8 +290,11 @@ export class RoxyClient {
   /**
    * Close multiple browsers in batch
    */
-  async closeBrowsers(dirIds: string[]): Promise<Array<{ dirId: string; success: boolean; error?: string }>> {
-    const results: Array<{ dirId: string; success: boolean; error?: string }> = [];
+  async closeBrowsers(
+    dirIds: string[]
+  ): Promise<Array<{ dirId: string; success: boolean; error?: string }>> {
+    const results: Array<{ dirId: string; success: boolean; error?: string }> =
+      [];
 
     // Close browsers in parallel
     const closePromises = dirIds.map(async (dirId) => {
@@ -213,7 +302,8 @@ export class RoxyClient {
         await this.closeBrowser({ dirId });
         return { dirId, success: true };
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorMsg =
+          error instanceof Error ? error.message : "Unknown error";
         return { dirId, success: false, error: errorMsg };
       }
     });
@@ -228,8 +318,8 @@ export class RoxyClient {
    * Create a single browser
    */
   async createBrowser(config: BrowserCreateConfig): Promise<{ dirId: string }> {
-    return this.makeRequest<{ dirId: string }>('/browser/create', {
-      method: 'POST',
+    return this.makeRequest<{ dirId: string }>("/browser/create", {
+      method: "POST",
       body: JSON.stringify(config),
     });
   }
@@ -247,7 +337,7 @@ export class RoxyClient {
     const BATCH_SIZE = 3;
     for (let i = 0; i < configs.length; i += BATCH_SIZE) {
       const batch = configs.slice(i, i + BATCH_SIZE);
-      
+
       const batchPromises = batch.map(async (config, batchIndex) => {
         try {
           const result = await this.createBrowser(config);
@@ -257,10 +347,11 @@ export class RoxyClient {
             success: true,
           };
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorMsg =
+            error instanceof Error ? error.message : "Unknown error";
           errors.push({ config, error: errorMsg });
           return {
-            dirId: '',
+            dirId: "",
             windowName: config.windowName || `Browser-${i + batchIndex + 1}`,
             success: false,
             error: errorMsg,
@@ -273,12 +364,12 @@ export class RoxyClient {
 
       // Add small delay between batches to avoid overwhelming the API
       if (i + BATCH_SIZE < configs.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
     // If there were errors and some successes, log warnings
     if (errors.length > 0) {
@@ -302,16 +393,18 @@ export class RoxyClient {
       dirId,
     });
     return this.makeRequest<any>(`/browser/detail?${params}`, {
-      method: 'GET',
+      method: "GET",
     });
   }
 
   /**
    * Update/modify existing browser
    */
-  async updateBrowser(config: BrowserCreateConfig & { dirId: string }): Promise<void> {
-    await this.makeRequest<void>('/browser/mdf', {
-      method: 'POST',
+  async updateBrowser(
+    config: BrowserCreateConfig & { dirId: string }
+  ): Promise<void> {
+    await this.makeRequest<void>("/browser/mdf", {
+      method: "POST",
       body: JSON.stringify(config),
     });
   }
@@ -320,8 +413,8 @@ export class RoxyClient {
    * Delete browsers
    */
   async deleteBrowsers(workspaceId: number, dirIds: string[]): Promise<void> {
-    await this.makeRequest<void>('/browser/delete', {
-      method: 'POST',
+    await this.makeRequest<void>("/browser/delete", {
+      method: "POST",
       body: JSON.stringify({ workspaceId, dirIds }),
     });
   }
@@ -329,9 +422,12 @@ export class RoxyClient {
   /**
    * Random fingerprint for browser
    */
-  async randomBrowserFingerprint(workspaceId: number, dirId: string): Promise<void> {
-    await this.makeRequest<void>('/browser/random_env', {
-      method: 'POST',
+  async randomBrowserFingerprint(
+    workspaceId: number,
+    dirId: string
+  ): Promise<void> {
+    await this.makeRequest<void>("/browser/random_env", {
+      method: "POST",
       body: JSON.stringify({ workspaceId, dirId }),
     });
   }
@@ -340,8 +436,8 @@ export class RoxyClient {
    * Clear browser local cache
    */
   async clearBrowserLocalCache(dirIds: string[]): Promise<void> {
-    await this.makeRequest<void>('/browser/clear_local_cache', {
-      method: 'POST',
+    await this.makeRequest<void>("/browser/clear_local_cache", {
+      method: "POST",
       body: JSON.stringify({ dirIds }),
     });
   }
@@ -349,23 +445,110 @@ export class RoxyClient {
   /**
    * Clear browser server cache
    */
-  async clearBrowserServerCache(workspaceId: number, dirIds: string[]): Promise<void> {
-    await this.makeRequest<void>('/browser/clear_server_cache', {
-      method: 'POST',
+  async clearBrowserServerCache(
+    workspaceId: number,
+    dirIds: string[]
+  ): Promise<void> {
+    await this.makeRequest<void>("/browser/clear_server_cache", {
+      method: "POST",
       body: JSON.stringify({ workspaceId, dirIds }),
     });
   }
 
   /**
-   * Test API connectivity
+   * Test API connectivity with detailed diagnostics
    */
   async testConnection(): Promise<boolean> {
     try {
-      await this.makeRequest<string>('/health');
+      await this.makeRequest<string>("/health");
       return true;
     } catch (error) {
-      console.error('Connection test failed:', error);
+      console.error("Connection test failed:", error);
       return false;
     }
+  }
+
+  /**
+   * Perform comprehensive API diagnostics
+   */
+  async performDiagnostics(): Promise<{
+    connected: boolean;
+    apiVersion?: string;
+    authentication: boolean;
+    workspaceAccess: boolean;
+    errors: string[];
+    recommendations: string[];
+  }> {
+    const result = {
+      connected: false,
+      authentication: false,
+      workspaceAccess: false,
+      errors: [] as string[],
+      recommendations: [] as string[],
+    };
+
+    // Test 1: Basic connectivity
+    try {
+      await this.makeRequest<string>("/health");
+      result.connected = true;
+    } catch (error) {
+      result.connected = false;
+      if (error instanceof RoxyApiError) {
+        result.errors.push(`Connection failed: ${error.getExplanation()}`);
+        result.recommendations.push(...error.getTroubleshootingSteps());
+      } else {
+        result.errors.push(
+          `Network error: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+        result.recommendations.push(
+          "Check if RoxyBrowser is running",
+          "Verify API host configuration",
+          "Check network connectivity"
+        );
+      }
+    }
+
+    // Test 2: Authentication (if connected)
+    if (result.connected) {
+      try {
+        await this.getWorkspaces(1, 1);
+        result.authentication = true;
+        result.workspaceAccess = true;
+      } catch (error) {
+        if (error instanceof RoxyApiError) {
+          if (error.code === 401) {
+            result.authentication = false;
+            result.errors.push("Authentication failed: Invalid API key");
+            result.recommendations.push(
+              "Check ROXY_API_KEY environment variable",
+              "Verify API key in RoxyBrowser settings",
+              "Ensure API is enabled in RoxyBrowser"
+            );
+          } else if (error.code === 403) {
+            result.authentication = true;
+            result.workspaceAccess = false;
+            result.errors.push("Access denied: Insufficient permissions");
+            result.recommendations.push(
+              "Check API key permissions",
+              "Verify workspace access rights"
+            );
+          } else {
+            result.authentication = true;
+            result.errors.push(`API error: ${error.getExplanation()}`);
+            result.recommendations.push(...error.getTroubleshootingSteps());
+          }
+        } else {
+          result.errors.push(
+            `Unexpected error: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
+          );
+        }
+      }
+    }
+
+    return result;
   }
 }

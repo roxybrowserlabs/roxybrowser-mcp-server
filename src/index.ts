@@ -18,6 +18,7 @@ import { RoxyClient } from './roxy-client.js';
 import { BrowserCreator } from './browser/browser-creator.js';
 import { TemplateManager } from './browser/template-manager.js';
 import { ProxyManager } from './proxy/proxy-manager.js';
+import { ErrorAnalyzer } from './utils/error-analyzer.js';
 import {
   RoxyClientConfig,
   WorkspaceListToolResponse,
@@ -442,6 +443,30 @@ const TOOLS = [
       required: ['proxyInfo'],
     },
   },
+  {
+    name: 'roxy_system_diagnostics',
+    description: 'Perform comprehensive system diagnostics and health checks',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        includeWorkspaceCheck: {
+          type: 'boolean',
+          description: 'Include workspace connectivity tests (optional, default: true)',
+          default: true,
+        },
+        includeBrowserCheck: {
+          type: 'boolean',
+          description: 'Include browser availability checks (optional, default: true)',
+          default: true,
+        },
+        verbose: {
+          type: 'boolean',
+          description: 'Include detailed diagnostic information (optional, default: false)',
+          default: false,
+        },
+      },
+    },
+  },
 ];
 
 // ========== MCP Server ==========
@@ -515,16 +540,21 @@ class RoxyBrowserMCPServer {
           case 'roxy_validate_proxy_config':
             return await this.handleValidateProxyConfig(args);
 
+          case 'roxy_system_diagnostics':
+            return await this.handleSystemDiagnostics(args);
+
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        // Use enhanced error analysis
+        const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+        
         return {
           content: [
             {
               type: 'text',
-              text: `Error: ${errorMessage}`,
+              text: formattedError,
             },
           ],
         };
@@ -966,17 +996,6 @@ class RoxyBrowserMCPServer {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      const response: BrowserDeleteToolResponse = {
-        results: params.dirIds.map(dirId => ({
-          dirId,
-          success: false,
-          error: errorMessage,
-        })),
-        successCount: 0,
-        failureCount: params.dirIds.length,
-        message: `Failed to delete browsers: ${errorMessage}`,
-      };
-
       return {
         content: [
           {
@@ -993,22 +1012,168 @@ class RoxyBrowserMCPServer {
     }
   }
 
-  async run() {
-    // Test connection before starting
-    console.error('🔗 Testing RoxyBrowser API connection...');
-    const isConnected = await this.roxyClient.testConnection();
+  private async handleSystemDiagnostics(args: any) {
+    const { includeWorkspaceCheck = true, includeBrowserCheck = true, verbose = false } = args || {};
     
-    if (!isConnected) {
+    // Perform comprehensive diagnostics
+    const diagnostics = await this.roxyClient.performDiagnostics();
+    
+    let diagnosticText = `## 🔍 系统诊断报告 / System Diagnostics Report\n\n`;
+    
+    // Basic connectivity
+    diagnosticText += `### 🌐 连接状态 / Connectivity Status\n`;
+    diagnosticText += `- **API连接 / API Connection**: ${diagnostics.connected ? '✅ 已连接' : '❌ 连接失败'}\n`;
+    diagnosticText += `- **认证状态 / Authentication**: ${diagnostics.authentication ? '✅ 成功' : '❌ 失败'}\n`;
+    diagnosticText += `- **工作区访问 / Workspace Access**: ${diagnostics.workspaceAccess ? '✅ 正常' : '⚠️ 受限'}\n\n`;
+    
+    // Additional workspace checks
+    if (includeWorkspaceCheck && diagnostics.connected && diagnostics.authentication) {
+      try {
+        const workspaces = await this.roxyClient.getWorkspaces(1, 5);
+        diagnosticText += `### 📁 工作区信息 / Workspace Information\n`;
+        diagnosticText += `- **可用工作区 / Available Workspaces**: ${workspaces.total}\n`;
+        
+        if (workspaces.rows.length > 0) {
+          diagnosticText += `- **工作区详情 / Workspace Details**:\n`;
+          workspaces.rows.slice(0, 3).forEach(ws => {
+            const projectCount = ws.project_details.length;
+            diagnosticText += `  - ${ws.workspaceName} (ID: ${ws.id}) - ${projectCount} projects\n`;
+          });
+          if (workspaces.total > 3) {
+            diagnosticText += `  - ... and ${workspaces.total - 3} more\n`;
+          }
+        }
+        diagnosticText += '\n';
+      } catch (error) {
+        diagnosticText += `### 📁 工作区信息 / Workspace Information\n`;
+        diagnosticText += `- **状态**: ❌ 无法获取工作区信息\n`;
+        diagnosticText += `- **错误**: ${error instanceof Error ? error.message : 'Unknown error'}\n\n`;
+      }
+    }
+
+    // Browser availability checks
+    if (includeBrowserCheck && diagnostics.connected && diagnostics.authentication && diagnostics.workspaceAccess) {
+      try {
+        // Get first workspace and check browsers
+        const workspaces = await this.roxyClient.getWorkspaces(1, 1);
+        if (workspaces.rows.length > 0) {
+          const firstWorkspace = workspaces.rows[0];
+          const browsers = await this.roxyClient.getBrowsers({
+            workspaceId: firstWorkspace.id,
+            page_index: 1,
+            page_size: 5,
+          });
+          
+          diagnosticText += `### 🖥️ 浏览器状态 / Browser Status\n`;
+          diagnosticText += `- **检查工作区 / Checked Workspace**: ${firstWorkspace.workspaceName} (ID: ${firstWorkspace.id})\n`;
+          diagnosticText += `- **可用浏览器 / Available Browsers**: ${browsers.total}\n`;
+          
+          if (browsers.rows.length > 0) {
+            diagnosticText += `- **浏览器示例 / Browser Examples**:\n`;
+            browsers.rows.slice(0, 3).forEach(browser => {
+              diagnosticText += `  - ${browser.windowName || 'Unnamed'} (${browser.os}) - Status: ${browser.status}\n`;
+            });
+          }
+          diagnosticText += '\n';
+        }
+      } catch (error) {
+        diagnosticText += `### 🖥️ 浏览器状态 / Browser Status\n`;
+        diagnosticText += `- **状态**: ⚠️ 无法检查浏览器状态\n`;
+        diagnosticText += `- **原因**: ${error instanceof Error ? error.message : 'Unknown error'}\n\n`;
+      }
+    }
+
+    // Error details
+    if (diagnostics.errors.length > 0) {
+      diagnosticText += `### ❌ 检测到的问题 / Detected Issues\n`;
+      diagnostics.errors.forEach((error, index) => {
+        diagnosticText += `${index + 1}. ${error}\n`;
+      });
+      diagnosticText += '\n';
+    }
+
+    // Recommendations
+    if (diagnostics.recommendations.length > 0) {
+      diagnosticText += `### 💡 建议操作 / Recommendations\n`;
+      diagnostics.recommendations.slice(0, 8).forEach((rec, index) => {
+        diagnosticText += `${index + 1}. ${rec}\n`;
+      });
+      if (diagnostics.recommendations.length > 8) {
+        diagnosticText += `... and ${diagnostics.recommendations.length - 8} more\n`;
+      }
+      diagnosticText += '\n';
+    }
+
+    // Verbose information
+    if (verbose) {
+      diagnosticText += `### 🔧 详细信息 / Detailed Information\n`;
+      diagnosticText += `- **API主机 / API Host**: ${this.roxyClient.config.apiHost}\n`;
+      diagnosticText += `- **超时设置 / Timeout**: ${this.roxyClient.config.timeout}ms\n`;
+      diagnosticText += `- **诊断时间 / Diagnosis Time**: ${new Date().toISOString()}\n\n`;
+    }
+
+    // Overall status
+    const overallStatus = diagnostics.connected && diagnostics.authentication;
+    diagnosticText += `### 📋 总体状态 / Overall Status\n`;
+    diagnosticText += `**${overallStatus ? '✅ 系统正常运行' : '❌ 系统存在问题'}** / `;
+    diagnosticText += `**${overallStatus ? 'System Operating Normally' : 'System Issues Detected'}**\n\n`;
+    
+    if (overallStatus) {
+      diagnosticText += `*系统已准备就绪，可以进行浏览器自动化操作。*\n`;
+      diagnosticText += `*System ready for browser automation operations.*`;
+    } else {
+      diagnosticText += `*请解决上述问题后重新运行诊断。*\n`;
+      diagnosticText += `*Please resolve the issues above and run diagnostics again.*`;
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: diagnosticText,
+        },
+      ],
+    };
+  }
+
+  async run() {
+    // Enhanced connection testing with diagnostics
+    console.error('🔗 Performing RoxyBrowser API diagnostics...');
+    const diagnostics = await this.roxyClient.performDiagnostics();
+    
+    if (!diagnostics.connected) {
       console.error('❌ Failed to connect to RoxyBrowser API');
-      console.error('   Please check:');
-      console.error('   1. RoxyBrowser is running');
-      console.error('   2. API is enabled in RoxyBrowser settings');
-      console.error('   3. ROXY_API_KEY environment variable is set');
-      console.error('   4. API host is correct (default: http://127.0.0.1:50000)');
+      console.error('\n📋 Diagnostic Results:');
+      diagnostics.errors.forEach(error => console.error(`   ❌ ${error}`));
+      
+      if (diagnostics.recommendations.length > 0) {
+        console.error('\n💡 Recommendations:');
+        diagnostics.recommendations.slice(0, 5).forEach((rec, index) => {
+          console.error(`   ${index + 1}. ${rec}`);
+        });
+      }
       process.exit(1);
     }
 
-    console.error('✅ Connected to RoxyBrowser API');
+    if (!diagnostics.authentication) {
+      console.error('❌ Authentication failed');
+      console.error('\n📋 Diagnostic Results:');
+      diagnostics.errors.forEach(error => console.error(`   ❌ ${error}`));
+      
+      if (diagnostics.recommendations.length > 0) {
+        console.error('\n💡 Recommendations:');
+        diagnostics.recommendations.slice(0, 5).forEach((rec, index) => {
+          console.error(`   ${index + 1}. ${rec}`);
+        });
+      }
+      process.exit(1);
+    }
+
+    console.error('✅ API Diagnostics Passed:');
+    console.error('   ✓ Connection established');
+    console.error('   ✓ Authentication successful');
+    console.error(`   ✓ Workspace access: ${diagnostics.workspaceAccess ? 'Yes' : 'Limited'}`);
+    
     console.error('🚀 Starting RoxyBrowser MCP Server...');
 
     const transport = new StdioServerTransport();
