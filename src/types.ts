@@ -350,27 +350,6 @@ export interface BrowserCreateStandardParams {
 /** Advanced browser creation parameters - full control */
 export interface BrowserCreateAdvancedParams extends BrowserCreateConfig {}
 
-/** Browser template types */
-export type BrowserTemplateType = 'gmail' | 'facebook' | 'ecommerce' | 'social_media' | 'general' | 'custom';
-
-/** Browser template configuration */
-export interface BrowserTemplate {
-  name: BrowserTemplateType;
-  description: string;
-  defaultConfig: Partial<BrowserCreateConfig>;
-}
-
-/** Template-based browser creation parameters */
-export interface BrowserCreateTemplateParams {
-  workspaceId: number;                  // Required: Workspace ID
-  templateName: BrowserTemplateType;    // Template to use
-  count?: number;                       // Number of browsers to create (default: 1)
-  proxyList?: ProxyInfo[];              // List of proxies to assign
-  customConfig?: Partial<BrowserCreateConfig>; // Override template config
-  namePrefix?: string;                  // Prefix for browser names
-  projectId?: number;                   // Project ID
-}
-
 /** Browser creation result */
 export interface BrowserCreateResult {
   dirId: string;                        // Browser directory ID
@@ -422,16 +401,6 @@ export interface BrowserCreateAdvancedResponse {
     dirId: string;
     config: BrowserCreateConfig;
   };
-  message: string;
-}
-
-/** Template browser creation tool response */
-export interface BrowserCreateTemplateResponse {
-  browsers: BrowserCreateResult[];
-  template: BrowserTemplateType;
-  successCount: number;
-  failureCount: number;
-  total: number;
   message: string;
 }
 

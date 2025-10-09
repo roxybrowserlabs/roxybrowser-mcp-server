@@ -9,7 +9,6 @@ import {
   BrowserCreateSimpleParams,
   BrowserCreateStandardParams,
   BrowserCreateAdvancedParams,
-  BrowserCreateTemplateParams,
   BrowserCreateResult,
   BrowserCreateBatchResult,
   ProxyInfo,
@@ -273,38 +272,6 @@ export class BrowserCreator {
     }
 
     return result;
-  }
-
-  /**
-   * Create multiple browser configuration objects from template parameters
-   */
-  static buildConfigsFromTemplate(
-    params: BrowserCreateTemplateParams,
-    templateConfig: Partial<BrowserCreateConfig>
-  ): BrowserCreateConfig[] {
-    const count = params.count || 1;
-    const configs: BrowserCreateConfig[] = [];
-
-    for (let i = 0; i < count; i++) {
-      const baseConfig: BrowserCreateConfig = {
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        windowName: this.generateBrowserName(params.namePrefix, i),
-        ...templateConfig,
-        ...params.customConfig,
-      };
-
-      // Apply defaults and validate
-      const config = this.applyDefaults(baseConfig);
-      configs.push(config);
-    }
-
-    // Assign proxies if provided
-    if (params.proxyList && params.proxyList.length > 0) {
-      return this.assignProxiesToConfigs(configs, params.proxyList);
-    }
-
-    return configs;
   }
 
   /**

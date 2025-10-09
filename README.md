@@ -9,9 +9,8 @@ A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.
 - 🤖 **AI-Friendly**: Seamlessly integrates with AI assistants through MCP
 - 🎯 **Playwright Ready**: Works perfectly with [@playwright/mcp](https://github.com/microsoft/playwright-mcp)
 - 📊 **Workspace Support**: Manage browsers across different workspaces and projects
-- 🛠️ **Browser Creation**: Create browsers with layered complexity (Simple, Standard, Advanced, Template-based)
+- 🛠️ **Browser Creation**: Create browsers with layered complexity (Simple, Standard, Advanced)
 - 🌐 **Proxy Management**: Built-in proxy validation, testing, and configuration tools
-- 📋 **Template System**: Predefined configurations for Gmail, Facebook, E-commerce, and more
 - 🔧 **Advanced Configuration**: Full control over fingerprints, proxies, and browser settings
 
 ## Quick Start
@@ -195,34 +194,9 @@ Create a browser with complete configuration control - for expert users.
 AI: "Create an advanced browser with custom fingerprint settings and multiple platform accounts"
 ```
 
-##### 8. `roxy_create_browser_from_template` ⭐
-Create browsers using predefined templates - ideal for batch creation.
-
-**Parameters:**
-- `workspaceId` (required): Workspace ID
-- `templateName` (required): gmail, facebook, ecommerce, social_media, general, or custom
-- `count` (optional): Number of browsers to create (default: 1, max: 50)
-- `namePrefix` (optional): Prefix for browser names
-- `projectId` (optional): Project ID
-- `proxyList` (optional): List of proxy configurations
-- `customConfig` (optional): Override template defaults
-
-**Example:**
-```
-AI: "Create 10 Gmail browsers with different proxies using the gmail template"
-```
-
-##### 9. `roxy_list_browser_templates`
-List available browser templates with descriptions.
-
-**Example:**
-```
-AI: "What browser templates are available?"
-```
-
 #### Proxy Management Tools 🆕
 
-##### 10. `roxy_validate_proxy_config`
+##### 8. `roxy_validate_proxy_config`
 Validate proxy configuration before using it.
 
 **Parameters:**
@@ -235,58 +209,42 @@ AI: "Validate this proxy configuration before creating browsers"
 
 ## Complete Workflow Examples
 
-### Example 1: Quick Gmail Automation Setup
+### Example 1: Quick Browser Automation Setup
 
 ```
-1. AI: "Create 5 Gmail browsers using the gmail template in workspace 1"
-   → Uses roxy_create_browser_from_template
-   → Returns browser IDs ready for use
+1. AI: "Create a simple browser in workspace 1 with name 'Test Browser'"
+   → Uses roxy_create_browser_simple
+   → Returns browser ID ready for use
 
-2. AI: "Open all the Gmail browsers I just created"
-   → Uses roxy_open_browsers with the returned IDs
-   → Returns CDP WebSocket URLs like: ws://127.0.0.1:52314/devtools/browser/xxx
+2. AI: "Open the browser I just created"
+   → Uses roxy_open_browsers with the returned ID
+   → Returns CDP WebSocket URL like: ws://127.0.0.1:52314/devtools/browser/xxx
 
-3. AI: "Connect to the first browser and automate Gmail"
+3. AI: "Connect to the browser and automate tasks"
    → Uses playwright-mcp with --cdp-endpoint flag
    → npx @playwright/mcp@latest --cdp-endpoint "ws://127.0.0.1:52314/devtools/browser/xxx"
 
 4. AI: "Navigate to gmail.com, login, and send emails"
    → Uses playwright-mcp tools: browser_navigate, browser_type, browser_click, etc.
 
-5. AI: "Close all browsers when done"
+5. AI: "Close the browser when done"
    → Uses roxy_close_browsers
 ```
 
-### Example 2: E-commerce with Proxy Setup
+### Example 2: Advanced Browser with Proxy Setup
 
 ```
 1. AI: "Validate my proxy configuration before creating browsers"
    → Uses roxy_validate_proxy_config
    → Confirms proxy settings are correct
 
-2. AI: "Create a standard e-commerce browser with SOCKS5 proxy in workspace 2"
+2. AI: "Create a standard browser with SOCKS5 proxy and 1920x1080 resolution in workspace 2"
    → Uses roxy_create_browser_standard with proxy configuration
    → Returns configured browser ID
 
-3. AI: "Open the e-commerce browser and start automation"
+3. AI: "Open the browser and start automation"
    → Uses roxy_open_browsers → playwright-mcp integration
-   → Begin automated shopping tasks
-```
-
-### Example 3: Batch Social Media Management
-
-```
-1. AI: "List available browser templates"
-   → Uses roxy_list_browser_templates
-   → Shows social_media, facebook, etc.
-
-2. AI: "Create 20 social media browsers with different proxies"
-   → Uses roxy_create_browser_from_template with proxy list
-   → Batch creates browsers with distributed proxies
-
-3. AI: "Open first 5 browsers for Instagram automation"
-   → Uses roxy_open_browsers with selected IDs
-   → Ready for social media automation
+   → Begin automated tasks
 ```
 
 ## Integration with Playwright MCP

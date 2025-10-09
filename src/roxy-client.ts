@@ -22,7 +22,7 @@ import {
 } from "./types.js";
 
 export class RoxyClient {
-  private readonly config: Required<RoxyClientConfig>;
+  public readonly config: Required<RoxyClientConfig>;
 
   constructor(config: RoxyClientConfig) {
     // Validate required configuration

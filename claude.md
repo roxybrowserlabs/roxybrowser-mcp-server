@@ -57,18 +57,13 @@ node lib/index.js
    - Proxy assignment and batch operations
    - OS version compatibility checking
 
-4. **Template Manager** (`src/browser/template-manager.ts`)
-   - Predefined browser templates (Gmail, Facebook, E-commerce, etc.)
-   - Regional and proxy-specific optimizations
-   - Template validation and merging with custom configs
-
-5. **Proxy Manager** (`src/proxy/proxy-manager.ts`)
+4. **Proxy Manager** (`src/proxy/proxy-manager.ts`)
    - Proxy configuration validation and testing
    - Multiple proxy formats support (URL, host:port)
    - Proxy distribution strategies (round-robin, random)
    - Statistics and filtering capabilities
 
-6. **Types** (`src/types.ts`)
+5. **Types** (`src/types.ts`)
    - Comprehensive TypeScript definitions
    - API request/response types
    - Browser configuration interfaces
@@ -81,8 +76,6 @@ The server supports three complexity levels for browser creation:
 1. **Simple** - Basic proxy configuration, minimal setup
 2. **Standard** - OS/version selection, window size, language, timezone
 3. **Advanced** - Complete control over fingerprints, user agents, platform accounts
-
-Templates provide pre-configured settings optimized for specific use cases.
 
 ### Enhanced Error Handling System
 
@@ -193,12 +186,6 @@ const batchFormatted = ErrorAnalyzer.formatBatchAnalysisForDisplay(batchAnalysis
 - **Troubleshooting**: Provides context-aware troubleshooting steps
 - **Pattern Recognition**: Detects common error patterns in network issues
 - **Bilingual Support**: Returns both Chinese and English explanations
-
-### Extending Browser Templates
-1. Add template configuration to `TemplateManager.templates`
-2. Define optimized settings for the use case
-3. Include appropriate fingerprint and proxy defaults
-4. Test with various proxy configurations
 
 ### Error Handling Best Practices
 - Use specific error types for different failure modes
