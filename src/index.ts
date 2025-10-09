@@ -37,6 +37,14 @@ import {
   BrowserCreateAdvancedResponse,
   ConfigError,
   BrowserCreationError,
+  AccountListParams,
+  AccountListResponse,
+  LabelListResponse,
+  ConnectionInfoResponse,
+  BrowserUpdateParams,
+  ClearLocalCacheParams,
+  ClearServerCacheParams,
+  RandomFingerprintParams,
 } from './types.js';
 
 // ========== Configuration ==========
@@ -414,6 +422,163 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: 'roxy_list_accounts',
+    description: 'Get list of accounts (platform credentials) in specified workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        accountId: {
+          type: 'number',
+          description: 'Account ID to filter by (optional)',
+        },
+        pageIndex: {
+          type: 'number',
+          description: 'Page index for pagination (default: 1)',
+          default: 1,
+        },
+        pageSize: {
+          type: 'number',
+          description: 'Number of items per page (default: 15)',
+          default: 15,
+        },
+      },
+      required: ['workspaceId'],
+    },
+  },
+  {
+    name: 'roxy_list_labels',
+    description: 'Get list of labels in specified workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+      },
+      required: ['workspaceId'],
+    },
+  },
+  {
+    name: 'roxy_get_connection_info',
+    description: 'Get connection information (CDP endpoints, PIDs) for currently opened browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs to query (optional, returns all if not specified)',
+        },
+      },
+    },
+  },
+  {
+    name: 'roxy_get_browser_detail',
+    description: 'Get detailed information for a specific browser window',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID (required)',
+        },
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_update_browser',
+    description: 'Update/modify an existing browser configuration',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID to update (required)',
+        },
+        windowName: {
+          type: 'string',
+          description: 'Updated window name (optional)',
+        },
+        windowRemark: {
+          type: 'string',
+          description: 'Updated window remarks (optional)',
+        },
+        proxyInfo: {
+          type: 'object',
+          description: 'Updated proxy configuration (optional)',
+        },
+        // Add other updatable fields as needed
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_random_fingerprint',
+    description: 'Randomize browser fingerprint for a specific browser',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID (required)',
+        },
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_clear_local_cache',
+    description: 'Clear local cache for specified browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs (required)',
+        },
+      },
+      required: ['dirIds'],
+    },
+  },
+  {
+    name: 'roxy_clear_server_cache',
+    description: 'Clear server-side cache for specified browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs (required)',
+        },
+      },
+      required: ['workspaceId', 'dirIds'],
+    },
+  },
 ];
 
 // ========== MCP Server ==========
@@ -483,6 +648,30 @@ class RoxyBrowserMCPServer {
 
           case 'roxy_system_diagnostics':
             return await this.handleSystemDiagnostics(args);
+
+          case 'roxy_list_accounts':
+            return await this.handleListAccounts(args);
+
+          case 'roxy_list_labels':
+            return await this.handleListLabels(args);
+
+          case 'roxy_get_connection_info':
+            return await this.handleGetConnectionInfo(args);
+
+          case 'roxy_get_browser_detail':
+            return await this.handleGetBrowserDetail(args);
+
+          case 'roxy_update_browser':
+            return await this.handleUpdateBrowser(args);
+
+          case 'roxy_random_fingerprint':
+            return await this.handleRandomFingerprint(args);
+
+          case 'roxy_clear_local_cache':
+            return await this.handleClearLocalCache(args);
+
+          case 'roxy_clear_server_cache':
+            return await this.handleClearServerCache(args);
 
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -986,6 +1175,211 @@ class RoxyBrowserMCPServer {
         {
           type: 'text',
           text: diagnosticText,
+        },
+      ],
+    };
+  }
+
+  private async handleListAccounts(args: any) {
+    const params: AccountListParams = {
+      workspaceId: args.workspaceId,
+      accountId: args.accountId,
+      page_index: args.pageIndex || 1,
+      page_size: args.pageSize || 15,
+    };
+
+    if (!params.workspaceId) {
+      throw new Error('workspaceId is required');
+    }
+
+    const data = await this.roxyClient.getAccounts(params);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${data.total} accounts in workspace ${params.workspaceId}:\n\n` +
+                data.rows.map(account =>
+                  `**${account.platformName}** (ID: ${account.id})\n` +
+                  `  - Username: ${account.platformUserName}\n` +
+                  `  - Platform URL: ${account.platformUrl}\n` +
+                  `  - Remarks: ${account.platformRemarks || 'N/A'}\n` +
+                  `  - Created: ${account.createTime}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleListLabels(args: any) {
+    const { workspaceId } = args;
+
+    if (!workspaceId) {
+      throw new Error('workspaceId is required');
+    }
+
+    const labels = await this.roxyClient.getLabels(workspaceId);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${labels.length} labels in workspace ${workspaceId}:\n\n` +
+                labels.map(label =>
+                  `**${label.name}** (ID: ${label.id})\n` +
+                  `  - Color: ${label.color}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleGetConnectionInfo(args: any) {
+    const { dirIds } = args;
+
+    const connections = await this.roxyClient.getConnectionInfo(dirIds);
+
+    if (connections.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: '⚠️ No opened browsers found.\n\nUse `roxy_open_browsers` to open browsers first.',
+          },
+        ],
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${connections.length} opened browser(s):\n\n` +
+                connections.map(conn =>
+                  `**${conn.windowName || 'Unnamed'}** (${conn.dirId})\n` +
+                  `  - PID: ${conn.pid}\n` +
+                  `  - CDP WebSocket: \`${conn.ws}\`\n` +
+                  `  - HTTP Endpoint: \`${conn.http}\`\n` +
+                  `  - Core Version: ${conn.coreVersion}\n` +
+                  `  - Driver: ${conn.driver}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleGetBrowserDetail(args: any) {
+    const { workspaceId, dirId } = args;
+
+    if (!workspaceId || !dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    const detail = await this.roxyClient.getBrowserDetail(workspaceId, dirId);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `**Browser Details**\n\n` +
+                `**ID:** \`${detail.dirId}\`\n` +
+                `**Name:** ${detail.windowName}\n` +
+                `**OS:** ${detail.os} ${detail.osVersion}\n` +
+                `**Core:** ${detail.coreVersion}\n` +
+                `**User Agent:** ${detail.userAgent}\n` +
+                `**Proxy:** ${detail.proxyInfo?.host || 'None'}:${detail.proxyInfo?.port || ''}\n` +
+                `**Created:** ${detail.createTime}\n` +
+                `**Updated:** ${detail.updateTime}\n` +
+                `**Open Status:** ${detail.openStatus ? 'Opened' : 'Closed'}`,
+        },
+      ],
+    };
+  }
+
+  private async handleUpdateBrowser(args: any) {
+    const params: BrowserUpdateParams = args as BrowserUpdateParams;
+
+    if (!params.workspaceId || !params.dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    await this.roxyClient.updateBrowser(params);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Browser Updated Successfully**\n\n` +
+                `**Browser ID:** \`${params.dirId}\`\n` +
+                `**Workspace:** ${params.workspaceId}\n\n` +
+                `*Browser configuration has been updated.*`,
+        },
+      ],
+    };
+  }
+
+  private async handleRandomFingerprint(args: any) {
+    const { workspaceId, dirId } = args;
+
+    if (!workspaceId || !dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    await this.roxyClient.randomBrowserFingerprint(workspaceId, dirId);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Browser Fingerprint Randomized**\n\n` +
+                `**Browser ID:** \`${dirId}\`\n` +
+                `**Workspace:** ${workspaceId}\n\n` +
+                `*Browser fingerprint has been randomized. Restart the browser to apply changes.*`,
+        },
+      ],
+    };
+  }
+
+  private async handleClearLocalCache(args: any) {
+    const { dirIds } = args;
+
+    if (!dirIds || dirIds.length === 0) {
+      throw new Error('dirIds are required');
+    }
+
+    await this.roxyClient.clearBrowserLocalCache(dirIds);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Local Cache Cleared**\n\n` +
+                `**Browser Count:** ${dirIds.length}\n\n` +
+                `**Browser IDs:**\n` +
+                dirIds.map((id: string, index: number) => `  ${index + 1}. \`${id}\``).join('\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleClearServerCache(args: any) {
+    const { workspaceId, dirIds } = args;
+
+    if (!workspaceId || !dirIds || dirIds.length === 0) {
+      throw new Error('workspaceId and dirIds are required');
+    }
+
+    await this.roxyClient.clearBrowserServerCache(workspaceId, dirIds);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Server Cache Cleared**\n\n` +
+                `**Workspace:** ${workspaceId}\n` +
+                `**Browser Count:** ${dirIds.length}\n\n` +
+                `**Browser IDs:**\n` +
+                dirIds.map((id: string, index: number) => `  ${index + 1}. \`${id}\``).join('\n'),
         },
       ],
     };

@@ -195,7 +195,32 @@ const batchFormatted = ErrorAnalyzer.formatBatchAnalysisForDisplay(batchAnalysis
 
 ### Available MCP Tools
 
-**Diagnostic Tools:**
+**Workspace & Project Management:**
+- `roxy_list_workspaces` - List all workspaces and projects
+- `roxy_list_accounts` - Get platform accounts/credentials in workspace
+- `roxy_list_labels` - Get browser labels in workspace
+
+**Browser Management:**
+- `roxy_list_browsers` - List browsers with filtering options
+- `roxy_get_browser_detail` - Get detailed information for a specific browser
+- `roxy_create_browser_simple` - Create browser with basic configuration
+- `roxy_create_browser_standard` - Create browser with standard options
+- `roxy_create_browser_advanced` - Create browser with full control
+- `roxy_update_browser` - Update/modify existing browser configuration
+- `roxy_delete_browsers` - Delete browsers permanently
+
+**Browser Operations:**
+- `roxy_open_browsers` - Open browsers and get CDP endpoints
+- `roxy_close_browsers` - Close opened browsers
+- `roxy_get_connection_info` - Get CDP endpoints and PIDs for opened browsers
+
+**Browser Maintenance:**
+- `roxy_random_fingerprint` - Randomize browser fingerprint
+- `roxy_clear_local_cache` - Clear local browser cache
+- `roxy_clear_server_cache` - Clear server-side browser cache
+
+**Utilities:**
+- `roxy_validate_proxy_config` - Validate proxy configuration
 - `roxy_system_diagnostics` - Comprehensive system health check and diagnostics
   - Tests API connectivity, authentication, workspace access
   - Checks browser availability and status
@@ -220,11 +245,19 @@ The RoxyBrowser API uses:
 
 Key endpoints:
 - `/browser/workspace` - List workspaces and projects
+- `/browser/account` - Get platform accounts/credentials
+- `/browser/label` - Get browser labels
 - `/browser/list_v3` - List browsers with filtering
+- `/browser/detail` - Get detailed browser information
 - `/browser/open` - Open single browser
-- `/browser/close` - Close single browser  
+- `/browser/close` - Close single browser
+- `/browser/connection_info` - Get connection info for opened browsers
 - `/browser/create` - Create new browser
+- `/browser/mdf` - Update/modify browser
 - `/browser/delete` - Delete browsers permanently
+- `/browser/random_env` - Randomize browser fingerprint
+- `/browser/clear_local_cache` - Clear local browser cache
+- `/browser/clear_server_cache` - Clear server browser cache
 
 ## Testing and Validation
 

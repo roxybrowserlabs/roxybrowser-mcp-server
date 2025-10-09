@@ -19,6 +19,14 @@ import {
   RoxyApiError,
   ConfigError,
   BrowserCreationError,
+  AccountListParams,
+  AccountListResponse,
+  LabelItem,
+  ConnectionInfoItem,
+  BrowserUpdateParams,
+  ClearLocalCacheParams,
+  ClearServerCacheParams,
+  RandomFingerprintParams,
 } from "./types.js";
 
 export class RoxyClient {
@@ -452,6 +460,58 @@ export class RoxyClient {
     await this.makeRequest<void>("/browser/clear_server_cache", {
       method: "POST",
       body: JSON.stringify({ workspaceId, dirIds }),
+    });
+  }
+
+  /**
+   * Get account list
+   */
+  async getAccounts(params: AccountListParams): Promise<AccountListResponse> {
+    const searchParams = new URLSearchParams();
+    searchParams.append("workspaceId", params.workspaceId.toString());
+    if (params.accountId)
+      searchParams.append("accountId", params.accountId.toString());
+    if (params.page_index)
+      searchParams.append("page_index", params.page_index.toString());
+    if (params.page_size)
+      searchParams.append("page_size", params.page_size.toString());
+
+    return this.makeRequest<AccountListResponse>(
+      `/browser/account?${searchParams}`,
+      {
+        method: "GET",
+      }
+    );
+  }
+
+  /**
+   * Get label list
+   */
+  async getLabels(workspaceId: number): Promise<LabelItem[]> {
+    const params = new URLSearchParams({
+      workspaceId: workspaceId.toString(),
+    });
+    return this.makeRequest<LabelItem[]>(`/browser/label?${params}`, {
+      method: "GET",
+    });
+  }
+
+  /**
+   * Get connection info for opened browsers
+   */
+  async getConnectionInfo(dirIds?: string[]): Promise<ConnectionInfoItem[]> {
+    const params = new URLSearchParams();
+    if (dirIds && dirIds.length > 0) {
+      params.append("dirIds", dirIds.join(","));
+    }
+
+    const queryString = params.toString();
+    const endpoint = queryString
+      ? `/browser/connection_info?${queryString}`
+      : "/browser/connection_info";
+
+    return this.makeRequest<ConnectionInfoItem[]>(endpoint, {
+      method: "GET",
     });
   }
 

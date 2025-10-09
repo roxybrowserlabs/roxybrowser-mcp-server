@@ -779,3 +779,99 @@ export class BrowserCreationError extends Error {
     this.name = 'BrowserCreationError';
   }
 }
+
+// ========== Account Types ==========
+
+/** Account item */
+export interface AccountItem {
+  id: number;                         // Account ID
+  platformUrl: string;                // Business platform URL
+  platformUserName: string;           // Account username
+  platformPassword: string;           // Account password
+  platformEfa: string;                // Account EFA
+  platformCookies: Array<{            // Account Cookies
+    name: string;
+    value: string;
+    domain: string;
+  }>;
+  platformName: string;               // Platform name
+  platformRemarks: string;            // Platform remarks
+  createTime: string;                 // Create time
+  updateTime: string;                 // Update time
+}
+
+/** Paginated account list response */
+export interface AccountListResponse {
+  total: number;
+  rows: AccountItem[];
+}
+
+/** Account list query parameters */
+export interface AccountListParams {
+  workspaceId: number;
+  accountId?: number;
+  page_index?: number;
+  page_size?: number;
+}
+
+// ========== Label Types ==========
+
+/** Label item */
+export interface LabelItem {
+  id: number;                         // Label ID
+  color: string;                      // Label color
+  name: string;                       // Label name
+}
+
+/** Label list response */
+export interface LabelListResponse {
+  labels: LabelItem[];
+}
+
+// ========== Connection Info Types ==========
+
+/** Connection info item for opened browser */
+export interface ConnectionInfoItem {
+  ws: string;                         // WebSocket endpoint for automation tools
+  http: string;                       // HTTP endpoint for automation tools
+  coreVersion: string;                // Core version
+  driver: string;                     // WebDriver path for automation tools
+  sortNum: number;                    // Window sort number
+  windowName: string;                 // Window name
+  windowRemark: string;               // Window remark
+  pid: number;                        // Process ID
+  dirId: string;                      // Browser directory ID
+}
+
+/** Connection info response */
+export interface ConnectionInfoResponse {
+  connections: ConnectionInfoItem[];
+}
+
+// ========== Update Browser Types ==========
+
+/** Browser update parameters (same as create but with dirId) */
+export interface BrowserUpdateParams extends BrowserCreateConfig {
+  dirId: string;                      // Browser directory ID (required for update)
+}
+
+// ========== Cache Clear Types ==========
+
+/** Local cache clear parameters */
+export interface ClearLocalCacheParams {
+  dirIds: string[];                   // Array of browser directory IDs
+}
+
+/** Server cache clear parameters */
+export interface ClearServerCacheParams {
+  workspaceId: number;
+  dirIds: string[];                   // Array of browser directory IDs
+}
+
+// ========== Random Fingerprint Types ==========
+
+/** Random fingerprint parameters */
+export interface RandomFingerprintParams {
+  workspaceId: number;
+  dirId: string;                      // Browser directory ID
+}
