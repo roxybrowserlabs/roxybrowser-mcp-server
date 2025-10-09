@@ -178,7 +178,7 @@ const TOOLS = [
   },
   {
     name: 'roxy_create_browser_simple',
-    description: 'Create a browser with simple configuration - ideal for quick setup with basic proxy',
+    description: 'Create a browser with simple configuration - ideal for quick setup with basic proxy and common options',
     inputSchema: {
       type: 'object',
       properties: {
@@ -219,13 +219,27 @@ const TOOLS = [
           enum: ['HTTP', 'HTTPS', 'SOCKS5'],
           description: 'Proxy type (optional, default: HTTP)',
         },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
+        searchEngine: {
+          type: 'string',
+          enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
+          description: 'Default search engine (optional, default: Google)',
+        },
+        labelIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'Label IDs to assign (optional)',
+        },
       },
       required: ['workspaceId'],
     },
   },
   {
     name: 'roxy_create_browser_standard',
-    description: 'Create a browser with standard configuration - covers most common use cases',
+    description: 'Create a browser with standard configuration - covers most common use cases with commonly used fingerprint settings',
     inputSchema: {
       type: 'object',
       properties: {
@@ -259,6 +273,43 @@ const TOOLS = [
           enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
           description: 'Browser core version (optional, default: 125)',
         },
+        userAgent: {
+          type: 'string',
+          description: 'Custom user agent (optional)',
+        },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
+        searchEngine: {
+          type: 'string',
+          enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
+          description: 'Default search engine (optional)',
+        },
+        labelIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'Label IDs to assign (optional)',
+        },
+        defaultOpenUrl: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs to open by default (optional)',
+        },
+        windowPlatformList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              platformUrl: { type: 'string', description: 'Platform URL' },
+              platformUserName: { type: 'string', description: 'Platform username' },
+              platformPassword: { type: 'string', description: 'Platform password' },
+              platformEfa: { type: 'string', description: 'Platform EFA' },
+              platformRemarks: { type: 'string', description: 'Platform remarks' },
+            },
+          },
+          description: 'Platform account information (optional)',
+        },
         proxyInfo: {
           type: 'object',
           description: 'Complete proxy configuration object (optional)',
@@ -275,26 +326,28 @@ const TOOLS = [
             checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
           },
         },
-        openWidth: {
-          type: 'string',
-          description: 'Browser window width (optional, default: 1000)',
-        },
-        openHeight: {
-          type: 'string',
-          description: 'Browser window height (optional, default: 1000)',
-        },
-        language: {
-          type: 'string',
-          description: 'Browser language (optional, e.g., en-US)',
-        },
-        timeZone: {
-          type: 'string',
-          description: 'Browser timezone (optional, e.g., GMT-5:00 America/New_York)',
-        },
-        defaultOpenUrl: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'URLs to open by default (optional)',
+        fingerInfo: {
+          type: 'object',
+          description: 'Common fingerprint configuration (optional) - for full control use roxy_create_browser_advanced',
+          properties: {
+            // Language and timezone
+            language: { type: 'string', description: 'Browser language (e.g., en-US)' },
+            timeZone: { type: 'string', description: 'Browser timezone (e.g., GMT-5:00 America/New_York)' },
+
+            // Window settings (commonly used)
+            openWidth: { type: 'string', description: 'Window width (default: 1000)' },
+            openHeight: { type: 'string', description: 'Window height (default: 1000)' },
+
+            // Media settings (commonly adjusted)
+            forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
+            forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+            forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
+
+            // Common fingerprint settings
+            webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+            canvas: { type: 'boolean', description: 'Canvas: random vs real' },
+            webGL: { type: 'boolean', description: 'WebGL: random vs real' },
+          },
         },
       },
       required: ['workspaceId'],
@@ -302,7 +355,7 @@ const TOOLS = [
   },
   {
     name: 'roxy_create_browser_advanced',
-    description: 'Create a browser with complete configuration control - for expert users',
+    description: 'Create a browser with complete configuration control - for expert users needing full parameter access',
     inputSchema: {
       type: 'object',
       properties: {
@@ -320,7 +373,7 @@ const TOOLS = [
         },
         windowRemark: {
           type: 'string',
-          description: 'Window remarks (optional)',
+          description: 'Window remarks/notes (optional)',
         },
         os: {
           type: 'string',
@@ -340,6 +393,10 @@ const TOOLS = [
           type: 'string',
           description: 'Custom user agent (optional)',
         },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
         searchEngine: {
           type: 'string',
           enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
@@ -355,18 +412,126 @@ const TOOLS = [
           items: { type: 'string' },
           description: 'Default URLs to open (optional)',
         },
+        windowPlatformList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              platformUrl: { type: 'string', description: 'Platform URL' },
+              platformUserName: { type: 'string', description: 'Platform username' },
+              platformPassword: { type: 'string', description: 'Platform password' },
+              platformEfa: { type: 'string', description: 'Platform EFA' },
+              platformRemarks: { type: 'string', description: 'Platform remarks' },
+            },
+          },
+          description: 'Platform account information (optional)',
+        },
         proxyInfo: {
           type: 'object',
-          description: 'Proxy configuration (optional)',
+          description: 'Complete proxy configuration (optional)',
+          properties: {
+            proxyMethod: { type: 'string', enum: ['custom', 'choose', 'api'] },
+            proxyCategory: { type: 'string', enum: ['noproxy', 'HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
+            ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
+            protocol: { type: 'string', enum: ['HTTP', 'HTTPS', 'SOCKS5'] },
+            host: { type: 'string' },
+            port: { type: 'string' },
+            proxyUserName: { type: 'string' },
+            proxyPassword: { type: 'string' },
+            refreshUrl: { type: 'string' },
+            checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
+          },
         },
         fingerInfo: {
           type: 'object',
           description: 'Complete fingerprint configuration (optional)',
-        },
-        windowPlatformList: {
-          type: 'array',
-          items: { type: 'object' },
-          description: 'Platform account information (optional)',
+          properties: {
+            // Language and timezone
+            isLanguageBaseIp: { type: 'boolean', description: 'Follow IP for browser language' },
+            language: { type: 'string', description: 'Custom browser language' },
+            isDisplayLanguageBaseIp: { type: 'boolean', description: 'Follow IP for display language' },
+            displayLanguage: { type: 'string', description: 'Custom display language' },
+            isTimeZone: { type: 'boolean', description: 'Follow IP for timezone' },
+            timeZone: { type: 'string', description: 'Custom timezone' },
+
+            // Geolocation
+            position: { type: 'number', enum: [0, 1, 2], description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
+            isPositionBaseIp: { type: 'boolean', description: 'Follow IP for geolocation' },
+            longitude: { type: 'string', description: 'Custom longitude' },
+            latitude: { type: 'string', description: 'Custom latitude' },
+            precisionPos: { type: 'string', description: 'Precision in meters' },
+
+            // Media settings
+            forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
+            forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+            forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
+
+            // Window settings
+            openWidth: { type: 'string', description: 'Window width' },
+            openHeight: { type: 'string', description: 'Window height' },
+            openBookmarks: { type: 'boolean', description: 'Enable bookmarks' },
+            positionSwitch: { type: 'boolean', description: 'Window position switch' },
+            windowRatioPosition: { type: 'string', description: 'Window position ratio' },
+            isDisplayName: { type: 'boolean', description: 'Show window name in title bar' },
+
+            // Sync settings
+            syncBookmark: { type: 'boolean', description: 'Sync bookmarks' },
+            syncHistory: { type: 'boolean', description: 'Sync history' },
+            syncTab: { type: 'boolean', description: 'Sync tabs' },
+            syncCookie: { type: 'boolean', description: 'Sync cookies' },
+            syncExtensions: { type: 'boolean', description: 'Sync extensions' },
+            syncPassword: { type: 'boolean', description: 'Sync saved passwords' },
+            syncIndexedDb: { type: 'boolean', description: 'Sync IndexedDB' },
+            syncLocalStorage: { type: 'boolean', description: 'Sync LocalStorage' },
+
+            // Cleanup settings
+            clearCacheFile: { type: 'boolean', description: 'Clear cache files on startup' },
+            clearCookie: { type: 'boolean', description: 'Clear cookies on startup' },
+            clearLocalStorage: { type: 'boolean', description: 'Clear LocalStorage on startup' },
+
+            // Advanced settings
+            randomFingerprint: { type: 'boolean', description: 'Generate random fingerprint' },
+            forbidSavePassword: { type: 'boolean', description: 'Disable password save prompts' },
+            stopOpenNet: { type: 'boolean', description: 'Stop opening if network fails' },
+            stopOpenIP: { type: 'boolean', description: 'Stop opening if IP changes' },
+            stopOpenPosition: { type: 'boolean', description: 'Stop opening if IP location changes' },
+            openWorkbench: { type: 'number', enum: [0, 1, 2], description: 'Open workbench: 0=close, 1=open, 2=follow app' },
+
+            // Display settings
+            resolutionType: { type: 'boolean', description: 'Custom resolution vs follow system' },
+            resolutionX: { type: 'string', description: 'Custom resolution width' },
+            resolutionY: { type: 'string', description: 'Custom resolution height' },
+            fontType: { type: 'boolean', description: 'Random fonts vs system fonts' },
+
+            // Browser fingerprint settings
+            webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+            webGL: { type: 'boolean', description: 'WebGL: random vs real' },
+            webGLInfo: { type: 'boolean', description: 'WebGL info: custom vs real' },
+            webGLManufacturer: { type: 'string', description: 'Custom WebGL manufacturer' },
+            webGLRender: { type: 'string', description: 'Custom WebGL renderer' },
+            webGpu: { type: 'string', enum: ['webgl', 'real', 'block'], description: 'WebGPU setting' },
+            canvas: { type: 'boolean', description: 'Canvas: random vs real' },
+            audioContext: { type: 'boolean', description: 'AudioContext: random vs real' },
+            speechVoices: { type: 'boolean', description: 'Speech Voices: random vs real' },
+            doNotTrack: { type: 'boolean', description: 'Enable Do Not Track' },
+            clientRects: { type: 'boolean', description: 'ClientRects: random vs real' },
+            deviceInfo: { type: 'boolean', description: 'Media devices: random vs real' },
+            deviceNameSwitch: { type: 'boolean', description: 'Device names: random vs real' },
+            macInfo: { type: 'boolean', description: 'MAC address: custom vs real' },
+
+            // Hardware settings
+            hardwareConcurrent: { type: 'string', description: 'Hardware concurrency' },
+            deviceMemory: { type: 'string', description: 'Device memory' },
+
+            // Security settings
+            disableSsl: { type: 'boolean', description: 'SSL fingerprint settings' },
+            disableSslList: { type: 'array', items: { type: 'string' }, description: 'SSL feature list' },
+            portScanProtect: { type: 'boolean', description: 'Port scan protection' },
+            portScanList: { type: 'string', description: 'Port scan whitelist' },
+            useGpu: { type: 'boolean', description: 'Use GPU acceleration' },
+            sandboxPermission: { type: 'boolean', description: 'Disable sandbox' },
+            startupParam: { type: 'string', description: 'Browser startup parameters' },
+          },
         },
       },
       required: ['workspaceId'],
