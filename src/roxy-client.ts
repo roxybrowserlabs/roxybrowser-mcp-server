@@ -400,9 +400,16 @@ export class RoxyClient {
       workspaceId: workspaceId.toString(),
       dirId,
     });
-    return this.makeRequest<any>(`/browser/detail?${params}`, {
+    const response = await this.makeRequest<{ rows: any[]; total: number }>(`/browser/detail?${params}`, {
       method: "GET",
     });
+
+    // API returns { rows: [browser object], total: 1 }, extract first browser
+    if (response.rows && response.rows.length > 0) {
+      return response.rows[0];
+    }
+
+    throw new Error('Browser not found or no data returned');
   }
 
   /**

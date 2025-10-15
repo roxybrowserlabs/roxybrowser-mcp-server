@@ -1599,20 +1599,33 @@ class RoxyBrowserMCPServer {
 
     const detail = await this.roxyClient.getBrowserDetail(workspaceId, dirId);
 
+    // Save cookie count before removing cookies to save tokens
+    const cookieCount = detail.cookie?.length || 0;
+
+    // Create a copy without cookies (cookies can be very large)
+    const { cookie, ...detailWithoutCookies } = detail;
+
+    // Create summary
+    const summary = `**Browser Details Summary**\n\n` +
+                   `**ID:** \`${detail.dirId}\`\n` +
+                   `**Name:** ${detail.windowName}\n` +
+                   `**Sort Number:** ${detail.windowSortNum}\n` +
+                   `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n` +
+                   `**OS:** ${detail.os} ${detail.osVersion}\n` +
+                   `**Core Version:** ${detail.coreVersion}\n` +
+                   `**Search Engine:** ${detail.searchEngine}\n` +
+                   `**Open Status:** ${detail.openStatus ? '✅ Opened' : '❌ Closed'}\n` +
+                   `**Cookies:** ${cookieCount} stored (excluded from response to save tokens)\n\n` +
+                   `**Full Details (JSON):**\n` +
+                   '```json\n' +
+                   JSON.stringify(detailWithoutCookies, null, 2) +
+                   '\n```';
+
     return {
       content: [
         {
           type: 'text',
-          text: `**Browser Details**\n\n` +
-                `**ID:** \`${detail.dirId}\`\n` +
-                `**Name:** ${detail.windowName}\n` +
-                `**OS:** ${detail.os} ${detail.osVersion}\n` +
-                `**Core:** ${detail.coreVersion}\n` +
-                `**User Agent:** ${detail.userAgent}\n` +
-                `**Proxy:** ${detail.proxyInfo?.host || 'None'}:${detail.proxyInfo?.port || ''}\n` +
-                `**Created:** ${detail.createTime}\n` +
-                `**Updated:** ${detail.updateTime}\n` +
-                `**Open Status:** ${detail.openStatus ? 'Opened' : 'Closed'}`,
+          text: summary,
         },
       ],
     };
