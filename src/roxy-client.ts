@@ -204,12 +204,16 @@ export class RoxyClient {
     dirIds: string[],
     args?: string[],
     options: { maxRetries?: number; retryDelay?: number } = {}
-  ): Promise<BrowserOpenResult[]> {
+  ): Promise<{
+    successes: BrowserOpenResult[];
+    failures: Array<{ dirId: string; error: string; errorCode?: number; retryable: boolean }>;
+  }> {
     const { maxRetries = 2, retryDelay = 1000 } = options;
-    const results: BrowserOpenResult[] = [];
-    const allErrors: Array<{
+    const successes: BrowserOpenResult[] = [];
+    const failures: Array<{
       dirId: string;
       error: string;
+      errorCode?: number;
       retryable: boolean;
     }> = [];
 
@@ -220,6 +224,7 @@ export class RoxyClient {
 
       const batchPromises = batch.map(async (dirId) => {
         let lastError: Error | null = null;
+        let lastErrorCode: number | undefined = undefined;
 
         // Retry logic for each browser
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -230,9 +235,14 @@ export class RoxyClient {
             lastError =
               error instanceof Error ? error : new Error("Unknown error");
 
-            // Check if error is retryable
-            if (error instanceof RoxyApiError && !error.isRetryable()) {
-              break; // Don't retry non-retryable errors
+            // Capture error code if available
+            if (error instanceof RoxyApiError) {
+              lastErrorCode = error.code;
+
+              // Don't retry non-retryable errors
+              if (!error.isRetryable()) {
+                break;
+              }
             }
 
             // Don't wait after the last attempt
@@ -250,6 +260,7 @@ export class RoxyClient {
         return {
           dirId,
           error: lastError?.message || "Unknown error",
+          errorCode: lastErrorCode,
           retryable: isRetryable,
         };
       });
@@ -258,11 +269,12 @@ export class RoxyClient {
 
       for (const item of batchResults) {
         if ("result" in item && item.result) {
-          results.push(item.result);
+          successes.push(item.result);
         } else if ("error" in item) {
-          allErrors.push({
+          failures.push({
             dirId: item.dirId,
             error: item.error,
+            errorCode: item.errorCode,
             retryable: "retryable" in item ? item.retryable : true,
           });
         }
@@ -270,12 +282,12 @@ export class RoxyClient {
     }
 
     // Enhanced error reporting
-    if (allErrors.length > 0) {
-      const retryableErrors = allErrors.filter((e) => e.retryable);
-      const nonRetryableErrors = allErrors.filter((e) => !e.retryable);
+    if (failures.length > 0) {
+      const retryableErrors = failures.filter((e) => e.retryable);
+      const nonRetryableErrors = failures.filter((e) => !e.retryable);
 
       console.warn(
-        `Browser opening completed with ${allErrors.length} errors:`
+        `Browser opening completed with ${failures.length} errors:`
       );
       if (retryableErrors.length > 0) {
         console.warn(
@@ -289,7 +301,7 @@ export class RoxyClient {
       }
     }
 
-    return results;
+    return { successes, failures };
   }
 
   /**

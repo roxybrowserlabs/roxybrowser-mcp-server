@@ -1074,9 +1074,10 @@ class RoxyBrowserMCPServer {
                   `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
                   `2. 前往费用中心 / Go to Billing Center\n` +
                   `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
-                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
-                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
-                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
           }],
         };
       }
@@ -1155,9 +1156,10 @@ class RoxyBrowserMCPServer {
                   `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
                   `2. 前往费用中心 / Go to Billing Center\n` +
                   `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
-                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
-                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
-                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
           }],
         };
       }
@@ -1235,9 +1237,10 @@ class RoxyBrowserMCPServer {
                   `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
                   `2. 前往费用中心 / Go to Billing Center\n` +
                   `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
-                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
-                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
-                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
           }],
         };
       }
@@ -1345,34 +1348,84 @@ class RoxyBrowserMCPServer {
 
   private async handleOpenBrowsers(args: any) {
     const params: BrowserOpenToolParams = args;
-    
+
     if (!params.workspaceId || !params.dirIds || params.dirIds.length === 0) {
       throw new Error('workspaceId and dirIds are required');
     }
 
-    const results = await this.roxyClient.openBrowsers(
+    const { successes, failures } = await this.roxyClient.openBrowsers(
       params.workspaceId,
       params.dirIds,
       params.args
     );
 
+    // Build success message
+    let message = '';
+
+    if (successes.length > 0) {
+      message += `✅ **Successfully opened ${successes.length} browser(s):**\n\n` +
+                 successes.map(result =>
+                   `**Browser ${result.dirId || 'Unknown'}** (PID: ${result.pid})\n` +
+                   `  - CDP WebSocket: \`${result.ws}\`\n` +
+                   `  - HTTP Endpoint: \`${result.http}\`\n` +
+                   `  - Core Version: ${result.coreVersion}`
+                 ).join('\n\n') +
+                 '\n\n**Use these WebSocket URLs with playwright-mcp:**\n' +
+                 '```bash\n' +
+                 successes.map(result =>
+                   `npx @playwright/mcp@latest --cdp-endpoint "${result.ws}"`
+                 ).join('\n') +
+                 '\n```';
+    }
+
+    // Build failure message with special handling for quota errors
+    if (failures.length > 0) {
+      if (successes.length > 0) {
+        message += '\n\n---\n\n';
+      }
+
+      // Check if any failures are quota errors (code 101 or 409)
+      const quotaErrors = failures.filter(f => f.errorCode === 101 || (f.errorCode === 409 && f.error.includes('额度不足')));
+      const otherErrors = failures.filter(f => !quotaErrors.includes(f));
+
+      if (quotaErrors.length > 0) {
+        message += `❌ **Failed to open ${quotaErrors.length} browser(s) - Insufficient Profiles Quota / 窗口额度不足:**\n\n`;
+        quotaErrors.forEach(failure => {
+          message += `  - Browser ID: \`${failure.dirId}\`\n    Error: ${failure.error}\n`;
+        });
+
+        message += '\n**解决步骤 / Solution Steps:**\n';
+        message += '1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n';
+        message += '2. 前往费用中心 / Go to Billing Center\n';
+        message += '3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n';
+        message += '4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n\n';
+        message += '💡 **重要提示 / Important:** 必须使用 `roxy_delete_browsers` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n';
+        message += 'You must use `roxy_delete_browsers` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.';
+      }
+
+      if (otherErrors.length > 0) {
+        if (quotaErrors.length > 0) {
+          message += '\n\n';
+        }
+        message += `❌ **Failed to open ${otherErrors.length} browser(s) - Other Errors:**\n\n`;
+        otherErrors.forEach(failure => {
+          message += `  - Browser ID: \`${failure.dirId}\`\n`;
+          message += `    Error: ${failure.error}\n`;
+          message += `    Retryable: ${failure.retryable ? '✅ Yes' : '❌ No'}\n`;
+        });
+      }
+    }
+
+    // If all failed
+    if (successes.length === 0 && failures.length > 0) {
+      message = `❌ **Failed to open all ${failures.length} browser(s)**\n\n` + message;
+    }
+
     return {
       content: [
         {
           type: 'text',
-          text: `Successfully opened ${results.length} browsers:\n\n` +
-                results.map(result => 
-                  `**Browser ${result.dirId || 'Unknown'}** (PID: ${result.pid})\n` +
-                  `  - CDP WebSocket: \`${result.ws}\`\n` +
-                  `  - HTTP Endpoint: \`${result.http}\`\n` +
-                  `  - Core Version: ${result.coreVersion}`
-                ).join('\n\n') +
-                '\n\n**Use these WebSocket URLs with playwright-mcp:**\n' +
-                '```bash\n' +
-                results.map(result => 
-                  `npx @playwright/mcp@latest --cdp-endpoint "${result.ws}"`
-                ).join('\n') +
-                '\n```',
+          text: message,
         },
       ],
     };

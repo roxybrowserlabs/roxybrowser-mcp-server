@@ -409,6 +409,7 @@ export interface BrowserCreateAdvancedResponse {
 /** RoxyBrowser API error codes mapping */
 export enum RoxyApiErrorCode {
   SUCCESS = 0,           // 成功
+  INSUFFICIENT_QUOTA = 101, // 窗口额度不足
   INVALID_PARAMS = 400,  // 参数错误
   UNAUTHORIZED = 401,    // 认证失败
   FORBIDDEN = 403,       // 权限不足
@@ -447,6 +448,24 @@ export const ROXY_ERROR_MAP: Record<number, ErrorInfo> = {
     severity: 'low',
     troubleshooting: [],
     autoRecoverable: true,
+    retryable: false,
+  },
+  101: {
+    code: 101,
+    name: 'INSUFFICIENT_QUOTA',
+    description: 'Insufficient profiles quota - cannot open browser',
+    chineseMsg: '窗口额度不足',
+    englishMsg: 'Insufficient profiles quota',
+    category: 'resource',
+    severity: 'high',
+    troubleshooting: [
+      'Go to Billing Center in RoxyBrowser to purchase more profiles',
+      'Delete unused browser profiles to free up quota (closing is not enough)',
+      'Use roxy_delete_browsers tool to permanently remove profiles',
+      'Upgrade your subscription plan for more profiles',
+      'Check current quota usage in workspace settings',
+    ],
+    autoRecoverable: false,
     retryable: false,
   },
   400: {
