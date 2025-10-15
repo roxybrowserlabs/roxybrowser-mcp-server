@@ -36,6 +36,7 @@ import {
   BrowserCreateStandardResponse,
   BrowserCreateAdvancedResponse,
   ConfigError,
+  RoxyApiError,
   BrowserCreationError,
   AccountListParams,
   AccountListResponse,
@@ -1016,154 +1017,238 @@ class RoxyBrowserMCPServer {
 
   private async handleCreateBrowserSimple(args: any) {
     const params: BrowserCreateSimpleParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from simple parameters
-    const config = BrowserCreator.buildSimpleConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from simple parameters
+      const config = BrowserCreator.buildSimpleConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateSimpleResponse = {
-      browser: {
-        dirId: result.dirId,
-        windowName: finalConfig.windowName || 'Simple Browser',
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        proxyConfigured: !!(params.proxyHost && params.proxyPort),
-      },
-      message: `Browser created successfully with ID: ${result.dirId}`,
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Simple Browser Created**\n\n` +
-                `**Browser ID:** \`${response.browser.dirId}\`\n` +
-                `**Name:** ${response.browser.windowName}\n` +
-                `**Workspace:** ${response.browser.workspaceId}\n` +
-                `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
-                `**Proxy:** ${response.browser.proxyConfigured ? '✅ Configured' : '❌ Not configured'}\n\n` +
-                `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`,
+      const response: BrowserCreateSimpleResponse = {
+        browser: {
+          dirId: result.dirId,
+          windowName: finalConfig.windowName || 'Simple Browser',
+          workspaceId: params.workspaceId,
+          projectId: params.projectId,
+          proxyConfigured: !!(params.proxyHost && params.proxyPort),
         },
-      ],
-    };
+        message: `Browser created successfully with ID: ${result.dirId}`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Simple Browser Created**\n\n` +
+                  `**Browser ID:** \`${response.browser.dirId}\`\n` +
+                  `**Name:** ${response.browser.windowName}\n` +
+                  `**Workspace:** ${response.browser.workspaceId}\n` +
+                  `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
+                  `**Proxy:** ${response.browser.proxyConfigured ? '✅ Configured' : '❌ Not configured'}\n\n` +
+                  `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
+                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
+                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
+    }
   }
 
   private async handleCreateBrowserStandard(args: any) {
     const params: BrowserCreateStandardParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from standard parameters
-    const config = BrowserCreator.buildStandardConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from standard parameters
+      const config = BrowserCreator.buildStandardConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateStandardResponse = {
-      browser: {
-        dirId: result.dirId,
-        windowName: finalConfig.windowName || 'Standard Browser',
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        os: finalConfig.os || 'Windows',
-        coreVersion: finalConfig.coreVersion || '125',
-        proxyInfo: params.proxyInfo,
-        windowSize: `${params.openWidth || '1000'}x${params.openHeight || '1000'}`,
-      },
-      message: `Standard browser created successfully with ID: ${result.dirId}`,
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Standard Browser Created**\n\n` +
-                `**Browser ID:** \`${response.browser.dirId}\`\n` +
-                `**Name:** ${response.browser.windowName}\n` +
-                `**OS:** ${response.browser.os} ${finalConfig.osVersion || ''}\n` +
-                `**Core Version:** ${response.browser.coreVersion}\n` +
-                `**Window Size:** ${response.browser.windowSize}\n` +
-                `**Workspace:** ${response.browser.workspaceId}\n` +
-                `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
-                `**Proxy:** ${response.browser.proxyInfo ? '✅ Configured' : '❌ Not configured'}\n\n` +
-                `*Browser is ready for automation. Use \`roxy_open_browsers\` to start it.*`,
+      const response: BrowserCreateStandardResponse = {
+        browser: {
+          dirId: result.dirId,
+          windowName: finalConfig.windowName || 'Standard Browser',
+          workspaceId: params.workspaceId,
+          projectId: params.projectId,
+          os: finalConfig.os || 'Windows',
+          coreVersion: finalConfig.coreVersion || '125',
+          proxyInfo: params.proxyInfo,
+          windowSize: `${params.openWidth || '1000'}x${params.openHeight || '1000'}`,
         },
-      ],
-    };
+        message: `Standard browser created successfully with ID: ${result.dirId}`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Standard Browser Created**\n\n` +
+                  `**Browser ID:** \`${response.browser.dirId}\`\n` +
+                  `**Name:** ${response.browser.windowName}\n` +
+                  `**OS:** ${response.browser.os} ${finalConfig.osVersion || ''}\n` +
+                  `**Core Version:** ${response.browser.coreVersion}\n` +
+                  `**Window Size:** ${response.browser.windowSize}\n` +
+                  `**Workspace:** ${response.browser.workspaceId}\n` +
+                  `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
+                  `**Proxy:** ${response.browser.proxyInfo ? '✅ Configured' : '❌ Not configured'}\n\n` +
+                  `*Browser is ready for automation. Use \`roxy_open_browsers\` to start it.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
+                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
+                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
+    }
   }
 
   private async handleCreateBrowserAdvanced(args: any) {
     const params: BrowserCreateAdvancedParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from advanced parameters
-    const config = BrowserCreator.buildAdvancedConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from advanced parameters
+      const config = BrowserCreator.buildAdvancedConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateAdvancedResponse = {
-      browser: {
-        dirId: result.dirId,
-        config: finalConfig,
-      },
-      message: `Advanced browser created successfully with ID: ${result.dirId}`,
-    };
-
-    // Create detailed status text
-    const configSummary = [
-      `**Browser ID:** \`${response.browser.dirId}\``,
-      `**Name:** ${finalConfig.windowName || 'Advanced Browser'}`,
-      `**OS:** ${finalConfig.os || 'Windows'} ${finalConfig.osVersion || ''}`,
-      `**Core Version:** ${finalConfig.coreVersion || '125'}`,
-      finalConfig.userAgent ? `**User Agent:** ${finalConfig.userAgent.substring(0, 50)}...` : '',
-      `**Search Engine:** ${finalConfig.searchEngine || 'Google'}`,
-      finalConfig.proxyInfo?.proxyCategory !== 'noproxy' ? `**Proxy:** ✅ ${finalConfig.proxyInfo?.proxyCategory} ${finalConfig.proxyInfo?.host}:${finalConfig.proxyInfo?.port}` : '**Proxy:** ❌ No proxy',
-      finalConfig.fingerInfo?.randomFingerprint ? '**Fingerprint:** 🎲 Random' : '**Fingerprint:** 🔒 Fixed',
-      finalConfig.defaultOpenUrl?.length ? `**Default URLs:** ${finalConfig.defaultOpenUrl.length} URL(s)` : '',
-    ].filter(Boolean).join('\n');
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Advanced Browser Created**\n\n${configSummary}\n\n` +
-                `*Advanced browser configured with complete control. Use \`roxy_open_browsers\` to start it.*`,
+      const response: BrowserCreateAdvancedResponse = {
+        browser: {
+          dirId: result.dirId,
+          config: finalConfig,
         },
-      ],
-    };
+        message: `Advanced browser created successfully with ID: ${result.dirId}`,
+      };
+
+      // Create detailed status text
+      const configSummary = [
+        `**Browser ID:** \`${response.browser.dirId}\``,
+        `**Name:** ${finalConfig.windowName || 'Advanced Browser'}`,
+        `**OS:** ${finalConfig.os || 'Windows'} ${finalConfig.osVersion || ''}`,
+        `**Core Version:** ${finalConfig.coreVersion || '125'}`,
+        finalConfig.userAgent ? `**User Agent:** ${finalConfig.userAgent.substring(0, 50)}...` : '',
+        `**Search Engine:** ${finalConfig.searchEngine || 'Google'}`,
+        finalConfig.proxyInfo?.proxyCategory !== 'noproxy' ? `**Proxy:** ✅ ${finalConfig.proxyInfo?.proxyCategory} ${finalConfig.proxyInfo?.host}:${finalConfig.proxyInfo?.port}` : '**Proxy:** ❌ No proxy',
+        finalConfig.fingerInfo?.randomFingerprint ? '**Fingerprint:** 🎲 Random' : '**Fingerprint:** 🔒 Fixed',
+        finalConfig.defaultOpenUrl?.length ? `**Default URLs:** ${finalConfig.defaultOpenUrl.length} URL(s)` : '',
+      ].filter(Boolean).join('\n');
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Advanced Browser Created**\n\n${configSummary}\n\n` +
+                  `*Advanced browser configured with complete control. Use \`roxy_open_browsers\` to start it.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 等待充值生效后重试创建 / Retry creation after quota is added\n\n` +
+                  `💡 **提示 / Tip:** 您可以先使用 \`roxy_list_browsers\` 查看现有浏览器，或使用 \`roxy_delete_browsers\` 删除不需要的浏览器以释放额度。\n` +
+                  `You can use \`roxy_list_browsers\` to view existing profiles, or \`roxy_delete_browsers\` to remove unused profiles to free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
+    }
   }
 
   private async handleValidateProxyConfig(args: any) {

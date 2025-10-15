@@ -89,7 +89,14 @@ export class RoxyClient {
       // Check API response code
       if (data.code !== 0) {
         // Enhanced error message with both Chinese and English
-        const errorMessage = data.msg || "API request failed";
+        let errorMessage = data.msg || "API request failed";
+
+        // Special handling for code 409 with quota error
+        if (data.code === 409 && data.msg && data.msg.includes('额度不足')) {
+          const remainingQuota = typeof data.data === 'number' ? data.data : 0;
+          errorMessage = `窗口额度不足 / Insufficient profiles quota. 剩余额度 / Remaining: ${remainingQuota}. 请前往 RoxyBrowser 购买窗口套餐 / Please purchase more profiles in RoxyBrowser.`;
+        }
+
         throw new RoxyApiError(
           errorMessage,
           data.code,

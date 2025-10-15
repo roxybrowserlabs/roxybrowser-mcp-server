@@ -226,11 +226,22 @@ export class ErrorAnalyzer {
         );
         break;
       case 409:
-        actions.push(
-          'Close conflicting browser instances',
-          'Use roxy_close_browsers tool',
-          'Wait a moment and try again'
-        );
+        // Check if it's quota error
+        if (error.message.includes('额度不足') || error.message.includes('quota')) {
+          actions.push(
+            '打开 RoxyBrowser 应用 / Open RoxyBrowser app',
+            '前往费用中心 / Go to Billing Center',
+            '购买或升级窗口套餐 / Purchase or upgrade profiles plan',
+            '等待充值生效后重试创建 / Retry creation after quota is added'
+          );
+        } else {
+          // Profile conflict case
+          actions.push(
+            'Close conflicting profile instances',
+            'Use roxy_close_browsers tool',
+            'Wait a moment and try again'
+          );
+        }
         break;
       case 500:
         actions.push(
