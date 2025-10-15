@@ -40,7 +40,7 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
   "mcpServers": {
     "roxybrowser-openapi": {
       "command": "npx",
-      "args": ["@roxybrowser/openapi@latest"],
+      "args": ["@roxybrowser/openapi@beta"],
       "env": {
         "ROXY_API_KEY": "YOUR API KEY",
         "ROXY_API_HOST": "http://127.0.0.1:50000"
@@ -48,7 +48,7 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
     },
     "roxybrowser-playwright-mcp": {
       "command": "npx",
-      "args": ["@roxybrowser/playwright-mcp@latest"]
+      "args": ["@roxybrowser/playwright-mcp@beta"]
     }
   }
 }
