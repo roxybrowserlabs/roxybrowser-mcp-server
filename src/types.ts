@@ -187,6 +187,9 @@ export type BrowserOS = 'Windows' | 'macOS' | 'Linux' | 'IOS' | 'Android';
 /** Browser core versions */
 export type CoreVersion = '138' | '137' | '136' | '135' | '133' | '130' | '125' | '117' | '109';
 
+/** Latest/recommended browser core version */
+export const LATEST_CORE_VERSION: CoreVersion = '138';
+
 /** Search engine options */
 export type SearchEngine = 'Google' | 'Microsoft Bing' | 'Yahoo' | 'Yandex' | 'DuckDuckGo';
 

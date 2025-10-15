@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RoxyBrowser MCP Server is a Model Context Protocol (MCP) server that provides AI assistants with browser automation capabilities through the RoxyBrowser fingerprint browser. The server acts as a bridge between AI assistants and RoxyBrowser's API, enabling browser lifecycle management and Chrome DevTools Protocol (CDP) endpoint generation.
+RoxyBrowser MCP Server is a Model Context Protocol (MCP) server that provides AI assistants with browser automation capabilities through the RoxyBrowser fingerprint browser. The server acts as a bridge between AI assistants and RoxyBrowser's API, enabling browser lifecycle management and Chrome DevTools Protocol (CDP) endpoint generation for use with tools like playwright-mcp.
 
 ## Development Commands
 
@@ -35,39 +35,57 @@ npm start
 node lib/index.js
 ```
 
+### Important Build Notes
+- This is an **ESM (ES Module) project** (`"type": "module"` in package.json)
+- All imports must use `.js` extensions even in `.ts` files (e.g., `import { foo } from './bar.js'`)
+- TypeScript compiles to `lib/` directory (configured in tsconfig.json)
+- The entry point `lib/index.js` has shebang `#!/usr/bin/env node` for CLI execution
+- Published to npm as `@roxybrowser/openapi` with binary name `roxy-browser-mcp`
+
 ## Architecture Overview
 
 ### Core Components
 
 1. **Main Server** (`src/index.ts`)
    - MCP server implementation using `@modelcontextprotocol/sdk`
-   - Tool registration and request handling
-   - Configuration management and API connectivity testing
+   - Tool registration and request handling via `ListToolsRequestSchema` and `CallToolRequestSchema`
+   - Configuration management and API connectivity testing on startup
+   - Stdio transport for MCP client communication
    - Error handling and graceful shutdown
 
 2. **RoxyClient** (`src/roxy-client.ts`)
-   - HTTP client for RoxyBrowser REST API
-   - Authentication using API key in `token` header
+   - HTTP client for RoxyBrowser REST API using native fetch
+   - Authentication using API key in `token` header (not `Authorization`)
    - Request/response handling with proper error types
-   - Batch operations for browsers (open/close/create)
+   - Batch operations for browsers (open/close/create) with concurrency limits
+   - Timeout handling via AbortController
 
 3. **Browser Creator** (`src/browser/browser-creator.ts`)
-   - Configuration builder for different complexity levels
-   - Validation and default application
-   - Proxy assignment and batch operations
-   - OS version compatibility checking
+   - Configuration builder for different complexity levels (Simple/Standard/Advanced)
+   - Validation and default application for browser configs
+   - Proxy assignment and batch operations with delays
+   - OS version compatibility checking and validation
 
 4. **Proxy Manager** (`src/proxy/proxy-manager.ts`)
    - Proxy configuration validation and testing
-   - Multiple proxy formats support (URL, host:port)
+   - Multiple proxy formats support (URL, host:port, protocol://host:port)
    - Proxy distribution strategies (round-robin, random)
    - Statistics and filtering capabilities
+   - Related validator in `src/proxy/proxy-validator.ts`
 
-5. **Types** (`src/types.ts`)
+5. **Error Analyzer** (`src/utils/error-analyzer.ts`)
+   - Centralized error analysis and categorization
+   - Bilingual error messages (Chinese/English)
+   - Retry strategy determination
+   - Batch error analysis for multiple failures
+   - Troubleshooting guidance generation
+
+6. **Types** (`src/types.ts`)
    - Comprehensive TypeScript definitions
-   - API request/response types
-   - Browser configuration interfaces
-   - Error classes and validation types
+   - API request/response types (RoxyApiResponse, BrowserListResponse, etc.)
+   - Browser configuration interfaces (BrowserCreateConfig, ProxyInfo, FingerInfo)
+   - Error classes (ConfigError, RoxyApiError, BrowserCreationError)
+   - Error code mappings (ROXY_ERROR_MAP, NETWORK_ERROR_PATTERNS)
 
 ### Browser Creation Complexity Levels
 
@@ -137,9 +155,10 @@ Each MCP tool follows this structure:
 
 ### Batch Operations
 The server implements intelligent batching for performance:
-- Browser opening: 5 concurrent operations
-- Browser creation: 3 concurrent with 1s delays
+- Browser opening: 5 concurrent operations (see `RoxyClient.openBrowsersBatch`)
+- Browser creation: 3 concurrent with 1s delays between batches (see `BrowserCreator.createBrowsersBatch`)
 - Proper error isolation and partial success handling
+- Uses Promise.allSettled for parallel operations to continue even when some fail
 
 ### Response Formatting
 All tool responses use structured markdown format with:
@@ -148,25 +167,91 @@ All tool responses use structured markdown format with:
 - Actionable next steps
 - Example commands for playwright-mcp integration
 
+## Key Architectural Patterns
+
+### Error Handling Architecture
+The codebase uses a three-tier error handling approach:
+
+1. **Custom Error Classes** - Specialized errors with rich metadata:
+   - `ConfigError` - Configuration and environment issues
+   - `RoxyApiError` - API errors with code mapping, retry logic, and bilingual messages
+   - `BrowserCreationError` - Browser creation failures with context
+
+2. **Error Code Mapping** - `ROXY_ERROR_MAP` and `NETWORK_ERROR_PATTERNS` in types.ts provide:
+   - Error categorization (network/authentication/configuration/resource/server/browser/proxy)
+   - Severity levels (low/medium/high/critical)
+   - Retry strategies with backoff
+   - Bilingual descriptions
+
+3. **ErrorAnalyzer Utility** - Centralized analysis providing:
+   - Single error analysis with troubleshooting steps
+   - Batch error pattern detection
+   - Formatted output for user display
+   - Retry recommendations
+
+### Data Flow Pattern
+```
+MCP Client Request
+  → Server Tool Handler (index.ts)
+    → RoxyClient HTTP Request
+      → RoxyBrowser API
+    ← RoxyApiResponse
+  ← Formatted Tool Response (markdown)
+```
+
+### Browser ID System
+RoxyBrowser uses `dirId` (directory ID) as the primary browser identifier:
+- Returned from browser creation
+- Required for open/close/update/delete operations
+- Different from workspace/project IDs
+- Stored in browser list responses
+
 ## Integration with Playwright MCP
 
 Primary workflow:
-1. Use RoxyBrowser MCP to manage browser lifecycle
+1. Use RoxyBrowser MCP to manage browser lifecycle (create/open)
 2. Extract CDP WebSocket endpoints from open operations
-3. Pass endpoints to playwright-mcp for automation
-4. Clean up browsers when automation completes
+3. Pass endpoints to playwright-mcp for automation using `--cdp-endpoint` flag
+4. Clean up browsers when automation completes (close/delete)
 
 Example CDP endpoint: `ws://127.0.0.1:62662/devtools/browser/58293891-bfb2-402b-b79a-8f37ed005402`
+
+**Integration Example:**
+```bash
+# Step 1: Open browser via RoxyBrowser MCP (returns CDP endpoint)
+# Step 2: Use endpoint with playwright-mcp
+npx @playwright/mcp@latest --cdp-endpoint "ws://127.0.0.1:62662/devtools/browser/xxx"
+```
 
 ## Development Guidelines
 
 ### Adding New Tools
-1. Define TypeScript interfaces in `types.ts`
-2. Add tool schema to `TOOLS` array in `index.ts`
-3. Implement handler method in `RoxyBrowserMCPServer` class
-4. Add business logic to appropriate service class
-5. Use `ErrorAnalyzer.formatErrorForDisplay()` for consistent error responses
-6. Update documentation and test connectivity
+1. **Define Types** in `types.ts`:
+   - Tool parameter interface (e.g., `FooToolParams`)
+   - Tool response interface (e.g., `FooToolResponse`)
+   - API request/response types if needed
+
+2. **Add Tool Schema** to `TOOLS` array in `index.ts`:
+   - Name, description, and JSON schema for parameters
+   - Use descriptive parameter descriptions for AI context
+
+3. **Implement Handler** in the main switch statement (around line 600+):
+   ```typescript
+   case 'roxy_your_tool':
+     return await this.handleYourTool(params as YourToolParams);
+   ```
+
+4. **Add Handler Method** to `RoxyBrowserMCPServer` class:
+   - Use try-catch with ErrorAnalyzer for errors
+   - Format response as markdown text with ✅/❌ indicators
+   - Include next steps and usage examples
+
+5. **Add API Method** to `RoxyClient` if calling new RoxyBrowser endpoint:
+   - Use `makeRequest<T>()` private method
+   - Handle batch operations if needed
+   - Throw RoxyApiError on failures
+
+6. **Update Documentation** and test with `roxy_system_diagnostics`
 
 ### Working with Error Analysis
 **Using the ErrorAnalyzer utility:**
@@ -261,16 +346,17 @@ Key endpoints:
 
 ## Testing and Validation
 
-Connection testing happens at startup:
-1. API connectivity verification
-2. Authentication validation
-3. Graceful failure with helpful error messages
+Connection testing happens at startup (in `main()` function):
+1. API connectivity verification via `/browser/workspace`
+2. Authentication validation (checks for valid token)
+3. Graceful failure with helpful error messages from ErrorAnalyzer
 
 For development, verify:
 1. RoxyBrowser application is running
-2. API is enabled in settings
-3. Network connectivity to localhost:50000
+2. API is enabled in settings (RoxyBrowser → API → API配置 → 启用状态 = 启用)
+3. Network connectivity to localhost:50000 (or custom ROXY_API_HOST)
 4. API key is valid and not expired
+5. Use `roxy_system_diagnostics` tool for comprehensive health checks
 
 ## Security Considerations
 

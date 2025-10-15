@@ -16,6 +16,7 @@ import {
   WindowPlatformInfo,
   BrowserOS,
   CoreVersion,
+  LATEST_CORE_VERSION,
   BrowserCreationError,
 } from '../types.js';
 
@@ -196,7 +197,7 @@ export class BrowserCreator {
     const defaultConfig: Partial<BrowserCreateConfig> = {
       os: 'Windows',
       osVersion: '11',
-      coreVersion: '125' as CoreVersion,
+      coreVersion: LATEST_CORE_VERSION,
       searchEngine: 'Google',
       
       // Default fingerprint settings

@@ -46,6 +46,7 @@ import {
   ClearLocalCacheParams,
   ClearServerCacheParams,
   RandomFingerprintParams,
+  LATEST_CORE_VERSION,
 } from './types.js';
 
 // ========== Configuration ==========
@@ -1119,7 +1120,7 @@ class RoxyBrowserMCPServer {
           workspaceId: params.workspaceId,
           projectId: params.projectId,
           os: finalConfig.os || 'Windows',
-          coreVersion: finalConfig.coreVersion || '125',
+          coreVersion: finalConfig.coreVersion || LATEST_CORE_VERSION,
           proxyInfo: params.proxyInfo,
           windowSize: `${params.openWidth || '1000'}x${params.openHeight || '1000'}`,
         },
@@ -1207,7 +1208,7 @@ class RoxyBrowserMCPServer {
         `**Browser ID:** \`${response.browser.dirId}\``,
         `**Name:** ${finalConfig.windowName || 'Advanced Browser'}`,
         `**OS:** ${finalConfig.os || 'Windows'} ${finalConfig.osVersion || ''}`,
-        `**Core Version:** ${finalConfig.coreVersion || '125'}`,
+        `**Core Version:** ${finalConfig.coreVersion || LATEST_CORE_VERSION}`,
         finalConfig.userAgent ? `**User Agent:** ${finalConfig.userAgent.substring(0, 50)}...` : '',
         `**Search Engine:** ${finalConfig.searchEngine || 'Google'}`,
         finalConfig.proxyInfo?.proxyCategory !== 'noproxy' ? `**Proxy:** ✅ ${finalConfig.proxyInfo?.proxyCategory} ${finalConfig.proxyInfo?.host}:${finalConfig.proxyInfo?.port}` : '**Proxy:** ❌ No proxy',
