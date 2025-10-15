@@ -272,8 +272,8 @@ const TOOLS = [
         },
         coreVersion: {
           type: 'string',
-          enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
-          description: 'Browser core version (optional, default: 125)',
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          description: 'Browser core version (optional, default: 140)',
         },
         userAgent: {
           type: 'string',
@@ -388,7 +388,7 @@ const TOOLS = [
         },
         coreVersion: {
           type: 'string',
-          enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
           description: 'Browser core version (optional)',
         },
         userAgent: {
@@ -700,7 +700,7 @@ const TOOLS = [
         },
         coreVersion: {
           type: 'string',
-          enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
           description: 'Browser core version (optional)',
         },
         userAgent: {
