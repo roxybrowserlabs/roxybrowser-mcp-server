@@ -48,7 +48,7 @@
     },
     "roxybrowser-playwright-mcp": {
       "command": "npx",
-      "args": ["@roxybrowser/playwright-mcp@beta"]
+      "args": ["@roxybrowser/playwright-mcp@latest"]
     }
   }
 }
