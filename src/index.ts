@@ -16,8 +16,8 @@ import {
 
 import { RoxyClient } from './roxy-client.js';
 import { BrowserCreator } from './browser/browser-creator.js';
-import { TemplateManager } from './browser/template-manager.js';
 import { ProxyManager } from './proxy/proxy-manager.js';
+import { ErrorAnalyzer } from './utils/error-analyzer.js';
 import {
   RoxyClientConfig,
   WorkspaceListToolResponse,
@@ -32,13 +32,21 @@ import {
   BrowserCreateSimpleParams,
   BrowserCreateStandardParams,
   BrowserCreateAdvancedParams,
-  BrowserCreateTemplateParams,
   BrowserCreateSimpleResponse,
   BrowserCreateStandardResponse,
   BrowserCreateAdvancedResponse,
-  BrowserCreateTemplateResponse,
   ConfigError,
+  RoxyApiError,
   BrowserCreationError,
+  AccountListParams,
+  AccountListResponse,
+  LabelListResponse,
+  ConnectionInfoResponse,
+  BrowserUpdateParams,
+  ClearLocalCacheParams,
+  ClearServerCacheParams,
+  RandomFingerprintParams,
+  LATEST_CORE_VERSION,
 } from './types.js';
 
 // ========== Configuration ==========
@@ -172,7 +180,7 @@ const TOOLS = [
   },
   {
     name: 'roxy_create_browser_simple',
-    description: 'Create a browser with simple configuration - ideal for quick setup with basic proxy',
+    description: 'Create a browser with simple configuration - ideal for quick setup with basic proxy and common options',
     inputSchema: {
       type: 'object',
       properties: {
@@ -213,13 +221,27 @@ const TOOLS = [
           enum: ['HTTP', 'HTTPS', 'SOCKS5'],
           description: 'Proxy type (optional, default: HTTP)',
         },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
+        searchEngine: {
+          type: 'string',
+          enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
+          description: 'Default search engine (optional, default: Google)',
+        },
+        labelIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'Label IDs to assign (optional)',
+        },
       },
       required: ['workspaceId'],
     },
   },
   {
     name: 'roxy_create_browser_standard',
-    description: 'Create a browser with standard configuration - covers most common use cases',
+    description: 'Create a browser with standard configuration - covers most common use cases with commonly used fingerprint settings',
     inputSchema: {
       type: 'object',
       properties: {
@@ -250,8 +272,45 @@ const TOOLS = [
         },
         coreVersion: {
           type: 'string',
-          enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
-          description: 'Browser core version (optional, default: 125)',
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          description: 'Browser core version (optional, default: 140)',
+        },
+        userAgent: {
+          type: 'string',
+          description: 'Custom user agent (optional)',
+        },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
+        searchEngine: {
+          type: 'string',
+          enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
+          description: 'Default search engine (optional)',
+        },
+        labelIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'Label IDs to assign (optional)',
+        },
+        defaultOpenUrl: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'URLs to open by default (optional)',
+        },
+        windowPlatformList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              platformUrl: { type: 'string', description: 'Platform URL' },
+              platformUserName: { type: 'string', description: 'Platform username' },
+              platformPassword: { type: 'string', description: 'Platform password' },
+              platformEfa: { type: 'string', description: 'Platform EFA' },
+              platformRemarks: { type: 'string', description: 'Platform remarks' },
+            },
+          },
+          description: 'Platform account information (optional)',
         },
         proxyInfo: {
           type: 'object',
@@ -269,26 +328,28 @@ const TOOLS = [
             checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
           },
         },
-        openWidth: {
-          type: 'string',
-          description: 'Browser window width (optional, default: 1000)',
-        },
-        openHeight: {
-          type: 'string',
-          description: 'Browser window height (optional, default: 1000)',
-        },
-        language: {
-          type: 'string',
-          description: 'Browser language (optional, e.g., en-US)',
-        },
-        timeZone: {
-          type: 'string',
-          description: 'Browser timezone (optional, e.g., GMT-5:00 America/New_York)',
-        },
-        defaultOpenUrl: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'URLs to open by default (optional)',
+        fingerInfo: {
+          type: 'object',
+          description: 'Common fingerprint configuration (optional) - for full control use roxy_create_browser_advanced',
+          properties: {
+            // Language and timezone
+            language: { type: 'string', description: 'Browser language (e.g., en-US)' },
+            timeZone: { type: 'string', description: 'Browser timezone (e.g., GMT-5:00 America/New_York)' },
+
+            // Window settings (commonly used)
+            openWidth: { type: 'string', description: 'Window width (default: 1000)' },
+            openHeight: { type: 'string', description: 'Window height (default: 1000)' },
+
+            // Media settings (commonly adjusted)
+            forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
+            forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+            forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
+
+            // Common fingerprint settings
+            webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+            canvas: { type: 'boolean', description: 'Canvas: random vs real' },
+            webGL: { type: 'boolean', description: 'WebGL: random vs real' },
+          },
         },
       },
       required: ['workspaceId'],
@@ -296,7 +357,7 @@ const TOOLS = [
   },
   {
     name: 'roxy_create_browser_advanced',
-    description: 'Create a browser with complete configuration control - for expert users',
+    description: 'Create a browser with complete configuration control - for expert users needing full parameter access',
     inputSchema: {
       type: 'object',
       properties: {
@@ -314,7 +375,7 @@ const TOOLS = [
         },
         windowRemark: {
           type: 'string',
-          description: 'Window remarks (optional)',
+          description: 'Window remarks/notes (optional)',
         },
         os: {
           type: 'string',
@@ -327,12 +388,16 @@ const TOOLS = [
         },
         coreVersion: {
           type: 'string',
-          enum: ['138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
           description: 'Browser core version (optional)',
         },
         userAgent: {
           type: 'string',
           description: 'Custom user agent (optional)',
+        },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
         },
         searchEngine: {
           type: 'string',
@@ -349,71 +414,129 @@ const TOOLS = [
           items: { type: 'string' },
           description: 'Default URLs to open (optional)',
         },
+        windowPlatformList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              platformUrl: { type: 'string', description: 'Platform URL' },
+              platformUserName: { type: 'string', description: 'Platform username' },
+              platformPassword: { type: 'string', description: 'Platform password' },
+              platformEfa: { type: 'string', description: 'Platform EFA' },
+              platformRemarks: { type: 'string', description: 'Platform remarks' },
+            },
+          },
+          description: 'Platform account information (optional)',
+        },
         proxyInfo: {
           type: 'object',
-          description: 'Proxy configuration (optional)',
+          description: 'Complete proxy configuration (optional)',
+          properties: {
+            proxyMethod: { type: 'string', enum: ['custom', 'choose', 'api'] },
+            proxyCategory: { type: 'string', enum: ['noproxy', 'HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
+            ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
+            protocol: { type: 'string', enum: ['HTTP', 'HTTPS', 'SOCKS5'] },
+            host: { type: 'string' },
+            port: { type: 'string' },
+            proxyUserName: { type: 'string' },
+            proxyPassword: { type: 'string' },
+            refreshUrl: { type: 'string' },
+            checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
+          },
         },
         fingerInfo: {
           type: 'object',
           description: 'Complete fingerprint configuration (optional)',
-        },
-        windowPlatformList: {
-          type: 'array',
-          items: { type: 'object' },
-          description: 'Platform account information (optional)',
+          properties: {
+            // Language and timezone
+            isLanguageBaseIp: { type: 'boolean', description: 'Follow IP for browser language' },
+            language: { type: 'string', description: 'Custom browser language' },
+            isDisplayLanguageBaseIp: { type: 'boolean', description: 'Follow IP for display language' },
+            displayLanguage: { type: 'string', description: 'Custom display language' },
+            isTimeZone: { type: 'boolean', description: 'Follow IP for timezone' },
+            timeZone: { type: 'string', description: 'Custom timezone' },
+
+            // Geolocation
+            position: { type: 'number', enum: [0, 1, 2], description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
+            isPositionBaseIp: { type: 'boolean', description: 'Follow IP for geolocation' },
+            longitude: { type: 'string', description: 'Custom longitude' },
+            latitude: { type: 'string', description: 'Custom latitude' },
+            precisionPos: { type: 'string', description: 'Precision in meters' },
+
+            // Media settings
+            forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
+            forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+            forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
+
+            // Window settings
+            openWidth: { type: 'string', description: 'Window width' },
+            openHeight: { type: 'string', description: 'Window height' },
+            openBookmarks: { type: 'boolean', description: 'Enable bookmarks' },
+            positionSwitch: { type: 'boolean', description: 'Window position switch' },
+            windowRatioPosition: { type: 'string', description: 'Window position ratio' },
+            isDisplayName: { type: 'boolean', description: 'Show window name in title bar' },
+
+            // Sync settings
+            syncBookmark: { type: 'boolean', description: 'Sync bookmarks' },
+            syncHistory: { type: 'boolean', description: 'Sync history' },
+            syncTab: { type: 'boolean', description: 'Sync tabs' },
+            syncCookie: { type: 'boolean', description: 'Sync cookies' },
+            syncExtensions: { type: 'boolean', description: 'Sync extensions' },
+            syncPassword: { type: 'boolean', description: 'Sync saved passwords' },
+            syncIndexedDb: { type: 'boolean', description: 'Sync IndexedDB' },
+            syncLocalStorage: { type: 'boolean', description: 'Sync LocalStorage' },
+
+            // Cleanup settings
+            clearCacheFile: { type: 'boolean', description: 'Clear cache files on startup' },
+            clearCookie: { type: 'boolean', description: 'Clear cookies on startup' },
+            clearLocalStorage: { type: 'boolean', description: 'Clear LocalStorage on startup' },
+
+            // Advanced settings
+            randomFingerprint: { type: 'boolean', description: 'Generate random fingerprint' },
+            forbidSavePassword: { type: 'boolean', description: 'Disable password save prompts' },
+            stopOpenNet: { type: 'boolean', description: 'Stop opening if network fails' },
+            stopOpenIP: { type: 'boolean', description: 'Stop opening if IP changes' },
+            stopOpenPosition: { type: 'boolean', description: 'Stop opening if IP location changes' },
+            openWorkbench: { type: 'number', enum: [0, 1, 2], description: 'Open workbench: 0=close, 1=open, 2=follow app' },
+
+            // Display settings
+            resolutionType: { type: 'boolean', description: 'Custom resolution vs follow system' },
+            resolutionX: { type: 'string', description: 'Custom resolution width' },
+            resolutionY: { type: 'string', description: 'Custom resolution height' },
+            fontType: { type: 'boolean', description: 'Random fonts vs system fonts' },
+
+            // Browser fingerprint settings
+            webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+            webGL: { type: 'boolean', description: 'WebGL: random vs real' },
+            webGLInfo: { type: 'boolean', description: 'WebGL info: custom vs real' },
+            webGLManufacturer: { type: 'string', description: 'Custom WebGL manufacturer' },
+            webGLRender: { type: 'string', description: 'Custom WebGL renderer' },
+            webGpu: { type: 'string', enum: ['webgl', 'real', 'block'], description: 'WebGPU setting' },
+            canvas: { type: 'boolean', description: 'Canvas: random vs real' },
+            audioContext: { type: 'boolean', description: 'AudioContext: random vs real' },
+            speechVoices: { type: 'boolean', description: 'Speech Voices: random vs real' },
+            doNotTrack: { type: 'boolean', description: 'Enable Do Not Track' },
+            clientRects: { type: 'boolean', description: 'ClientRects: random vs real' },
+            deviceInfo: { type: 'boolean', description: 'Media devices: random vs real' },
+            deviceNameSwitch: { type: 'boolean', description: 'Device names: random vs real' },
+            macInfo: { type: 'boolean', description: 'MAC address: custom vs real' },
+
+            // Hardware settings
+            hardwareConcurrent: { type: 'string', description: 'Hardware concurrency' },
+            deviceMemory: { type: 'string', description: 'Device memory' },
+
+            // Security settings
+            disableSsl: { type: 'boolean', description: 'SSL fingerprint settings' },
+            disableSslList: { type: 'array', items: { type: 'string' }, description: 'SSL feature list' },
+            portScanProtect: { type: 'boolean', description: 'Port scan protection' },
+            portScanList: { type: 'string', description: 'Port scan whitelist' },
+            useGpu: { type: 'boolean', description: 'Use GPU acceleration' },
+            sandboxPermission: { type: 'boolean', description: 'Disable sandbox' },
+            startupParam: { type: 'string', description: 'Browser startup parameters' },
+          },
         },
       },
       required: ['workspaceId'],
-    },
-  },
-  {
-    name: 'roxy_create_browser_from_template',
-    description: 'Create browsers using predefined templates - perfect for batch creation and common scenarios',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        workspaceId: {
-          type: 'number',
-          description: 'Workspace ID (required)',
-        },
-        templateName: {
-          type: 'string',
-          enum: ['gmail', 'facebook', 'ecommerce', 'social_media', 'general', 'custom'],
-          description: 'Template to use (required)',
-        },
-        count: {
-          type: 'number',
-          description: 'Number of browsers to create (optional, default: 1)',
-          minimum: 1,
-          maximum: 50,
-        },
-        namePrefix: {
-          type: 'string',
-          description: 'Prefix for browser names (optional)',
-        },
-        projectId: {
-          type: 'number',
-          description: 'Project ID (optional)',
-        },
-        proxyList: {
-          type: 'array',
-          items: { type: 'object' },
-          description: 'List of proxy configurations to distribute across browsers (optional)',
-        },
-        customConfig: {
-          type: 'object',
-          description: 'Custom configuration to override template defaults (optional)',
-        },
-      },
-      required: ['workspaceId', 'templateName'],
-    },
-  },
-  {
-    name: 'roxy_list_browser_templates',
-    description: 'List available browser templates with descriptions',
-    inputSchema: {
-      type: 'object',
-      properties: {},
     },
   },
   {
@@ -440,6 +563,344 @@ const TOOLS = [
         },
       },
       required: ['proxyInfo'],
+    },
+  },
+  {
+    name: 'roxy_system_diagnostics',
+    description: 'Perform comprehensive system diagnostics and health checks',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        includeWorkspaceCheck: {
+          type: 'boolean',
+          description: 'Include workspace connectivity tests (optional, default: true)',
+          default: true,
+        },
+        includeBrowserCheck: {
+          type: 'boolean',
+          description: 'Include browser availability checks (optional, default: true)',
+          default: true,
+        },
+        verbose: {
+          type: 'boolean',
+          description: 'Include detailed diagnostic information (optional, default: false)',
+          default: false,
+        },
+      },
+    },
+  },
+  {
+    name: 'roxy_list_accounts',
+    description: 'Get list of accounts (platform credentials) in specified workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        accountId: {
+          type: 'number',
+          description: 'Account ID to filter by (optional)',
+        },
+        pageIndex: {
+          type: 'number',
+          description: 'Page index for pagination (default: 1)',
+          default: 1,
+        },
+        pageSize: {
+          type: 'number',
+          description: 'Number of items per page (default: 15)',
+          default: 15,
+        },
+      },
+      required: ['workspaceId'],
+    },
+  },
+  {
+    name: 'roxy_list_labels',
+    description: 'Get list of labels in specified workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+      },
+      required: ['workspaceId'],
+    },
+  },
+  {
+    name: 'roxy_get_connection_info',
+    description: 'Get connection information (CDP endpoints, PIDs) for currently opened browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs to query (optional, returns all if not specified)',
+        },
+      },
+    },
+  },
+  {
+    name: 'roxy_get_browser_detail',
+    description: 'Get detailed information for a specific browser window',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID (required)',
+        },
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_update_browser',
+    description: 'Update/modify an existing browser configuration with full control over all settings',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID to update (required)',
+        },
+        windowName: {
+          type: 'string',
+          description: 'Browser window name (optional)',
+        },
+        projectId: {
+          type: 'number',
+          description: 'Project ID (optional)',
+        },
+        windowRemark: {
+          type: 'string',
+          description: 'Window remarks/notes (optional)',
+        },
+        os: {
+          type: 'string',
+          enum: ['Windows', 'macOS', 'Linux', 'IOS', 'Android'],
+          description: 'Operating system (optional)',
+        },
+        osVersion: {
+          type: 'string',
+          description: 'OS version (optional)',
+        },
+        coreVersion: {
+          type: 'string',
+          enum: ['140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
+          description: 'Browser core version (optional)',
+        },
+        userAgent: {
+          type: 'string',
+          description: 'Custom user agent (optional)',
+        },
+        cookie: {
+          type: 'array',
+          description: 'Cookie list (optional)',
+        },
+        searchEngine: {
+          type: 'string',
+          enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
+          description: 'Default search engine (optional)',
+        },
+        labelIds: {
+          type: 'array',
+          items: { type: 'number' },
+          description: 'Label IDs to assign (optional)',
+        },
+        defaultOpenUrl: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Default URLs to open (optional)',
+        },
+        windowPlatformList: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              platformUrl: { type: 'string', description: 'Platform URL' },
+              platformUserName: { type: 'string', description: 'Platform username' },
+              platformPassword: { type: 'string', description: 'Platform password' },
+              platformEfa: { type: 'string', description: 'Platform EFA' },
+              platformRemarks: { type: 'string', description: 'Platform remarks' },
+            },
+          },
+          description: 'Platform account information (optional)',
+        },
+        proxyInfo: {
+          type: 'object',
+          description: 'Complete proxy configuration (optional)',
+          properties: {
+            proxyMethod: { type: 'string', enum: ['custom', 'choose', 'api'] },
+            proxyCategory: { type: 'string', enum: ['noproxy', 'HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
+            ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
+            protocol: { type: 'string', enum: ['HTTP', 'HTTPS', 'SOCKS5'] },
+            host: { type: 'string' },
+            port: { type: 'string' },
+            proxyUserName: { type: 'string' },
+            proxyPassword: { type: 'string' },
+            refreshUrl: { type: 'string' },
+            checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
+          },
+        },
+        fingerInfo: {
+          type: 'object',
+          description: 'Complete fingerprint configuration (optional)',
+          properties: {
+            // Language and timezone
+            isLanguageBaseIp: { type: 'boolean', description: 'Follow IP for browser language' },
+            language: { type: 'string', description: 'Custom browser language' },
+            isDisplayLanguageBaseIp: { type: 'boolean', description: 'Follow IP for display language' },
+            displayLanguage: { type: 'string', description: 'Custom display language' },
+            isTimeZone: { type: 'boolean', description: 'Follow IP for timezone' },
+            timeZone: { type: 'string', description: 'Custom timezone' },
+
+            // Geolocation
+            position: { type: 'number', enum: [0, 1, 2], description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
+            isPositionBaseIp: { type: 'boolean', description: 'Follow IP for geolocation' },
+            longitude: { type: 'string', description: 'Custom longitude' },
+            latitude: { type: 'string', description: 'Custom latitude' },
+            precisionPos: { type: 'string', description: 'Precision in meters' },
+
+            // Media settings
+            forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
+            forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+            forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
+
+            // Window settings
+            openWidth: { type: 'string', description: 'Window width' },
+            openHeight: { type: 'string', description: 'Window height' },
+            openBookmarks: { type: 'boolean', description: 'Enable bookmarks' },
+            positionSwitch: { type: 'boolean', description: 'Window position switch' },
+            windowRatioPosition: { type: 'string', description: 'Window position ratio' },
+            isDisplayName: { type: 'boolean', description: 'Show window name in title bar' },
+
+            // Sync settings
+            syncBookmark: { type: 'boolean', description: 'Sync bookmarks' },
+            syncHistory: { type: 'boolean', description: 'Sync history' },
+            syncTab: { type: 'boolean', description: 'Sync tabs' },
+            syncCookie: { type: 'boolean', description: 'Sync cookies' },
+            syncExtensions: { type: 'boolean', description: 'Sync extensions' },
+            syncPassword: { type: 'boolean', description: 'Sync saved passwords' },
+            syncIndexedDb: { type: 'boolean', description: 'Sync IndexedDB' },
+            syncLocalStorage: { type: 'boolean', description: 'Sync LocalStorage' },
+
+            // Cleanup settings
+            clearCacheFile: { type: 'boolean', description: 'Clear cache files on startup' },
+            clearCookie: { type: 'boolean', description: 'Clear cookies on startup' },
+            clearLocalStorage: { type: 'boolean', description: 'Clear LocalStorage on startup' },
+
+            // Advanced settings
+            randomFingerprint: { type: 'boolean', description: 'Generate random fingerprint' },
+            forbidSavePassword: { type: 'boolean', description: 'Disable password save prompts' },
+            stopOpenNet: { type: 'boolean', description: 'Stop opening if network fails' },
+            stopOpenIP: { type: 'boolean', description: 'Stop opening if IP changes' },
+            stopOpenPosition: { type: 'boolean', description: 'Stop opening if IP location changes' },
+            openWorkbench: { type: 'number', enum: [0, 1, 2], description: 'Open workbench: 0=close, 1=open, 2=follow app' },
+
+            // Display settings
+            resolutionType: { type: 'boolean', description: 'Custom resolution vs follow system' },
+            resolutionX: { type: 'string', description: 'Custom resolution width' },
+            resolutionY: { type: 'string', description: 'Custom resolution height' },
+            fontType: { type: 'boolean', description: 'Random fonts vs system fonts' },
+
+            // Browser fingerprint settings
+            webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+            webGL: { type: 'boolean', description: 'WebGL: random vs real' },
+            webGLInfo: { type: 'boolean', description: 'WebGL info: custom vs real' },
+            webGLManufacturer: { type: 'string', description: 'Custom WebGL manufacturer' },
+            webGLRender: { type: 'string', description: 'Custom WebGL renderer' },
+            webGpu: { type: 'string', enum: ['webgl', 'real', 'block'], description: 'WebGPU setting' },
+            canvas: { type: 'boolean', description: 'Canvas: random vs real' },
+            audioContext: { type: 'boolean', description: 'AudioContext: random vs real' },
+            speechVoices: { type: 'boolean', description: 'Speech Voices: random vs real' },
+            doNotTrack: { type: 'boolean', description: 'Enable Do Not Track' },
+            clientRects: { type: 'boolean', description: 'ClientRects: random vs real' },
+            deviceInfo: { type: 'boolean', description: 'Media devices: random vs real' },
+            deviceNameSwitch: { type: 'boolean', description: 'Device names: random vs real' },
+            macInfo: { type: 'boolean', description: 'MAC address: custom vs real' },
+
+            // Hardware settings
+            hardwareConcurrent: { type: 'string', description: 'Hardware concurrency' },
+            deviceMemory: { type: 'string', description: 'Device memory' },
+
+            // Security settings
+            disableSsl: { type: 'boolean', description: 'SSL fingerprint settings' },
+            disableSslList: { type: 'array', items: { type: 'string' }, description: 'SSL feature list' },
+            portScanProtect: { type: 'boolean', description: 'Port scan protection' },
+            portScanList: { type: 'string', description: 'Port scan whitelist' },
+            useGpu: { type: 'boolean', description: 'Use GPU acceleration' },
+            sandboxPermission: { type: 'boolean', description: 'Disable sandbox' },
+            startupParam: { type: 'string', description: 'Browser startup parameters' },
+          },
+        },
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_random_fingerprint',
+    description: 'Randomize browser fingerprint for a specific browser',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirId: {
+          type: 'string',
+          description: 'Browser directory ID (required)',
+        },
+      },
+      required: ['workspaceId', 'dirId'],
+    },
+  },
+  {
+    name: 'roxy_clear_local_cache',
+    description: 'Clear local cache for specified browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs (required)',
+        },
+      },
+      required: ['dirIds'],
+    },
+  },
+  {
+    name: 'roxy_clear_server_cache',
+    description: 'Clear server-side cache for specified browsers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspaceId: {
+          type: 'number',
+          description: 'Workspace ID (required)',
+        },
+        dirIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of browser directory IDs (required)',
+        },
+      },
+      required: ['workspaceId', 'dirIds'],
     },
   },
 ];
@@ -506,25 +967,48 @@ class RoxyBrowserMCPServer {
           case 'roxy_create_browser_advanced':
             return await this.handleCreateBrowserAdvanced(args);
 
-          case 'roxy_create_browser_from_template':
-            return await this.handleCreateBrowserFromTemplate(args);
-
-          case 'roxy_list_browser_templates':
-            return await this.handleListBrowserTemplates();
-
           case 'roxy_validate_proxy_config':
             return await this.handleValidateProxyConfig(args);
+
+          case 'roxy_system_diagnostics':
+            return await this.handleSystemDiagnostics(args);
+
+          case 'roxy_list_accounts':
+            return await this.handleListAccounts(args);
+
+          case 'roxy_list_labels':
+            return await this.handleListLabels(args);
+
+          case 'roxy_get_connection_info':
+            return await this.handleGetConnectionInfo(args);
+
+          case 'roxy_get_browser_detail':
+            return await this.handleGetBrowserDetail(args);
+
+          case 'roxy_update_browser':
+            return await this.handleUpdateBrowser(args);
+
+          case 'roxy_random_fingerprint':
+            return await this.handleRandomFingerprint(args);
+
+          case 'roxy_clear_local_cache':
+            return await this.handleClearLocalCache(args);
+
+          case 'roxy_clear_server_cache':
+            return await this.handleClearServerCache(args);
 
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        // Use enhanced error analysis
+        const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+        
         return {
           content: [
             {
               type: 'text',
-              text: `Error: ${errorMessage}`,
+              text: formattedError,
             },
           ],
         };
@@ -534,240 +1018,241 @@ class RoxyBrowserMCPServer {
 
   private async handleCreateBrowserSimple(args: any) {
     const params: BrowserCreateSimpleParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from simple parameters
-    const config = BrowserCreator.buildSimpleConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from simple parameters
+      const config = BrowserCreator.buildSimpleConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateSimpleResponse = {
-      browser: {
-        dirId: result.dirId,
-        windowName: finalConfig.windowName || 'Simple Browser',
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        proxyConfigured: !!(params.proxyHost && params.proxyPort),
-      },
-      message: `Browser created successfully with ID: ${result.dirId}`,
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Simple Browser Created**\n\n` +
-                `**Browser ID:** \`${response.browser.dirId}\`\n` +
-                `**Name:** ${response.browser.windowName}\n` +
-                `**Workspace:** ${response.browser.workspaceId}\n` +
-                `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
-                `**Proxy:** ${response.browser.proxyConfigured ? '✅ Configured' : '❌ Not configured'}\n\n` +
-                `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`,
+      const response: BrowserCreateSimpleResponse = {
+        browser: {
+          dirId: result.dirId,
+          windowName: finalConfig.windowName || 'Simple Browser',
+          workspaceId: params.workspaceId,
+          projectId: params.projectId,
+          proxyConfigured: !!(params.proxyHost && params.proxyPort),
         },
-      ],
-    };
+        message: `Browser created successfully with ID: ${result.dirId}`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Simple Browser Created**\n\n` +
+                  `**Browser ID:** \`${response.browser.dirId}\`\n` +
+                  `**Name:** ${response.browser.windowName}\n` +
+                  `**Workspace:** ${response.browser.workspaceId}\n` +
+                  `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
+                  `**Proxy:** ${response.browser.proxyConfigured ? '✅ Configured' : '❌ Not configured'}\n\n` +
+                  `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
+    }
   }
 
   private async handleCreateBrowserStandard(args: any) {
     const params: BrowserCreateStandardParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from standard parameters
-    const config = BrowserCreator.buildStandardConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from standard parameters
+      const config = BrowserCreator.buildStandardConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateStandardResponse = {
-      browser: {
-        dirId: result.dirId,
-        windowName: finalConfig.windowName || 'Standard Browser',
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        os: finalConfig.os || 'Windows',
-        coreVersion: finalConfig.coreVersion || '125',
-        proxyInfo: params.proxyInfo,
-        windowSize: `${params.openWidth || '1000'}x${params.openHeight || '1000'}`,
-      },
-      message: `Standard browser created successfully with ID: ${result.dirId}`,
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Standard Browser Created**\n\n` +
-                `**Browser ID:** \`${response.browser.dirId}\`\n` +
-                `**Name:** ${response.browser.windowName}\n` +
-                `**OS:** ${response.browser.os} ${finalConfig.osVersion || ''}\n` +
-                `**Core Version:** ${response.browser.coreVersion}\n` +
-                `**Window Size:** ${response.browser.windowSize}\n` +
-                `**Workspace:** ${response.browser.workspaceId}\n` +
-                `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
-                `**Proxy:** ${response.browser.proxyInfo ? '✅ Configured' : '❌ Not configured'}\n\n` +
-                `*Browser is ready for automation. Use \`roxy_open_browsers\` to start it.*`,
+      const response: BrowserCreateStandardResponse = {
+        browser: {
+          dirId: result.dirId,
+          windowName: finalConfig.windowName || 'Standard Browser',
+          workspaceId: params.workspaceId,
+          projectId: params.projectId,
+          os: finalConfig.os || 'Windows',
+          coreVersion: finalConfig.coreVersion || LATEST_CORE_VERSION,
+          proxyInfo: params.proxyInfo,
+          windowSize: `${params.openWidth || '1000'}x${params.openHeight || '1000'}`,
         },
-      ],
-    };
+        message: `Standard browser created successfully with ID: ${result.dirId}`,
+      };
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Standard Browser Created**\n\n` +
+                  `**Browser ID:** \`${response.browser.dirId}\`\n` +
+                  `**Name:** ${response.browser.windowName}\n` +
+                  `**OS:** ${response.browser.os} ${finalConfig.osVersion || ''}\n` +
+                  `**Core Version:** ${response.browser.coreVersion}\n` +
+                  `**Window Size:** ${response.browser.windowSize}\n` +
+                  `**Workspace:** ${response.browser.workspaceId}\n` +
+                  `${response.browser.projectId ? `**Project:** ${response.browser.projectId}\n` : ''}` +
+                  `**Proxy:** ${response.browser.proxyInfo ? '✅ Configured' : '❌ Not configured'}\n\n` +
+                  `*Browser is ready for automation. Use \`roxy_open_browsers\` to start it.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
+    }
   }
 
   private async handleCreateBrowserAdvanced(args: any) {
     const params: BrowserCreateAdvancedParams = args;
-    
+
     if (!params.workspaceId) {
       throw new Error('workspaceId is required');
     }
 
-    // Build configuration from advanced parameters
-    const config = BrowserCreator.buildAdvancedConfig(params);
-    const finalConfig = BrowserCreator.applyDefaults(config);
+    try {
+      // Build configuration from advanced parameters
+      const config = BrowserCreator.buildAdvancedConfig(params);
+      const finalConfig = BrowserCreator.applyDefaults(config);
 
-    // Validate configuration
-    const validation = BrowserCreator.validateConfig(finalConfig);
-    if (!validation.valid) {
-      throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
-    }
+      // Validate configuration
+      const validation = BrowserCreator.validateConfig(finalConfig);
+      if (!validation.valid) {
+        throw new BrowserCreationError(`Configuration validation failed: ${validation.errors.join(', ')}`);
+      }
 
-    // Create browser
-    const result = await this.roxyClient.createBrowser(finalConfig);
+      // Create browser
+      const result = await this.roxyClient.createBrowser(finalConfig);
 
-    const response: BrowserCreateAdvancedResponse = {
-      browser: {
-        dirId: result.dirId,
-        config: finalConfig,
-      },
-      message: `Advanced browser created successfully with ID: ${result.dirId}`,
-    };
-
-    // Create detailed status text
-    const configSummary = [
-      `**Browser ID:** \`${response.browser.dirId}\``,
-      `**Name:** ${finalConfig.windowName || 'Advanced Browser'}`,
-      `**OS:** ${finalConfig.os || 'Windows'} ${finalConfig.osVersion || ''}`,
-      `**Core Version:** ${finalConfig.coreVersion || '125'}`,
-      finalConfig.userAgent ? `**User Agent:** ${finalConfig.userAgent.substring(0, 50)}...` : '',
-      `**Search Engine:** ${finalConfig.searchEngine || 'Google'}`,
-      finalConfig.proxyInfo?.proxyCategory !== 'noproxy' ? `**Proxy:** ✅ ${finalConfig.proxyInfo?.proxyCategory} ${finalConfig.proxyInfo?.host}:${finalConfig.proxyInfo?.port}` : '**Proxy:** ❌ No proxy',
-      finalConfig.fingerInfo?.randomFingerprint ? '**Fingerprint:** 🎲 Random' : '**Fingerprint:** 🔒 Fixed',
-      finalConfig.defaultOpenUrl?.length ? `**Default URLs:** ${finalConfig.defaultOpenUrl.length} URL(s)` : '',
-    ].filter(Boolean).join('\n');
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ **Advanced Browser Created**\n\n${configSummary}\n\n` +
-                `*Advanced browser configured with complete control. Use \`roxy_open_browsers\` to start it.*`,
+      const response: BrowserCreateAdvancedResponse = {
+        browser: {
+          dirId: result.dirId,
+          config: finalConfig,
         },
-      ],
-    };
-  }
+        message: `Advanced browser created successfully with ID: ${result.dirId}`,
+      };
 
-  private async handleCreateBrowserFromTemplate(args: any) {
-    const params: BrowserCreateTemplateParams = args;
-    
-    if (!params.workspaceId || !params.templateName) {
-      throw new Error('workspaceId and templateName are required');
+      // Create detailed status text
+      const configSummary = [
+        `**Browser ID:** \`${response.browser.dirId}\``,
+        `**Name:** ${finalConfig.windowName || 'Advanced Browser'}`,
+        `**OS:** ${finalConfig.os || 'Windows'} ${finalConfig.osVersion || ''}`,
+        `**Core Version:** ${finalConfig.coreVersion || LATEST_CORE_VERSION}`,
+        finalConfig.userAgent ? `**User Agent:** ${finalConfig.userAgent.substring(0, 50)}...` : '',
+        `**Search Engine:** ${finalConfig.searchEngine || 'Google'}`,
+        finalConfig.proxyInfo?.proxyCategory !== 'noproxy' ? `**Proxy:** ✅ ${finalConfig.proxyInfo?.proxyCategory} ${finalConfig.proxyInfo?.host}:${finalConfig.proxyInfo?.port}` : '**Proxy:** ❌ No proxy',
+        finalConfig.fingerInfo?.randomFingerprint ? '**Fingerprint:** 🎲 Random' : '**Fingerprint:** 🔒 Fixed',
+        finalConfig.defaultOpenUrl?.length ? `**Default URLs:** ${finalConfig.defaultOpenUrl.length} URL(s)` : '',
+      ].filter(Boolean).join('\n');
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `✅ **Advanced Browser Created**\n\n${configSummary}\n\n` +
+                  `*Advanced browser configured with complete control. Use \`roxy_open_browsers\` to start it.*`,
+          },
+        ],
+      };
+    } catch (error) {
+      // Check for quota error specifically
+      if (error instanceof RoxyApiError && error.code === 409 &&
+          error.message.includes('额度不足')) {
+        return {
+          content: [{
+            type: 'text',
+            text: `❌ **浏览器创建失败 - 窗口额度不足 / Browser Creation Failed - Insufficient Profiles Quota**\n\n` +
+                  `**错误信息 / Error:** ${error.message}\n\n` +
+                  `**解决步骤 / Solution Steps:**\n` +
+                  `1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n` +
+                  `2. 前往费用中心 / Go to Billing Center\n` +
+                  `3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n` +
+                  `4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n` +
+                  `5. 等待生效后重试创建 / Retry creation after quota is available\n\n` +
+                  `💡 **重要提示 / Important:** 必须使用 \`roxy_delete_browsers\` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n` +
+                  `You must use \`roxy_delete_browsers\` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.`,
+          }],
+        };
+      }
+
+      // Use enhanced error analysis for other errors
+      const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'));
+
+      return {
+        content: [{ type: 'text', text: formattedError }],
+      };
     }
-
-    // Get template configuration
-    const templateConfig = TemplateManager.getTemplateConfig(params.templateName, params.customConfig);
-    
-    // Build configurations for multiple browsers
-    const configs = BrowserCreator.buildConfigsFromTemplate(params, templateConfig);
-
-    // Validate all configurations
-    const validation = BrowserCreator.validateConfigs(configs);
-    if (!validation.valid) {
-      const errorDetails = validation.errors.map(err => `Browser ${err.index + 1}: ${err.errors.join(', ')}`).join('\n');
-      throw new BrowserCreationError(`Configuration validation failed:\n${errorDetails}`);
-    }
-
-    // Create browsers in batch
-    const batchResult = await this.roxyClient.createBrowsers(configs);
-
-    const response: BrowserCreateTemplateResponse = {
-      browsers: batchResult.results,
-      template: params.templateName,
-      successCount: batchResult.successCount,
-      failureCount: batchResult.failureCount,
-      total: batchResult.total,
-      message: `Template-based creation completed: ${batchResult.successCount}/${batchResult.total} browsers created successfully`,
-    };
-
-    // Create result summary
-    const successBrowsers = batchResult.results.filter(r => r.success);
-    const failedBrowsers = batchResult.results.filter(r => !r.success);
-
-    let resultText = `✅ **Template Browser Creation Complete**\n\n` +
-                     `**Template:** ${params.templateName}\n` +
-                     `**Success:** ${response.successCount}/${response.total}\n` +
-                     `**Workspace:** ${params.workspaceId}\n` +
-                     `${params.projectId ? `**Project:** ${params.projectId}\n` : ''}\n`;
-
-    if (successBrowsers.length > 0) {
-      resultText += `**✅ Successfully Created (${successBrowsers.length}):**\n`;
-      successBrowsers.forEach((browser, index) => {
-        resultText += `  ${index + 1}. \`${browser.dirId}\` - ${browser.windowName}\n`;
-      });
-    }
-
-    if (failedBrowsers.length > 0) {
-      resultText += `\n**❌ Failed (${failedBrowsers.length}):**\n`;
-      failedBrowsers.forEach((browser, index) => {
-        resultText += `  ${index + 1}. ${browser.windowName} - ${browser.error}\n`;
-      });
-    }
-
-    resultText += `\n*Use \`roxy_open_browsers\` with the successful browser IDs to start them for automation.*`;
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: resultText,
-        },
-      ],
-    };
-  }
-
-  private async handleListBrowserTemplates() {
-    const templates = TemplateManager.getAvailableTemplates();
-
-    const templateText = templates.map(template => 
-      `**${template.name}**\n  ${template.description}`
-    ).join('\n\n');
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `📋 **Available Browser Templates**\n\n${templateText}\n\n` +
-                `*Use these template names with \`roxy_create_browser_from_template\` for optimized browser configurations.*`,
-        },
-      ],
-    };
   }
 
   private async handleValidateProxyConfig(args: any) {
@@ -864,34 +1349,84 @@ class RoxyBrowserMCPServer {
 
   private async handleOpenBrowsers(args: any) {
     const params: BrowserOpenToolParams = args;
-    
+
     if (!params.workspaceId || !params.dirIds || params.dirIds.length === 0) {
       throw new Error('workspaceId and dirIds are required');
     }
 
-    const results = await this.roxyClient.openBrowsers(
+    const { successes, failures } = await this.roxyClient.openBrowsers(
       params.workspaceId,
       params.dirIds,
       params.args
     );
 
+    // Build success message
+    let message = '';
+
+    if (successes.length > 0) {
+      message += `✅ **Successfully opened ${successes.length} browser(s):**\n\n` +
+                 successes.map(result =>
+                   `**Browser ${result.dirId || 'Unknown'}** (PID: ${result.pid})\n` +
+                   `  - CDP WebSocket: \`${result.ws}\`\n` +
+                   `  - HTTP Endpoint: \`${result.http}\`\n` +
+                   `  - Core Version: ${result.coreVersion}`
+                 ).join('\n\n') +
+                 '\n\n**Use these WebSocket URLs with playwright-mcp:**\n' +
+                 '```bash\n' +
+                 successes.map(result =>
+                   `npx @playwright/mcp@latest --cdp-endpoint "${result.ws}"`
+                 ).join('\n') +
+                 '\n```';
+    }
+
+    // Build failure message with special handling for quota errors
+    if (failures.length > 0) {
+      if (successes.length > 0) {
+        message += '\n\n---\n\n';
+      }
+
+      // Check if any failures are quota errors (code 101 or 409)
+      const quotaErrors = failures.filter(f => f.errorCode === 101 || (f.errorCode === 409 && f.error.includes('额度不足')));
+      const otherErrors = failures.filter(f => !quotaErrors.includes(f));
+
+      if (quotaErrors.length > 0) {
+        message += `❌ **Failed to open ${quotaErrors.length} browser(s) - Insufficient Profiles Quota / 窗口额度不足:**\n\n`;
+        quotaErrors.forEach(failure => {
+          message += `  - Browser ID: \`${failure.dirId}\`\n    Error: ${failure.error}\n`;
+        });
+
+        message += '\n**解决步骤 / Solution Steps:**\n';
+        message += '1. 打开 RoxyBrowser 应用 / Open RoxyBrowser app\n';
+        message += '2. 前往费用中心 / Go to Billing Center\n';
+        message += '3. 购买或升级窗口套餐 / Purchase or upgrade profiles plan\n';
+        message += '4. 或者删除不需要的浏览器窗口以释放额度 / Or delete unused browser profiles to free up quota\n\n';
+        message += '💡 **重要提示 / Important:** 必须使用 `roxy_delete_browsers` 删除浏览器才能释放额度，仅关闭浏览器无法释放额度。\n';
+        message += 'You must use `roxy_delete_browsers` to delete profiles to free up quota. Simply closing browsers will NOT free up quota.';
+      }
+
+      if (otherErrors.length > 0) {
+        if (quotaErrors.length > 0) {
+          message += '\n\n';
+        }
+        message += `❌ **Failed to open ${otherErrors.length} browser(s) - Other Errors:**\n\n`;
+        otherErrors.forEach(failure => {
+          message += `  - Browser ID: \`${failure.dirId}\`\n`;
+          message += `    Error: ${failure.error}\n`;
+          message += `    Retryable: ${failure.retryable ? '✅ Yes' : '❌ No'}\n`;
+        });
+      }
+    }
+
+    // If all failed
+    if (successes.length === 0 && failures.length > 0) {
+      message = `❌ **Failed to open all ${failures.length} browser(s)**\n\n` + message;
+    }
+
     return {
       content: [
         {
           type: 'text',
-          text: `Successfully opened ${results.length} browsers:\n\n` +
-                results.map(result => 
-                  `**Browser ${result.dirId || 'Unknown'}** (PID: ${result.pid})\n` +
-                  `  - CDP WebSocket: \`${result.ws}\`\n` +
-                  `  - HTTP Endpoint: \`${result.http}\`\n` +
-                  `  - Core Version: ${result.coreVersion}`
-                ).join('\n\n') +
-                '\n\n**Use these WebSocket URLs with playwright-mcp:**\n' +
-                '```bash\n' +
-                results.map(result => 
-                  `npx @playwright/mcp@latest --cdp-endpoint "${result.ws}"`
-                ).join('\n') +
-                '\n```',
+          text: message,
         },
       ],
     };
@@ -966,17 +1501,6 @@ class RoxyBrowserMCPServer {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      const response: BrowserDeleteToolResponse = {
-        results: params.dirIds.map(dirId => ({
-          dirId,
-          success: false,
-          error: errorMessage,
-        })),
-        successCount: 0,
-        failureCount: params.dirIds.length,
-        message: `Failed to delete browsers: ${errorMessage}`,
-      };
-
       return {
         content: [
           {
@@ -993,22 +1517,386 @@ class RoxyBrowserMCPServer {
     }
   }
 
-  async run() {
-    // Test connection before starting
-    console.error('🔗 Testing RoxyBrowser API connection...');
-    const isConnected = await this.roxyClient.testConnection();
+  private async handleSystemDiagnostics(args: any) {
+    const { includeWorkspaceCheck = true, includeBrowserCheck = true, verbose = false } = args || {};
     
-    if (!isConnected) {
+    // Perform comprehensive diagnostics
+    const diagnostics = await this.roxyClient.performDiagnostics();
+    
+    let diagnosticText = `## 🔍 系统诊断报告 / System Diagnostics Report\n\n`;
+    
+    // Basic connectivity
+    diagnosticText += `### 🌐 连接状态 / Connectivity Status\n`;
+    diagnosticText += `- **API连接 / API Connection**: ${diagnostics.connected ? '✅ 已连接' : '❌ 连接失败'}\n`;
+    diagnosticText += `- **认证状态 / Authentication**: ${diagnostics.authentication ? '✅ 成功' : '❌ 失败'}\n`;
+    diagnosticText += `- **工作区访问 / Workspace Access**: ${diagnostics.workspaceAccess ? '✅ 正常' : '⚠️ 受限'}\n\n`;
+    
+    // Additional workspace checks
+    if (includeWorkspaceCheck && diagnostics.connected && diagnostics.authentication) {
+      try {
+        const workspaces = await this.roxyClient.getWorkspaces(1, 5);
+        diagnosticText += `### 📁 工作区信息 / Workspace Information\n`;
+        diagnosticText += `- **可用工作区 / Available Workspaces**: ${workspaces.total}\n`;
+        
+        if (workspaces.rows.length > 0) {
+          diagnosticText += `- **工作区详情 / Workspace Details**:\n`;
+          workspaces.rows.slice(0, 3).forEach(ws => {
+            const projectCount = ws.project_details.length;
+            diagnosticText += `  - ${ws.workspaceName} (ID: ${ws.id}) - ${projectCount} projects\n`;
+          });
+          if (workspaces.total > 3) {
+            diagnosticText += `  - ... and ${workspaces.total - 3} more\n`;
+          }
+        }
+        diagnosticText += '\n';
+      } catch (error) {
+        diagnosticText += `### 📁 工作区信息 / Workspace Information\n`;
+        diagnosticText += `- **状态**: ❌ 无法获取工作区信息\n`;
+        diagnosticText += `- **错误**: ${error instanceof Error ? error.message : 'Unknown error'}\n\n`;
+      }
+    }
+
+    // Browser availability checks
+    if (includeBrowserCheck && diagnostics.connected && diagnostics.authentication && diagnostics.workspaceAccess) {
+      try {
+        // Get first workspace and check browsers
+        const workspaces = await this.roxyClient.getWorkspaces(1, 1);
+        if (workspaces.rows.length > 0) {
+          const firstWorkspace = workspaces.rows[0];
+          const browsers = await this.roxyClient.getBrowsers({
+            workspaceId: firstWorkspace.id,
+            page_index: 1,
+            page_size: 5,
+          });
+          
+          diagnosticText += `### 🖥️ 浏览器状态 / Browser Status\n`;
+          diagnosticText += `- **检查工作区 / Checked Workspace**: ${firstWorkspace.workspaceName} (ID: ${firstWorkspace.id})\n`;
+          diagnosticText += `- **可用浏览器 / Available Browsers**: ${browsers.total}\n`;
+          
+          if (browsers.rows.length > 0) {
+            diagnosticText += `- **浏览器示例 / Browser Examples**:\n`;
+            browsers.rows.slice(0, 3).forEach(browser => {
+              diagnosticText += `  - ${browser.windowName || 'Unnamed'} (${browser.os}) - Status: ${browser.status}\n`;
+            });
+          }
+          diagnosticText += '\n';
+        }
+      } catch (error) {
+        diagnosticText += `### 🖥️ 浏览器状态 / Browser Status\n`;
+        diagnosticText += `- **状态**: ⚠️ 无法检查浏览器状态\n`;
+        diagnosticText += `- **原因**: ${error instanceof Error ? error.message : 'Unknown error'}\n\n`;
+      }
+    }
+
+    // Error details
+    if (diagnostics.errors.length > 0) {
+      diagnosticText += `### ❌ 检测到的问题 / Detected Issues\n`;
+      diagnostics.errors.forEach((error, index) => {
+        diagnosticText += `${index + 1}. ${error}\n`;
+      });
+      diagnosticText += '\n';
+    }
+
+    // Recommendations
+    if (diagnostics.recommendations.length > 0) {
+      diagnosticText += `### 💡 建议操作 / Recommendations\n`;
+      diagnostics.recommendations.slice(0, 8).forEach((rec, index) => {
+        diagnosticText += `${index + 1}. ${rec}\n`;
+      });
+      if (diagnostics.recommendations.length > 8) {
+        diagnosticText += `... and ${diagnostics.recommendations.length - 8} more\n`;
+      }
+      diagnosticText += '\n';
+    }
+
+    // Verbose information
+    if (verbose) {
+      diagnosticText += `### 🔧 详细信息 / Detailed Information\n`;
+      diagnosticText += `- **API主机 / API Host**: ${this.roxyClient.config.apiHost}\n`;
+      diagnosticText += `- **超时设置 / Timeout**: ${this.roxyClient.config.timeout}ms\n`;
+      diagnosticText += `- **诊断时间 / Diagnosis Time**: ${new Date().toISOString()}\n\n`;
+    }
+
+    // Overall status
+    const overallStatus = diagnostics.connected && diagnostics.authentication;
+    diagnosticText += `### 📋 总体状态 / Overall Status\n`;
+    diagnosticText += `**${overallStatus ? '✅ 系统正常运行' : '❌ 系统存在问题'}** / `;
+    diagnosticText += `**${overallStatus ? 'System Operating Normally' : 'System Issues Detected'}**\n\n`;
+    
+    if (overallStatus) {
+      diagnosticText += `*系统已准备就绪，可以进行浏览器自动化操作。*\n`;
+      diagnosticText += `*System ready for browser automation operations.*`;
+    } else {
+      diagnosticText += `*请解决上述问题后重新运行诊断。*\n`;
+      diagnosticText += `*Please resolve the issues above and run diagnostics again.*`;
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: diagnosticText,
+        },
+      ],
+    };
+  }
+
+  private async handleListAccounts(args: any) {
+    const params: AccountListParams = {
+      workspaceId: args.workspaceId,
+      accountId: args.accountId,
+      page_index: args.pageIndex || 1,
+      page_size: args.pageSize || 15,
+    };
+
+    if (!params.workspaceId) {
+      throw new Error('workspaceId is required');
+    }
+
+    const data = await this.roxyClient.getAccounts(params);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${data.total} accounts in workspace ${params.workspaceId}:\n\n` +
+                data.rows.map(account =>
+                  `**${account.platformName}** (ID: ${account.id})\n` +
+                  `  - Username: ${account.platformUserName}\n` +
+                  `  - Platform URL: ${account.platformUrl}\n` +
+                  `  - Remarks: ${account.platformRemarks || 'N/A'}\n` +
+                  `  - Created: ${account.createTime}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleListLabels(args: any) {
+    const { workspaceId } = args;
+
+    if (!workspaceId) {
+      throw new Error('workspaceId is required');
+    }
+
+    const labels = await this.roxyClient.getLabels(workspaceId);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${labels.length} labels in workspace ${workspaceId}:\n\n` +
+                labels.map(label =>
+                  `**${label.name}** (ID: ${label.id})\n` +
+                  `  - Color: ${label.color}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleGetConnectionInfo(args: any) {
+    const { dirIds } = args;
+
+    const connections = await this.roxyClient.getConnectionInfo(dirIds);
+
+    if (connections.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: '⚠️ No opened browsers found.\n\nUse `roxy_open_browsers` to open browsers first.',
+          },
+        ],
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Found ${connections.length} opened browser(s):\n\n` +
+                connections.map(conn =>
+                  `**${conn.windowName || 'Unnamed'}** (${conn.dirId})\n` +
+                  `  - PID: ${conn.pid}\n` +
+                  `  - CDP WebSocket: \`${conn.ws}\`\n` +
+                  `  - HTTP Endpoint: \`${conn.http}\`\n` +
+                  `  - Core Version: ${conn.coreVersion}\n` +
+                  `  - Driver: ${conn.driver}`
+                ).join('\n\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleGetBrowserDetail(args: any) {
+    const { workspaceId, dirId } = args;
+
+    if (!workspaceId || !dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    const detail = await this.roxyClient.getBrowserDetail(workspaceId, dirId);
+
+    // Save cookie count before removing cookies to save tokens
+    const cookieCount = detail.cookie?.length || 0;
+
+    // Create a copy without cookies (cookies can be very large)
+    const { cookie, ...detailWithoutCookies } = detail;
+
+    // Create summary
+    const summary = `**Browser Details Summary**\n\n` +
+                   `**ID:** \`${detail.dirId}\`\n` +
+                   `**Name:** ${detail.windowName}\n` +
+                   `**Sort Number:** ${detail.windowSortNum}\n` +
+                   `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n` +
+                   `**OS:** ${detail.os} ${detail.osVersion}\n` +
+                   `**Core Version:** ${detail.coreVersion}\n` +
+                   `**Search Engine:** ${detail.searchEngine}\n` +
+                   `**Open Status:** ${detail.openStatus ? '✅ Opened' : '❌ Closed'}\n` +
+                   `**Cookies:** ${cookieCount} stored (excluded from response to save tokens)\n\n` +
+                   `**Full Details (JSON):**\n` +
+                   '```json\n' +
+                   JSON.stringify(detailWithoutCookies, null, 2) +
+                   '\n```';
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: summary,
+        },
+      ],
+    };
+  }
+
+  private async handleUpdateBrowser(args: any) {
+    const params: BrowserUpdateParams = args as BrowserUpdateParams;
+
+    if (!params.workspaceId || !params.dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    await this.roxyClient.updateBrowser(params);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Browser Updated Successfully**\n\n` +
+                `**Browser ID:** \`${params.dirId}\`\n` +
+                `**Workspace:** ${params.workspaceId}\n\n` +
+                `*Browser configuration has been updated.*`,
+        },
+      ],
+    };
+  }
+
+  private async handleRandomFingerprint(args: any) {
+    const { workspaceId, dirId } = args;
+
+    if (!workspaceId || !dirId) {
+      throw new Error('workspaceId and dirId are required');
+    }
+
+    await this.roxyClient.randomBrowserFingerprint(workspaceId, dirId);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Browser Fingerprint Randomized**\n\n` +
+                `**Browser ID:** \`${dirId}\`\n` +
+                `**Workspace:** ${workspaceId}\n\n` +
+                `*Browser fingerprint has been randomized. Restart the browser to apply changes.*`,
+        },
+      ],
+    };
+  }
+
+  private async handleClearLocalCache(args: any) {
+    const { dirIds } = args;
+
+    if (!dirIds || dirIds.length === 0) {
+      throw new Error('dirIds are required');
+    }
+
+    await this.roxyClient.clearBrowserLocalCache(dirIds);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Local Cache Cleared**\n\n` +
+                `**Browser Count:** ${dirIds.length}\n\n` +
+                `**Browser IDs:**\n` +
+                dirIds.map((id: string, index: number) => `  ${index + 1}. \`${id}\``).join('\n'),
+        },
+      ],
+    };
+  }
+
+  private async handleClearServerCache(args: any) {
+    const { workspaceId, dirIds } = args;
+
+    if (!workspaceId || !dirIds || dirIds.length === 0) {
+      throw new Error('workspaceId and dirIds are required');
+    }
+
+    await this.roxyClient.clearBrowserServerCache(workspaceId, dirIds);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ **Server Cache Cleared**\n\n` +
+                `**Workspace:** ${workspaceId}\n` +
+                `**Browser Count:** ${dirIds.length}\n\n` +
+                `**Browser IDs:**\n` +
+                dirIds.map((id: string, index: number) => `  ${index + 1}. \`${id}\``).join('\n'),
+        },
+      ],
+    };
+  }
+
+  async run() {
+    // Enhanced connection testing with diagnostics
+    console.error('🔗 Performing RoxyBrowser API diagnostics...');
+    const diagnostics = await this.roxyClient.performDiagnostics();
+    
+    if (!diagnostics.connected) {
       console.error('❌ Failed to connect to RoxyBrowser API');
-      console.error('   Please check:');
-      console.error('   1. RoxyBrowser is running');
-      console.error('   2. API is enabled in RoxyBrowser settings');
-      console.error('   3. ROXY_API_KEY environment variable is set');
-      console.error('   4. API host is correct (default: http://127.0.0.1:50000)');
+      console.error('\n📋 Diagnostic Results:');
+      diagnostics.errors.forEach(error => console.error(`   ❌ ${error}`));
+      
+      if (diagnostics.recommendations.length > 0) {
+        console.error('\n💡 Recommendations:');
+        diagnostics.recommendations.slice(0, 5).forEach((rec, index) => {
+          console.error(`   ${index + 1}. ${rec}`);
+        });
+      }
       process.exit(1);
     }
 
-    console.error('✅ Connected to RoxyBrowser API');
+    if (!diagnostics.authentication) {
+      console.error('❌ Authentication failed');
+      console.error('\n📋 Diagnostic Results:');
+      diagnostics.errors.forEach(error => console.error(`   ❌ ${error}`));
+      
+      if (diagnostics.recommendations.length > 0) {
+        console.error('\n💡 Recommendations:');
+        diagnostics.recommendations.slice(0, 5).forEach((rec, index) => {
+          console.error(`   ${index + 1}. ${rec}`);
+        });
+      }
+      process.exit(1);
+    }
+
+    console.error('✅ API Diagnostics Passed:');
+    console.error('   ✓ Connection established');
+    console.error('   ✓ Authentication successful');
+    console.error(`   ✓ Workspace access: ${diagnostics.workspaceAccess ? 'Yes' : 'Limited'}`);
+    
     console.error('🚀 Starting RoxyBrowser MCP Server...');
 
     const transport = new StdioServerTransport();

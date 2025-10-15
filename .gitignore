@@ -104,3 +104,6 @@ temp/
 
 # Test files
 test-*.js
+
+# Reference files
+api-documentation/

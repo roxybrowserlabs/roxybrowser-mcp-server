@@ -1,141 +1,367 @@
-# Claude Assistant Instructions for RoxyBrowser MCP
+# CLAUDE.md
 
-This document provides Claude with specific instructions for using the RoxyBrowser MCP server effectively.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Context
+## Project Overview
 
-RoxyBrowser is a fingerprint browser designed for managing multiple browser profiles. This MCP server provides Claude with the ability to:
-- Manage browser instances (open/close)
-- Retrieve Chrome DevTools Protocol (CDP) WebSocket endpoints
-- Work with browser profiles across different workspaces and projects
+RoxyBrowser MCP Server is a Model Context Protocol (MCP) server that provides AI assistants with browser automation capabilities through the RoxyBrowser fingerprint browser. The server acts as a bridge between AI assistants and RoxyBrowser's API, enabling browser lifecycle management and Chrome DevTools Protocol (CDP) endpoint generation for use with tools like playwright-mcp.
 
-## Available Tools
+## Development Commands
 
-### 1. `roxy_list_workspaces`
-Lists all available workspaces and their associated projects.
+### Build and Development
+```bash
+# Install dependencies
+npm install
 
-**Usage Pattern:**
-```
-Claude: "Let me check what workspaces are available"
-→ Use roxy_list_workspaces
-```
+# Build TypeScript to JavaScript
+npm run build
 
-**Returns:** List of workspaces with their projects, useful for finding the right workspace/project IDs.
+# Development mode with auto-rebuild
+npm run dev
 
-### 2. `roxy_list_browsers` 
-Lists browsers in a specific workspace/project.
+# Clean build artifacts
+npm run clean
 
-**Parameters:**
-- `workspaceId` (required): The workspace ID
-- `projectIds` (optional): Comma-separated project IDs to filter
-- `windowName` (optional): Filter by browser window name
-- `pageIndex` (optional): Page number for pagination
-- `pageSize` (optional): Number of results per page
-
-**Usage Pattern:**
-```
-Claude: "I need to see what browsers are available in workspace 6"
-→ Use roxy_list_browsers with workspaceId: 6
+# Build and publish to npm
+npm run npm-publish
 ```
 
-### 3. `roxy_open_browsers` ⭐ Primary Tool
-Opens multiple browsers and returns their CDP WebSocket endpoints.
+### Running the Server
+```bash
+# Start the compiled server
+npm start
 
-**Parameters:**
-- `workspaceId` (required): The workspace ID
-- `dirIds` (required): Array of browser directory IDs to open
-- `args` (optional): Browser startup arguments
-
-**Usage Pattern:**
-```
-Claude: "Open 3 browsers for Gmail automation"
-1. First use roxy_list_browsers to get available browser IDs
-2. Then use roxy_open_browsers with selected dirIds
-3. Extract WebSocket URLs from response for playwright-mcp
+# Or run directly from source (after build)
+node lib/index.js
 ```
 
-**Critical:** This tool returns CDP WebSocket endpoints that can be used with playwright-mcp for automation.
+### Important Build Notes
+- This is an **ESM (ES Module) project** (`"type": "module"` in package.json)
+- All imports must use `.js` extensions even in `.ts` files (e.g., `import { foo } from './bar.js'`)
+- TypeScript compiles to `lib/` directory (configured in tsconfig.json)
+- The entry point `lib/index.js` has shebang `#!/usr/bin/env node` for CLI execution
+- Published to npm as `@roxybrowser/openapi` with binary name `roxy-browser-mcp`
 
-### 4. `roxy_close_browsers`
-Closes multiple browsers by their directory IDs.
+## Architecture Overview
 
-**Parameters:**
-- `dirIds` (required): Array of browser directory IDs to close
+### Core Components
 
-**Usage Pattern:**
+1. **Main Server** (`src/index.ts`)
+   - MCP server implementation using `@modelcontextprotocol/sdk`
+   - Tool registration and request handling via `ListToolsRequestSchema` and `CallToolRequestSchema`
+   - Configuration management and API connectivity testing on startup
+   - Stdio transport for MCP client communication
+   - Error handling and graceful shutdown
+
+2. **RoxyClient** (`src/roxy-client.ts`)
+   - HTTP client for RoxyBrowser REST API using native fetch
+   - Authentication using API key in `token` header (not `Authorization`)
+   - Request/response handling with proper error types
+   - Batch operations for browsers (open/close/create) with concurrency limits
+   - Timeout handling via AbortController
+
+3. **Browser Creator** (`src/browser/browser-creator.ts`)
+   - Configuration builder for different complexity levels (Simple/Standard/Advanced)
+   - Validation and default application for browser configs
+   - Proxy assignment and batch operations with delays
+   - OS version compatibility checking and validation
+
+4. **Proxy Manager** (`src/proxy/proxy-manager.ts`)
+   - Proxy configuration validation and testing
+   - Multiple proxy formats support (URL, host:port, protocol://host:port)
+   - Proxy distribution strategies (round-robin, random)
+   - Statistics and filtering capabilities
+   - Related validator in `src/proxy/proxy-validator.ts`
+
+5. **Error Analyzer** (`src/utils/error-analyzer.ts`)
+   - Centralized error analysis and categorization
+   - Bilingual error messages (Chinese/English)
+   - Retry strategy determination
+   - Batch error analysis for multiple failures
+   - Troubleshooting guidance generation
+
+6. **Types** (`src/types.ts`)
+   - Comprehensive TypeScript definitions
+   - API request/response types (RoxyApiResponse, BrowserListResponse, etc.)
+   - Browser configuration interfaces (BrowserCreateConfig, ProxyInfo, FingerInfo)
+   - Error classes (ConfigError, RoxyApiError, BrowserCreationError)
+   - Error code mappings (ROXY_ERROR_MAP, NETWORK_ERROR_PATTERNS)
+
+### Browser Creation Complexity Levels
+
+The server supports three complexity levels for browser creation:
+
+1. **Simple** - Basic proxy configuration, minimal setup
+2. **Standard** - OS/version selection, window size, language, timezone
+3. **Advanced** - Complete control over fingerprints, user agents, platform accounts
+
+### Enhanced Error Handling System
+
+The server includes a comprehensive error handling and analysis system:
+
+**Error Types:**
+- **ConfigError**: Environment/configuration issues
+- **RoxyApiError**: Enhanced API errors with troubleshooting guidance
+- **BrowserCreationError**: Browser setup failures with retry capabilities
+
+**Key Features:**
+- **Error Code Mapping**: Complete RoxyBrowser API error code interpretation (0, 400, 401, 403, 404, 408, 409, 500, 502, 503, 504)
+- **Chinese/English Support**: Bilingual error messages and explanations
+- **Intelligent Analysis**: `ErrorAnalyzer` utility categorizes errors by type, severity, and provides actionable solutions
+- **Retry Logic**: Automatic retry for retriable errors with exponential backoff
+- **Network Pattern Detection**: Recognizes common network issues (ECONNREFUSED, ETIMEDOUT, etc.)
+- **Batch Error Analysis**: Aggregates and analyzes multiple errors to identify patterns
+
+**Error Categories:**
+- `network`: Connection and communication issues
+- `authentication`: API key and permission problems
+- `configuration`: Parameter validation and setup errors
+- `resource`: Missing workspaces, browsers, or conflicts
+- `server`: RoxyBrowser internal errors
+- `browser`: Browser lifecycle issues
+- `proxy`: Proxy configuration and connectivity
+
+**Diagnostic Tools:**
+- **System Diagnostics**: `roxy_system_diagnostics` tool for comprehensive health checks
+- **Enhanced Startup**: Detailed connectivity and authentication testing
+- **Troubleshooting Guidance**: Context-aware suggestions for resolving issues
+
+## Configuration Requirements
+
+### Environment Variables
+```bash
+# Required
+ROXY_API_KEY="your_api_key_from_roxybrowser"
+
+# Optional
+ROXY_API_HOST="http://127.0.0.1:50000"  # Default API endpoint
+ROXY_TIMEOUT="30000"                     # Request timeout in ms
 ```
-Claude: "Clean up by closing all opened browsers"
-→ Use roxy_close_browsers with the dirIds that were opened earlier
+
+### RoxyBrowser Setup
+1. Install and run RoxyBrowser application
+2. Enable API: RoxyBrowser → API → API配置 → 启用状态 = 启用
+3. Copy API Key from the settings
+4. Verify API port (default: 50000)
+
+## MCP Integration Patterns
+
+### Tool Implementation Pattern
+Each MCP tool follows this structure:
+1. Parameter validation using TypeScript interfaces
+2. Business logic delegation to service classes
+3. Formatted response with success/error details
+4. Consistent error handling and user feedback
+
+### Batch Operations
+The server implements intelligent batching for performance:
+- Browser opening: 5 concurrent operations (see `RoxyClient.openBrowsersBatch`)
+- Browser creation: 3 concurrent with 1s delays between batches (see `BrowserCreator.createBrowsersBatch`)
+- Proper error isolation and partial success handling
+- Uses Promise.allSettled for parallel operations to continue even when some fail
+
+### Response Formatting
+All tool responses use structured markdown format with:
+- Success/failure indicators (✅/❌)
+- Key information (Browser IDs, counts, configurations)
+- Actionable next steps
+- Example commands for playwright-mcp integration
+
+## Key Architectural Patterns
+
+### Error Handling Architecture
+The codebase uses a three-tier error handling approach:
+
+1. **Custom Error Classes** - Specialized errors with rich metadata:
+   - `ConfigError` - Configuration and environment issues
+   - `RoxyApiError` - API errors with code mapping, retry logic, and bilingual messages
+   - `BrowserCreationError` - Browser creation failures with context
+
+2. **Error Code Mapping** - `ROXY_ERROR_MAP` and `NETWORK_ERROR_PATTERNS` in types.ts provide:
+   - Error categorization (network/authentication/configuration/resource/server/browser/proxy)
+   - Severity levels (low/medium/high/critical)
+   - Retry strategies with backoff
+   - Bilingual descriptions
+
+3. **ErrorAnalyzer Utility** - Centralized analysis providing:
+   - Single error analysis with troubleshooting steps
+   - Batch error pattern detection
+   - Formatted output for user display
+   - Retry recommendations
+
+### Data Flow Pattern
 ```
+MCP Client Request
+  → Server Tool Handler (index.ts)
+    → RoxyClient HTTP Request
+      → RoxyBrowser API
+    ← RoxyApiResponse
+  ← Formatted Tool Response (markdown)
+```
+
+### Browser ID System
+RoxyBrowser uses `dirId` (directory ID) as the primary browser identifier:
+- Returned from browser creation
+- Required for open/close/update/delete operations
+- Different from workspace/project IDs
+- Stored in browser list responses
 
 ## Integration with Playwright MCP
 
-The primary value of RoxyBrowser MCP is providing CDP endpoints for playwright-mcp:
+Primary workflow:
+1. Use RoxyBrowser MCP to manage browser lifecycle (create/open)
+2. Extract CDP WebSocket endpoints from open operations
+3. Pass endpoints to playwright-mcp for automation using `--cdp-endpoint` flag
+4. Clean up browsers when automation completes (close/delete)
 
-```
-1. Use roxy_open_browsers → Get WebSocket URLs
-2. Use playwright-mcp with --cdp-endpoint flag
-3. Perform web automation with playwright tools
-4. Use roxy_close_browsers when done
-```
+Example CDP endpoint: `ws://127.0.0.1:62662/devtools/browser/58293891-bfb2-402b-b79a-8f37ed005402`
 
-**Example WebSocket URL:** `ws://127.0.0.1:62662/devtools/browser/58293891-bfb2-402b-b79a-8f37ed005402`
-
-## Best Practices
-
-### Workflow Order
-1. **Discovery:** Use `roxy_list_workspaces` to understand available resources
-2. **Selection:** Use `roxy_list_browsers` to find suitable browser profiles
-3. **Opening:** Use `roxy_open_browsers` to start browsers and get CDP endpoints
-4. **Automation:** Use playwright-mcp with the CDP endpoints
-5. **Cleanup:** Use `roxy_close_browsers` to close browsers when done
-
-### Resource Management
-- Always close browsers after automation tasks
-- Keep track of opened browser dirIds for proper cleanup
-- Consider system resources when opening multiple browsers
-
-### Error Handling
-- If browser opening fails, check if the profile exists and isn't already open
-- Verify workspace and project IDs exist before attempting operations
-- Handle partial failures gracefully when opening multiple browsers
-
-## Common Use Cases
-
-### Gmail Automation Workflow
-```
-1. "List workspaces to find Gmail project"
-2. "Show browsers in the Gmail workspace/project"  
-3. "Open 10 Gmail browser profiles"
-4. "Use the CDP endpoints with playwright for automation"
-5. "Close all browsers when email tasks are complete"
+**Integration Example:**
+```bash
+# Step 1: Open browser via RoxyBrowser MCP (returns CDP endpoint)
+# Step 2: Use endpoint with playwright-mcp
+npx @playwright/mcp@latest --cdp-endpoint "ws://127.0.0.1:62662/devtools/browser/xxx"
 ```
 
-### Browser Profile Management
+## Development Guidelines
+
+### Adding New Tools
+1. **Define Types** in `types.ts`:
+   - Tool parameter interface (e.g., `FooToolParams`)
+   - Tool response interface (e.g., `FooToolResponse`)
+   - API request/response types if needed
+
+2. **Add Tool Schema** to `TOOLS` array in `index.ts`:
+   - Name, description, and JSON schema for parameters
+   - Use descriptive parameter descriptions for AI context
+
+3. **Implement Handler** in the main switch statement (around line 600+):
+   ```typescript
+   case 'roxy_your_tool':
+     return await this.handleYourTool(params as YourToolParams);
+   ```
+
+4. **Add Handler Method** to `RoxyBrowserMCPServer` class:
+   - Use try-catch with ErrorAnalyzer for errors
+   - Format response as markdown text with ✅/❌ indicators
+   - Include next steps and usage examples
+
+5. **Add API Method** to `RoxyClient` if calling new RoxyBrowser endpoint:
+   - Use `makeRequest<T>()` private method
+   - Handle batch operations if needed
+   - Throw RoxyApiError on failures
+
+6. **Update Documentation** and test with `roxy_system_diagnostics`
+
+### Working with Error Analysis
+**Using the ErrorAnalyzer utility:**
+```typescript
+// Analyze single error
+const analysis = ErrorAnalyzer.analyzeError(error);
+const formatted = ErrorAnalyzer.formatErrorForDisplay(error);
+
+// Analyze batch errors
+const batchAnalysis = ErrorAnalyzer.analyzeBatchErrors(errorArray);
+const batchFormatted = ErrorAnalyzer.formatBatchAnalysisForDisplay(batchAnalysis);
 ```
-1. "Show all available browser profiles in workspace X"
-2. "Open specific browsers for testing"
-3. "Close unused browser instances"
-```
 
-## Important Notes
+**Key Error Analysis Features:**
+- **Error Classification**: Automatically categorizes errors by type and severity
+- **Retry Detection**: Identifies which errors can be safely retried
+- **Troubleshooting**: Provides context-aware troubleshooting steps
+- **Pattern Recognition**: Detects common error patterns in network issues
+- **Bilingual Support**: Returns both Chinese and English explanations
 
-- RoxyBrowser MCP focuses on browser lifecycle management
-- Actual web automation should be done through playwright-mcp
-- Always verify API connectivity before attempting operations
-- Browser opening can take time, be patient with responses
-- Each browser gets a unique CDP WebSocket endpoint
+### Error Handling Best Practices
+- Use specific error types for different failure modes
+- Include actionable troubleshooting information
+- Log warnings for partial failures
+- Preserve context for debugging
 
-## Environment Requirements
+### Available MCP Tools
 
-The MCP server requires:
-- `ROXY_API_KEY`: Your RoxyBrowser API key
-- `ROXY_API_HOST`: RoxyBrowser API endpoint (default: http://127.0.0.1:50000)
-- RoxyBrowser application running with API enabled
+**Workspace & Project Management:**
+- `roxy_list_workspaces` - List all workspaces and projects
+- `roxy_list_accounts` - Get platform accounts/credentials in workspace
+- `roxy_list_labels` - Get browser labels in workspace
+
+**Browser Management:**
+- `roxy_list_browsers` - List browsers with filtering options
+- `roxy_get_browser_detail` - Get detailed information for a specific browser
+- `roxy_create_browser_simple` - Create browser with basic configuration
+- `roxy_create_browser_standard` - Create browser with standard options
+- `roxy_create_browser_advanced` - Create browser with full control
+- `roxy_update_browser` - Update/modify existing browser configuration
+- `roxy_delete_browsers` - Delete browsers permanently
+
+**Browser Operations:**
+- `roxy_open_browsers` - Open browsers and get CDP endpoints
+- `roxy_close_browsers` - Close opened browsers
+- `roxy_get_connection_info` - Get CDP endpoints and PIDs for opened browsers
+
+**Browser Maintenance:**
+- `roxy_random_fingerprint` - Randomize browser fingerprint
+- `roxy_clear_local_cache` - Clear local browser cache
+- `roxy_clear_server_cache` - Clear server-side browser cache
+
+**Utilities:**
+- `roxy_validate_proxy_config` - Validate proxy configuration
+- `roxy_system_diagnostics` - Comprehensive system health check and diagnostics
+  - Tests API connectivity, authentication, workspace access
+  - Checks browser availability and status
+  - Provides detailed troubleshooting recommendations
+  - Supports verbose mode for detailed information
+
+**Error Analysis Features:**
+- All tools now provide enhanced error responses with:
+  - Bilingual error messages (Chinese/English)
+  - Error categorization and severity assessment
+  - Specific troubleshooting steps
+  - Retry recommendations when applicable
+  - Related error pattern identification
+
+## API Integration Notes
+
+The RoxyBrowser API uses:
+- `token` header for authentication (not Authorization)
+- Numeric response codes (0 = success)
+- Workspace/Project hierarchical organization
+- Directory IDs (dirId) for browser identification
+
+Key endpoints:
+- `/browser/workspace` - List workspaces and projects
+- `/browser/account` - Get platform accounts/credentials
+- `/browser/label` - Get browser labels
+- `/browser/list_v3` - List browsers with filtering
+- `/browser/detail` - Get detailed browser information
+- `/browser/open` - Open single browser
+- `/browser/close` - Close single browser
+- `/browser/connection_info` - Get connection info for opened browsers
+- `/browser/create` - Create new browser
+- `/browser/mdf` - Update/modify browser
+- `/browser/delete` - Delete browsers permanently
+- `/browser/random_env` - Randomize browser fingerprint
+- `/browser/clear_local_cache` - Clear local browser cache
+- `/browser/clear_server_cache` - Clear server browser cache
+
+## Testing and Validation
+
+Connection testing happens at startup (in `main()` function):
+1. API connectivity verification via `/browser/workspace`
+2. Authentication validation (checks for valid token)
+3. Graceful failure with helpful error messages from ErrorAnalyzer
+
+For development, verify:
+1. RoxyBrowser application is running
+2. API is enabled in settings (RoxyBrowser → API → API配置 → 启用状态 = 启用)
+3. Network connectivity to localhost:50000 (or custom ROXY_API_HOST)
+4. API key is valid and not expired
+5. Use `roxy_system_diagnostics` tool for comprehensive health checks
 
 ## Security Considerations
 
-- API keys should be handled securely
+- API keys are passed in environment variables only
+- No credentials stored in code or logs
 - CDP endpoints provide full browser control
+- Consider network security for WebSocket connections
 - Only use trusted browser profiles for automation
-- Consider network security when accessing WebSocket endpoints

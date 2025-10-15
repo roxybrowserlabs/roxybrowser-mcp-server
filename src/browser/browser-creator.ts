@@ -9,7 +9,6 @@ import {
   BrowserCreateSimpleParams,
   BrowserCreateStandardParams,
   BrowserCreateAdvancedParams,
-  BrowserCreateTemplateParams,
   BrowserCreateResult,
   BrowserCreateBatchResult,
   ProxyInfo,
@@ -17,6 +16,7 @@ import {
   WindowPlatformInfo,
   BrowserOS,
   CoreVersion,
+  LATEST_CORE_VERSION,
   BrowserCreationError,
 } from '../types.js';
 
@@ -197,7 +197,7 @@ export class BrowserCreator {
     const defaultConfig: Partial<BrowserCreateConfig> = {
       os: 'Windows',
       osVersion: '11',
-      coreVersion: '125' as CoreVersion,
+      coreVersion: LATEST_CORE_VERSION,
       searchEngine: 'Google',
       
       // Default fingerprint settings
@@ -273,38 +273,6 @@ export class BrowserCreator {
     }
 
     return result;
-  }
-
-  /**
-   * Create multiple browser configuration objects from template parameters
-   */
-  static buildConfigsFromTemplate(
-    params: BrowserCreateTemplateParams,
-    templateConfig: Partial<BrowserCreateConfig>
-  ): BrowserCreateConfig[] {
-    const count = params.count || 1;
-    const configs: BrowserCreateConfig[] = [];
-
-    for (let i = 0; i < count; i++) {
-      const baseConfig: BrowserCreateConfig = {
-        workspaceId: params.workspaceId,
-        projectId: params.projectId,
-        windowName: this.generateBrowserName(params.namePrefix, i),
-        ...templateConfig,
-        ...params.customConfig,
-      };
-
-      // Apply defaults and validate
-      const config = this.applyDefaults(baseConfig);
-      configs.push(config);
-    }
-
-    // Assign proxies if provided
-    if (params.proxyList && params.proxyList.length > 0) {
-      return this.assignProxiesToConfigs(configs, params.proxyList);
-    }
-
-    return configs;
   }
 
   /**
