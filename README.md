@@ -5,6 +5,8 @@
 > **⚠️ BETA VERSION NOTICE**
 >
 > This project is currently in **beta testing and active development**. While we strive for stability, please exercise caution when using this tool in production environments or with critical assets. We recommend closely monitoring software and browser operations when using it with MCP clients to avoid unnecessary losses.
+>
+>For more details, please refer to: [RoxyBrowser Now Supports MCP — AI Can Finally Do the Work for You](https://roxybrowser.com/blog/roxybrowser-mcp-integration)
 
 A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.com/) that provides AI assistants with the ability to manage browser instances and obtain Chrome DevTools Protocol (CDP) WebSocket endpoints for automation.
 

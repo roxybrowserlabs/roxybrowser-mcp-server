@@ -5,6 +5,8 @@
 > **⚠️ Beta 测试版声明**
 >
 > 本项目目前处于 **Beta 测试和开发阶段**。虽然我们力求稳定性，但请在重要环境或关键资产中谨慎使用。我们建议在 MCP 客户端使用时，密切监控软件和浏览器操作，从而避免不必要的损失。
+>
+> 关于 RoxyBrowser MCP 的更多功能介绍，请访问：[RoxyBrowser 支持 MCP 协议：让 AI 替你干活儿!](https://roxybrowser.com/zh/blog/roxybrowser-mcp-integration)
 
 一个为 [RoxyBrowser](https://www.roxybrowser.com/) 设计的模型上下文协议（MCP）服务器，为 AI 助手提供管理浏览器实例和获取 Chrome DevTools Protocol (CDP) WebSocket 端点的能力。
 
