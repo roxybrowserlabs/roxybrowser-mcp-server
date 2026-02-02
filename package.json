@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "type": "module",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roxybrowserlabs/roxybrowser-mcp-server"
+    "url": "git+https://github.com/roxybrowserlabs/roxybrowser-mcp-server.git"
   },
   "publishConfig": {
     "access": "public",
