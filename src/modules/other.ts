@@ -1,4 +1,4 @@
-import { request } from '../utils'
+import { request } from '../utils/index.js'
 
 class ListWorkspaces {
   name = 'roxy_list_workspaces'

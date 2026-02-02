@@ -1,4 +1,27 @@
-import { request } from '../utils'
+import { request } from '../utils/index.js'
+
+const channelList = [
+  {
+      "label": "IPRust.io",
+      "type": "checkChannel",
+      "value": "http://iprust.io/ip.json"
+  },
+  {
+      "label": "IP-API",
+      "type": "checkChannel",
+      "value": "http://pro.ip-api.com/json?key=c1ulk9X5j8NKqTV"
+  },
+  {
+      "label": "IP123.in",
+      "type": "checkChannel",
+      "value": "http://ip123.in/ip.json"
+  },
+  {
+      "label": "IPinfo",
+      "type": "checkChannel",
+      "value": "http://ipinfo.io"
+  }
+]
 
 /** 代理列表 */
 export class ProxyList {
@@ -12,11 +35,11 @@ export class ProxyList {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       id: {
         type: 'number',
-        description: 'Filter by proxy ID (optional)',
+        description: 'Filter by proxy ID',
       },
       pageIndex: {
         type: 'number',
@@ -103,7 +126,7 @@ export class ProxyStore {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       pageIndex: {
         type: 'number',
@@ -186,46 +209,46 @@ class CreateProxy {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       protocol: {
         type: 'string',
         enum: ['HTTP', 'HTTPS', 'SOCKS5', 'SSH'],
-        description: 'Proxy protocol type (required)',
+        description: 'Proxy protocol type',
       },
       host: {
         type: 'string',
-        description: 'Proxy host/IP address (required)',
+        description: 'Proxy host/IP address',
       },
       port: {
         type: 'string',
-        description: 'Proxy port (required)',
+        description: 'Proxy port',
       },
       proxyUserName: {
         type: 'string',
-        description: 'Proxy username (optional)',
+        description: 'Proxy username',
       },
       proxyPassword: {
         type: 'string',
-        description: 'Proxy password (optional)',
+        description: 'Proxy password',
       },
       ipType: {
         type: 'string',
         enum: ['IPV4', 'IPV6'],
-        description: 'IP type (optional, default: IPV4)',
+        description: 'IP type (default: IPV4)',
       },
       checkChannel: {
         type: 'string',
-        enum: ['IPRust.io', 'IP-API', 'IP123.in'],
-        description: 'IP detection channel (optional)',
+        enum: channelList.map(item => item.label),
+        description: 'IP detection channel (default: IP123.in)',
       },
       refreshUrl: {
         type: 'string',
-        description: 'Refresh URL for dynamic proxies (optional)',
+        description: 'Refresh URL for dynamic proxies',
       },
       remark: {
         type: 'string',
-        description: 'Proxy remark/notes (optional)',
+        description: 'Proxy remark/notes',
       },
     },
     required: ['workspaceId', 'protocol', 'host', 'port'],
@@ -251,10 +274,12 @@ class CreateProxy {
       }
     }
 
-    const { workspaceId, ...proxyData } = params
+    const { workspaceId, ipType = 'IPV4', checkChannel = 'IP123.in', ...proxyData } = params
     const proxyParams = {
       workspaceId,
       ...proxyData,
+      ipType,
+      checkChannel: checkChannel ? channelList.find(item => item.label === checkChannel)?.value : null,
       proxyCategory: params.protocol,
     }
 
@@ -304,16 +329,16 @@ class BatchCreateProxies {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
-      checkChannel: {
-        type: 'string',
-        enum: ['IPRust.io', 'IP-API', 'IP123.in'],
-        description: 'Default IP detection channel for all proxies (optional)',
-      },
+      // checkChannel: {
+      //   type: 'string',
+      //   enum: channelList.map(item => item.label),
+      //   description: 'Default IP detection channel for all proxies',
+      // },
       proxyList: {
         type: 'array',
-        description: 'Array of proxy configurations (required)',
+        description: 'Array of proxy configurations',
         items: {
           type: 'object',
           properties: {
@@ -323,7 +348,7 @@ class BatchCreateProxies {
             proxyUserName: { type: 'string' },
             proxyPassword: { type: 'string' },
             ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
-            checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
+            checkChannel: { type: 'string', enum: channelList.map(item => item.label) },
             refreshUrl: { type: 'string' },
             remark: { type: 'string' },
           },
@@ -354,11 +379,15 @@ class BatchCreateProxies {
       }
     }
 
-    const { workspaceId, checkChannel, proxyList } = params
+    const { workspaceId, proxyList } = params
+
+    proxyList.forEach((item: any) => {
+      item.checkChannel = item.checkChannel ? channelList.find((channel: any) => channel.label === item.checkChannel)?.value : null
+    })
 
     const result = await request('/proxy/batch_create', {
       method: 'POST',
-      body: JSON.stringify({ workspaceId, checkChannel, proxyList }),
+      body: JSON.stringify({ workspaceId, proxyList }),
     })
 
     let text = ''
@@ -396,11 +425,11 @@ class DetectProxy {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       id: {
         type: 'number',
-        description: 'Proxy ID to detect (required)',
+        description: 'Proxy ID to detect',
       },
     },
     required: ['workspaceId', 'id'],
@@ -433,17 +462,36 @@ class DetectProxy {
       body: JSON.stringify({ workspaceId, id }),
     })
 
+    
+
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to detect proxy:**\n\n error message: ${result.msg}`
     }
     else {
-      text = `✅ **Proxy Detection Started**
+      const data = result.data;
+      // checkStatus: 0, // 0 未检测 1 检测成功 2 检测失败
+      // lastIp: '',
+      // lastCity: '',
+      // lastCountry: '',
+      // timezone: '',
+      if (data) {
+        text = `✅ **Proxy Detection ${data.checkStatus === 1 ? 'Success' : data.checkStatus === 2 ? 'Failed' : ''}**
+
+**ip address:** ${data.lastIp}
+**country:** ${data.lastCountry}
+**city:** ${data.lastCity}
+**timezone:** ${data.timezone ? data.timezone : 'N/A'}
+`
+      } else {
+text = `✅ **Proxy Detection Started**
 
 **Proxy ID:** ${params.id}
 **Workspace:** ${params.workspaceId}
 
-*Proxy detection is in progress. This may take a few seconds. Use \`roxy_list_proxies\` | \`roxy_store_proxies\` to check the updated status.*`
+*Proxy detection is in progress. This may take a few seconds. Use \`roxy_list_proxies\` | \`roxy_store_proxies\` to check the updated status.*
+`
+      }
     }
 
     return {
@@ -465,50 +513,50 @@ class ModifyProxy {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       id: {
         type: 'number',
-        description: 'Proxy ID to modify (required)',
+        description: 'Proxy ID to modify',
       },
       protocol: {
         type: 'string',
         enum: ['HTTP', 'HTTPS', 'SOCKS5', 'SSH'],
-        description: 'Proxy protocol type (optional)',
+        description: 'Proxy protocol type',
       },
       host: {
         type: 'string',
-        description: 'Proxy host/IP address (optional)',
+        description: 'Proxy host/IP address',
       },
       port: {
         type: 'string',
-        description: 'Proxy port (optional)',
+        description: 'Proxy port',
       },
       proxyUserName: {
         type: 'string',
-        description: 'Proxy username (optional)',
+        description: 'Proxy username',
       },
       proxyPassword: {
         type: 'string',
-        description: 'Proxy password (optional)',
+        description: 'Proxy password',
       },
       ipType: {
         type: 'string',
         enum: ['IPV4', 'IPV6'],
-        description: 'IP type (optional)',
+        description: 'IP type',
       },
       checkChannel: {
         type: 'string',
-        enum: ['IPRust.io', 'IP-API', 'IP123.in'],
-        description: 'IP detection channel (optional)',
+        enum: channelList.map(item => item.label),
+        description: 'IP detection channel',
       },
       refreshUrl: {
         type: 'string',
-        description: 'Refresh URL for dynamic proxies (optional)',
+        description: 'Refresh URL for dynamic proxies',
       },
       remark: {
         type: 'string',
-        description: 'Proxy remark/notes (optional)',
+        description: 'Proxy remark/notes',
       },
     },
     required: ['workspaceId', 'id'],
@@ -534,10 +582,11 @@ class ModifyProxy {
       }
     }
 
-    const { workspaceId, ...proxyData } = params
+    const { workspaceId, checkChannel = 'IPRust.io', ...proxyData } = params
     const proxyParams = {
       workspaceId,
       ...proxyData,
+      checkChannel: checkChannel ? channelList.find(item => item.label === checkChannel)?.value : null,
       proxyCategory: params.protocol,
     }
 
@@ -586,12 +635,12 @@ class DeleteProxies {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       ids: {
         type: 'array',
         items: { type: 'number' },
-        description: 'Array of proxy IDs to delete (required)',
+        description: 'Array of proxy IDs to delete',
       },
     },
     required: ['workspaceId', 'ids'],
@@ -651,75 +700,75 @@ ${params.ids.map((id: number, index: number) => `  ${index + 1}. ${id}`).join('\
   }
 }
 
-class GetDetectChannels {
-  name = 'roxy_get_detect_channels'
-  description = 'Get available IP detection channels'
-  inputSchema = {
-    type: 'object',
-    properties: {
-      workspaceId: {
-        type: 'number',
-        description: 'Workspace ID (required)',
-      },
-    },
-    required: ['workspaceId'],
-  }
+// class GetDetectChannels {
+//   name = 'roxy_get_detect_channels'
+//   description = 'Get available IP detection channels'
+//   inputSchema = {
+//     type: 'object',
+//     properties: {
+//       workspaceId: {
+//         type: 'number',
+//         description: 'Workspace ID',
+//       },
+//     },
+//     required: ['workspaceId'],
+//   }
 
-  get schema() {
-    return {
-      name: this.name,
-      description: this.description,
-      inputSchema: this.inputSchema,
-    }
-  }
+//   get schema() {
+//     return {
+//       name: this.name,
+//       description: this.description,
+//       inputSchema: this.inputSchema,
+//     }
+//   }
 
-  async handle(params: any) {
-    if (!params.workspaceId) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: '❌ **Failed to get detect channels:**\n\n workspaceId is required',
-          },
-        ],
-      }
-    }
+//   async handle(params: any) {
+//     if (!params.workspaceId) {
+//       return {
+//         content: [
+//           {
+//             type: 'text',
+//             text: '❌ **Failed to get detect channels:**\n\n workspaceId is required',
+//           },
+//         ],
+//       }
+//     }
 
-    const searchParams = new URLSearchParams()
-    searchParams.append('workspaceId', params.workspaceId.toString())
+//     const searchParams = new URLSearchParams()
+//     searchParams.append('workspaceId', params.workspaceId.toString())
 
-    const result = await request(`/proxy/detect_channel?${searchParams}`, {
-      method: 'GET',
-    })
+//     const result = await request(`/proxy/detect_channel?${searchParams}`, {
+//       method: 'GET',
+//     })
 
-    const data = result.data
+//     const data = result.data
 
-    let text = ''
-    if (result.code !== 0) {
-      text = `❌ **Failed to get detect channels:**\n\n error message: ${result.msg}`
-    }
-    else {
-      const channelsText = data.checkChannel && data.checkChannel.length > 0
-        ? data.checkChannel.map((channel: any) => `- **${channel.label}** (${channel.value})`).join('\n')
-        : 'No detect channels available'
+//     let text = ''
+//     if (result.code !== 0) {
+//       text = `❌ **Failed to get detect channels:**\n\n error message: ${result.msg}`
+//     }
+//     else {
+//       const channelsText = data.checkChannel && data.checkChannel.length > 0
+//         ? data.checkChannel.map((channel: any) => `- **${channel.label}** (${channel.value})`).join('\n')
+//         : 'No detect channels available'
 
-      text = `📡 **Available IP Detection Channels**
+//       text = `📡 **Available IP Detection Channels**
 
-${channelsText}
+// ${channelsText}
 
-*These channels are used to detect proxy IP information (location, ISP, etc.).*`
-    }
+// *These channels are used to detect proxy IP information (location, ISP, etc.).*`
+//     }
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text,
-        },
-      ],
-    }
-  }
-}
+//     return {
+//       content: [
+//         {
+//           type: 'text',
+//           text,
+//         },
+//       ],
+//     }
+//   }
+// }
 
 export const proxyList = new ProxyList()
 export const proxyStore = new ProxyStore()
@@ -728,4 +777,4 @@ export const batchCreateProxies = new BatchCreateProxies()
 export const detectProxy = new DetectProxy()
 export const modifyProxy = new ModifyProxy()
 export const deleteProxies = new DeleteProxies()
-export const getDetectChannels = new GetDetectChannels()
+// export const getDetectChannels = new GetDetectChannels()

@@ -1,5 +1,5 @@
-import { request } from '../utils'
-import { proxyList, proxyStore } from './proxy'
+import { request } from '../utils/index.js'
+import { proxyList, proxyStore } from './proxy.js'
 
 class CreateBrowser {
   name = 'roxy_create_browser'

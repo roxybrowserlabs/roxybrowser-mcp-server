@@ -13,10 +13,10 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
-import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account'
-import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser'
-import { healthCheck, listWorkspaces } from './modules/other'
-import { batchCreateProxies, createProxy, deleteProxies, detectProxy, getDetectChannels, modifyProxy, proxyList, proxyStore } from './modules/proxy'
+import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account.js'
+import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
+import { healthCheck, listWorkspaces } from './modules/other.js'
+import { batchCreateProxies, createProxy, deleteProxies, detectProxy, getDetectChannels, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
 import { ConfigError } from './types.js'
 import { ErrorAnalyzer } from './utils/error-analyzer.js'
 
