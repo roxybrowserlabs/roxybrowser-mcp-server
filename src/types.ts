@@ -1,6 +1,6 @@
 /**
  * RoxyBrowser MCP Server Types
- * 
+ *
  * TypeScript type definitions for RoxyBrowser API and MCP server functionality
  */
 
@@ -8,346 +8,698 @@
 
 /** Base API response structure */
 export interface RoxyApiResponse<T = unknown> {
-  code: number;
-  msg: string;
-  data?: T;
+  code: number
+  msg: string
+  data?: T
 }
 
 /** Workspace project details */
 export interface ProjectDetails {
-  projectId: number;
-  projectName: string;
+  projectId: number
+  projectName: string
 }
 
 /** Workspace information */
 export interface Workspace {
-  id: number;
-  workspaceName: string;
-  project_details: ProjectDetails[];
+  id: number
+  workspaceName: string
+  project_details: ProjectDetails[]
 }
 
 /** Paginated workspace response */
 export interface WorkspaceListResponse {
-  total: number;
-  rows: Workspace[];
+  total: number
+  rows: Workspace[]
 }
 
 /** Browser open result (single browser) */
 export interface BrowserOpenResult {
-  ws: string;           // WebSocket CDP endpoint
-  http: string;         // HTTP endpoint  
-  coreVersion: string;  // Browser core version
-  driver: string;       // WebDriver path
-  sortNum: number;      // Window sort number
-  windowName: string;   // Window name
-  windowRemark: string; // Window remark
-  pid: number;          // Process ID
-  dirId?: string;       // Browser directory ID
+  /**
+   * WebSocket CDP endpoint
+   */
+  ws: string
+  http: string /**
+                * HTTP endpoint
+                */
+  coreVersion: string /**
+                       * Browser core version
+                       */
+  driver: string /**
+                  * WebDriver path
+                  */
+  sortNum: number /**
+                   * Window sort number
+                   */
+  windowName: string /**
+                      * Window name
+                      */
+  windowRemark: string /**
+                        * Window remark
+                        */
+  pid: number /**
+               * Process ID
+               */
+  /**
+   * Browser directory ID
+   */
+  dirId?: string
 }
 
 /** Browser list item */
 export interface BrowserListItem {
-  dirId: string;        // Browser directory ID
-  workspaceId: number;  // Workspace ID
-  projectId: number;    // Project ID
-  windowName: string;   // Window name
-  windowRemark: string; // Window remark
-  sortNum: number;      // Window sort number
-  os: string;           // Operating system
-  status: string;       // Browser status
+  dirId: string /**
+                 * Browser directory ID
+                 */
+  workspaceId: number /**
+                       * Workspace ID
+                       */
+  projectId: number /**
+                     * Project ID
+                     */
+  windowName: string /**
+                      * Window name
+                      */
+  windowRemark: string /**
+                        * Window remark
+                        */
+  sortNum: number /**
+                   * Window sort number
+                   */
+  os: string /**
+              * Operating system
+              */
+  /**
+   * Browser status
+   */
+  status: string
   // ... other fields from API
 }
 
 /** Paginated browser list response */
 export interface BrowserListResponse {
-  total: number;
-  rows: BrowserListItem[];
+  total: number
+  rows: BrowserListItem[]
 }
 
 /** Browser list query parameters */
 export interface BrowserListParams {
-  workspaceId: number;
-  dirIds?: string;      // Comma-separated browser IDs
-  windowName?: string;  // Browser window name
-  sortNums?: string;    // Comma-separated sort numbers
-  os?: string;          // Operating system
-  projectIds?: string;  // Comma-separated project IDs
-  windowRemark?: string; // Window remark
-  page_index?: number;  // Page index (default: 1)
-  page_size?: number;   // Page size (default: 15)
+  workspaceId: number
+  dirIds?: string /**
+                   * Comma-separated browser IDs
+                   */
+  windowName?: string /**
+                       * Browser window name
+                       */
+  sortNums?: string /**
+                     * Comma-separated sort numbers
+                     */
+  os?: string /**
+               * Operating system
+               */
+  projectIds?: string /**
+                       * Comma-separated project IDs
+                       */
+  windowRemark?: string /**
+                         * Window remark
+                         */
+  page_index?: number /**
+                       * Page index (default: 1)
+                       */
+  /**
+   * Page size (default: 15)
+   */
+  page_size?: number
 }
 
 /** Browser open parameters */
 export interface BrowserOpenParams {
-  workspaceId: number;
-  dirId: string;        // Browser directory ID
-  args?: string[];      // Browser startup arguments
+  workspaceId: number
+  dirId: string /**
+                 * Browser directory ID
+                 */
+  /**
+   * Browser startup arguments
+   */
+  args?: string[]
 }
 
 /** Browser close parameters */
 export interface BrowserCloseParams {
-  dirId: string;        // Browser directory ID
+  /**
+   * Browser directory ID
+   */
+  dirId: string
 }
 
 // ========== MCP Tool Types ==========
 
 /** Workspace list tool response */
 export interface WorkspaceListToolResponse {
-  workspaces: Workspace[];
-  total: number;
+  workspaces: Workspace[]
+  total: number
 }
 
 /** Browser list tool parameters */
 export interface BrowserListToolParams {
-  workspaceId: number;
-  projectIds?: string;  // Comma-separated project IDs
-  windowName?: string;
-  pageIndex?: number;
-  pageSize?: number;
+  workspaceId: number
+  projectIds?: string /**
+                       * Comma-separated project IDs
+                       */
+  windowName?: string
+  pageIndex?: number
+  pageSize?: number
 }
 
 /** Browser list tool response */
 export interface BrowserListToolResponse {
-  browsers: BrowserListItem[];
-  total: number;
-  workspaceId: number;
+  browsers: BrowserListItem[]
+  total: number
+  workspaceId: number
 }
 
 /** Browser open tool parameters */
 export interface BrowserOpenToolParams {
-  workspaceId: number;
-  dirIds: string[];     // Array of browser directory IDs
-  args?: string[];      // Optional browser startup arguments
+  workspaceId: number
+  dirIds: string[] /**
+                    * Array of browser directory IDs
+                    */
+  /**
+   * Optional browser startup arguments
+   */
+  args?: string[]
 }
 
 /** Browser open tool response */
 export interface BrowserOpenToolResponse {
   results: {
-    dirId: string;
-    ws: string;         // CDP WebSocket endpoint
-    http: string;       // HTTP endpoint  
-    pid: number;
-    success: boolean;
-    error?: string;
-  }[];
-  total: number;
-  successCount: number;
-  failureCount: number;
+    dirId: string
+    ws: string /**
+                * CDP WebSocket endpoint
+                */
+    http: string /**
+                  * HTTP endpoint
+                  */
+    pid: number
+    success: boolean
+    error?: string
+  }[]
+  total: number
+  successCount: number
+  failureCount: number
 }
 
 /** Browser close tool parameters */
 export interface BrowserCloseToolParams {
-  dirIds: string[];     // Array of browser directory IDs
+  /**
+   * Array of browser directory IDs
+   */
+  dirIds: string[]
 }
 
 /** Browser close tool response */
 export interface BrowserCloseToolResponse {
   results: {
-    dirId: string;
-    success: boolean;
-    error?: string;
-  }[];
-  total: number;
-  successCount: number;
-  failureCount: number;
+    dirId: string
+    success: boolean
+    error?: string
+  }[]
+  total: number
+  successCount: number
+  failureCount: number
 }
 
 /** Browser delete tool parameters */
 export interface BrowserDeleteToolParams {
-  workspaceId: number;  // Workspace ID
-  dirIds: string[];     // Array of browser directory IDs to delete
+  workspaceId: number /**
+                       * Workspace ID
+                       */
+  /**
+   * Array of browser directory IDs to delete
+   */
+  dirIds: string[]
 }
 
 /** Browser delete tool response */
 export interface BrowserDeleteToolResponse {
   results: {
-    dirId: string;
-    success: boolean;
-    error?: string;
-  }[];
-  successCount: number;
-  failureCount: number;
-  message: string;
+    dirId: string
+    success: boolean
+    error?: string
+  }[]
+  successCount: number
+  failureCount: number
+  message: string
 }
 
 // ========== Client Configuration ==========
 
 /** RoxyBrowser client configuration */
 export interface RoxyClientConfig {
-  apiHost: string;      // RoxyBrowser API host (default: http://127.0.0.1:50000)
-  apiKey: string;       // RoxyBrowser API key
-  timeout?: number;     // Request timeout in milliseconds (default: 30000)
+  apiHost: string /**
+                   * RoxyBrowser API host (default: http://127.0.0.1:50000)
+                   */
+  apiKey: string /**
+                  * RoxyBrowser API key
+                  */
+  /**
+   * Request timeout in milliseconds (default: 30000)
+   */
+  timeout?: number
 }
 
 // ========== Browser Creation Types ==========
 
 /** Browser operating system types */
-export type BrowserOS = 'Windows' | 'macOS' | 'Linux' | 'IOS' | 'Android';
+export type BrowserOS = 'Windows' | 'macOS' | 'Linux' | 'IOS' | 'Android'
 
 /** Browser core versions */
-export type CoreVersion = '140' | '138' | '137' | '136' | '135' | '133' | '130' | '125' | '117' | '109';
+export type CoreVersion = '140' | '138' | '137' | '136' | '135' | '133' | '130' | '125' | '117' | '109'
 
 /** Latest/recommended browser core version */
-export const LATEST_CORE_VERSION: CoreVersion = '140';
+export const LATEST_CORE_VERSION: CoreVersion = '140'
 
 /** Search engine options */
-export type SearchEngine = 'Google' | 'Microsoft Bing' | 'Yahoo' | 'Yandex' | 'DuckDuckGo';
+export type SearchEngine = 'Google' | 'Microsoft Bing' | 'Yahoo' | 'Yandex' | 'DuckDuckGo'
 
 /** Window platform information */
 export interface WindowPlatformInfo {
-  platformUrl?: string;         // Business platform URL
-  platformUserName?: string;    // Platform account
-  platformPassword?: string;    // Platform password  
-  platformEfa?: string;         // EFA value
-  platformRemarks?: string;     // Platform remarks
+  platformUrl?: string /**
+                        * Business platform URL
+                        */
+  platformUserName?: string /**
+                             * Platform account
+                             */
+  platformPassword?: string /**
+                             * Platform password
+                             */
+  platformEfa?: string /**
+                        * EFA value
+                        */
+  /**
+   * Platform remarks
+   */
+  platformRemarks?: string
 }
 
 /** Proxy configuration details */
 export interface ProxyInfo {
-  proxyMethod?: 'custom' | 'choose' | 'api';                    // Proxy method
-  proxyCategory?: 'noproxy' | 'HTTP' | 'HTTPS' | 'SOCKS5' | 'SSH'; // Proxy type
-  ipType?: 'IPV4' | 'IPV6';                                     // Network protocol
-  protocol?: 'HTTP' | 'HTTPS' | 'SOCKS5';                      // Proxy protocol
-  host?: string;                                                // Proxy host
-  port?: string;                                                // Proxy port
-  proxyUserName?: string;                                       // Proxy username
-  proxyPassword?: string;                                       // Proxy password
-  refreshUrl?: string;                                          // Refresh URL
-  checkChannel?: 'IPRust.io' | 'IP-API' | 'IP123.in';         // IP query channel
+  proxyMethod?: 'custom' | 'choose' | 'api' /**
+                                             * Proxy method
+                                             */
+  proxyCategory?: 'noproxy' | 'HTTP' | 'HTTPS' | 'SOCKS5' | 'SSH' /**
+                                                                   * Proxy type
+                                                                   */
+  ipType?: 'IPV4' | 'IPV6' /**
+                            * Network protocol
+                            */
+  protocol?: 'HTTP' | 'HTTPS' | 'SOCKS5' /**
+                                          * Proxy protocol
+                                          */
+  host?: string /**
+                 * Proxy host
+                 */
+  port?: string /**
+                 * Proxy port
+                 */
+  proxyUserName?: string /**
+                          * Proxy username
+                          */
+  proxyPassword?: string /**
+                          * Proxy password
+                          */
+  refreshUrl?: string /**
+                       * Refresh URL
+                       */
+  /**
+   * IP query channel
+   */
+  checkChannel?: 'IPRust.io' | 'IP-API' | 'IP123.in'
 }
 
 /** Fingerprint configuration */
 export interface FingerInfo {
-  // Language settings
-  isLanguageBaseIp?: boolean;           // Follow IP matching for browser language
-  language?: string;                    // Custom browser language
-  isDisplayLanguageBaseIp?: boolean;    // Follow IP matching for display language
-  displayLanguage?: string;             // Custom display language
-  
-  // Location and timezone
-  isTimeZone?: boolean;                 // Follow IP matching for timezone
-  timeZone?: string;                    // Custom timezone
-  position?: 0 | 1 | 2;                // Geolocation prompt: 0=ask, 1=allow, 2=deny
-  isPositionBaseIp?: boolean;           // Follow IP matching for geolocation
-  longitude?: string;                   // Custom longitude
-  latitude?: string;                    // Custom latitude
-  precisionPos?: string;                // Precision in meters
-  
-  // Media settings
-  forbidAudio?: boolean;                // Enable/disable sound
-  forbidImage?: boolean;                // Enable/disable image loading
-  forbidMedia?: boolean;                // Enable/disable video playback
-  
-  // Window settings
-  openWidth?: string;                   // Window width
-  openHeight?: string;                  // Window height
-  openBookmarks?: boolean;              // Enable bookmarks
-  positionSwitch?: boolean;             // Window position switch
-  windowRatioPosition?: string;         // Window position ratio
-  isDisplayName?: boolean;              // Show window name in title bar
-  
-  // Sync settings
-  syncBookmark?: boolean;               // Sync bookmarks
-  syncHistory?: boolean;                // Sync history
-  syncTab?: boolean;                    // Sync tabs
-  syncCookie?: boolean;                 // Sync cookies
-  syncExtensions?: boolean;             // Sync extensions
-  syncPassword?: boolean;               // Sync saved passwords
-  syncIndexedDb?: boolean;              // Sync IndexedDB
-  syncLocalStorage?: boolean;           // Sync LocalStorage
-  
-  // Cleanup settings
-  clearCacheFile?: boolean;             // Clear cache files on startup
-  clearCookie?: boolean;                // Clear cookies on startup
-  clearLocalStorage?: boolean;          // Clear LocalStorage on startup
-  
-  // Advanced settings
-  randomFingerprint?: boolean;          // Generate random fingerprint
-  forbidSavePassword?: boolean;         // Disable password save prompts
-  stopOpenNet?: boolean;                // Stop opening if network fails
-  stopOpenIP?: boolean;                 // Stop opening if IP changes
-  stopOpenPosition?: boolean;           // Stop opening if IP location changes
-  openWorkbench?: 0 | 1 | 2;           // Open workbench: 0=close, 1=open, 2=follow app
-  
-  // Display settings
-  resolutionType?: boolean;             // Custom resolution vs follow system
-  resolutionX?: string;                 // Custom resolution width
-  resolutionY?: string;                 // Custom resolution height
-  fontType?: boolean;                   // Random fonts vs system fonts
-  
-  // Browser fingerprint settings
-  webRTC?: 0 | 1 | 2;                  // WebRTC: 0=replace, 1=real, 2=disable
-  webGL?: boolean;                      // WebGL: random vs real
-  webGLInfo?: boolean;                  // WebGL info: custom vs real
-  webGLManufacturer?: string;           // Custom WebGL manufacturer
-  webGLRender?: string;                 // Custom WebGL renderer
-  webGpu?: 'webgl' | 'real' | 'block';  // WebGPU setting
-  canvas?: boolean;                     // Canvas: random vs real
-  audioContext?: boolean;               // AudioContext: random vs real
-  speechVoices?: boolean;               // Speech Voices: random vs real
-  doNotTrack?: boolean;                 // Enable Do Not Track
-  clientRects?: boolean;                // ClientRects: random vs real
-  deviceInfo?: boolean;                 // Media devices: random vs real
-  deviceNameSwitch?: boolean;           // Device names: random vs real
-  macInfo?: boolean;                    // MAC address: custom vs real
-  hardwareConcurrent?: string;          // Hardware concurrency
-  deviceMemory?: string;                // Device memory
-  disableSsl?: boolean;                 // SSL fingerprint settings
-  disableSslList?: string[];            // SSL feature list
-  portScanProtect?: boolean;            // Port scan protection
-  portScanList?: string;                // Port scan whitelist
-  useGpu?: boolean;                     // Use GPU acceleration
-  sandboxPermission?: boolean;          // Disable sandbox
-  startupParam?: string;                // Browser startup parameters
+  /**
+   * Language settings
+   */
+  isLanguageBaseIp?: boolean /**
+                              * Follow IP matching for browser language
+                              */
+  language?: string /**
+                     * Custom browser language
+                     */
+  isDisplayLanguageBaseIp?: boolean /**
+                                     * Follow IP matching for display language
+                                     */
+  /**
+   * Custom display language
+   */
+  displayLanguage?: string
+
+  /**
+   * Location and timezone
+   */
+  isTimeZone?: boolean /**
+                        * Follow IP matching for timezone
+                        */
+  timeZone?: string /**
+                     * Custom timezone
+                     */
+  position?: 0 | 1 | 2 /**
+                        * Geolocation prompt: 0=ask, 1=allow, 2=deny
+                        */
+  isPositionBaseIp?: boolean /**
+                              * Follow IP matching for geolocation
+                              */
+  longitude?: string /**
+                      * Custom longitude
+                      */
+  latitude?: string /**
+                     * Custom latitude
+                     */
+  /**
+   * Precision in meters
+   */
+  precisionPos?: string
+
+  /**
+   * Media settings
+   */
+  forbidAudio?: boolean /**
+                         * Enable/disable sound
+                         */
+  forbidImage?: boolean /**
+                         * Enable/disable image loading
+                         */
+  /**
+   * Enable/disable video playback
+   */
+  forbidMedia?: boolean
+
+  /**
+   * Window settings
+   */
+  openWidth?: string /**
+                      * Window width
+                      */
+  openHeight?: string /**
+                       * Window height
+                       */
+  openBookmarks?: boolean /**
+                           * Enable bookmarks
+                           */
+  positionSwitch?: boolean /**
+                            * Window position switch
+                            */
+  windowRatioPosition?: string /**
+                                * Window position ratio
+                                */
+  /**
+   * Show window name in title bar
+   */
+  isDisplayName?: boolean
+
+  /**
+   * Sync settings
+   */
+  syncBookmark?: boolean /**
+                          * Sync bookmarks
+                          */
+  syncHistory?: boolean /**
+                         * Sync history
+                         */
+  syncTab?: boolean /**
+                     * Sync tabs
+                     */
+  syncCookie?: boolean /**
+                        * Sync cookies
+                        */
+  syncExtensions?: boolean /**
+                            * Sync extensions
+                            */
+  syncPassword?: boolean /**
+                          * Sync saved passwords
+                          */
+  syncIndexedDb?: boolean /**
+                           * Sync IndexedDB
+                           */
+  /**
+   * Sync LocalStorage
+   */
+  syncLocalStorage?: boolean
+
+  /**
+   * Cleanup settings
+   */
+  clearCacheFile?: boolean /**
+                            * Clear cache files on startup
+                            */
+  clearCookie?: boolean /**
+                         * Clear cookies on startup
+                         */
+  /**
+   * Clear LocalStorage on startup
+   */
+  clearLocalStorage?: boolean
+
+  /**
+   * Advanced settings
+   */
+  randomFingerprint?: boolean /**
+                               * Generate random fingerprint
+                               */
+  forbidSavePassword?: boolean /**
+                                * Disable password save prompts
+                                */
+  stopOpenNet?: boolean /**
+                         * Stop opening if network fails
+                         */
+  stopOpenIP?: boolean /**
+                        * Stop opening if IP changes
+                        */
+  stopOpenPosition?: boolean /**
+                              * Stop opening if IP location changes
+                              */
+  /**
+   * Open workbench: 0=close, 1=open, 2=follow app
+   */
+  openWorkbench?: 0 | 1 | 2
+
+  /**
+   * Display settings
+   */
+  resolutionType?: boolean /**
+                            * Custom resolution vs follow system
+                            */
+  resolutionX?: string /**
+                        * Custom resolution width
+                        */
+  resolutionY?: string /**
+                        * Custom resolution height
+                        */
+  /**
+   * Random fonts vs system fonts
+   */
+  fontType?: boolean
+
+  /**
+   * Browser fingerprint settings
+   */
+  webRTC?: 0 | 1 | 2 /**
+                      * WebRTC: 0=replace, 1=real, 2=disable
+                      */
+  webGL?: boolean /**
+                   * WebGL: random vs real
+                   */
+  webGLInfo?: boolean /**
+                       * WebGL info: custom vs real
+                       */
+  webGLManufacturer?: string /**
+                              * Custom WebGL manufacturer
+                              */
+  webGLRender?: string /**
+                        * Custom WebGL renderer
+                        */
+  webGpu?: 'webgl' | 'real' | 'block' /**
+                                       * WebGPU setting
+                                       */
+  canvas?: boolean /**
+                    * Canvas: random vs real
+                    */
+  audioContext?: boolean /**
+                          * AudioContext: random vs real
+                          */
+  speechVoices?: boolean /**
+                          * Speech Voices: random vs real
+                          */
+  doNotTrack?: boolean /**
+                        * Enable Do Not Track
+                        */
+  clientRects?: boolean /**
+                         * ClientRects: random vs real
+                         */
+  deviceInfo?: boolean /**
+                        * Media devices: random vs real
+                        */
+  deviceNameSwitch?: boolean /**
+                              * Device names: random vs real
+                              */
+  macInfo?: boolean /**
+                     * MAC address: custom vs real
+                     */
+  hardwareConcurrent?: string /**
+                               * Hardware concurrency
+                               */
+  deviceMemory?: string /**
+                         * Device memory
+                         */
+  disableSsl?: boolean /**
+                        * SSL fingerprint settings
+                        */
+  disableSslList?: string[] /**
+                             * SSL feature list
+                             */
+  portScanProtect?: boolean /**
+                             * Port scan protection
+                             */
+  portScanList?: string /**
+                         * Port scan whitelist
+                         */
+  useGpu?: boolean /**
+                    * Use GPU acceleration
+                    */
+  sandboxPermission?: boolean /**
+                               * Disable sandbox
+                               */
+  /**
+   * Browser startup parameters
+   */
+  startupParam?: string
 }
 
 /** Complete browser creation configuration */
 export interface BrowserCreateConfig {
-  workspaceId: number;                  // Required: Workspace ID
-  windowName?: string;                  // Window name
-  coreVersion?: CoreVersion;            // Browser core version
-  os?: BrowserOS;                       // Operating system
-  osVersion?: string;                   // OS version
-  userAgent?: string;                   // Custom user agent
-  cookie?: unknown[];                   // Cookie list
-  searchEngine?: SearchEngine;          // Default search engine
-  labelIds?: number[];                  // Label IDs
-  windowPlatformList?: WindowPlatformInfo[]; // Platform account info
-  defaultOpenUrl?: string[];            // Default URLs to open
-  windowRemark?: string;                // Window remarks
-  projectId?: number;                   // Project ID
-  proxyInfo?: ProxyInfo;                // Proxy configuration
-  fingerInfo?: FingerInfo;              // Fingerprint configuration
+  workspaceId: number /**
+                       * Required: Workspace ID
+                       */
+  windowName?: string /**
+                       * Window name
+                       */
+  coreVersion?: CoreVersion /**
+                             * Browser core version
+                             */
+  os?: BrowserOS /**
+                  * Operating system
+                  */
+  osVersion?: string /**
+                      * OS version
+                      */
+  userAgent?: string /**
+                      * Custom user agent
+                      */
+  cookie?: unknown[] /**
+                      * Cookie list
+                      */
+  searchEngine?: SearchEngine /**
+                               * Default search engine
+                               */
+  labelIds?: number[] /**
+                       * Label IDs
+                       */
+  windowPlatformList?: WindowPlatformInfo[] /**
+                                             * Platform account info
+                                             */
+  defaultOpenUrl?: string[] /**
+                             * Default URLs to open
+                             */
+  windowRemark?: string /**
+                         * Window remarks
+                         */
+  projectId?: number /**
+                      * Project ID
+                      */
+  proxyInfo?: ProxyInfo /**
+                         * Proxy configuration
+                         */
+  /**
+   * Fingerprint configuration
+   */
+  fingerInfo?: FingerInfo
 }
 
 /** Simple browser creation parameters - for most common use cases */
 export interface BrowserCreateSimpleParams {
-  workspaceId: number;                  // Required: Workspace ID
-  windowName?: string;                  // Window name
-  projectId?: number;                   // Project ID
-  windowRemark?: string;                // Window remarks
-  proxyHost?: string;                   // Simple proxy host
-  proxyPort?: string;                   // Simple proxy port
-  proxyUserName?: string;               // Simple proxy username
-  proxyPassword?: string;               // Simple proxy password
-  proxyType?: 'HTTP' | 'HTTPS' | 'SOCKS5'; // Simple proxy type
+  workspaceId: number /**
+                       * Required: Workspace ID
+                       */
+  windowName?: string /**
+                       * Window name
+                       */
+  projectId?: number /**
+                      * Project ID
+                      */
+  windowRemark?: string /**
+                         * Window remarks
+                         */
+  proxyHost?: string /**
+                      * Simple proxy host
+                      */
+  proxyPort?: string /**
+                      * Simple proxy port
+                      */
+  proxyUserName?: string /**
+                          * Simple proxy username
+                          */
+  proxyPassword?: string /**
+                          * Simple proxy password
+                          */
+  /**
+   * Simple proxy type
+   */
+  proxyType?: 'HTTP' | 'HTTPS' | 'SOCKS5'
 }
 
 /** Standard browser creation parameters - covers 80% of use cases */
 export interface BrowserCreateStandardParams {
-  workspaceId: number;                  // Required: Workspace ID
-  windowName?: string;                  // Window name
-  projectId?: number;                   // Project ID
-  windowRemark?: string;                // Window remarks
-  os?: BrowserOS;                       // Operating system
-  osVersion?: string;                   // OS version
-  coreVersion?: CoreVersion;            // Browser core version
-  proxyInfo?: ProxyInfo;                // Complete proxy configuration
-  openWidth?: string;                   // Window width
-  openHeight?: string;                  // Window height
-  language?: string;                    // Browser language
-  timeZone?: string;                    // Timezone
-  defaultOpenUrl?: string[];            // Default URLs
+  workspaceId: number /**
+                       * Required: Workspace ID
+                       */
+  windowName?: string /**
+                       * Window name
+                       */
+  projectId?: number /**
+                      * Project ID
+                      */
+  windowRemark?: string /**
+                         * Window remarks
+                         */
+  os?: BrowserOS /**
+                  * Operating system
+                  */
+  osVersion?: string /**
+                      * OS version
+                      */
+  coreVersion?: CoreVersion /**
+                             * Browser core version
+                             */
+  proxyInfo?: ProxyInfo /**
+                         * Complete proxy configuration
+                         */
+  openWidth?: string /**
+                      * Window width
+                      */
+  openHeight?: string /**
+                       * Window height
+                       */
+  language?: string /**
+                     * Browser language
+                     */
+  timeZone?: string /**
+                     * Timezone
+                     */
+  /**
+   * Default URLs
+   */
+  defaultOpenUrl?: string[]
 }
 
 /** Advanced browser creation parameters - full control */
@@ -355,18 +707,36 @@ export interface BrowserCreateAdvancedParams extends BrowserCreateConfig {}
 
 /** Browser creation result */
 export interface BrowserCreateResult {
-  dirId: string;                        // Browser directory ID
-  windowName: string;                   // Window name
-  success: boolean;                     // Creation success
-  error?: string;                       // Error message if failed
+  dirId: string /**
+                 * Browser directory ID
+                 */
+  windowName: string /**
+                      * Window name
+                      */
+  success: boolean /**
+                    * Creation success
+                    */
+  /**
+   * Error message if failed
+   */
+  error?: string
 }
 
 /** Batch browser creation result */
 export interface BrowserCreateBatchResult {
-  results: BrowserCreateResult[];       // Individual results
-  successCount: number;                 // Number of successful creations
-  failureCount: number;                 // Number of failed creations
-  total: number;                        // Total attempts
+  results: BrowserCreateResult[] /**
+                                  * Individual results
+                                  */
+  successCount: number /**
+                        * Number of successful creations
+                        */
+  failureCount: number /**
+                        * Number of failed creations
+                        */
+  /**
+   * Total attempts
+   */
+  total: number
 }
 
 // ========== MCP Tool Types for Browser Creation ==========
@@ -374,69 +744,69 @@ export interface BrowserCreateBatchResult {
 /** Simple browser creation tool response */
 export interface BrowserCreateSimpleResponse {
   browser: {
-    dirId: string;
-    windowName: string;
-    workspaceId: number;
-    projectId?: number;
-    proxyConfigured: boolean;
-  };
-  message: string;
+    dirId: string
+    windowName: string
+    workspaceId: number
+    projectId?: number
+    proxyConfigured: boolean
+  }
+  message: string
 }
 
 /** Standard browser creation tool response */
 export interface BrowserCreateStandardResponse {
   browser: {
-    dirId: string;
-    windowName: string;
-    workspaceId: number;
-    projectId?: number;
-    os: string;
-    coreVersion: string;
-    proxyInfo?: ProxyInfo;
-    windowSize: string;
-  };
-  message: string;
+    dirId: string
+    windowName: string
+    workspaceId: number
+    projectId?: number
+    os: string
+    coreVersion: string
+    proxyInfo?: ProxyInfo
+    windowSize: string
+  }
+  message: string
 }
 
 /** Advanced browser creation tool response */
 export interface BrowserCreateAdvancedResponse {
   browser: {
-    dirId: string;
-    config: BrowserCreateConfig;
-  };
-  message: string;
+    dirId: string
+    config: BrowserCreateConfig
+  }
+  message: string
 }
 
 // ========== Error Types ==========
 
 /** RoxyBrowser API error codes mapping */
 export enum RoxyApiErrorCode {
-  SUCCESS = 0,           // 成功
+  SUCCESS = 0, // 成功
   INSUFFICIENT_QUOTA = 101, // 窗口额度不足
-  INVALID_PARAMS = 400,  // 参数错误
-  UNAUTHORIZED = 401,    // 认证失败
-  FORBIDDEN = 403,       // 权限不足
-  NOT_FOUND = 404,       // 资源不存在
-  TIMEOUT = 408,         // 请求超时
-  CONFLICT = 409,        // 资源冲突
-  SERVER_ERROR = 500,    // 服务器内部错误
-  BAD_GATEWAY = 502,     // 网关错误
+  INVALID_PARAMS = 400, // 参数错误
+  UNAUTHORIZED = 401, // 认证失败
+  FORBIDDEN = 403, // 权限不足
+  NOT_FOUND = 404, // 资源不存在
+  TIMEOUT = 408, // 请求超时
+  CONFLICT = 409, // 资源冲突
+  SERVER_ERROR = 500, // 服务器内部错误
+  BAD_GATEWAY = 502, // 网关错误
   SERVICE_UNAVAILABLE = 503, // 服务不可用
   GATEWAY_TIMEOUT = 504, // 网关超时
 }
 
 /** Error information with troubleshooting guidance */
 export interface ErrorInfo {
-  code: number;
-  name: string;
-  description: string;
-  chineseMsg: string;
-  englishMsg: string;
-  category: 'network' | 'authentication' | 'configuration' | 'resource' | 'server' | 'browser' | 'proxy';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  troubleshooting: string[];
-  autoRecoverable: boolean;
-  retryable: boolean;
+  code: number
+  name: string
+  description: string
+  chineseMsg: string
+  englishMsg: string
+  category: 'network' | 'authentication' | 'configuration' | 'resource' | 'server' | 'browser' | 'proxy'
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  troubleshooting: string[]
+  autoRecoverable: boolean
+  retryable: boolean
 }
 
 /** Error mapping for RoxyBrowser API */
@@ -641,14 +1011,14 @@ export const ROXY_ERROR_MAP: Record<number, ErrorInfo> = {
     autoRecoverable: true,
     retryable: true,
   },
-};
+}
 
 /** Network error patterns and their solutions */
 export const NETWORK_ERROR_PATTERNS: Array<{
-  pattern: RegExp;
-  category: string;
-  description: string;
-  troubleshooting: string[];
+  pattern: RegExp
+  category: string
+  description: string
+  troubleshooting: string[]
 }> = [
   {
     pattern: /ECONNREFUSED/i,
@@ -694,90 +1064,90 @@ export const NETWORK_ERROR_PATTERNS: Array<{
       'Check for rate limiting',
     ],
   },
-];
+]
 
 /** Enhanced RoxyBrowser API error */
 export class RoxyApiError extends Error {
-  public readonly errorInfo?: ErrorInfo;
-  public readonly troubleshooting: string[];
-  public readonly category: string;
-  public readonly severity: string;
-  public readonly retryable: boolean;
+  public readonly errorInfo?: ErrorInfo
+  public readonly troubleshooting: string[]
+  public readonly category: string
+  public readonly severity: string
+  public readonly retryable: boolean
 
   constructor(
     message: string,
     public code: number,
     public response?: unknown,
-    public originalError?: Error
+    public originalError?: Error,
   ) {
-    super(message);
-    this.name = 'RoxyApiError';
-    
+    super(message)
+    this.name = 'RoxyApiError'
+
     // Get error information from mapping
-    this.errorInfo = ROXY_ERROR_MAP[code];
-    this.troubleshooting = this.errorInfo?.troubleshooting || [];
-    this.category = this.errorInfo?.category || 'unknown';
-    this.severity = this.errorInfo?.severity || 'medium';
-    this.retryable = this.errorInfo?.retryable || false;
+    this.errorInfo = ROXY_ERROR_MAP[code]
+    this.troubleshooting = this.errorInfo?.troubleshooting || []
+    this.category = this.errorInfo?.category || 'unknown'
+    this.severity = this.errorInfo?.severity || 'medium'
+    this.retryable = this.errorInfo?.retryable || false
 
     // Enhance message with Chinese translation if available
     if (this.errorInfo) {
-      const enhancedMessage = `${message} (${this.errorInfo.chineseMsg})`;
-      this.message = enhancedMessage;
+      const enhancedMessage = `${message} (${this.errorInfo.chineseMsg})`
+      this.message = enhancedMessage
     }
   }
 
   /** Get user-friendly error explanation */
   getExplanation(): string {
     if (!this.errorInfo) {
-      return `Error ${this.code}: ${this.message}`;
+      return `Error ${this.code}: ${this.message}`
     }
 
-    return `**${this.errorInfo.name}** (${this.code}): ${this.errorInfo.description}\n` +
-           `**中文说明**: ${this.errorInfo.chineseMsg}\n` +
-           `**分类**: ${this.errorInfo.category}\n` +
-           `**严重程度**: ${this.errorInfo.severity}`;
+    return `**${this.errorInfo.name}** (${this.code}): ${this.errorInfo.description}\n`
+      + `**中文说明**: ${this.errorInfo.chineseMsg}\n`
+      + `**分类**: ${this.errorInfo.category}\n`
+      + `**严重程度**: ${this.errorInfo.severity}`
   }
 
   /** Get troubleshooting steps */
   getTroubleshootingSteps(): string[] {
-    const steps = [...this.troubleshooting];
-    
+    const steps = [...this.troubleshooting]
+
     // Add network-specific troubleshooting for network errors
     if (this.originalError) {
-      const networkPattern = NETWORK_ERROR_PATTERNS.find(pattern => 
-        pattern.pattern.test(this.originalError!.message)
-      );
+      const networkPattern = NETWORK_ERROR_PATTERNS.find(pattern =>
+        pattern.pattern.test(this.originalError!.message),
+      )
       if (networkPattern) {
-        steps.unshift(`**网络错误检测**: ${networkPattern.description}`);
-        steps.push(...networkPattern.troubleshooting);
+        steps.unshift(`**网络错误检测**: ${networkPattern.description}`)
+        steps.push(...networkPattern.troubleshooting)
       }
     }
 
-    return steps;
+    return steps
   }
 
   /** Check if error is retryable */
   isRetryable(): boolean {
-    return this.retryable;
+    return this.retryable
   }
 
   /** Get retry strategy */
-  getRetryStrategy(): { shouldRetry: boolean; delayMs: number; maxRetries: number } {
+  getRetryStrategy(): { shouldRetry: boolean, delayMs: number, maxRetries: number } {
     if (!this.retryable) {
-      return { shouldRetry: false, delayMs: 0, maxRetries: 0 };
+      return { shouldRetry: false, delayMs: 0, maxRetries: 0 }
     }
 
     // Different retry strategies based on error type
     switch (this.category) {
       case 'network':
-        return { shouldRetry: true, delayMs: 2000, maxRetries: 3 };
+        return { shouldRetry: true, delayMs: 2000, maxRetries: 3 }
       case 'server':
-        return { shouldRetry: true, delayMs: 5000, maxRetries: 2 };
+        return { shouldRetry: true, delayMs: 5000, maxRetries: 2 }
       case 'browser':
-        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 };
+        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 }
       default:
-        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 };
+        return { shouldRetry: true, delayMs: 1000, maxRetries: 1 }
     }
   }
 }
@@ -785,8 +1155,8 @@ export class RoxyApiError extends Error {
 /** Configuration error */
 export class ConfigError extends Error {
   constructor(message: string) {
-    super(message);
-    this.name = 'ConfigError';
+    super(message)
+    this.name = 'ConfigError'
   }
 }
 
@@ -795,10 +1165,10 @@ export class BrowserCreationError extends Error {
   constructor(
     message: string,
     public failedConfigs?: Partial<BrowserCreateConfig>[],
-    public partialResults?: BrowserCreateResult[]
+    public partialResults?: BrowserCreateResult[],
   ) {
-    super(message);
-    this.name = 'BrowserCreationError';
+    super(message)
+    this.name = 'BrowserCreationError'
   }
 }
 
@@ -806,94 +1176,439 @@ export class BrowserCreationError extends Error {
 
 /** Account item */
 export interface AccountItem {
-  id: number;                         // Account ID
-  platformUrl: string;                // Business platform URL
-  platformUserName: string;           // Account username
-  platformPassword: string;           // Account password
-  platformEfa: string;                // Account EFA
-  platformCookies: Array<{            // Account Cookies
-    name: string;
-    value: string;
-    domain: string;
-  }>;
-  platformName: string;               // Platform name
-  platformRemarks: string;            // Platform remarks
-  createTime: string;                 // Create time
-  updateTime: string;                 // Update time
+  id: number /**
+              * Account ID
+              */
+  platformUrl: string /**
+                       * Business platform URL
+                       */
+  platformUserName: string /**
+                            * Account username
+                            */
+  platformPassword: string /**
+                            * Account password
+                            */
+  platformEfa: string /**
+                       * Account EFA
+                       */
+  platformCookies: Array<{ /**
+                            * Account Cookies
+                            */
+    name: string
+    value: string
+    domain: string
+  }>
+  platformName: string /**
+                        * Platform name
+                        */
+  platformRemarks: string /**
+                           * Platform remarks
+                           */
+  createTime: string /**
+                      * Create time
+                      */
+  /**
+   * Update time
+   */
+  updateTime: string
 }
 
 /** Paginated account list response */
 export interface AccountListResponse {
-  total: number;
-  rows: AccountItem[];
+  total: number
+  rows: AccountItem[]
 }
 
 /** Account list query parameters */
 export interface AccountListParams {
-  workspaceId: number;
-  accountId?: number;
-  page_index?: number;
-  page_size?: number;
+  workspaceId: number
+  accountId?: number
+  page_index?: number
+  page_size?: number
+}
+
+/** Account create parameters */
+export interface AccountCreateParams {
+  workspaceId: number
+  /**
+   * Business platform URL (required)
+   */
+  platformUrl: string
+  /**
+   * Account username (required)
+   */
+  platformUserName: string
+  /**
+   * Account password (required)
+   */
+  platformPassword: string
+  /**
+   * Account EFA (optional)
+   */
+  platformEfa?: string
+  /**
+   * Account cookies (optional)
+   */
+  platformCookies?: Array<{
+    name: string
+    value: string
+    domain: string
+  }>
+  /**
+   * Platform name (optional)
+   */
+  platformName?: string
+  /**
+   * Platform remarks/notes (optional)
+   */
+  platformRemarks?: string
+}
+
+/** Account modify parameters (same as create but with id) */
+export interface AccountModifyParams extends AccountCreateParams {
+  /**
+   * Account ID (required for modify)
+   */
+  id: number
+}
+
+/** Account delete parameters */
+export interface AccountDeleteParams {
+  workspaceId: number
+  /**
+   * Array of account IDs to delete
+   */
+  ids: number[]
+}
+
+/** Batch create account parameters */
+export interface AccountBatchCreateParams {
+  workspaceId: number
+  /**
+   * Array of account configurations
+   */
+  accountList: AccountCreateParams[]
 }
 
 // ========== Label Types ==========
 
 /** Label item */
 export interface LabelItem {
-  id: number;                         // Label ID
-  color: string;                      // Label color
-  name: string;                       // Label name
+  id: number /**
+              * Label ID
+              */
+  color: string /**
+                 * Label color
+                 */
+  /**
+   * Label name
+   */
+  name: string
 }
 
 /** Label list response */
 export interface LabelListResponse {
-  labels: LabelItem[];
+  labels: LabelItem[]
 }
 
 // ========== Connection Info Types ==========
 
 /** Connection info item for opened browser */
 export interface ConnectionInfoItem {
-  ws: string;                         // WebSocket endpoint for automation tools
-  http: string;                       // HTTP endpoint for automation tools
-  coreVersion: string;                // Core version
-  driver: string;                     // WebDriver path for automation tools
-  sortNum: number;                    // Window sort number
-  windowName: string;                 // Window name
-  windowRemark: string;               // Window remark
-  pid: number;                        // Process ID
-  dirId: string;                      // Browser directory ID
+  ws: string /**
+              * WebSocket endpoint for automation tools
+              */
+  http: string /**
+                * HTTP endpoint for automation tools
+                */
+  coreVersion: string /**
+                       * Core version
+                       */
+  driver: string /**
+                  * WebDriver path for automation tools
+                  */
+  sortNum: number /**
+                   * Window sort number
+                   */
+  windowName: string /**
+                      * Window name
+                      */
+  windowRemark: string /**
+                        * Window remark
+                        */
+  pid: number /**
+               * Process ID
+               */
+  /**
+   * Browser directory ID
+   */
+  dirId: string
 }
 
 /** Connection info response */
 export interface ConnectionInfoResponse {
-  connections: ConnectionInfoItem[];
+  connections: ConnectionInfoItem[]
 }
 
 // ========== Update Browser Types ==========
 
 /** Browser update parameters (same as create but with dirId) */
 export interface BrowserUpdateParams extends BrowserCreateConfig {
-  dirId: string;                      // Browser directory ID (required for update)
+  /**
+   * Browser directory ID (required for update)
+   */
+  dirId: string
 }
 
 // ========== Cache Clear Types ==========
 
 /** Local cache clear parameters */
 export interface ClearLocalCacheParams {
-  dirIds: string[];                   // Array of browser directory IDs
+  /**
+   * Array of browser directory IDs
+   */
+  dirIds: string[]
 }
 
 /** Server cache clear parameters */
 export interface ClearServerCacheParams {
-  workspaceId: number;
-  dirIds: string[];                   // Array of browser directory IDs
+  workspaceId: number
+  /**
+   * Array of browser directory IDs
+   */
+  dirIds: string[]
 }
 
 // ========== Random Fingerprint Types ==========
 
 /** Random fingerprint parameters */
 export interface RandomFingerprintParams {
-  workspaceId: number;
-  dirId: string;                      // Browser directory ID
+  workspaceId: number
+  /**
+   * Browser directory ID
+   */
+  dirId: string
+}
+
+// ========== Proxy Management Types ==========
+
+/** Proxy list item */
+export interface ProxyListItem {
+  id?: number
+  /**
+   * Proxy check status: 0=未检测, 1=检测成功, 2=检测失败
+   */
+  checkStatus?: number
+  /**
+   * IP detection channel
+   */
+  checkChannel?: string
+  /**
+   * IP detection channel value
+   */
+  checkChannelValue?: string
+  /**
+   * Last detected IP address
+   */
+  lastIp?: string
+  /**
+   * Last detected country
+   */
+  lastCountry?: string
+  /**
+   * Last detected state/region
+   */
+  lastState?: string
+  /**
+   * Last detected city
+   */
+  lastCity?: string
+  /**
+   * IP type: IPV4 or IPV6
+   */
+  ipType?: string
+  /**
+   * Proxy protocol: HTTP, HTTPS, SOCKS5, SSH
+   */
+  protocol?: string
+  /**
+   * Proxy host/IP address
+   */
+  host?: string
+  /**
+   * Proxy port
+   */
+  port?: string
+  /**
+   * Proxy username
+   */
+  proxyUserName?: string
+  /**
+   * Proxy password
+   */
+  proxyPassword?: string
+  /**
+   * Refresh URL for dynamic proxies
+   */
+  refreshUrl?: string
+  /**
+   * Proxy remark/notes
+   */
+  remark?: string
+  /**
+   * Last check time
+   */
+  checkTime?: string
+  /**
+   * Create time
+   */
+  createTime?: string
+  /**
+   * Update time
+   */
+  updateTime?: string
+  /**
+   * Timezone
+   */
+  timezone?: string
+  /**
+   * Error information if check failed
+   */
+  error?: any
+}
+
+/** Paginated proxy list response */
+export interface ProxyListResponse {
+  total: number
+  rows: ProxyListItem[]
+}
+
+/** Proxy list query parameters */
+export interface ProxyListParams {
+  workspaceId: number
+  id?: number
+  page_index?: number
+  page_size?: number
+  [key: string]: any // Allow additional query parameters
+}
+
+/** Proxy create parameters */
+export interface ProxyCreateParams {
+  workspaceId: number
+  /**
+   * Proxy protocol: HTTP, HTTPS, SOCKS5, SSH
+   */
+  protocol?: string
+  /**
+   * Proxy host/IP address
+   */
+  host?: string
+  /**
+   * Proxy port
+   */
+  port?: string
+  /**
+   * Proxy username
+   */
+  proxyUserName?: string
+  /**
+   * Proxy password
+   */
+  proxyPassword?: string
+  /**
+   * IP type: IPV4 or IPV6
+   */
+  ipType?: string
+  /**
+   * IP detection channel: IPRust.io, IP-API, IP123.in
+   */
+  checkChannel?: string
+  /**
+   * Refresh URL for dynamic proxies
+   */
+  refreshUrl?: string
+  /**
+   * Proxy remark/notes
+   */
+  remark?: string
+  /**
+   * Proxy category (same as protocol)
+   */
+  proxyCategory?: string
+  [key: string]: any // Allow additional fields
+}
+
+/** Proxy modify parameters (same as create but with id) */
+export interface ProxyModifyParams extends ProxyCreateParams {
+  /**
+   * Proxy ID (required for modify)
+   */
+  id: number
+}
+
+/** Proxy detect parameters */
+export interface ProxyDetectParams {
+  workspaceId: number
+  /**
+   * Proxy ID to detect
+   */
+  id: number
+}
+
+/** Proxy delete parameters */
+export interface ProxyDeleteParams {
+  workspaceId: number
+  /**
+   * Array of proxy IDs to delete
+   */
+  ids: number[]
+}
+
+/** Batch create proxy parameters */
+export interface ProxyBatchCreateParams {
+  workspaceId: number
+  /**
+   * Default check channel for all proxies
+   */
+  checkChannel?: string
+  /**
+   * Array of proxy configurations
+   */
+  proxyList: ProxyCreateParams[]
+}
+
+/** Detect channel item */
+export interface DetectChannelItem {
+  label: string
+  value: string
+}
+
+/** Detect channel response */
+export interface DetectChannelResponse {
+  checkChannel: DetectChannelItem[]
+}
+
+export interface BoughtProxyListItem {
+  id: number
+  orderNo: string
+  checkStatus: number
+  proxyCheckChannel: string
+  checkChannelValue: string
+  lastIp: string
+  lastCountry: string
+  lastState: string
+  lastCity: string
+  proxyProviderName: string
+  providerType: string
+  ipType: string
+  protocol: string
+  host: string
+  port: string
+  proxyUserName: string
+  proxyPassword: string
+  remark: string
+  checkTime: string
+  createTime: string
+  updateTime: string
+  expireDate: string
 }
