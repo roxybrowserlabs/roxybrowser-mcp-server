@@ -16,7 +16,7 @@ import {
 import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account.js'
 import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
 import { healthCheck, listWorkspaces } from './modules/other.js'
-import { batchCreateProxies, createProxy, deleteProxies, detectProxy, getDetectChannels, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
+import { batchCreateProxies, createProxy, deleteProxies, detectProxy, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
 import { ConfigError } from './types.js'
 import { ErrorAnalyzer } from './utils/error-analyzer.js'
 
@@ -43,7 +43,7 @@ const TOOLS = [
   detectProxy.schema,
   modifyProxy.schema,
   deleteProxies.schema,
-  getDetectChannels.schema,
+  // getDetectChannels.schema,
 
   listAccounts.schema,
   createAccount.schema,
@@ -165,8 +165,8 @@ class RoxyBrowserMCPServer {
           case deleteProxies.name:
             return await deleteProxies.handle(args)
 
-          case getDetectChannels.name:
-            return await getDetectChannels.handle(args)
+          // case getDetectChannels.name:
+          //   return await getDetectChannels.handle(args)
 
           default:
             throw new Error(`Unknown tool: ${name}`)

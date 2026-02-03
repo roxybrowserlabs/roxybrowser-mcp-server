@@ -8,11 +8,11 @@ class ListAccounts {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       accountId: {
         type: 'number',
-        description: 'Account ID to filter by (optional)',
+        description: 'Account ID to filter by',
       },
       pageIndex: {
         type: 'number',
@@ -86,27 +86,27 @@ class CreateAccount {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       platformUrl: {
         type: 'string',
-        description: 'Business platform URL (required, e.g., https://www.tiktok.com/)',
+        description: 'Business platform URL (e.g., https://www.tiktok.com/)',
       },
       platformUserName: {
         type: 'string',
-        description: 'Account username (required)',
+        description: 'Account username',
       },
       platformPassword: {
         type: 'string',
-        description: 'Account password (required)',
+        description: 'Account password',
       },
       platformEfa: {
         type: 'string',
-        description: 'Account EFA (optional)',
+        description: 'Account EFA',
       },
       platformCookies: {
         type: 'array',
-        description: 'Account cookies (optional)',
+        description: 'Account cookies',
         items: {
           type: 'object',
           properties: {
@@ -119,11 +119,11 @@ class CreateAccount {
       },
       platformName: {
         type: 'string',
-        description: 'Platform name (optional)',
+        description: 'Platform name',
       },
       platformRemarks: {
         type: 'string',
-        description: 'Platform remarks/notes (optional)',
+        description: 'Platform remarks/notes',
       },
     },
     required: ['workspaceId', 'platformUrl', 'platformUserName', 'platformPassword'],
@@ -198,11 +198,11 @@ class BatchCreateAccounts {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       accountList: {
         type: 'array',
-        description: 'Array of account configurations (required)',
+        description: 'Array of account configurations',
         items: {
           type: 'object',
           properties: {
@@ -291,31 +291,31 @@ class ModifyAccount {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       id: {
         type: 'number',
-        description: 'Account ID to modify (required)',
+        description: 'Account ID to modify',
       },
       platformUrl: {
         type: 'string',
-        description: 'Business platform URL (optional)',
+        description: 'Business platform URL',
       },
       platformUserName: {
         type: 'string',
-        description: 'Account username (optional)',
+        description: 'Account username',
       },
       platformPassword: {
         type: 'string',
-        description: 'Account password (optional)',
+        description: 'Account password',
       },
       platformEfa: {
         type: 'string',
-        description: 'Account EFA (optional)',
+        description: 'Account EFA',
       },
       platformCookies: {
         type: 'array',
-        description: 'Account cookies (optional)',
+        description: 'Account cookies',
         items: {
           type: 'object',
           properties: {
@@ -328,11 +328,11 @@ class ModifyAccount {
       },
       platformName: {
         type: 'string',
-        description: 'Platform name (optional)',
+        description: 'Platform name',
       },
       platformRemarks: {
         type: 'string',
-        description: 'Platform remarks/notes (optional)',
+        description: 'Platform remarks/notes',
       },
     },
     required: ['workspaceId', 'id'],
@@ -408,12 +408,12 @@ class DeleteAccounts {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       ids: {
         type: 'array',
         items: { type: 'number' },
-        description: 'Array of account IDs to delete (required)',
+        description: 'Array of account IDs to delete',
       },
     },
     required: ['workspaceId', 'ids'],
