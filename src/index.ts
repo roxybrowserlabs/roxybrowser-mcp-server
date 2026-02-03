@@ -18,7 +18,6 @@ import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, 
 import { healthCheck, listWorkspaces } from './modules/other.js'
 import { batchCreateProxies, createProxy, deleteProxies, detectProxy, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
 import { ConfigError } from './types.js'
-import { ErrorAnalyzer } from './utils/error-analyzer.js'
 
 // ========== Tool Definitions ==========
 const TOOLS = [
@@ -91,32 +90,47 @@ class RoxyBrowserMCPServer {
 
       try {
         switch (name) {
+          // 浏览器相关
           case listBrowsers.name:
             return await listBrowsers.handle(args)
+
           case createBrowser.name:
             return await createBrowser.handle(args)
+
           case openBrowser.name:
             return await openBrowser.handle(args)
+
           case updateBrowser.name:
             return await updateBrowser.handle(args)
+
           case closeBrowsers.name:
             return await closeBrowsers.handle(args)
+
           case deleteBrowsers.name:
             return await deleteBrowsers.handle(args)
+
           case batchCreateBrowsers.name:
             return await batchCreateBrowsers.handle(args)
 
-          case proxyList.name:
-            return await proxyList.handle(args)
-          case proxyStore.name:
-            return await proxyStore.handle(args)
+          case listLabels.name:
+            return await listLabels.handle(args)
 
-          case listWorkspaces.name:
-            return await listWorkspaces.handle(args)
+          case getConnectionInfo.name:
+            return await getConnectionInfo.handle(args)
 
-          case healthCheck.name:
-            return await healthCheck.handle(args)
+          case randomFingerprint.name:
+            return await randomFingerprint.handle(args)
 
+          case clearLocalCache.name:
+            return await clearLocalCache.handle(args)
+
+          case clearServerCache.name:
+            return await clearServerCache.handle(args)
+
+          case getBrowserDetail.name:
+            return await getBrowserDetail.handle(args)
+
+          // 账号相关
           case listAccounts.name:
             return await listAccounts.handle(args)
 
@@ -132,23 +146,12 @@ class RoxyBrowserMCPServer {
           case deleteAccounts.name:
             return await deleteAccounts.handle(args)
 
-          case listLabels.name:
-            return await listLabels.handle(args)
+          // 代理相关
+          case proxyList.name:
+            return await proxyList.handle(args)
 
-          case getConnectionInfo.name:
-            return await getConnectionInfo.handle(args)
-
-          case getBrowserDetail.name:
-            return await getBrowserDetail.handle(args)
-
-          case randomFingerprint.name:
-            return await randomFingerprint.handle(args)
-
-          case clearLocalCache.name:
-            return await clearLocalCache.handle(args)
-
-          case clearServerCache.name:
-            return await clearServerCache.handle(args)
+          case proxyStore.name:
+            return await proxyStore.handle(args)
 
           case createProxy.name:
             return await createProxy.handle(args)
@@ -165,22 +168,24 @@ class RoxyBrowserMCPServer {
           case deleteProxies.name:
             return await deleteProxies.handle(args)
 
-          // case getDetectChannels.name:
-          //   return await getDetectChannels.handle(args)
+          // 空间列表
+          case listWorkspaces.name:
+            return await listWorkspaces.handle(args)
+
+          // 健康检查
+          case healthCheck.name:
+            return await healthCheck.handle(args)
 
           default:
             throw new Error(`Unknown tool: ${name}`)
         }
       }
       catch (error) {
-        // Use enhanced error analysis
-        const formattedError = ErrorAnalyzer.formatErrorForDisplay(error instanceof Error ? error : new Error('Unknown error'))
-
         return {
           content: [
             {
               type: 'text',
-              text: formattedError,
+              text: error instanceof Error ? error.message : 'Unknown error',
             },
           ],
         }

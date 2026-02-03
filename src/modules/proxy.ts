@@ -2,25 +2,25 @@ import { request } from '../utils/index.js'
 
 const channelList = [
   {
-      "label": "IPRust.io",
-      "type": "checkChannel",
-      "value": "http://iprust.io/ip.json"
+    label: 'IPRust.io',
+    type: 'checkChannel',
+    value: 'http://iprust.io/ip.json',
   },
   {
-      "label": "IP-API",
-      "type": "checkChannel",
-      "value": "http://pro.ip-api.com/json?key=c1ulk9X5j8NKqTV"
+    label: 'IP-API',
+    type: 'checkChannel',
+    value: 'http://pro.ip-api.com/json?key=c1ulk9X5j8NKqTV',
   },
   {
-      "label": "IP123.in",
-      "type": "checkChannel",
-      "value": "http://ip123.in/ip.json"
+    label: 'IP123.in',
+    type: 'checkChannel',
+    value: 'http://ip123.in/ip.json',
   },
   {
-      "label": "IPinfo",
-      "type": "checkChannel",
-      "value": "http://ipinfo.io"
-  }
+    label: 'IPinfo',
+    type: 'checkChannel',
+    value: 'http://ipinfo.io',
+  },
 ]
 
 /** 代理列表 */
@@ -382,6 +382,7 @@ class BatchCreateProxies {
     const { workspaceId, proxyList } = params
 
     proxyList.forEach((item: any) => {
+      item.ipType = item.ipType ? item.ipType : 'IPV4'
       item.checkChannel = item.checkChannel ? channelList.find((channel: any) => channel.label === item.checkChannel)?.value : null
     })
 
@@ -462,14 +463,12 @@ class DetectProxy {
       body: JSON.stringify({ workspaceId, id }),
     })
 
-    
-
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to detect proxy:**\n\n error message: ${result.msg}`
     }
     else {
-      const data = result.data;
+      const data = result.data
       // checkStatus: 0, // 0 未检测 1 检测成功 2 检测失败
       // lastIp: '',
       // lastCity: '',
@@ -483,8 +482,9 @@ class DetectProxy {
 **city:** ${data.lastCity}
 **timezone:** ${data.timezone ? data.timezone : 'N/A'}
 `
-      } else {
-text = `✅ **Proxy Detection Started**
+      }
+      else {
+        text = `✅ **Proxy Detection Started**
 
 **Proxy ID:** ${params.id}
 **Workspace:** ${params.workspaceId}
