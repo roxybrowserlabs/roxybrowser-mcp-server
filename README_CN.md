@@ -1,4 +1,4 @@
-# RoxyBrowser MCP 服务器 [Beta]
+# RoxyBrowser MCP 服务器
 
 [English](README.md) | [中文](README_CN.md)
 
