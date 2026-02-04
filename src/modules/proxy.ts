@@ -290,7 +290,12 @@ class CreateProxy {
 
     let text = ''
     if (result.code !== 0) {
-      text = `❌ **Failed to create proxy:**\n\n error message: ${result.msg}`
+      if (result.data) {
+        text = `❌ **Failed to create proxy:**\n\n error message: ${result.msg}\n\n${result.data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
+      }
+      else {
+        text = `❌ **Failed to create proxy:**\n\n error message: ${result.msg}`
+      }
     }
     else {
       text = `✅ **Proxy Created Successfully**
@@ -393,7 +398,12 @@ class BatchCreateProxies {
 
     let text = ''
     if (result.code !== 0) {
-      text = `❌ **Failed to batch create proxies:**\n\n error message: ${result.msg}`
+      if (result.data) {
+        text = `❌ **Failed to batch create proxies:**\n\n error message: ${result.msg}\n\n${result.data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
+      }
+      else {
+        text = `❌ **Failed to batch create proxies:**\n\n error message: ${result.msg}`
+      }
     }
     else {
       text = `✅ **Batch Proxy Creation Successful**

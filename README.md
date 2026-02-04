@@ -15,11 +15,13 @@ A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.
 - 🚀 **Browser Management**: Open and close RoxyBrowser instances programmatically
 - 🔗 **CDP Integration**: Get WebSocket endpoints for Chrome DevTools Protocol automation
 - 🤖 **AI-Friendly**: Seamlessly integrates with AI assistants through MCP
-- 🎯 **Playwright Ready**: Works perfectly with [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp) (RoxyBrowser's customized Playwright MCP)
+- 🎯 **Playwright Ready**: Works with [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp) (RoxyBrowser's customized Playwright MCP)
 - 📊 **Workspace Support**: Manage browsers across different workspaces and projects
-- 🛠️ **Browser Creation**: Create browsers with layered complexity (Simple, Standard, Advanced)
-- 🌐 **Proxy Management**: Built-in proxy validation, testing, and configuration tools
-- 🔧 **Advanced Configuration**: Full control over fingerprints, proxies, and browser settings
+- 🛠️ **Browser Creation**: Create browsers (single or batch) with full configuration
+- 🌐 **Proxy Management**: List, create, detect, and manage proxy configurations
+- 👤 **Account Management**: Manage platform accounts and credentials in workspaces
+- 🔧 **Advanced Configuration**: Fingerprints, cache clear, random fingerprint, and more
+- 🏥 **Health Check**: Server and workspace connectivity diagnostics
 
 ## Quick Start
 
@@ -60,41 +62,50 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
 
 ## Available Tools
 
-### Workspace & Project Management
+### Workspace
 - `roxy_list_workspaces` - List all available workspaces and their projects
-- `roxy_list_accounts` - Get platform accounts and credentials in a workspace
-- `roxy_list_labels` - Get browser labels/tags for organization
 
-### Browser Management
+### Browser
 - `roxy_list_browsers` - List browsers in a workspace/project with filtering
-- `roxy_get_browser_detail` - Get detailed browser information and configuration
+- `roxy_create_browser` - Create a browser with full configuration
+- `roxy_batch_create_browsers` - Create multiple browsers in batch
 - `roxy_open_browsers` - Open browsers and get CDP WebSocket endpoints for automation
+- `roxy_update_browser` - Update existing browser configuration
 - `roxy_close_browsers` - Close running browsers (does NOT free quota)
 - `roxy_delete_browsers` - Delete browser profiles permanently (frees quota)
+- `roxy_get_browser_detail` - Get detailed browser information and configuration
 - `roxy_get_connection_info` - Get CDP endpoints and PIDs for opened browsers
-
-### Browser Creation
-- `roxy_create_browser_simple` - Create browser with basic configuration
-- `roxy_create_browser_standard` - Create browser with common settings (OS, proxy, window size, etc.)
-- `roxy_create_browser_advanced` - Create browser with full control (fingerprint, platform accounts, etc.)
-
-### Browser Maintenance
-- `roxy_update_browser` - Update existing browser configuration
-- `roxy_random_fingerprint` - Randomize browser fingerprint
 - `roxy_clear_local_cache` - Clear local browser cache
 - `roxy_clear_server_cache` - Clear server-side browser cache
+- `roxy_random_fingerprint` - Randomize browser fingerprint
+- `roxy_list_labels` - Get browser labels/tags for organization
+
+### Proxy
+- `roxy_list_proxies` - List proxy configurations in a workspace
+- `roxy_store_proxies` - Get list of proxies you've purchased (store)
+- `roxy_create_proxy` - Create a proxy configuration
+- `roxy_batch_create_proxies` - Create multiple proxies in batch
+- `roxy_detect_proxy` - Detect/test proxy availability
+- `roxy_modify_proxy` - Modify existing proxy configuration
+- `roxy_delete_proxies` - Delete proxy configurations
+
+### Account
+- `roxy_list_accounts` - List platform accounts and credentials in a workspace
+- `roxy_create_account` - Create a platform account
+- `roxy_batch_create_accounts` - Create multiple accounts in batch
+- `roxy_modify_account` - Modify existing account
+- `roxy_delete_accounts` - Delete accounts
 
 ### Utilities
-- `roxy_validate_proxy_config` - Validate proxy configuration
-- `roxy_system_diagnostics` - System health check and diagnostics
+- `roxy_health_check` - Server health check and workspace/browser connectivity diagnostics
 
 ## Complete Workflow Examples
 
 ### Example 1: Quick Browser Automation Setup
 
 ```
-1. AI: "Create a simple browser in workspace 1 with name 'Test Browser'"
-   → Uses roxy_create_browser_simple
+1. AI: "Create a browser in workspace 1 with name 'Test Browser'"
+   → Uses roxy_create_browser
    → Returns browser ID ready for use
 
 2. AI: "Open the browser I just created"
@@ -102,27 +113,27 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
    → Returns CDP WebSocket URL like: ws://127.0.0.1:52314/devtools/browser/xxx
 
 3. AI: "Navigate to gmail.com, login, and send emails"
-   → Uses PlayRoxy MCP tools automatically (browser_navigate, browser_type, browser_click, etc.)
+   → Uses PlayRoxy MCP tools (browser_navigate, browser_type, browser_click, etc.)
    → PlayRoxy MCP connects to the opened browser via CDP endpoint
 
 4. AI: "Close the browser when done"
    → Uses roxy_close_browsers
 ```
 
-### Example 2: Advanced Browser with Proxy Setup
+### Example 2: Browser with Proxy
 
 ```
-1. AI: "Validate my proxy configuration before creating browsers"
-   → Uses roxy_validate_proxy_config
-   → Confirms proxy settings are correct
+1. AI: "Detect my proxy before creating browsers"
+   → Uses roxy_detect_proxy
+   → Confirms proxy is available
 
-2. AI: "Create a standard browser with SOCKS5 proxy and 1920x1080 resolution in workspace 2"
-   → Uses roxy_create_browser_standard with proxy configuration
+2. AI: "Create a browser with SOCKS5 proxy and 1920x1080 in workspace 2"
+   → Uses roxy_create_browser with proxy configuration
    → Returns configured browser ID
 
 3. AI: "Open the browser and start automation"
    → Uses roxy_open_browsers → gets CDP endpoint
-   → PlayRoxy MCP automatically connects and begins automation tasks
+   → PlayRoxy MCP connects and begins automation
 ```
 
 ## Integration with Playwright MCP
@@ -158,23 +169,6 @@ npm run build
 | `ROXY_API_KEY` | ✅ Yes | - | API key from RoxyBrowser settings |
 | `ROXY_API_HOST` | ✅ Yes | `http://127.0.0.1:50000` | RoxyBrowser API endpoint |
 | `ROXY_TIMEOUT` | No | `30000` | Request timeout in milliseconds |
-
-### Error Codes
-
-| Code | Name | Description |
-|------|------|-------------|
-| **0** | SUCCESS | Operation completed successfully |
-| **101** | INSUFFICIENT_QUOTA | Insufficient profiles quota |
-| **400** | INVALID_PARAMS | Invalid parameters provided |
-| **401** | UNAUTHORIZED | Authentication failed - invalid API key |
-| **403** | FORBIDDEN | Access denied - insufficient permissions |
-| **404** | NOT_FOUND | Resource not found |
-| **408** | TIMEOUT | Request timeout |
-| **409** | CONFLICT | Resource conflict or insufficient quota |
-| **500** | SERVER_ERROR | Internal server error |
-| **502** | BAD_GATEWAY | Bad gateway - proxy or network issue |
-| **503** | SERVICE_UNAVAILABLE | Service temporarily unavailable |
-| **504** | GATEWAY_TIMEOUT | Gateway timeout |
 
 ## Troubleshooting
 
@@ -213,7 +207,7 @@ Solutions:
 - Check that the browser profiles exist and are not corrupted
 - Ensure sufficient system resources (RAM, CPU)
 - Verify the dirIds are valid (use `roxy_list_browsers` first)
-- Run `roxy_system_diagnostics` for comprehensive health check
+- Run `roxy_health_check` for connectivity and health diagnostics
 
 ## License
 

@@ -15,11 +15,13 @@
 - 🚀 **浏览器管理**：通过编程方式打开和关闭 RoxyBrowser 实例
 - 🔗 **CDP 集成**：获取用于 Chrome DevTools Protocol 自动化的 WebSocket 端点
 - 🤖 **AI 友好**：通过 MCP 与 AI 助手无缝集成
-- 🎯 **Playwright 就绪**：与 [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp)（RoxyBrowser 定制的 Playwright MCP）完美配合
+- 🎯 **Playwright 就绪**：与 [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp)（RoxyBrowser 定制的 Playwright MCP）配合使用
 - 📊 **工作区支持**：跨不同工作区和项目管理浏览器
-- 🛠️ **浏览器创建**：支持分层复杂度创建浏览器（简单、标准、高级）
-- 🌐 **代理管理**：内置代理验证、测试和配置工具
-- 🔧 **高级配置**：完全控制指纹、代理和浏览器设置
+- 🛠️ **浏览器创建**：支持单个或批量创建浏览器，可完整配置
+- 🌐 **代理管理**：代理列表、创建、检测与管理
+- 👤 **账号管理**：在工作区中管理平台账号与凭证
+- 🔧 **高级配置**：指纹、清缓存、随机指纹等
+- 🏥 **健康检查**：服务器与工作区连通性诊断
 
 ## 快速开始
 
@@ -42,7 +44,7 @@
   "mcpServers": {
     "roxybrowser-openapi": {
       "command": "npx",
-      "args": ["@roxybrowser/openapi@beta"],
+      "args": ["@roxybrowser/openapi@latest"],
       "env": {
         "ROXY_API_KEY": "YOUR API KEY",
         "ROXY_API_HOST": "http://127.0.0.1:50000"
@@ -60,41 +62,50 @@
 
 ## 可用工具
 
-### 工作区与项目管理
+### 工作区
 - `roxy_list_workspaces` - 列出所有可用的工作区及其项目
-- `roxy_list_accounts` - 获取工作区中的平台账号和凭证
-- `roxy_list_labels` - 获取用于组织的浏览器标签
 
-### 浏览器管理
+### 浏览器
 - `roxy_list_browsers` - 列出工作区/项目中的浏览器并支持筛选
-- `roxy_get_browser_detail` - 获取详细的浏览器信息和配置
+- `roxy_create_browser` - 使用完整配置创建浏览器
+- `roxy_batch_create_browsers` - 批量创建多个浏览器
 - `roxy_open_browsers` - 打开浏览器并获取用于自动化的 CDP WebSocket 端点
+- `roxy_update_browser` - 更新现有浏览器配置
 - `roxy_close_browsers` - 关闭运行中的浏览器（不释放额度）
 - `roxy_delete_browsers` - 永久删除浏览器配置文件（释放额度）
+- `roxy_get_browser_detail` - 获取详细的浏览器信息和配置
 - `roxy_get_connection_info` - 获取已打开浏览器的 CDP 端点和进程 ID
-
-### 浏览器创建
-- `roxy_create_browser_simple` - 使用基础配置创建浏览器
-- `roxy_create_browser_standard` - 使用常用设置创建浏览器（操作系统、代理、窗口大小等）
-- `roxy_create_browser_advanced` - 使用完全控制创建浏览器（指纹、平台账号等）
-
-### 浏览器维护
-- `roxy_update_browser` - 更新现有浏览器配置
-- `roxy_random_fingerprint` - 随机化浏览器指纹
 - `roxy_clear_local_cache` - 清除本地浏览器缓存
 - `roxy_clear_server_cache` - 清除服务端浏览器缓存
+- `roxy_random_fingerprint` - 随机化浏览器指纹
+- `roxy_list_labels` - 获取用于组织的浏览器标签
+
+### 代理
+- `roxy_list_proxies` - 列出工作区中的代理配置
+- `roxy_store_proxies` - 获取已购买的代理列表（商店）
+- `roxy_create_proxy` - 创建代理配置
+- `roxy_batch_create_proxies` - 批量创建代理
+- `roxy_detect_proxy` - 检测/测试代理可用性
+- `roxy_modify_proxy` - 修改现有代理配置
+- `roxy_delete_proxies` - 删除代理配置
+
+### 账号
+- `roxy_list_accounts` - 列出工作区中的平台账号和凭证
+- `roxy_create_account` - 创建平台账号
+- `roxy_batch_create_accounts` - 批量创建账号
+- `roxy_modify_account` - 修改现有账号
+- `roxy_delete_accounts` - 删除账号
 
 ### 实用工具
-- `roxy_validate_proxy_config` - 验证代理配置
-- `roxy_system_diagnostics` - 系统健康检查和诊断
+- `roxy_health_check` - 服务器健康检查及工作区/浏览器连通性诊断
 
 ## 完整工作流示例
 
 ### 示例 1：快速浏览器自动化设置
 
 ```
-1. AI："在工作区 1 中创建一个名为'测试浏览器'的简单浏览器"
-   → 使用 roxy_create_browser_simple
+1. AI："在工作区 1 中创建一个名为'测试浏览器'的浏览器"
+   → 使用 roxy_create_browser
    → 返回可供使用的浏览器 ID
 
 2. AI："打开我刚创建的浏览器"
@@ -102,27 +113,27 @@
    → 返回 CDP WebSocket URL，例如：ws://127.0.0.1:52314/devtools/browser/xxx
 
 3. AI："导航到 gmail.com，登录并发送邮件"
-   → 自动使用 PlayRoxy MCP 工具（browser_navigate、browser_type、browser_click 等）
+   → 使用 PlayRoxy MCP 工具（browser_navigate、browser_type、browser_click 等）
    → PlayRoxy MCP 通过 CDP 端点连接到已打开的浏览器
 
 4. AI："完成后关闭浏览器"
    → 使用 roxy_close_browsers
 ```
 
-### 示例 2：使用代理的高级浏览器设置
+### 示例 2：使用代理的浏览器设置
 
 ```
-1. AI："在创建浏览器之前验证我的代理配置"
-   → 使用 roxy_validate_proxy_config
-   → 确认代理设置正确
+1. AI："在创建浏览器之前检测我的代理"
+   → 使用 roxy_detect_proxy
+   → 确认代理可用
 
-2. AI："在工作区 2 中创建一个使用 SOCKS5 代理和 1920x1080 分辨率的标准浏览器"
-   → 使用 roxy_create_browser_standard 配置代理
+2. AI："在工作区 2 中创建一个使用 SOCKS5 代理和 1920x1080 分辨率的浏览器"
+   → 使用 roxy_create_browser 配置代理
    → 返回配置好的浏览器 ID
 
 3. AI："打开浏览器并开始自动化"
    → 使用 roxy_open_browsers → 获取 CDP 端点
-   → PlayRoxy MCP 自动连接并开始自动化任务
+   → PlayRoxy MCP 连接并开始自动化
 ```
 
 ## 与 Playwright MCP 集成
@@ -158,23 +169,6 @@ npm run build
 | `ROXY_API_KEY` | ✅ 是 | - | 从 RoxyBrowser 设置中获取的 API key |
 | `ROXY_API_HOST` | ✅ 是 | `http://127.0.0.1:50000` | RoxyBrowser API 端点 |
 | `ROXY_TIMEOUT` | 否 | `30000` | 请求超时时间（毫秒）|
-
-### 错误代码
-
-| 代码 | 名称 | 说明 |
-|------|------|-------------|
-| **0** | SUCCESS | 操作成功完成 |
-| **101** | INSUFFICIENT_QUOTA | 窗口额度不足 |
-| **400** | INVALID_PARAMS | 提供的参数无效 |
-| **401** | UNAUTHORIZED | 认证失败 - API key 无效 |
-| **403** | FORBIDDEN | 访问被拒绝 - 权限不足 |
-| **404** | NOT_FOUND | 资源未找到 |
-| **408** | TIMEOUT | 请求超时 |
-| **409** | CONFLICT | 资源冲突或额度不足 |
-| **500** | SERVER_ERROR | 服务器内部错误 |
-| **502** | BAD_GATEWAY | 网关错误 - 代理或网络问题 |
-| **503** | SERVICE_UNAVAILABLE | 服务暂时不可用 |
-| **504** | GATEWAY_TIMEOUT | 网关超时 |
 
 ## 故障排除
 
@@ -213,7 +207,7 @@ export ROXY_API_KEY="your_actual_api_key_from_roxybrowser"
 - 检查浏览器配置文件存在且未损坏
 - 确保系统资源充足（RAM、CPU）
 - 验证 dirIds 有效（先使用 `roxy_list_browsers`）
-- 运行 `roxy_system_diagnostics` 进行全面健康检查
+- 运行 `roxy_health_check` 进行连通性与健康诊断
 
 ## 许可证
 

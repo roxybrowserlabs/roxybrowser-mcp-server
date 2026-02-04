@@ -1,6 +1,438 @@
 import { request } from '../utils/index.js'
 import { proxyList, proxyStore } from './proxy.js'
 
+const osversion_windows = [
+  {
+    label: '11',
+    type: 'osVersion-Windows',
+    value: '11',
+  },
+  {
+    label: '10',
+    type: 'osVersion-Windows',
+    value: '10',
+  },
+  {
+    label: '8',
+    type: 'osVersion-Windows',
+    value: '8',
+  },
+  {
+    label: '7',
+    type: 'osVersion-Windows',
+    value: '7',
+  },
+]
+
+const osversion_macos = [
+  {
+    label: '15.3.2',
+    type: 'osVersion-macOS',
+    value: '15.3.2',
+  },
+  {
+    label: '15.3.1',
+    type: 'osVersion-macOS',
+    value: '15.3.1',
+  },
+  {
+    label: '15.3',
+    type: 'osVersion-macOS',
+    value: '15.3',
+  },
+  {
+    label: '15.2',
+    type: 'osVersion-macOS',
+    value: '15.2',
+  },
+  {
+    label: '15.1',
+    type: 'osVersion-macOS',
+    value: '15.1',
+  },
+  {
+    label: '15.0.1',
+    type: 'osVersion-macOS',
+    value: '15.0.1',
+  },
+  {
+    label: '15.0',
+    type: 'osVersion-macOS',
+    value: '15.0',
+  },
+  {
+    label: '14.7.4',
+    type: 'osVersion-macOS',
+    value: '14.7.4',
+  },
+  {
+    label: '14.7.3',
+    type: 'osVersion-macOS',
+    value: '14.7.3',
+  },
+  {
+    label: '14.7.2',
+    type: 'osVersion-macOS',
+    value: '14.7.2',
+  },
+  {
+    label: '14.7.1',
+    type: 'osVersion-macOS',
+    value: '14.7.1',
+  },
+  {
+    label: '14.7',
+    type: 'osVersion-macOS',
+    value: '14.7',
+  },
+  {
+    label: '14.6.1',
+    type: 'osVersion-macOS',
+    value: '14.6.1',
+  },
+  {
+    label: '14.6',
+    type: 'osVersion-macOS',
+    value: '14.6',
+  },
+  {
+    label: '14.5',
+    type: 'osVersion-macOS',
+    value: '14.5',
+  },
+  {
+    label: '14.4.1',
+    type: 'osVersion-macOS',
+    value: '14.4.1',
+  },
+  {
+    label: '14.4',
+    type: 'osVersion-macOS',
+    value: '14.4',
+  },
+  {
+    label: '14.3.1',
+    type: 'osVersion-macOS',
+    value: '14.3.1',
+  },
+  {
+    label: '14.3',
+    type: 'osVersion-macOS',
+    value: '14.3',
+  },
+  {
+    label: '14.2.1',
+    type: 'osVersion-macOS',
+    value: '14.2.1',
+  },
+  {
+    label: '14.2',
+    type: 'osVersion-macOS',
+    value: '14.2',
+  },
+  {
+    label: '14.1',
+    type: 'osVersion-macOS',
+    value: '14.1',
+  },
+  {
+    label: '13.7.4',
+    type: 'osVersion-macOS',
+    value: '13.7.4',
+  },
+  {
+    label: '13.7.3',
+    type: 'osVersion-macOS',
+    value: '13.7.3',
+  },
+  {
+    label: '13.7.2',
+    type: 'osVersion-macOS',
+    value: '13.7.2',
+  },
+  {
+    label: '13.7.1',
+    type: 'osVersion-macOS',
+    value: '13.7.1',
+  },
+  {
+    label: '13.7',
+    type: 'osVersion-macOS',
+    value: '13.7',
+  },
+  {
+    label: 'ALL',
+    type: 'osVersion-macOS',
+    value: 'ALL',
+  },
+]
+
+const osversion_linux = [
+  {
+    label: 'ALL',
+    type: 'osVersion-Linux',
+    value: 'ALL',
+  },
+]
+
+const osversion_android = [
+  {
+    label: '15',
+    type: 'osVersion-Android',
+    value: '15',
+  },
+  {
+    label: '14',
+    type: 'osVersion-Android',
+    value: '14',
+  },
+  {
+    label: '13',
+    type: 'osVersion-Android',
+    value: '13',
+  },
+  {
+    label: '12',
+    type: 'osVersion-Android',
+    value: '12',
+  },
+  {
+    label: '11',
+    type: 'osVersion-Android',
+    value: '11',
+  },
+  {
+    label: '10',
+    type: 'osVersion-Android',
+    value: '10',
+  },
+  {
+    label: '9',
+    type: 'osVersion-Android',
+    value: '9',
+  },
+]
+
+const osversion_ios = [
+  {
+    label: '18.2',
+    type: 'osVersion-IOS',
+    value: '18.2',
+  },
+  {
+    label: '18.1',
+    type: 'osVersion-IOS',
+    value: '18.1',
+  },
+  {
+    label: '18.0',
+    type: 'osVersion-IOS',
+    value: '18.0',
+  },
+  {
+    label: '17.0',
+    type: 'osVersion-IOS',
+    value: '17.0',
+  },
+  {
+    label: '16.6',
+    type: 'osVersion-IOS',
+    value: '16.6',
+  },
+  {
+    label: '16.5',
+    type: 'osVersion-IOS',
+    value: '16.5',
+  },
+  {
+    label: '16.4',
+    type: 'osVersion-IOS',
+    value: '16.4',
+  },
+  {
+    label: '16.3',
+    type: 'osVersion-IOS',
+    value: '16.3',
+  },
+  {
+    label: '16.2',
+    type: 'osVersion-IOS',
+    value: '16.2',
+  },
+  {
+    label: '16.1',
+    type: 'osVersion-IOS',
+    value: '16.1',
+  },
+  {
+    label: '16.0',
+    type: 'osVersion-IOS',
+    value: '16.0',
+  },
+  {
+    label: '15.7',
+    type: 'osVersion-IOS',
+    value: '15.7',
+  },
+  {
+    label: '15.6',
+    type: 'osVersion-IOS',
+    value: '15.6',
+  },
+  {
+    label: '15.5',
+    type: 'osVersion-IOS',
+    value: '15.5',
+  },
+  {
+    label: '15.4',
+    type: 'osVersion-IOS',
+    value: '15.4',
+  },
+  {
+    label: '15.3',
+    type: 'osVersion-IOS',
+    value: '15.3',
+  },
+  {
+    label: '15.2',
+    type: 'osVersion-IOS',
+    value: '15.2',
+  },
+  {
+    label: '15.1',
+    type: 'osVersion-IOS',
+    value: '15.1',
+  },
+  {
+    label: '15.0',
+    type: 'osVersion-IOS',
+    value: '15.0',
+  },
+  {
+    label: '14.7',
+    type: 'osVersion-IOS',
+    value: '14.7',
+  },
+  {
+    label: '14.6',
+    type: 'osVersion-IOS',
+    value: '14.6',
+  },
+  {
+    label: '14.5',
+    type: 'osVersion-IOS',
+    value: '14.5',
+  },
+  {
+    label: '14.4',
+    type: 'osVersion-IOS',
+    value: '14.4',
+  },
+  {
+    label: '14.3',
+    type: 'osVersion-IOS',
+    value: '14.3',
+  },
+  {
+    label: '14.2',
+    type: 'osVersion-IOS',
+    value: '14.2',
+  },
+  {
+    label: '14.1',
+    type: 'osVersion-IOS',
+    value: '14.1',
+  },
+  {
+    label: '14.0',
+    type: 'osVersion-IOS',
+    value: '14.0',
+  },
+]
+
+const coreVersion = [
+  {
+    label: 'RoxyChrome 144',
+    type: 'coreVersion',
+    value: '144',
+  },
+  {
+    label: 'RoxyChrome 143',
+    type: 'coreVersion',
+    value: '143',
+  },
+  {
+    label: 'RoxyChrome 142',
+    type: 'coreVersion',
+    value: '142',
+  },
+  {
+    label: 'RoxyChrome 141',
+    type: 'coreVersion',
+    value: '141',
+  },
+  {
+    label: 'RoxyChrome 140',
+    type: 'coreVersion',
+    value: '140',
+  },
+  {
+    label: 'RoxyChrome 139',
+    type: 'coreVersion',
+    value: '139',
+  },
+  {
+    label: 'RoxyChrome 138',
+    type: 'coreVersion',
+    value: '138',
+  },
+  {
+    label: 'RoxyChrome 137',
+    type: 'coreVersion',
+    value: '137',
+  },
+  {
+    label: 'RoxyChrome 136',
+    type: 'coreVersion',
+    value: '136',
+  },
+  {
+    label: 'RoxyChrome 135',
+    type: 'coreVersion',
+    value: '135',
+  },
+  {
+    label: 'RoxyChrome 133',
+    type: 'coreVersion',
+    value: '133',
+  },
+  {
+    label: 'RoxyChrome 130',
+    type: 'coreVersion',
+    value: '130',
+  },
+  {
+    label: 'RoxyChrome 125',
+    type: 'coreVersion',
+    value: '125',
+  },
+  {
+    label: 'RoxyChrome 117',
+    type: 'coreVersion',
+    value: '117',
+  },
+  {
+    label: 'RoxyChrome 109',
+    type: 'coreVersion',
+    value: '109',
+  },
+]
+
+function osVersionString() {
+  return `Windows: ${osversion_windows.map(item => item.value).join(',')}; macOS: ${osversion_macos.map(item => item.value).join(',')}; Linux: ${osversion_linux.map(item => item.value).join(',')}; Android: ${osversion_android.map(item => item.value).join(',')}; IOS: ${osversion_ios.map(item => item.value).join(',')}`
+}
+
 class CreateBrowser {
   name = 'roxy_create_browser'
   description = 'Create a browser with complete configuration control - for expert users needing full parameter access'
@@ -9,56 +441,56 @@ class CreateBrowser {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       windowName: {
         type: 'string',
-        description: 'Browser window name (optional)',
+        description: 'Browser window name',
       },
       coreVersion: {
         type: 'string',
-        enum: ['144', '143', '142', '141', '140', '138', '137', '136', '135', '133', '130', '125', '117', '109'],
-        description: 'Browser core version (optional). If not provided, the latest available core version will be used.',
+        enum: coreVersion.map(item => item.value),
+        description: 'Browser core version. If not provided, the latest available core version will be used.',
       },
       os: {
         type: 'string',
         enum: ['Windows', 'macOS', 'Linux', 'IOS', 'Android'],
-        description: 'Operating system (optional, default: Windows)',
+        description: 'Operating system (default: Windows)',
       },
       osVersion: {
         type: 'string',
-        description: `Windows: 11,10,8,7; macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; Linux: ALL; Android: 14,13,12,11,10,9; IOS: 18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 (optional)`,
+        description: osVersionString(),
       },
       userAgent: {
         type: 'string',
-        description: 'Custom user agent (optional)',
+        description: 'Custom user agent',
       },
       cookie: {
         type: 'array',
-        description: 'Cookie list (optional)',
+        description: 'Cookie list',
       },
       searchEngine: {
         type: 'string',
         enum: ['Google', 'Microsoft Bing', 'Yahoo', 'Yandex', 'DuckDuckGo'],
-        description: 'Default search engine (optional)',
+        description: 'Default search engine',
       },
       labelIds: {
         type: 'array',
         items: { type: 'number' },
-        description: 'Label IDs to assign (optional)',
+        description: 'Label IDs to assign',
       },
       defaultOpenUrl: {
         type: 'array',
         items: { type: 'string' },
-        description: 'URLs to open by default (optional)',
+        description: 'URLs to open by default',
       },
       windowRemark: {
         type: 'string',
-        description: 'Window remarks/notes (optional)',
+        description: 'Window remarks/notes',
       },
       projectId: {
         type: 'number',
-        description: 'Project ID (optional)',
+        description: 'Project ID',
       },
       windowPlatformList: {
         type: 'array',
@@ -74,11 +506,11 @@ class CreateBrowser {
             platformRemarks: { type: 'string', description: 'Platform remarks' },
           },
         },
-        description: 'Platform account information (optional)',
+        description: 'Platform account information',
       },
       proxyInfo: {
         type: 'object',
-        description: 'Complete proxy configuration object (optional)',
+        description: 'Complete proxy configuration object',
         properties: {
           // 如果有 moduleId ，则其他参数不可传递 (moduleId 可通过 roxy_list_proxies 或 roxy_store_proxies 获取) 优先使用该参数来绑定代理IP
           moduleId: { type: 'number', description: `If moduleId is provided, no other parameters may be passed. (moduleId can be obtained via ${proxyList.name} or ${proxyStore.name}. field: id) Priority to use this parameter to bind proxy IP` },
@@ -96,7 +528,7 @@ class CreateBrowser {
       },
       fingerInfo: {
         type: 'object',
-        description: 'Complete fingerprint configuration (optional)',
+        description: 'Complete fingerprint configuration',
         properties: {
           // Language and timezone
           isLanguageBaseIp: { type: 'boolean', description: 'Follow IP for browser language' },
@@ -400,12 +832,12 @@ class OpenBrowser {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       dirIds: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Array of browser directory IDs to open (required)',
+        description: 'Array of browser directory IDs to open',
       },
       forceOpen: {
         type: 'boolean',
@@ -548,15 +980,15 @@ class ListBrowsers {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       projectIds: {
         type: 'string',
-        description: 'Comma-separated project IDs (optional)',
+        description: 'Comma-separated project IDs',
       },
       windowName: {
         type: 'string',
-        description: 'Filter by browser window name (optional)',
+        description: 'Filter by browser window name',
       },
       pageIndex: {
         type: 'number',
@@ -633,7 +1065,7 @@ class CloseBrowsers {
       dirIds: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Array of browser directory IDs to close (required)',
+        description: 'Array of browser directory IDs to close',
       },
     },
     required: ['dirIds'],
@@ -715,12 +1147,12 @@ class DeleteBrowsers {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       dirIds: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Array of browser directory IDs to delete (required)',
+        description: 'Array of browser directory IDs to delete',
       },
     },
     required: ['workspaceId', 'dirIds'],
@@ -792,11 +1224,11 @@ class GetBrowserDetail {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       dirId: {
         type: 'string',
-        description: 'Browser directory ID (required)',
+        description: 'Browser directory ID',
       },
     },
     required: ['workspaceId', 'dirId'],
@@ -885,7 +1317,7 @@ class ClearLocalCache {
       dirIds: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Array of browser directory IDs (required)',
+        description: 'Array of browser directory IDs',
       },
     },
     required: ['dirIds'],
@@ -948,12 +1380,12 @@ class ClearServerCache {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       dirIds: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Array of browser directory IDs (required)',
+        description: 'Array of browser directory IDs',
       },
     },
     required: ['workspaceId', 'dirIds'],
@@ -1020,11 +1452,11 @@ class RandomFingerprint {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
       dirId: {
         type: 'string',
-        description: 'Browser directory ID (required)',
+        description: 'Browser directory ID',
       },
     },
     required: ['workspaceId', 'dirId'],
@@ -1090,7 +1522,7 @@ class ListLabels {
     properties: {
       workspaceId: {
         type: 'number',
-        description: 'Workspace ID (required)',
+        description: 'Workspace ID',
       },
     },
     required: ['workspaceId'],
