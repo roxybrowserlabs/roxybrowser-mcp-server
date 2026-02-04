@@ -2,12 +2,6 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-> **⚠️ BETA VERSION NOTICE**
->
-> This project is currently in **beta testing and active development**. While we strive for stability, please exercise caution when using this tool in production environments or with critical assets. We recommend closely monitoring software and browser operations when using it with MCP clients to avoid unnecessary losses.
->
->For more details, please refer to: [RoxyBrowser Now Supports MCP — AI Can Finally Do the Work for You](https://roxybrowser.com/blog/roxybrowser-mcp-integration)
-
 A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.com/) that provides AI assistants with the ability to manage browser instances and obtain Chrome DevTools Protocol (CDP) WebSocket endpoints for automation.
 
 ## Features
@@ -15,7 +9,7 @@ A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.
 - 🚀 **Browser Management**: Open and close RoxyBrowser instances programmatically
 - 🔗 **CDP Integration**: Get WebSocket endpoints for Chrome DevTools Protocol automation
 - 🤖 **AI-Friendly**: Seamlessly integrates with AI assistants through MCP
-- 🎯 **Playwright Ready**: Works with [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp) (RoxyBrowser's customized Playwright MCP)
+- 🎯 **Playwright Ready**: Works with [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp) (RoxyBrowser's customized Playwright MCP)
 - 📊 **Workspace Support**: Manage browsers across different workspaces and projects
 - 🛠️ **Browser Creation**: Create browsers (single or batch) with full configuration
 - 🌐 **Proxy Management**: List, create, detect, and manage proxy configurations
@@ -36,7 +30,7 @@ A Model Context Protocol (MCP) server for [RoxyBrowser](https://www.roxybrowser.
 
 ### MCP Client Configuration
 
-Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
+Add both RoxyBrowser OpenAPI and RoxyBrowser Playwright MCP to your MCP client configuration:
 
 **Claude Desktop / VS Code / Cursor:**
 ```json
@@ -113,8 +107,8 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
    → Returns CDP WebSocket URL like: ws://127.0.0.1:52314/devtools/browser/xxx
 
 3. AI: "Navigate to gmail.com, login, and send emails"
-   → Uses PlayRoxy MCP tools (browser_navigate, browser_type, browser_click, etc.)
-   → PlayRoxy MCP connects to the opened browser via CDP endpoint
+   → Uses RoxyBrowser Playwright MCP tools (browser_navigate, browser_type, browser_click, etc.)
+   → RoxyBrowser Playwright MCP connects to the opened browser via CDP endpoint
 
 4. AI: "Close the browser when done"
    → Uses roxy_close_browsers
@@ -133,20 +127,20 @@ Add both RoxyBrowser OpenAPI and PlayRoxy MCP to your MCP client configuration:
 
 3. AI: "Open the browser and start automation"
    → Uses roxy_open_browsers → gets CDP endpoint
-   → PlayRoxy MCP connects and begins automation
+   → RoxyBrowser Playwright MCP connects and begins automation
 ```
 
 ## Integration with Playwright MCP
 
-RoxyBrowser MCP is designed to work seamlessly with [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp), our customized Playwright MCP server built specifically for RoxyBrowser compatibility.
+RoxyBrowser MCP is designed to work seamlessly with [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp), our customized Playwright MCP server built specifically for RoxyBrowser compatibility.
 
-**PlayRoxy MCP** is based on [Microsoft's Playwright MCP](https://github.com/microsoft/playwright-mcp) with enhancements for RoxyBrowser's fingerprint browser features.
+**RoxyBrowser Playwright MCP** is based on [Microsoft's Playwright MCP](https://github.com/microsoft/playwright-mcp) with enhancements for RoxyBrowser's fingerprint browser features.
 
 ### Workflow
 
 1. Use RoxyBrowser OpenAPI MCP to create and open browsers
 2. Get CDP WebSocket endpoints from opened browsers
-3. Use PlayRoxy MCP to automate browser tasks with full Playwright capabilities
+3. Use RoxyBrowser Playwright MCP to automate browser tasks with full Playwright capabilities
 
 Both servers work together seamlessly when configured in your MCP client (see configuration above).
 

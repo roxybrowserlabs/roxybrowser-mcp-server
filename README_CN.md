@@ -2,12 +2,6 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-> **⚠️ Beta 测试版声明**
->
-> 本项目目前处于 **Beta 测试和开发阶段**。虽然我们力求稳定性，但请在重要环境或关键资产中谨慎使用。我们建议在 MCP 客户端使用时，密切监控软件和浏览器操作，从而避免不必要的损失。
->
-> 关于 RoxyBrowser MCP 的更多功能介绍，请访问：[RoxyBrowser 支持 MCP 协议：让 AI 替你干活儿!](https://roxybrowser.com/zh/blog/roxybrowser-mcp-integration)
-
 一个为 [RoxyBrowser](https://www.roxybrowser.com/) 设计的模型上下文协议（MCP）服务器，为 AI 助手提供管理浏览器实例和获取 Chrome DevTools Protocol (CDP) WebSocket 端点的能力。
 
 ## 功能特性
@@ -15,7 +9,7 @@
 - 🚀 **浏览器管理**：通过编程方式打开和关闭 RoxyBrowser 实例
 - 🔗 **CDP 集成**：获取用于 Chrome DevTools Protocol 自动化的 WebSocket 端点
 - 🤖 **AI 友好**：通过 MCP 与 AI 助手无缝集成
-- 🎯 **Playwright 就绪**：与 [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp)（RoxyBrowser 定制的 Playwright MCP）配合使用
+- 🎯 **Playwright 就绪**：与 [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp)（RoxyBrowser 定制的 Playwright MCP）配合使用
 - 📊 **工作区支持**：跨不同工作区和项目管理浏览器
 - 🛠️ **浏览器创建**：支持单个或批量创建浏览器，可完整配置
 - 🌐 **代理管理**：代理列表、创建、检测与管理
@@ -36,7 +30,7 @@
 
 ### MCP 客户端配置
 
-将 RoxyBrowser OpenAPI 和 PlayRoxy MCP 添加到您的 MCP 客户端配置中：
+将 RoxyBrowser OpenAPI 和 RoxyBrowser Playwright MCP 添加到您的 MCP 客户端配置中：
 
 **Claude Desktop / VS Code / Cursor：**
 ```json
@@ -113,8 +107,8 @@
    → 返回 CDP WebSocket URL，例如：ws://127.0.0.1:52314/devtools/browser/xxx
 
 3. AI："导航到 gmail.com，登录并发送邮件"
-   → 使用 PlayRoxy MCP 工具（browser_navigate、browser_type、browser_click 等）
-   → PlayRoxy MCP 通过 CDP 端点连接到已打开的浏览器
+   → 使用 RoxyBrowser Playwright MCP 工具（browser_navigate、browser_type、browser_click 等）
+   → RoxyBrowser Playwright MCP 通过 CDP 端点连接到已打开的浏览器
 
 4. AI："完成后关闭浏览器"
    → 使用 roxy_close_browsers
@@ -133,20 +127,20 @@
 
 3. AI："打开浏览器并开始自动化"
    → 使用 roxy_open_browsers → 获取 CDP 端点
-   → PlayRoxy MCP 连接并开始自动化
+   → RoxyBrowser Playwright MCP 连接并开始自动化
 ```
 
 ## 与 Playwright MCP 集成
 
-RoxyBrowser MCP 旨在与 [PlayRoxy MCP](https://github.com/roxybrowserlabs/playroxy-mcp) 无缝协作，这是我们专为 RoxyBrowser 兼容性构建的定制 Playwright MCP 服务器。
+RoxyBrowser MCP 旨在与 [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp) 无缝协作，这是我们专为 RoxyBrowser 兼容性构建的定制 Playwright MCP 服务器。
 
-**PlayRoxy MCP** 基于 [Microsoft 的 Playwright MCP](https://github.com/microsoft/playwright-mcp)，并针对 RoxyBrowser 的指纹浏览器功能进行了增强。
+**RoxyBrowser Playwright MCP** 基于 [Microsoft 的 Playwright MCP](https://github.com/microsoft/playwright-mcp)，并针对 RoxyBrowser 的指纹浏览器功能进行了增强。
 
 ### 工作流程
 
 1. 使用 RoxyBrowser OpenAPI MCP 创建和打开浏览器
 2. 从打开的浏览器获取 CDP WebSocket 端点
-3. 使用 PlayRoxy MCP 以完整的 Playwright 功能自动化浏览器任务
+3. 使用 RoxyBrowser Playwright MCP 以完整的 Playwright 功能自动化浏览器任务
 
 两个服务器在 MCP 客户端中配置后可无缝协作（参见上面的配置）。
 
