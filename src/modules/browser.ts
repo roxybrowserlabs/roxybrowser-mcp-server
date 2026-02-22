@@ -468,6 +468,7 @@ class CreateBrowser {
       cookie: {
         type: 'array',
         description: 'Cookie list',
+        items: { type: 'object' },
       },
       searchEngine: {
         type: 'string',
