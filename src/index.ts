@@ -3,10 +3,11 @@
 /**
  * RoxyBrowser MCP Server
  *
- * Model Context Protocol server for RoxyBrowser automation
- * Provides tools to manage browser instances and get CDP endpoints
+ * Model Context Protocol server for RoxyBrowser automation.
+ * Supports: CLI startup, programmatic (in-process) startup, and library usage for secondary development.
  */
 
+import { fileURLToPath } from 'node:url'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
@@ -17,10 +18,9 @@ import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modif
 import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
 import { healthCheck, listWorkspaces } from './modules/other.js'
 import { batchCreateProxies, createProxy, deleteProxies, detectProxy, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
-import { ConfigError } from './types.js'
 
 // ========== Tool Definitions ==========
-const TOOLS = [
+export const TOOLS = [
   listBrowsers.schema,
   batchCreateBrowsers.schema,
   createBrowser.schema,
@@ -56,7 +56,7 @@ const TOOLS = [
 
 // ========== MCP Server ==========
 
-class RoxyBrowserMCPServer {
+export class RoxyBrowserMCPServer {
   private server: Server
   constructor() {
     this.server = new Server(
@@ -72,10 +72,6 @@ class RoxyBrowserMCPServer {
     )
 
     this.setupHandlers()
-
-    // Initialize RoxyBrowser client
-    // const config = getConfig()
-    // this.roxyClient = new RoxyClient(config)
   }
 
   private setupHandlers() {
@@ -203,31 +199,54 @@ class RoxyBrowserMCPServer {
   }
 }
 
-// ========== Main ==========
+// ========== Programmatic API ==========
 
-async function main() {
-  try {
-    const server = new RoxyBrowserMCPServer()
-    await server.run()
-  }
-  catch (error) {
-    if (error instanceof ConfigError) {
-      console.error(`❌ Configuration Error: ${error.message}`)
-      process.exit(1)
-    }
-
-    console.error('❌ Unexpected error:', error)
-    process.exit(1)
-  }
+/**
+ * Create and run MCP server with stdio transport (for in-process usage).
+ * Use when embedding the server in your own Node process.
+ */
+export async function runServer(): Promise<void> {
+  const server = new RoxyBrowserMCPServer()
+  await server.run()
 }
 
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-  console.error('\n👋 Shutting down RoxyBrowser MCP Server...')
-  process.exit(0)
-})
+// ========== Library exports for secondary development ==========
 
-main().catch((error) => {
-  console.error('Fatal error:', error)
-  process.exit(1)
-})
+export {
+  listBrowsers,
+  batchCreateBrowsers,
+  createBrowser,
+  openBrowser,
+  updateBrowser,
+  closeBrowsers,
+  deleteBrowsers,
+  getBrowserDetail,
+  clearLocalCache,
+  clearServerCache,
+  randomFingerprint,
+  listLabels,
+  getConnectionInfo,
+} from './modules/browser.js'
+
+export {
+  proxyList,
+  proxyStore,
+  createProxy,
+  batchCreateProxies,
+  detectProxy,
+  modifyProxy,
+  deleteProxies,
+} from './modules/proxy.js'
+
+export {
+  listAccounts,
+  createAccount,
+  batchCreateAccounts,
+  modifyAccount,
+  deleteAccounts,
+} from './modules/account.js'
+
+export { listWorkspaces, healthCheck } from './modules/other.js'
+
+export { request, resolveConfig, DEFAULT_CONFIG } from './utils/index.js'
+export type * from './types.js'
