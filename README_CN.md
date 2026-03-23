@@ -54,6 +54,108 @@
 
 **注意：** 将 `YOUR API KEY` 和 `YOUR API HOST` 替换为您实际的 RoxyBrowser 凭证。
 
+## 使用方式
+
+本包支持三种使用方式：**CLI 直接启动**、**进程内启动**、以及**作为库引入**做二次开发。
+
+### 1. CLI 直接启动
+
+在命令行直接启动 MCP 服务，适合被 MCP 客户端以子进程方式拉起。
+
+```bash
+# 全局安装后
+roxy-browser-mcp
+
+# 或使用 npx（无需全局安装）
+npx @roxybrowser/openapi
+
+# 本地构建后
+npm run build && node lib/index.js
+```
+
+CLI 参数（配置优先级：**CLI 参数 > 环境变量 > 默认值**）：
+
+- `-V, --version` — 显示版本
+- `-h, --help` — 显示用法
+- `-H, --api-host <url>` — RoxyBrowser API 地址（默认：`http://127.0.0.1:50000`）
+- `-k, --api-key <key>` — API 密钥（未通过环境变量设置时必填）
+- `-t, --timeout <ms>` — 请求超时毫秒数（默认：`30000`）
+
+环境变量（在未传对应 CLI 参数时生效）：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`。
+
+示例：
+
+```bash
+roxy-browser-mcp --api-key "your-key"
+roxy-browser-mcp -k "your-key" -H http://127.0.0.1:50000
+ROXY_API_KEY=your-key roxy-browser-mcp
+```
+
+### 2. 进程内启动（编程方式）
+
+在你自己进程内启动 MCP 服务（同一进程、stdio 传输），适合从代码里启动而不是单独开一个 CLI 进程。
+
+```ts
+import { runServer } from '@roxybrowser/openapi'
+
+// 在 stdio 上启动 MCP 服务，会一直运行直到进程退出
+await runServer()
+```
+
+也可以使用 Server 类做更多控制：
+
+```ts
+import { RoxyBrowserMCPServer } from '@roxybrowser/openapi'
+
+const server = new RoxyBrowserMCPServer()
+await server.run()
+```
+
+在调用 `runServer()` 前设置环境变量（`ROXY_API_KEY`、`ROXY_API_HOST`）；配置在进程启动时读取，运行中不可修改。
+
+### 3. 库模式（二次开发）
+
+在自己的应用里直接使用导出的工具和 API，调用 RoxyBrowser 接口，而无需运行 MCP 服务。
+
+```ts
+import {
+  listBrowsers,
+  openBrowser,
+  createBrowser,
+  listWorkspaces,
+  healthCheck,
+} from '@roxybrowser/openapi'
+
+// 在发起请求前设置 ROXY_API_KEY、ROXY_API_HOST（环境变量）；配置在进程启动时固定
+// 直接调用工具 handler（与 MCP 工具入参一致）
+const listResult = await listBrowsers.handle({ workspaceId: 1 })
+const openResult = await openBrowser.handle({
+  workspaceId: 1,
+  dirIds: ['browser-dir-id'],
+})
+const createResult = await createBrowser.handle({
+  workspaceId: 1,
+  windowName: 'My Browser',
+})
+```
+
+每个工具都导出：
+
+- `.name` — 工具名（如 `roxy_list_browsers`）
+- `.schema` — MCP 工具 schema（`name`、`description`、`inputSchema`）
+- `.handle(args)` — 异步执行；传入与 MCP 工具相同的参数
+
+也可以使用底层 `request()` 与类型做自定义请求：
+
+```ts
+import { request, resolveConfig } from '@roxybrowser/openapi'
+import type { RoxyClientConfig, BrowserListItem, Workspace } from '@roxybrowser/openapi'
+
+const res = await request('/browser/list_v3?workspaceId=1', { method: 'GET' })
+```
+
+这样可以在自定义界面、脚本或其它 MCP 服务中复用 RoxyBrowser 的能力。
+
 ## 可用工具
 
 ### 工作区
@@ -156,13 +258,17 @@ npm run build
 
 ## API 参考
 
-### 环境变量
+### 配置说明
 
-| 变量 | 必需 | 默认值 | 说明 |
-|----------|----------|---------|-------------|
-| `ROXY_API_KEY` | ✅ 是 | - | 从 RoxyBrowser 设置中获取的 API key |
-| `ROXY_API_HOST` | ✅ 是 | `http://127.0.0.1:50000` | RoxyBrowser API 端点 |
-| `ROXY_TIMEOUT` | 否 | `30000` | 请求超时时间（毫秒）|
+配置解析顺序：**CLI 参数 > 环境变量 > 默认值**。
+
+| 来源 | 选项 / 变量 | 说明 |
+|--------|----------------|-------------|
+| CLI | `-H, --api-host`、`-k, --api-key`、`-t, --timeout` | 启动时传入 |
+| 环境变量 | `ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT` | 未传 CLI 参数时使用 |
+| 默认值 | `apiHost: http://127.0.0.1:50000`、`timeout: 30000` | 内置默认 |
+
+配置仅从环境变量读取；可用 `resolveConfig()` 查看当前生效配置（环境变量 + 默认值）。
 
 ## 故障排除
 

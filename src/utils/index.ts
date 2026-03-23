@@ -1,48 +1,72 @@
-export class ConfigError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'ConfigError'
-  }
-}
+/**
+ * Configuration and HTTP client for RoxyBrowser API.
+ *
+ * Config is fixed at process start: environment variables (ROXY_API_HOST, ROXY_API_KEY, ROXY_TIMEOUT) + defaults.
+ * CLI writes parsed args into process.env before starting the server, so CLI args take effect the same way.
+ */
+
+import { ConfigError } from '../types.js'
+
+export { ConfigError }
 
 export interface RoxyClientConfig {
-  /**
-   * RoxyBrowser API host (default: http://127.0.0.1:50000)
-   */
+  /** RoxyBrowser API base URL */
   apiHost: string
-  /**
-   * RoxyBrowser API key
-   */
+  /** API key (required for requests) */
   apiKey: string
-  /**
-   * Request timeout in milliseconds (default: 30000)
-   */
-  timeout?: number
+  /** Request timeout in milliseconds */
+  timeout: number
 }
 
-export function getConfig(): RoxyClientConfig {
-  const apiHost = process.env.ROXY_API_HOST || 'http://127.0.0.1:50000'
-  const apiKey = process.env.ROXY_API_KEY || ''
-  const timeout = process.env.ROXY_TIMEOUT ? Number.parseInt(process.env.ROXY_TIMEOUT) : 30000
+/** Default values when env is not set */
+export const DEFAULT_CONFIG = {
+  apiHost: 'http://127.0.0.1:50000',
+  timeout: 30_000,
+} as const
 
-  if (!apiKey) {
+const ENV_KEYS = {
+  apiHost: 'ROXY_API_HOST',
+  apiKey: 'ROXY_API_KEY',
+  timeout: 'ROXY_TIMEOUT',
+} as const
+
+/**
+ * Resolve config from env + defaults (read-only; no runtime override).
+ */
+export function resolveConfig(): RoxyClientConfig {
+  const envHost = process.env[ENV_KEYS.apiHost]
+  const envKey = process.env[ENV_KEYS.apiKey]
+  const envTimeout = process.env[ENV_KEYS.timeout]
+
+  return {
+    apiHost: envHost ?? DEFAULT_CONFIG.apiHost,
+    apiKey: envKey ?? '',
+    timeout:
+      envTimeout != null && envTimeout !== ''
+        ? Number.parseInt(envTimeout, 10)
+        : DEFAULT_CONFIG.timeout,
+  }
+}
+
+/** Internal: config with apiKey validation (used by request()). */
+function requireConfig(): RoxyClientConfig {
+  const config = resolveConfig()
+  if (!config.apiKey || config.apiKey.trim() === '') {
     throw new ConfigError(
-      'ROXY_API_KEY environment variable is required. '
-      + 'Get your API key from RoxyBrowser: API -> API配置 -> API Key',
+      'API key is required. Set ROXY_API_KEY or pass --api-key. '
+      + 'Get your key from RoxyBrowser: API → API配置 → API Key',
     )
   }
-
-  return { apiHost, apiKey, timeout }
+  return config
 }
-
-const config = getConfig()
 
 export async function request<T = any>(endpoint: string, options: RequestInit = {}): Promise<{
   code: number
   msg: string
   data?: T
 }> {
-  const url = `${config.apiHost}${endpoint}`
+  const config = requireConfig()
+  const url = `${config.apiHost.replace(/\/$/, '')}${endpoint}`
 
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), config.timeout)
@@ -52,7 +76,7 @@ export async function request<T = any>(endpoint: string, options: RequestInit = 
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'token': config.apiKey, // RoxyBrowser uses 'token' header
+        'token': config.apiKey,
         ...options.headers,
       },
       signal: controller.signal,

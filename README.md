@@ -54,6 +54,108 @@ Add both RoxyBrowser OpenAPI and RoxyBrowser Playwright MCP to your MCP client c
 
 **Note:** Replace `YOUR API KEY` and `YOUR API HOST` with your actual RoxyBrowser credentials.
 
+## Usage
+
+This package supports three ways to run: **CLI**, **in-process (programmatic)**, and **as a library** for custom integration.
+
+### 1. CLI (direct start)
+
+Start the MCP server from the command line. Ideal for MCP clients that spawn the server as a subprocess.
+
+```bash
+# After npm install -g @roxybrowser/openapi
+roxy-browser-mcp
+
+# Or with npx (no global install)
+npx @roxybrowser/openapi
+
+# After cloning and building
+npm run build && node lib/index.js
+```
+
+CLI options (config: **CLI args > environment variables > defaults**):
+
+- `-V, --version` — Show version
+- `-h, --help` — Show usage
+- `-H, --api-host <url>` — RoxyBrowser API base URL (default: `http://127.0.0.1:50000`)
+- `-k, --api-key <key>` — API key (required unless set via env)
+- `-t, --timeout <ms>` — Request timeout in milliseconds (default: `30000`)
+
+Environment variables (used when an option is not passed): `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`.
+
+Examples:
+
+```bash
+roxy-browser-mcp --api-key "your-key"
+roxy-browser-mcp -k "your-key" -H http://127.0.0.1:50000
+ROXY_API_KEY=your-key roxy-browser-mcp
+```
+
+### 2. In-process (programmatic start)
+
+Run the MCP server inside your own Node process (same process, stdio transport). Useful when you want to start the server from code instead of a separate CLI process.
+
+```ts
+import { runServer } from '@roxybrowser/openapi'
+
+// Starts MCP server on stdio; runs until process exits
+await runServer()
+```
+
+Or use the server class for more control:
+
+```ts
+import { RoxyBrowserMCPServer } from '@roxybrowser/openapi'
+
+const server = new RoxyBrowserMCPServer()
+await server.run()
+```
+
+Set env vars (`ROXY_API_KEY`, `ROXY_API_HOST`) before calling `runServer()`; config is read at process start and cannot be changed at runtime.
+
+### 3. Library (secondary development)
+
+Use the exported tools and API helpers in your own app: call RoxyBrowser APIs without running the MCP server.
+
+```ts
+import {
+  listBrowsers,
+  openBrowser,
+  createBrowser,
+  listWorkspaces,
+  healthCheck,
+} from '@roxybrowser/openapi'
+
+// Set ROXY_API_KEY and ROXY_API_HOST (env) before any request; config is fixed at process start
+// Use tool handlers directly (same as MCP tool calls)
+const listResult = await listBrowsers.handle({ workspaceId: 1 })
+const openResult = await openBrowser.handle({
+  workspaceId: 1,
+  dirIds: ['browser-dir-id'],
+})
+const createResult = await createBrowser.handle({
+  workspaceId: 1,
+  windowName: 'My Browser',
+})
+```
+
+Each tool exports:
+
+- `.name` — Tool name (e.g. `roxy_list_browsers`)
+- `.schema` — MCP tool schema (`name`, `description`, `inputSchema`)
+- `.handle(args)` — Async handler; pass the same arguments as the MCP tool
+
+You can also use the low-level `request()` helper and types:
+
+```ts
+import { request, resolveConfig } from '@roxybrowser/openapi'
+import type { RoxyClientConfig, BrowserListItem, Workspace } from '@roxybrowser/openapi'
+
+const res = await request('/browser/list_v3?workspaceId=1', { method: 'GET' })
+```
+
+This allows you to build custom UIs, scripts, or other MCP servers that reuse RoxyBrowser logic.
+
 ## Available Tools
 
 ### Workspace
@@ -156,13 +258,17 @@ npm run build
 
 ## API Reference
 
-### Environment Variables
+### Configuration
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `ROXY_API_KEY` | ✅ Yes | - | API key from RoxyBrowser settings |
-| `ROXY_API_HOST` | ✅ Yes | `http://127.0.0.1:50000` | RoxyBrowser API endpoint |
-| `ROXY_TIMEOUT` | No | `30000` | Request timeout in milliseconds |
+Config is resolved in this order: **CLI arguments > environment variables > defaults**.
+
+| Source | Options / Variables | Description |
+|--------|----------------------|-------------|
+| CLI | `-H, --api-host`, `-k, --api-key`, `-t, --timeout` | Pass when starting the server |
+| Env | `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT` | Used when CLI option not passed |
+| Defaults | `apiHost: http://127.0.0.1:50000`, `timeout: 30000` | Built-in defaults |
+
+Config is read from env only; use `resolveConfig()` to read current effective config (env + defaults).
 
 ## Troubleshooting
 

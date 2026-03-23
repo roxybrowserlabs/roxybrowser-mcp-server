@@ -468,6 +468,7 @@ class CreateBrowser {
       cookie: {
         type: 'array',
         description: 'Cookie list',
+        items: { type: 'object' },
       },
       searchEngine: {
         type: 'string',
@@ -548,6 +549,7 @@ class CreateBrowser {
           // Media settings
           forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
           forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
+          forbiddenPictureSize: { type: 'number', description: 'Image load size threshold (bytes). When forbidImage is false, set forbiddenPictureSize = 0 to disable all image loading. Default 0.' },
           forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
 
           // Window settings
