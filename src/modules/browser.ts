@@ -1040,10 +1040,11 @@ class ListBrowsers {
       text = `Found ${data.total} browsers in workspace ${params.workspaceId}:\n\n${
         data.rows.map((browser: any) =>
           `**${browser.windowName || 'Unnamed'}** (ID: ${browser.dirId})\n`
-          + `  - Project: ${browser.projectId}\n`
-          + `  - Sort: ${browser.sortNum}\n`
+          + `  - coreVersion: ${browser.coreVersion}`
+          + `  - Sort: ${browser.windowSortNum}\n`
+          + `  - OSVersion: ${browser.osVersion}\n`
           + `  - OS: ${browser.os}\n`
-          + `  - Status: ${browser.status}`,
+          + `  - Remark: ${browser.windowRemark}`,
         ).join('\n\n')}`
     }
 
