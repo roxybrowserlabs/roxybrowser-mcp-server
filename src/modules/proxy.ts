@@ -65,13 +65,13 @@ export class ProxyList {
 
   async handle(params: any) {
     const searchParams = new URLSearchParams()
-    searchParams.append('workspaceId', params.workspaceId)
+    searchParams.append('workspaceId', params.workspaceId.toString())
     if (params.id)
-      searchParams.append('id', params.id)
-    if (params.page_index)
-      searchParams.append('page_index', params.pageIndex)
-    if (params.page_size)
-      searchParams.append('page_size', params.pageSize)
+      searchParams.append('id', params.id.toString())
+    if (params.pageIndex)
+      searchParams.append('page_index', params.pageIndex.toString())
+    if (params.pageSize)
+      searchParams.append('page_size', params.pageSize.toString())
 
     if (!params.workspaceId) {
       throw new Error('workspaceId is required')
@@ -81,6 +81,11 @@ export class ProxyList {
     let text = ''
     if (result.code === 0) {
       const data = result.data
+      const currentPage = params.pageIndex ?? 1
+      const pageSize = params.pageSize ?? 15
+      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
+      const hasNextPage = currentPage < totalPages
+
       const proxyListText = data.rows.length > 0
         ? data.rows.map((proxy: any, index: number) => {
             const statusText = proxy.checkStatus === 1 ? '✅ available' : proxy.checkStatus === 2 ? '❌ unavailable' : '⏳ not checked'
@@ -107,7 +112,14 @@ export class ProxyList {
             return baseInfo
           }).join('\n\n')
         : ''
-      text = `📋 **proxy list** (total: ${data.total})\n\n${proxyListText}`
+      text = `📋 **proxy list** (total: ${data.total})\n\n${proxyListText}
+
+Pagination:
+- currentPage: ${currentPage}
+- pageSize: ${pageSize}
+- totalPages: ${totalPages}
+- hasNextPage: ${hasNextPage}
+${hasNextPage ? `- nextPageHint: Call roxy_list_proxies again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
     }
     else {
       text = `❌ **get proxy list failed**\n\n${result.msg}`
@@ -158,10 +170,10 @@ export class ProxyStore {
   async handle(params: any) {
     const searchParams = new URLSearchParams()
     searchParams.append('workspaceId', params.workspaceId.toString())
-    if (params.page_index)
-      searchParams.append('page_index', params.page_index.toString())
-    if (params.page_size)
-      searchParams.append('page_size', params.page_size.toString())
+    if (params.pageIndex)
+      searchParams.append('page_index', params.pageIndex.toString())
+    if (params.pageSize)
+      searchParams.append('page_size', params.pageSize.toString())
     if (params.type)
       searchParams.append('type', params.type.toString())
 
@@ -169,6 +181,11 @@ export class ProxyStore {
     let text = ''
     if (result.code === 0) {
       const data = result.data
+      const currentPage = params.pageIndex ?? 1
+      const pageSize = params.pageSize ?? 15
+      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
+      const hasNextPage = currentPage < totalPages
+
       const proxyListText = data.rows.length > 0
         ? data.rows.map((proxy: any, index: number) => {
             const statusText = proxy.checkStatus === 1 ? '✅ available' : proxy.checkStatus === 2 ? '❌ unavailable' : '⏳ not checked'
@@ -191,7 +208,14 @@ export class ProxyStore {
             return baseInfo
           }).join('\n\n')
         : ''
-      text = `📋 **proxy store** (total: ${data.total})\n\n${proxyListText}`
+      text = `📋 **proxy store** (total: ${data.total})\n\n${proxyListText}
+
+Pagination:
+- currentPage: ${currentPage}
+- pageSize: ${pageSize}
+- totalPages: ${totalPages}
+- hasNextPage: ${hasNextPage}
+${hasNextPage ? `- nextPageHint: Call roxy_store_proxies again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
     }
     else {
       text = `❌ **get proxy store failed**\n\n${result.msg}`

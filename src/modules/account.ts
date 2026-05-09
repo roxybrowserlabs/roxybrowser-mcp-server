@@ -57,14 +57,28 @@ class ListAccounts {
       text = `❌ **Failed to list accounts:**\n\n error message: ${result.msg}`
     }
     else {
-      text = `Found ${data.total} accounts in workspace ${params.workspaceId}:\n\n${
+      const currentPage = params.pageIndex ?? 1
+      const pageSize = params.pageSize ?? 15
+      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
+      const hasNextPage = currentPage < totalPages
+
+      text = `Found ${data.total} accounts in workspace ${params.workspaceId}:
+
+${
         data.rows.map((account: any) =>
           `**${account.platformName}** (ID: ${account.id})\n`
           + `  - Username: ${account.platformUserName}\n`
           + `  - Platform URL: ${account.platformUrl}\n`
           + `  - Remarks: ${account.platformRemarks || 'N/A'}\n`
           + `  - Created: ${account.createTime}`,
-        ).join('\n\n')}`
+        ).join('\n\n')}
+
+Pagination:
+- currentPage: ${currentPage}
+- pageSize: ${pageSize}
+- totalPages: ${totalPages}
+- hasNextPage: ${hasNextPage}
+${hasNextPage ? `- nextPageHint: Call roxy_list_accounts again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
     }
 
     return {

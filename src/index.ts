@@ -14,6 +14,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account.js'
 import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
 import { healthCheck, listWorkspaces } from './modules/other.js'
@@ -187,6 +188,15 @@ export class RoxyBrowserMCPServer {
         }
       }
     })
+  }
+
+  /**
+   * Connect the server to any MCP transport (stdio, InMemoryTransport, SSE, etc.).
+   * Use this for in-process embedding — e.g. passing an InMemoryTransport from
+   * @modelcontextprotocol/sdk to avoid spawning a subprocess.
+   */
+  async connect(transport: Transport): Promise<void> {
+    await this.server.connect(transport)
   }
 
   async run() {

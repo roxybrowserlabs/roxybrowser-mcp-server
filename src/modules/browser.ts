@@ -1037,6 +1037,11 @@ class ListBrowsers {
       text = `❌ **Failed to list browsers:**\n\n error message: ${result.msg}`
     }
     else {
+      const currentPage = params.pageIndex ?? 1
+      const pageSize = params.pageSize ?? 15
+      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
+      const hasNextPage = currentPage < totalPages
+
       text = `Found ${data.total} browsers in workspace ${params.workspaceId}:\n\n${
         data.rows.map((browser: any) =>
           `**${browser.windowName || 'Unnamed'}** (ID: ${browser.dirId})\n`
@@ -1045,7 +1050,14 @@ class ListBrowsers {
           + `  - OSVersion: ${browser.osVersion}\n`
           + `  - OS: ${browser.os}\n`
           + `  - Remark: ${browser.windowRemark}`,
-        ).join('\n\n')}`
+        ).join('\n\n')}
+
+Pagination:
+- currentPage: ${currentPage}
+- pageSize: ${pageSize}
+- totalPages: ${totalPages}
+- hasNextPage: ${hasNextPage}
+${hasNextPage ? `- nextPageHint: Call roxy_list_browsers again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
     }
 
     return {
