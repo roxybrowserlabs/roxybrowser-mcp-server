@@ -540,7 +540,7 @@ class CreateBrowser {
           timeZone: { type: 'string', description: 'Custom timezone' },
 
           // Geolocation
-          position: { type: 'number', enum: [0, 1, 2], description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
+          position: { type: 'number', description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
           isPositionBaseIp: { type: 'boolean', description: 'Follow IP for geolocation' },
           longitude: { type: 'string', description: 'Custom longitude' },
           latitude: { type: 'string', description: 'Custom latitude' },
@@ -581,7 +581,7 @@ class CreateBrowser {
           stopOpenNet: { type: 'boolean', description: 'Stop opening if network fails' },
           stopOpenIP: { type: 'boolean', description: 'Stop opening if IP changes' },
           stopOpenPosition: { type: 'boolean', description: 'Stop opening if IP location changes' },
-          openWorkbench: { type: 'number', enum: [0, 1, 2], description: 'Open workbench: 0=close, 1=open, 2=follow app' },
+          openWorkbench: { type: 'number', description: 'Open workbench: 0=close, 1=open, 2=follow app' },
 
           // Display settings
           resolutionType: { type: 'boolean', description: 'Custom resolution vs follow system' },
@@ -590,7 +590,7 @@ class CreateBrowser {
           fontType: { type: 'boolean', description: 'Random fonts vs system fonts' },
 
           // Browser fingerprint settings
-          webRTC: { type: 'number', enum: [0, 1, 2], description: 'WebRTC: 0=replace, 1=real, 2=disable' },
+          webRTC: { type: 'number', description: 'WebRTC: 0=replace, 1=real, 2=disable' },
           webGL: { type: 'boolean', description: 'WebGL: random vs real' },
           webGLInfo: { type: 'boolean', description: 'WebGL info: custom vs real' },
           webGLManufacturer: { type: 'string', description: 'Custom WebGL manufacturer' },
