@@ -17,7 +17,7 @@ import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account.js'
 import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
 import { healthCheck, listWorkspaces } from './modules/other.js'
-import { deleteProxies, detectProxy, modifyProxy, proxyList, createProxies } from './modules/proxy.js'
+import { createProxies, deleteProxies, detectProxy, proxyDetail, modifyProxy, proxyList } from './modules/proxy.js'
 
 // ========== Tool Definitions ==========
 export const TOOLS = [
@@ -36,6 +36,7 @@ export const TOOLS = [
   getConnectionInfo.schema,
 
   proxyList.schema,
+  proxyDetail.schema,
   createProxies.schema,
   detectProxy.schema,
   modifyProxy.schema,
@@ -144,6 +145,9 @@ export class RoxyBrowserMCPServer {
           case proxyList.name:
             return await proxyList.handle(args)
 
+          case proxyDetail.name:
+            return await proxyDetail.handle(args)
+
           case createProxies.name:
             return await createProxies.handle(args)
 
@@ -231,6 +235,7 @@ export {
 
 export {
   proxyList,
+  proxyDetail,
   createProxies,
   detectProxy,
   modifyProxy,

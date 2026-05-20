@@ -23,6 +23,37 @@ const channelList = [
   },
 ]
 
+function formatProxySource(dataType?: string) {
+  return dataType === 'proxyModule'
+    ? 'user-added'
+    : dataType === 'buyProxy'
+      ? 'proxy store'
+      : dataType || 'unknown'
+}
+
+function formatCheckStatus(checkStatus?: number) {
+  return checkStatus === 1
+    ? '✅ available'
+    : '❌ unavailable'
+}
+
+function formatValue(value: any) {
+  if (value === null || value === undefined || value === '')
+    return 'N/A'
+  if (Array.isArray(value))
+    return value.length > 0 ? value.join(', ') : 'N/A'
+  return String(value)
+}
+
+function formatBool(value: any, truthy = 'yes', falsy = 'no') {
+  return value ? truthy : falsy
+}
+
+function formatLocation(proxy: any) {
+  const locationParts = [proxy.lastCity, proxy.lastState, proxy.lastCountry].filter(Boolean)
+  return locationParts.length > 0 ? locationParts.join(', ') : 'N/A'
+}
+
 /** 代理列表 */
 export class ProxyList {
   name = 'roxy_list_proxies'
@@ -34,9 +65,31 @@ export class ProxyList {
         type: 'number',
         description: 'Workspace ID',
       },
-      proxyType: {
+      country: {
+        type: 'string',
+        description: 'Filter by country (us,cn,jp)',
+      },
+      checkStatus: {
         type: 'number',
-        description: 'Filter by proxy ID',
+        description: 'Filter by check status (0: unavailable, 1: available)',
+      },
+      startDate: {
+        type: 'string',
+        description: 'Filter by detection start date (YYYY-MM-DD)',
+      },
+      endDate: {
+        type: 'string',
+        description: 'Filter by detection end date (YYYY-MM-DD)',
+      },
+      checker: { 
+        type: 'string', 
+        enum: channelList.map(item => item.label),
+        description: 'Filter by detection channel',
+      },
+      proxyType: {
+        type: 'string',
+        enum: ['user-added', 'proxy store'],
+        description: 'Filter by proxy source type',
       },
       pageIndex: {
         type: 'number',
@@ -63,12 +116,22 @@ export class ProxyList {
   async handle(params: any) {
     const searchParams = new URLSearchParams()
     searchParams.append('workspaceId', params.workspaceId.toString())
-    if (params.id)
-      searchParams.append('id', params.id.toString())
     if (params.pageIndex)
       searchParams.append('page_index', params.pageIndex.toString())
     if (params.pageSize)
       searchParams.append('page_size', params.pageSize.toString())
+    if (params.country)
+      searchParams.append('country', params.country)
+    if (params.checkStatus !== undefined)
+      searchParams.append('check_status', params.checkStatus.toString())
+    if (params.startDate)
+      searchParams.append('start_date', params.startDate)
+    if (params.endDate)
+      searchParams.append('end_date', params.endDate)
+    if (params.checker) 
+      searchParams.append('checker', params.checker)
+    if (params.proxyType) 
+      searchParams.append('proxyType', params.proxyType === 'user-added' ? '0' : '1')
 
     if (!params.workspaceId) {
       throw new Error('workspaceId is required')
@@ -85,8 +148,8 @@ export class ProxyList {
 
       const proxyListText = data.rows.length > 0
         ? data.rows.map((proxy: any, index: number) => {
-            const statusText = proxy.checkStatus === 1 ? '✅ available' : proxy.checkStatus === 2 ? '❌ unavailable' : '⏳ not checked'
-            const sourceType = proxy.dataType === 'proxyModule' ? 'user-added' : proxy.dataType === 'buyProxy' ? 'proxy store' : proxy.dataType || 'unknown'
+            const statusText = formatCheckStatus(proxy.checkStatus)
+            const sourceType = proxy.dataType === 'proxyModule' ? 'user-added' : 'proxy store'
             const canDelete = proxy.dataType === 'proxyModule' ? 'yes' : 'no'
             const name = `proxy (id: ${proxy.id}) ${proxy.remark ? `remark: ${proxy.remark}` : ''}`
 
@@ -124,6 +187,143 @@ ${hasNextPage ? `- nextPageHint: Call roxy_list_proxies again with pageIndex=${c
     }
 
     return { content: [{ type: 'text', text }] }
+  }
+}
+
+class GetProxyDetail {
+  name = 'roxy_proxy_detail'
+  description = 'Get detailed information for a specific proxy configuration'
+  inputSchema = {
+    type: 'object',
+    properties: {
+      workspaceId: {
+        type: 'number',
+        description: 'Workspace ID',
+      },
+      id: {
+        type: 'number',
+        description: 'Proxy ID to get detail for',
+      },
+    },
+    required: ['workspaceId', 'id'],
+  }
+
+  get schema() {
+    return {
+      name: this.name,
+      description: this.description,
+      inputSchema: this.inputSchema,
+    }
+  }
+
+  async handle(params: any) {
+    if (!params.workspaceId || !params.id) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: '❌ **Failed to get proxy detail:**\n\n workspaceId and id are required',
+          },
+        ],
+      }
+    }
+
+    const searchParams = new URLSearchParams()
+    searchParams.append('workspaceId', params.workspaceId.toString())
+    searchParams.append('id', params.id.toString())
+
+    const result = await request(`/proxy/detail?${searchParams}`)
+
+    let text = ''
+    if (result.code !== 0) {
+      text = `❌ **Failed to get proxy detail:**\n\n error message: ${result.msg}`
+    }
+    else {
+      const detail = result.data?.rows?.[0] || result.data || null
+
+      if (!detail) {
+        text = `❌ **Proxy Not Found**\n\nNo proxy detail found for ID ${params.id} in workspace ${params.workspaceId}.`
+      }
+      else {
+        const sourceType = formatProxySource(detail.dataType)
+        const sourceSpecificTitle = detail.dataType === 'buyProxy'
+          ? 'Store Purchase Fields'
+          : 'User-added Fields'
+        const authText = detail.proxyUserName && detail.proxyPassword
+          ? `${detail.proxyUserName}:${detail.proxyPassword}`
+          : detail.proxyUserName || detail.proxyPassword || 'N/A'
+        const commonLines = [
+          `**ID:** ${formatValue(detail.id)}`,
+          `**Source Type:** ${sourceType}`,
+          `**Workspace ID:** ${formatValue(detail.workspaceId)}`,
+          `**User ID:** ${formatValue(detail.userId)}`,
+          `**Remark:** ${formatValue(detail.remark)}`,
+          `**Protocol:** ${formatValue(detail.protocol)}`,
+          `**Host:** ${formatValue(detail.host)}`,
+          `**Port:** ${formatValue(detail.port)}`,
+          `**IP Type:** ${formatValue(detail.ipType)}`,
+          `**Proxy Account:** ${authText}`,
+          `**Bind Status:** ${formatBool(detail.isBind, 'bound', 'not bound')}`,
+          `**Bind Count:** ${formatValue(detail.bindCount)}`,
+          `**Bound Browser IDs:** ${formatValue(detail.bindList)}`,
+          `**Direct Connection:** ${formatBool(detail.isDirect)}`,
+          `**Check Status:** ${formatCheckStatus(detail.checkStatus)}`,
+          `**Check Channel:** ${formatValue(detail.checkChannel)}`,
+          `**Check Channel Value:** ${formatValue(detail.checkChannelValue)}`,
+          `**Last Check Time:** ${formatValue(detail.checkTime)}`,
+          `**Last IP:** ${formatValue(detail.lastIp)}`,
+          `**Last Location:** ${formatLocation(detail)}`,
+          `**Created At:** ${formatValue(detail.createTime)}`,
+          `**Updated At:** ${formatValue(detail.updateTime)}`,
+        ]
+
+        const userAddedLines = [
+          `**Refresh URL:** ${formatValue(detail.refreshUrl)}`,
+          `**Model Param:** ${formatValue(detail.modelParam)}`,
+        ]
+
+        const storePurchaseLines = [
+          `**Order No:** ${formatValue(detail.orderNo)}`,
+          `**Order Status:** ${formatValue(detail.orderStatus)}`,
+          `**Country:** ${formatValue(detail.country)}`,
+          `**Provider Type:** ${formatValue(detail.providerType)}`,
+          `**Provider Name:** ${formatValue(detail.proxyProviderName)}`,
+          `**Provider ID:** ${formatValue(detail.proxyProviderId)}`,
+          `**Provider Price:** ${formatValue(detail.proxyProviderPrice)}`,
+          `**Discount Price:** ${formatValue(detail.proxyProviderDiscountPrice)}`,
+          `**Proxy Check Channel:** ${formatValue(detail.proxyCheckChannel)}`,
+          `**Expire Date:** ${formatValue(detail.expireDate)}`,
+          `**Expire Status:** ${formatValue(detail.proxyExpireStatus)}`,
+          `**Auto Renew:** ${formatBool(detail.autoRenew, 'enabled', 'disabled')}`,
+          `**Can Renew:** ${formatBool(detail.canRenew)}`,
+          `**Can Refund:** ${formatBool(detail.canRefund)}`,
+          `**Renewal Time:** ${formatValue(detail.renewalTime)}`,
+          `**Proxy Months:** ${formatValue(detail.proxyMonths)}`,
+          `**Gift Days:** ${formatValue(detail.giftDays)}`,
+          `**Replace Status:** ${formatValue(detail.replaceStatus)}`,
+          `**Badge Type:** ${formatValue(detail.badgeTypeDesc)}`,
+          `**Operator Name:** ${formatValue(detail.opName)}`,
+        ]
+
+        const sourceSpecificLines = detail.dataType === 'buyProxy' ? storePurchaseLines : userAddedLines
+
+        text = `🔎 **Proxy Detail**
+
+${commonLines.join('\n')}
+
+**${sourceSpecificTitle}:**
+${sourceSpecificLines.join('\n')}`
+      }
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text,
+        },
+      ],
+    }
   }
 }
 
@@ -502,6 +702,7 @@ ${params.ids.map((id: number, index: number) => `  ${index + 1}. ${id}`).join('\
 }
 
 export const proxyList = new ProxyList()
+export const proxyDetail = new GetProxyDetail()
 export const createProxies = new CreateProxies()
 export const detectProxy = new DetectProxy()
 export const modifyProxy = new ModifyProxy()
