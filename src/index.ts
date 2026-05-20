@@ -7,7 +7,6 @@
  * Supports: CLI startup, programmatic (in-process) startup, and library usage for secondary development.
  */
 
-import { fileURLToPath } from 'node:url'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
@@ -18,7 +17,7 @@ import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { batchCreateAccounts, createAccount, deleteAccounts, listAccounts, modifyAccount } from './modules/account.js'
 import { batchCreateBrowsers, clearLocalCache, clearServerCache, closeBrowsers, createBrowser, deleteBrowsers, getBrowserDetail, getConnectionInfo, listBrowsers, listLabels, openBrowser, randomFingerprint, updateBrowser } from './modules/browser.js'
 import { healthCheck, listWorkspaces } from './modules/other.js'
-import { batchCreateProxies, createProxy, deleteProxies, detectProxy, modifyProxy, proxyList, proxyStore } from './modules/proxy.js'
+import { deleteProxies, detectProxy, modifyProxy, proxyList, createProxies } from './modules/proxy.js'
 
 // ========== Tool Definitions ==========
 export const TOOLS = [
@@ -37,9 +36,7 @@ export const TOOLS = [
   getConnectionInfo.schema,
 
   proxyList.schema,
-  proxyStore.schema,
-  createProxy.schema,
-  batchCreateProxies.schema,
+  createProxies.schema,
   detectProxy.schema,
   modifyProxy.schema,
   deleteProxies.schema,
@@ -147,14 +144,8 @@ export class RoxyBrowserMCPServer {
           case proxyList.name:
             return await proxyList.handle(args)
 
-          case proxyStore.name:
-            return await proxyStore.handle(args)
-
-          case createProxy.name:
-            return await createProxy.handle(args)
-
-          case batchCreateProxies.name:
-            return await batchCreateProxies.handle(args)
+          case createProxies.name:
+            return await createProxies.handle(args)
 
           case detectProxy.name:
             return await detectProxy.handle(args)
@@ -240,9 +231,7 @@ export {
 
 export {
   proxyList,
-  proxyStore,
-  createProxy,
-  batchCreateProxies,
+  createProxies,
   detectProxy,
   modifyProxy,
   deleteProxies,

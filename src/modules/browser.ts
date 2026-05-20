@@ -1,5 +1,5 @@
 import { request } from '../utils/index.js'
-import { proxyList, proxyStore } from './proxy.js'
+import { proxyList } from './proxy.js'
 
 const osversion_windows = [
   {
@@ -514,7 +514,7 @@ class CreateBrowser {
         description: 'Complete proxy configuration object',
         properties: {
           // 如果有 moduleId ，则其他参数不可传递 (moduleId 可通过 roxy_list_proxies 或 roxy_store_proxies 获取) 优先使用该参数来绑定代理IP
-          moduleId: { type: 'number', description: `If moduleId is provided, no other parameters may be passed. (moduleId can be obtained via ${proxyList.name} or ${proxyStore.name}. field: id) Priority to use this parameter to bind proxy IP` },
+          moduleId: { type: 'number', description: `If moduleId is provided, no other parameters may be passed. (moduleId can be obtained via ${proxyList.name} field: id) Priority to use this parameter to bind proxy IP` },
           proxyMethod: { type: 'string', enum: ['custom', 'choose', 'api'] },
           proxyCategory: { type: 'string', enum: ['noproxy', 'HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
           ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
@@ -1041,12 +1041,13 @@ class ListBrowsers {
       const pageSize = params.pageSize ?? 15
       const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
       const hasNextPage = currentPage < totalPages
+      const serialNo = `${data.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${data.windowSortNum}`
 
       text = `Found ${data.total} browsers in workspace ${params.workspaceId}:\n\n${
         data.rows.map((browser: any) =>
-          `**${browser.windowName || 'Unnamed'}** (ID: ${browser.dirId})\n`
-          + `  - coreVersion: ${browser.coreVersion}`
-          + `  - Sort: ${browser.windowSortNum}\n`
+          `**${browser.windowName || 'Unnamed'}** (Serial No: ${serialNo})\n`
+          + `  - CoreVersion: ${browser.coreVersion}`
+          + `  - DirId: ${browser.dirId}\n`
           + `  - OSVersion: ${browser.osVersion}\n`
           + `  - OS: ${browser.os}\n`
           + `  - Remark: ${browser.windowRemark}`,
@@ -1294,11 +1295,14 @@ class GetBrowserDetail {
         // Create a copy without cookies (cookies can be very large)
         const { cookie: _cookie, ...detailWithoutCookies } = detail
 
+        const serialNo = `${detail.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${detail.windowSortNum}`
+
         // Create summary
         text = `**Browser Details Summary**\n\n`
           + `**ID:** \`${detail.dirId}\`\n`
+          + `**dirId**: \`${detail.dirId}\`\n`
+          + `**Serial No:** ${serialNo}\n`
           + `**Name:** ${detail.windowName}\n`
-          + `**Sort Number:** ${detail.windowSortNum}\n`
           + `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n`
           + `**OS:** ${detail.os} ${detail.osVersion}\n`
           + `**Core Version:** ${detail.coreVersion}\n`
