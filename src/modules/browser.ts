@@ -988,6 +988,10 @@ class ListBrowsers {
         type: 'string',
         description: 'Comma-separated project IDs',
       },
+      windowSortNum: {
+        type: 'string',
+        description: 'Filter by window `Serial No` (e.g. 1, 102)',
+      },
       windowName: {
         type: 'string',
         description: 'Filter by browser window name',
@@ -1025,6 +1029,14 @@ class ListBrowsers {
       searchParams.append('page_index', params.pageIndex.toString())
     if (params.pageSize)
       searchParams.append('page_size', params.pageSize.toString())
+    if (params.windowSortNum) {
+      if (params.windowSortNum.includes('-')) {
+        const [_, serialNo] = params.windowSortNum.split('-').map((s: string) => s.trim())
+        searchParams.append('windowSortNum', serialNo)
+      } else {
+        searchParams.append('windowSortNum', params.windowSortNum)
+      }
+    }
 
     const result = await request(`/browser/list_v3?${searchParams}`, {
       method: 'GET',
@@ -1041,17 +1053,17 @@ class ListBrowsers {
       const pageSize = params.pageSize ?? 15
       const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
       const hasNextPage = currentPage < totalPages
-      const serialNo = `${data.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${data.windowSortNum}`
 
       text = `Found ${data.total} browsers in workspace ${params.workspaceId}:\n\n${
-        data.rows.map((browser: any) =>
-          `**${browser.windowName || 'Unnamed'}** (Serial No: ${serialNo})\n`
+        data.rows.map((browser: any) => {
+          const serialNo = `${browser.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${browser.windowSortNum}`
+          return `**${browser.windowName || 'Unnamed'}** (Serial No: ${serialNo})\n`
           + `  - CoreVersion: ${browser.coreVersion}`
           + `  - DirId: ${browser.dirId}\n`
           + `  - OSVersion: ${browser.osVersion}\n`
           + `  - OS: ${browser.os}\n`
-          + `  - Remark: ${browser.windowRemark}`,
-        ).join('\n\n')}
+          + `  - Remark: ${browser.windowRemark}`
+        }).join('\n\n')}
 
 Pagination:
 - currentPage: ${currentPage}
@@ -1246,6 +1258,10 @@ class GetBrowserDetail {
         type: 'string',
         description: 'Browser directory ID',
       },
+      windowSortNum: {
+        type: 'string',
+        description: 'Filter by window `Serial No` (e.g. 1, 102)',
+      },
     },
     required: ['workspaceId', 'dirId'],
   }
@@ -1273,6 +1289,15 @@ class GetBrowserDetail {
     const searchParams = new URLSearchParams()
     searchParams.append('workspaceId', params.workspaceId.toString())
     searchParams.append('dirId', params.dirId)
+
+    if (params.windowSortNum) {
+      if (params.windowSortNum.includes('-')) {
+        const [_, serialNo] = params.windowSortNum.split('-').map((s: string) => s.trim())
+        searchParams.append('windowSortNum', serialNo)
+      } else {
+        searchParams.append('windowSortNum', params.windowSortNum)
+      }
+    }
 
     const result = await request(`/browser/detail?${searchParams}`, {
       method: 'GET',
