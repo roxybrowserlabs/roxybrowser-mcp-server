@@ -29,6 +29,9 @@
     "build": "tsup",
     "start": "node lib/index.js",
     "dev": "tsup --watch",
+    "test": "npm run build && node --test",
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector node lib/cli.js",
+    "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli.js",
     "clean": "npx rimraf lib",
     "publish:release": "npm run clean && npm version patch --no-git-tag-version && npm run build && npm publish",
     "publish:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm run build && npm publish --tag beta"
@@ -49,7 +52,8 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "commander": "^14.0.3"
+    "commander": "^14.0.3",
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

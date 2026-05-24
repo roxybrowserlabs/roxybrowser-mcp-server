@@ -254,7 +254,37 @@ npm run dev
 
 # 生产构建
 npm run build
+
+# 构建并运行测试
+npm test
+
+# 用 MCP Inspector 连接本地 stdio server
+ROXY_API_KEY=your-key npm run inspect
 ```
+
+### 测试策略
+
+仓库现在内置了一套基于 Node 原生 test runner 的轻量测试方案，不需要额外接入测试框架就能先跑起来。
+
+- `test/utils.test.mjs`：配置解析与 HTTP 请求封装
+- `test/tools.test.mjs`：工具处理函数的文本格式化与健康检查输出
+- `test/server.test.mjs`：基于官方 SDK Client 和内存 Transport 的 MCP 集成测试
+
+`npm test` 会先构建 `lib/`，再针对构建产物执行测试，这样更接近实际发布后的运行路径。
+
+### MCP Inspector
+
+可以使用官方 MCP Inspector 本地调试工具发现和调用：
+
+```bash
+# Web 界面
+ROXY_API_KEY=your-key npm run inspect
+
+# CLI 模式
+ROXY_API_KEY=your-key npm run inspect:cli -- --method tools/list
+```
+
+如果 API 地址不是默认值，请同时设置 `ROXY_API_HOST`。
 
 ## API 参考
 

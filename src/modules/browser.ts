@@ -1053,24 +1053,32 @@ class ListBrowsers {
       const pageSize = params.pageSize ?? 15
       const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
       const hasNextPage = currentPage < totalPages
-
-      text = `Found ${data.total} browsers in workspace ${params.workspaceId}:\n\n${
-        data.rows.map((browser: any) => {
+      
+      const readable = []
+      
+      if (data.total > 0) {
+        readable.push(`Found ${data.total} browsers in workspace ${params.workspaceId}:`);
+        const browserList = data.rows.map((browser: any) => {
           const serialNo = `${browser.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${browser.windowSortNum}`
-          return `**${browser.windowName || 'Unnamed'}** (Serial No: ${serialNo})\n`
-          + `  - CoreVersion: ${browser.coreVersion}`
-          + `  - DirId: ${browser.dirId}\n`
-          + `  - OSVersion: ${browser.osVersion}\n`
-          + `  - OS: ${browser.os}\n`
-          + `  - Remark: ${browser.windowRemark}`
-        }).join('\n\n')}
+          const info = [
+            `Profile Name: **${browser.windowName || 'Unnamed'}** (SN: ${serialNo})`,
+            `  - CoreVersion: ${browser.coreVersion}`,
+            `  - OS: ${browser.os} ${browser.osVersion}`,
+          ];
+          if (browser.windowRemark) {
+            info.push(`  - Remark: ${browser.windowRemark}`)
+          }
+          return info.join('\n')
+        }).join('\n\n')
+        readable.push(browserList);
+        if (totalPages > 1) {
+          readable.push(`Pagination: page=${currentPage}, totalPages=${totalPages}, hasNext=${hasNextPage}`)
+        }
+      } else {
+        readable.push(`No browsers found in workspace ${params.workspaceId}.`)
+      }
 
-Pagination:
-- currentPage: ${currentPage}
-- pageSize: ${pageSize}
-- totalPages: ${totalPages}
-- hasNextPage: ${hasNextPage}
-${hasNextPage ? `- nextPageHint: Call roxy_list_browsers again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
+      text = readable.join('\n\n')
     }
 
     return {

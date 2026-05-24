@@ -254,7 +254,37 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Build and run the test suite
+npm test
+
+# Launch MCP Inspector against the local stdio server
+ROXY_API_KEY=your-key npm run inspect
 ```
+
+### Test Strategy
+
+The repository now includes a lightweight test setup based on Node's built-in test runner, so no extra test framework is required.
+
+- `test/utils.test.mjs`: config resolution and HTTP request wrapper behavior
+- `test/tools.test.mjs`: tool handler formatting and health-check output
+- `test/server.test.mjs`: in-memory MCP integration using the official SDK client and transport
+
+`npm test` builds `lib/` first, then runs the tests against the built artifacts. This keeps the test path close to what gets published.
+
+### MCP Inspector
+
+Use the official MCP Inspector to debug tool discovery and tool calls locally:
+
+```bash
+# Web UI
+ROXY_API_KEY=your-key npm run inspect
+
+# CLI mode
+ROXY_API_KEY=your-key npm run inspect:cli -- --method tools/list
+```
+
+Set `ROXY_API_HOST` as needed before launching Inspector.
 
 ## API Reference
 

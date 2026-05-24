@@ -7,6 +7,9 @@
 import { Command } from 'commander'
 import { runServer } from './index.js'
 import { ConfigError } from './utils/index.js'
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 const PKG_VERSION = '1.0.9'
 
