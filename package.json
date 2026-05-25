@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "1.0.13-beta.7",
+  "version": "1.0.13",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "type": "module",
   "main": "lib/index.cjs",
