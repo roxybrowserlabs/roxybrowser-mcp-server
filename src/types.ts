@@ -63,6 +63,9 @@ export interface BrowserOpenResult {
    * Browser directory ID
    */
   dirId?: string
+  coreType?: string /**
+                     * Browser core type: Chrome or Firefox
+                     */
 }
 
 /** Browser list item */
@@ -92,6 +95,9 @@ export interface BrowserListItem {
    * Browser status
    */
   status: string
+  coreType?: string /**
+                     * Browser core type: Chrome or Firefox
+                     */
   // ... other fields from API
 }
 
@@ -273,10 +279,13 @@ export interface RoxyClientConfig {
 export type BrowserOS = 'Windows' | 'macOS' | 'Linux' | 'IOS' | 'Android'
 
 /** Browser core versions */
-export type CoreVersion = '140' | '138' | '137' | '136' | '135' | '133' | '130' | '125' | '117' | '109'
+export type CoreVersion = '146' | '144' | '143' | '142' | '141' | '140' | '139' | '138' | '137' | '136' | '135' | '133' | '130' | '125' | '117' | '109'
+
+/** Browser core type — Firefox or Chromium */
+export type CoreType = 'Firefox' | 'Chrome'
 
 /** Latest/recommended browser core version */
-export const LATEST_CORE_VERSION: CoreVersion = '140'
+export const LATEST_CORE_VERSION: CoreVersion = '146'
 
 /** Search engine options */
 export type SearchEngine = 'Google' | 'Microsoft Bing' | 'Yahoo' | 'Yandex' | 'DuckDuckGo'
@@ -587,6 +596,12 @@ export interface BrowserCreateConfig {
   coreVersion?: CoreVersion /**
                              * Browser core version
                              */
+  coreType?: CoreType /**
+                        * Browser core type: Chrome or Firefox
+                        */
+  useLatestCore?: 0 | 1 /**
+                          * Whether to always use the latest core version: 1=yes, 0=no
+                          */
   os?: BrowserOS /**
                   * Operating system
                   */
@@ -640,6 +655,12 @@ export interface BrowserCreateSimpleParams {
   windowRemark?: string /**
                          * Window remarks
                          */
+  coreType?: CoreType /**
+                        * Browser core type: Chrome or Firefox
+                        */
+  useLatestCore?: 0 | 1 /**
+                          * Whether to always use the latest core version: 1=yes, 0=no
+                          */
   proxyHost?: string /**
                       * Simple proxy host
                       */
@@ -681,6 +702,12 @@ export interface BrowserCreateStandardParams {
   coreVersion?: CoreVersion /**
                              * Browser core version
                              */
+  coreType?: CoreType /**
+                        * Browser core type: Chrome or Firefox
+                        */
+  useLatestCore?: 0 | 1 /**
+                          * Whether to always use the latest core version: 1=yes, 0=no
+                          */
   proxyInfo?: ProxyInfo /**
                          * Complete proxy configuration
                          */
@@ -1340,9 +1367,9 @@ export interface ConnectionInfoItem {
                * Process ID
                */
   /**
-   * Browser directory ID
+   * Browser core type: Chrome or Firefox
    */
-  dirId: string
+  coreType?: string
 }
 
 /** Connection info response */

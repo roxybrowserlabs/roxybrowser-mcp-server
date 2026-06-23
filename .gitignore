@@ -107,3 +107,5 @@ test-*.js
 
 # Reference files
 api-documentation/
+
+.reasonix

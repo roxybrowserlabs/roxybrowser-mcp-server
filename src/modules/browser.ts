@@ -26,139 +26,24 @@ const osversion_windows = [
 
 const osversion_macos = [
   {
-    label: '15.3.2',
+    label: '26',
     type: 'osVersion-macOS',
-    value: '15.3.2',
+    value: '26',
   },
   {
-    label: '15.3.1',
+    label: '15',
     type: 'osVersion-macOS',
-    value: '15.3.1',
+    value: '15',
   },
   {
-    label: '15.3',
+    label: '14',
     type: 'osVersion-macOS',
-    value: '15.3',
+    value: '14',
   },
   {
-    label: '15.2',
+    label: '13',
     type: 'osVersion-macOS',
-    value: '15.2',
-  },
-  {
-    label: '15.1',
-    type: 'osVersion-macOS',
-    value: '15.1',
-  },
-  {
-    label: '15.0.1',
-    type: 'osVersion-macOS',
-    value: '15.0.1',
-  },
-  {
-    label: '15.0',
-    type: 'osVersion-macOS',
-    value: '15.0',
-  },
-  {
-    label: '14.7.4',
-    type: 'osVersion-macOS',
-    value: '14.7.4',
-  },
-  {
-    label: '14.7.3',
-    type: 'osVersion-macOS',
-    value: '14.7.3',
-  },
-  {
-    label: '14.7.2',
-    type: 'osVersion-macOS',
-    value: '14.7.2',
-  },
-  {
-    label: '14.7.1',
-    type: 'osVersion-macOS',
-    value: '14.7.1',
-  },
-  {
-    label: '14.7',
-    type: 'osVersion-macOS',
-    value: '14.7',
-  },
-  {
-    label: '14.6.1',
-    type: 'osVersion-macOS',
-    value: '14.6.1',
-  },
-  {
-    label: '14.6',
-    type: 'osVersion-macOS',
-    value: '14.6',
-  },
-  {
-    label: '14.5',
-    type: 'osVersion-macOS',
-    value: '14.5',
-  },
-  {
-    label: '14.4.1',
-    type: 'osVersion-macOS',
-    value: '14.4.1',
-  },
-  {
-    label: '14.4',
-    type: 'osVersion-macOS',
-    value: '14.4',
-  },
-  {
-    label: '14.3.1',
-    type: 'osVersion-macOS',
-    value: '14.3.1',
-  },
-  {
-    label: '14.3',
-    type: 'osVersion-macOS',
-    value: '14.3',
-  },
-  {
-    label: '14.2.1',
-    type: 'osVersion-macOS',
-    value: '14.2.1',
-  },
-  {
-    label: '14.2',
-    type: 'osVersion-macOS',
-    value: '14.2',
-  },
-  {
-    label: '14.1',
-    type: 'osVersion-macOS',
-    value: '14.1',
-  },
-  {
-    label: '13.7.4',
-    type: 'osVersion-macOS',
-    value: '13.7.4',
-  },
-  {
-    label: '13.7.3',
-    type: 'osVersion-macOS',
-    value: '13.7.3',
-  },
-  {
-    label: '13.7.2',
-    type: 'osVersion-macOS',
-    value: '13.7.2',
-  },
-  {
-    label: '13.7.1',
-    type: 'osVersion-macOS',
-    value: '13.7.1',
-  },
-  {
-    label: '13.7',
-    type: 'osVersion-macOS',
-    value: '13.7',
+    value: '13',
   },
   {
     label: 'ALL',
@@ -176,6 +61,11 @@ const osversion_linux = [
 ]
 
 const osversion_android = [
+  {
+    label: '16',
+    type: 'osVersion-Android',
+    value: '16',
+  },
   {
     label: '15',
     type: 'osVersion-Android',
@@ -215,222 +105,69 @@ const osversion_android = [
 
 const osversion_ios = [
   {
-    label: '18.2',
+    label: '26',
     type: 'osVersion-IOS',
-    value: '18.2',
+    value: '26',
   },
   {
-    label: '18.1',
+    label: '18',
     type: 'osVersion-IOS',
-    value: '18.1',
+    value: '18',
   },
   {
-    label: '18.0',
+    label: '17',
     type: 'osVersion-IOS',
-    value: '18.0',
+    value: '17',
   },
   {
-    label: '17.0',
+    label: '16',
     type: 'osVersion-IOS',
-    value: '17.0',
+    value: '16',
   },
   {
-    label: '16.6',
+    label: '15',
     type: 'osVersion-IOS',
-    value: '16.6',
+    value: '15',
   },
   {
-    label: '16.5',
+    label: '14',
     type: 'osVersion-IOS',
-    value: '16.5',
-  },
-  {
-    label: '16.4',
-    type: 'osVersion-IOS',
-    value: '16.4',
-  },
-  {
-    label: '16.3',
-    type: 'osVersion-IOS',
-    value: '16.3',
-  },
-  {
-    label: '16.2',
-    type: 'osVersion-IOS',
-    value: '16.2',
-  },
-  {
-    label: '16.1',
-    type: 'osVersion-IOS',
-    value: '16.1',
-  },
-  {
-    label: '16.0',
-    type: 'osVersion-IOS',
-    value: '16.0',
-  },
-  {
-    label: '15.7',
-    type: 'osVersion-IOS',
-    value: '15.7',
-  },
-  {
-    label: '15.6',
-    type: 'osVersion-IOS',
-    value: '15.6',
-  },
-  {
-    label: '15.5',
-    type: 'osVersion-IOS',
-    value: '15.5',
-  },
-  {
-    label: '15.4',
-    type: 'osVersion-IOS',
-    value: '15.4',
-  },
-  {
-    label: '15.3',
-    type: 'osVersion-IOS',
-    value: '15.3',
-  },
-  {
-    label: '15.2',
-    type: 'osVersion-IOS',
-    value: '15.2',
-  },
-  {
-    label: '15.1',
-    type: 'osVersion-IOS',
-    value: '15.1',
-  },
-  {
-    label: '15.0',
-    type: 'osVersion-IOS',
-    value: '15.0',
-  },
-  {
-    label: '14.7',
-    type: 'osVersion-IOS',
-    value: '14.7',
-  },
-  {
-    label: '14.6',
-    type: 'osVersion-IOS',
-    value: '14.6',
-  },
-  {
-    label: '14.5',
-    type: 'osVersion-IOS',
-    value: '14.5',
-  },
-  {
-    label: '14.4',
-    type: 'osVersion-IOS',
-    value: '14.4',
-  },
-  {
-    label: '14.3',
-    type: 'osVersion-IOS',
-    value: '14.3',
-  },
-  {
-    label: '14.2',
-    type: 'osVersion-IOS',
-    value: '14.2',
-  },
-  {
-    label: '14.1',
-    type: 'osVersion-IOS',
-    value: '14.1',
-  },
-  {
-    label: '14.0',
-    type: 'osVersion-IOS',
-    value: '14.0',
+    value: '14',
   },
 ]
 
-const coreVersion = [
-  {
-    label: 'RoxyChrome 144',
-    type: 'coreVersion',
-    value: '144',
-  },
-  {
-    label: 'RoxyChrome 143',
-    type: 'coreVersion',
-    value: '143',
-  },
-  {
-    label: 'RoxyChrome 142',
-    type: 'coreVersion',
-    value: '142',
-  },
-  {
-    label: 'RoxyChrome 141',
-    type: 'coreVersion',
-    value: '141',
-  },
-  {
-    label: 'RoxyChrome 140',
-    type: 'coreVersion',
-    value: '140',
-  },
-  {
-    label: 'RoxyChrome 139',
-    type: 'coreVersion',
-    value: '139',
-  },
-  {
-    label: 'RoxyChrome 138',
-    type: 'coreVersion',
-    value: '138',
-  },
-  {
-    label: 'RoxyChrome 137',
-    type: 'coreVersion',
-    value: '137',
-  },
-  {
-    label: 'RoxyChrome 136',
-    type: 'coreVersion',
-    value: '136',
-  },
-  {
-    label: 'RoxyChrome 135',
-    type: 'coreVersion',
-    value: '135',
-  },
-  {
-    label: 'RoxyChrome 133',
-    type: 'coreVersion',
-    value: '133',
-  },
-  {
-    label: 'RoxyChrome 130',
-    type: 'coreVersion',
-    value: '130',
-  },
-  {
-    label: 'RoxyChrome 125',
-    type: 'coreVersion',
-    value: '125',
-  },
-  {
-    label: 'RoxyChrome 117',
-    type: 'coreVersion',
-    value: '117',
-  },
-  {
-    label: 'RoxyChrome 109',
-    type: 'coreVersion',
-    value: '109',
-  },
+const browserCore = [
+  'Firefox 146',
+  'Chrome 149',
+  'Chrome 148',
+  'Chrome 147',
+  'Chrome 146',
+  'Chrome 145',
+  'Chrome 144',
+  'Chrome 143',
+  'Chrome 142',
+  'Chrome 141',
+  'Chrome 140'
 ]
 
 function osVersionString() {
   return `Windows: ${osversion_windows.map(item => item.value).join(',')}; macOS: ${osversion_macos.map(item => item.value).join(',')}; Linux: ${osversion_linux.map(item => item.value).join(',')}; Android: ${osversion_android.map(item => item.value).join(',')}; IOS: ${osversion_ios.map(item => item.value).join(',')}`
+}
+
+/** Validate cross-field constraints (e.g. Firefox on macOS only supports osVersion "ALL"). Returns an error message or null. */
+function validateBrowserConfig(params: any): string | null {
+  const os = params.os || 'Windows'
+  const browserCore = params.browserCore
+  if (!browserCore) return null
+
+  const [coreType] = browserCore.split(' ')
+  if (coreType === 'Firefox' && os === 'macOS') {
+    if (params.osVersion && params.osVersion !== 'ALL') {
+      return `Firefox on macOS only supports osVersion "ALL", but got "${params.osVersion}".`
+    }
+  }
+
+  return null
 }
 
 class CreateBrowser {
@@ -447,10 +184,15 @@ class CreateBrowser {
         type: 'string',
         description: 'Browser window name',
       },
-      coreVersion: {
+      browserCore: {
         type: 'string',
-        enum: coreVersion.map(item => item.value),
-        description: 'Browser core version. If not provided, the latest available core version will be used.',
+        enum: browserCore,
+        description: 'Browser core version. Defaults to the latest Chrome version if not provided.',
+      },
+      useLatestCore: {
+        type: 'number',
+        enum: [0, 1],
+        description: 'Whether to always use the latest core version: 1=yes, 0=no (default: 0). When set to 1, coreVersion will be automatically kept up-to-date.',
       },
       os: {
         type: 'string',
@@ -459,7 +201,7 @@ class CreateBrowser {
       },
       osVersion: {
         type: 'string',
-        description: osVersionString(),
+        description: osVersionString() + '. Note: Firefox on macOS only supports "ALL".',
       },
       userAgent: {
         type: 'string',
@@ -620,7 +362,24 @@ class CreateBrowser {
         },
       },
     },
-    required: ['workspaceId'],
+    required: ['workspaceId', 'browserCore'],
+    allOf: [
+      {
+        // Firefox on macOS only supports osVersion "ALL"
+        if: {
+          properties: {
+            browserCore: { pattern: '^Firefox' },
+            os: { const: 'macOS' },
+          },
+          required: ['browserCore', 'os'],
+        },
+        then: {
+          properties: {
+            osVersion: { enum: ['ALL'] },
+          },
+        },
+      },
+    ],
   }
 
   get schema() {
@@ -632,6 +391,24 @@ class CreateBrowser {
   }
 
   async handle(params: any) {
+
+    // Cross-field validation
+    const validationError = validateBrowserConfig(params)
+    if (validationError) {
+      return {
+        content: [{ type: 'text', text: `❌ **Invalid configuration:**\n\n${validationError}` }],
+      }
+    }
+
+    if (params.browserCore) {
+      const [coreType, coreVersion] = params.browserCore.split(' ')
+      params.coreType = coreType || 'Chrome';
+      params.coreVersion = coreVersion;
+      delete params.browserCore
+    } else {
+      params.coreType = 'Chrome';
+    }
+
     const result = await request('/browser/create', {
       method: 'POST',
       body: JSON.stringify(params),
@@ -646,6 +423,7 @@ class CreateBrowser {
     else {
       text = `✅ **Simple Browser Created**\n\n`
         + `**Browser ID:** \`${data.dirId}\`\n`
+        + `**Core Type:** ${data.coreType || 'Chrome'}\n`
         + `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`
     }
 
@@ -674,7 +452,8 @@ class BatchCreateBrowsers {
         items: {
           type: 'object',
           properties: createBrowser.inputSchema.properties,
-          required: ['workspaceId'],
+          required: ['workspaceId', 'browserCore'],
+          allOf: createBrowser.inputSchema.allOf,
         },
       },
     },
@@ -710,6 +489,15 @@ class BatchCreateBrowsers {
 
     const createPromises = params.browsers.map(async (browserParams: any, index: number) => {
       try {
+        // Cross-field validation for each browser config
+        const validationError = validateBrowserConfig(browserParams)
+        if (validationError) {
+          return {
+            index,
+            success: false,
+            error: validationError,
+          }
+        }
         const result = await request('/browser/create', {
           method: 'POST',
           body: JSON.stringify(browserParams),
@@ -790,6 +578,7 @@ class UpdateBrowser {
       ...createBrowser.inputSchema.properties,
     },
     required: ['workspaceId', 'dirId'],
+    allOf: createBrowser.inputSchema.allOf,
   }
 
   get schema() {
@@ -801,6 +590,24 @@ class UpdateBrowser {
   }
 
   async handle(params: any) {
+
+    // Cross-field validation
+    const validationError = validateBrowserConfig(params)
+    if (validationError) {
+      return {
+        content: [{ type: 'text', text: `❌ **Invalid configuration:**\n\n${validationError}` }],
+      }
+    }
+
+    if (params.browserCore) {
+      const [coreType, coreVersion] = params.browserCore.split(' ')
+      params.coreType = coreType || 'Chrome';
+      params.coreVersion = coreVersion;
+      delete params.browserCore
+    } else {
+      params.coreType = 'Chrome';
+    }
+
     const result = await request('/browser/mdf', {
       method: 'POST',
       body: JSON.stringify(params),
@@ -937,6 +744,7 @@ class OpenBrowser {
               `  - CDP WebSocket: \`${data.ws ?? 'N/A'}\``,
               `  - HTTP Endpoint: \`${data.http ?? 'N/A'}\``,
               `  - Core Version: ${data.coreVersion ?? 'Unknown'}`,
+              `  - Core Type: ${data.coreType ?? 'Chrome'}`,
             ].join('\n')
           }),
         ].join('\n')
@@ -1063,6 +871,7 @@ class ListBrowsers {
           const info = [
             `Profile Name: **${browser.windowName || 'Unnamed'}** (SN: ${serialNo})`,
             `  - CoreVersion: ${browser.coreVersion}`,
+            `  - CoreType: ${browser.coreType || 'Chrome'}`,
             `  - OS: ${browser.os} ${browser.osVersion}`,
           ];
           if (browser.windowRemark) {
@@ -1339,6 +1148,8 @@ class GetBrowserDetail {
           + `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n`
           + `**OS:** ${detail.os} ${detail.osVersion}\n`
           + `**Core Version:** ${detail.coreVersion}\n`
+          + `**Core Type:** ${detail.coreType || 'Chrome'}\n`
+          + `**Auto Latest Core:** ${detail.useLatestCore == 1 ? '✅ Enabled' : '❌ Disabled'}\n`
           + `**Search Engine:** ${detail.searchEngine}\n`
           + `**Open Status:** ${detail.openStatus ? '✅ Opened' : '❌ Closed'}\n`
           + `**Cookies:** ${cookieCount} stored (excluded from response to save tokens)\n\n`
@@ -1686,6 +1497,7 @@ class GetConnectionInfo {
             + `  - CDP WebSocket: \`${conn.ws}\`\n`
             + `  - HTTP Endpoint: \`${conn.http}\`\n`
             + `  - Core Version: ${conn.coreVersion}\n`
+            + `  - Core Type: ${conn.coreType || 'Chrome'}\n`
             + `  - Driver: ${conn.driver}`,
           ).join('\n\n')}`
       }
