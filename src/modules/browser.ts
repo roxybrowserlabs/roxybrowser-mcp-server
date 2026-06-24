@@ -870,6 +870,7 @@ class ListBrowsers {
           const serialNo = `${browser.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${browser.windowSortNum}`
           const info = [
             `Profile Name: **${browser.windowName || 'Unnamed'}** (SN: ${serialNo})`,
+            `  - DirId: ${browser.dirId}`,
             `  - BrowserCore: ${browser.coreType || 'Chrome'} ${browser.coreVersion}`,
             `  - OS: ${browser.os} ${browser.osVersion}`,
           ];
@@ -1141,7 +1142,7 @@ class GetBrowserDetail {
         // Create summary
         text = `**Browser Details Summary**\n\n`
           + `**ID:** \`${detail.dirId}\`\n`
-          + `**dirId**: \`${detail.dirId}\`\n`
+          + `**DirId**: \`${detail.dirId}\`\n`
           + `**Serial No:** ${serialNo}\n`
           + `**Name:** ${detail.windowName}\n`
           + `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n`
