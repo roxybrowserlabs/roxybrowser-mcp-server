@@ -870,8 +870,7 @@ class ListBrowsers {
           const serialNo = `${browser.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${browser.windowSortNum}`
           const info = [
             `Profile Name: **${browser.windowName || 'Unnamed'}** (SN: ${serialNo})`,
-            `  - CoreVersion: ${browser.coreVersion}`,
-            `  - CoreType: ${browser.coreType || 'Chrome'}`,
+            `  - BrowserCore: ${browser.coreType || 'Chrome'} ${browser.coreVersion}`,
             `  - OS: ${browser.os} ${browser.osVersion}`,
           ];
           if (browser.windowRemark) {
@@ -1147,8 +1146,7 @@ class GetBrowserDetail {
           + `**Name:** ${detail.windowName}\n`
           + `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n`
           + `**OS:** ${detail.os} ${detail.osVersion}\n`
-          + `**Core Version:** ${detail.coreVersion}\n`
-          + `**Core Type:** ${detail.coreType || 'Chrome'}\n`
+          + `**BrowserCore**: ${detail.coreType || 'Chrome'} ${detail.coreVersion}\n`,
           + `**Auto Latest Core:** ${detail.useLatestCore == 1 ? '✅ Enabled' : '❌ Disabled'}\n`
           + `**Search Engine:** ${detail.searchEngine}\n`
           + `**Open Status:** ${detail.openStatus ? '✅ Opened' : '❌ Closed'}\n`
