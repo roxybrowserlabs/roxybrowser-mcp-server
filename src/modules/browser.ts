@@ -170,6 +170,30 @@ function validateBrowserConfig(params: any): string | null {
   return null
 }
 
+/**
+ * Conditional schema: Firefox on macOS only supports osVersion "ALL".
+ * Only used nested (inside `items`) — must NOT be placed at the top level of a
+ * tool's inputSchema, since Codex/OpenAI strict function-calling rejects
+ * top-level allOf/oneOf/anyOf/enum/const/not. The same rule is enforced at
+ * runtime by validateBrowserConfig().
+ */
+const firefoxMacosAllOf = [
+  {
+    if: {
+      properties: {
+        browserCore: { pattern: '^Firefox' },
+        os: { const: 'macOS' },
+      },
+      required: ['browserCore', 'os'],
+    },
+    then: {
+      properties: {
+        osVersion: { enum: ['ALL'] },
+      },
+    },
+  },
+]
+
 class CreateBrowser {
   name = 'roxy_create_browser'
   description = 'Create a browser with complete configuration control - for expert users needing full parameter access'
@@ -363,23 +387,6 @@ class CreateBrowser {
       },
     },
     required: ['workspaceId', 'browserCore'],
-    allOf: [
-      {
-        // Firefox on macOS only supports osVersion "ALL"
-        if: {
-          properties: {
-            browserCore: { pattern: '^Firefox' },
-            os: { const: 'macOS' },
-          },
-          required: ['browserCore', 'os'],
-        },
-        then: {
-          properties: {
-            osVersion: { enum: ['ALL'] },
-          },
-        },
-      },
-    ],
   }
 
   get schema() {
@@ -453,7 +460,7 @@ class BatchCreateBrowsers {
           type: 'object',
           properties: createBrowser.inputSchema.properties,
           required: ['workspaceId', 'browserCore'],
-          allOf: createBrowser.inputSchema.allOf,
+          allOf: firefoxMacosAllOf,
         },
       },
     },
@@ -578,7 +585,6 @@ class UpdateBrowser {
       ...createBrowser.inputSchema.properties,
     },
     required: ['workspaceId', 'dirId'],
-    allOf: createBrowser.inputSchema.allOf,
   }
 
   get schema() {
