@@ -30,7 +30,7 @@
     "start": "node lib/index.js",
     "dev": "tsup --watch",
     "test": "npm run build && node --test",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector node lib/cli.js",
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli.js",
     "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli.js",
     "clean": "npx rimraf lib",
     "publish:release": "npm run clean && npm version patch --no-git-tag-version && npm run build && npm publish",

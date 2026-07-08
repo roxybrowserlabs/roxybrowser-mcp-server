@@ -2,18 +2,18 @@ import { request } from '../utils/index.js'
 
 class ListWorkspaces {
   name = 'roxy_list_workspaces'
-  description = 'Get list of all workspaces and their projects from RoxyBrowser'
+  description = 'Get list of all workspaces/team and projects'
   inputSchema = {
     type: 'object',
     properties: {
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination (default: 1)',
+        description: 'Page index for pagination',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of items per page (default: 15)',
+        description: 'Number of items per page',
         default: 15,
       },
     },
@@ -44,13 +44,22 @@ class ListWorkspaces {
     }
     else {
       const data = result.data
-      text = `Found ${data.total} workspaces:\n\n${
-        data.rows.map((ws: any) =>
-          `**${ws.workspaceName}** (ID: ${ws.id})\n${
-            ws.project_details.map((proj: any) =>
-              `  - ${proj.projectName} (ID: ${proj.projectId})`,
-            ).join('\n')}`,
-        ).join('\n\n')}`
+      const currentPage = pageIndex
+      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
+      const hasNextPage = currentPage < totalPages
+
+      const blocks = data.rows.map((ws: any) => {
+        const projects = (ws.project_details || []).map((proj: any) =>
+          `    • ${proj.projectName} → projectId: **${proj.projectId}**`,
+        ).join('\n')
+        return `  - **Workspace:** ${ws.workspaceName} → workspaceId: **${ws.id}**\n    Projects under this workspace:\n${projects || '    (no projects)'}`
+      })
+      text = `Found ${data.total} workspace(s). Each workspace contains its own projects:\n\n` +
+        blocks.join('\n\n') +
+        `\n\n> 💡 **Tip:** Browser operations (create/open/list) require a **projectId** taken from a workspace above. Proxy/account operations only require a **workspaceId**. Pick the relevant ID before calling those tools.`
+      if (totalPages > 1) {
+        text += `\n\nPagination: page=${currentPage}, totalPages=${totalPages}, hasNext=${hasNextPage}`
+      }
     }
 
     return {
