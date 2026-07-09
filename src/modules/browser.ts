@@ -1182,7 +1182,7 @@ class GetBrowserDetail {
           + `**Name:** ${detail.windowName}\n`
           + `**Project:** ${detail.projectName} (ID: ${detail.projectId})\n`
           + `**OS:** ${detail.os} ${detail.osVersion}\n`
-          + `**BrowserCore**: ${detail.coreType || 'Chrome'} ${detail.coreVersion}\n`,
+          + `**BrowserCore**: ${detail.coreType || 'Chrome'} ${detail.coreVersion}\n`
           + `**Auto Latest Core:** ${detail.useLatestCore == 1 ? '✅ Enabled' : '❌ Disabled'}\n`
           + `**Search Engine:** ${detail.searchEngine}\n`
           + `**Open Status:** ${detail.openStatus ? '✅ Opened' : '❌ Closed'}\n`
