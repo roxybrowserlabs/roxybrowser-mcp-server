@@ -1,5 +1,27 @@
 import { request } from '../utils/index.js'
+import { normalizeCookies, parseImportCookies } from '../utils/cookie.js'
 import { proxyList } from './proxy.js'
+
+/**
+ * 将传入的 cookie 归一化为标准 Cookie 数组。
+ * - 字符串：自动识别 JSON / Netscape / Name=Value 三种格式解析（与浏览器端一致），
+ *   Name=Value 缺少 domain 时会从同一份 windowPlatformList 的 platformUrl 按顺序补全。
+ * - 数组：视为已解析的 Cookie 对象数组，做一次字段归一化后透传。
+ * 解析在 params 上原地生效。
+ */
+function resolveCookieParam(params: any) {
+  if (params == null || params.cookie == null)
+    return
+
+  const windowPlatformList = Array.isArray(params.windowPlatformList) ? params.windowPlatformList : []
+
+  if (typeof params.cookie === 'string') {
+    params.cookie = parseImportCookies(params.cookie, windowPlatformList)
+  }
+  else if (Array.isArray(params.cookie)) {
+    params.cookie = normalizeCookies(params.cookie)
+  }
+}
 
 const osversion_windows = [
   {
@@ -232,8 +254,8 @@ class CreateBrowser {
         description: 'Custom user agent',
       },
       cookie: {
-        type: 'array',
-        description: 'Cookie list',
+        type: ['array', 'string'],
+        description: 'Cookie. Accepts either a pre-parsed array of cookie objects, or a raw string in one of three auto-detected formats: JSON (starts with [ or {), Netscape cookie file (tab-separated), or Name=Value (e.g. "domain=.x.com; name=value; ..."). For Name=Value entries without an explicit domain, the domain is filled from windowPlatformList[].platformUrl in order.',
         items: { type: 'object' },
       },
       searchEngine: {
@@ -416,6 +438,8 @@ class CreateBrowser {
       params.coreType = 'Chrome';
     }
 
+    resolveCookieParam(params)
+
     const result = await request('/browser/create', {
       method: 'POST',
       body: JSON.stringify(params),
@@ -505,6 +529,9 @@ class BatchCreateBrowsers {
             error: validationError,
           }
         }
+
+        resolveCookieParam(browserParams)
+
         const result = await request('/browser/create', {
           method: 'POST',
           body: JSON.stringify(browserParams),
@@ -613,6 +640,8 @@ class UpdateBrowser {
     } else {
       params.coreType = 'Chrome';
     }
+
+    resolveCookieParam(params)
 
     const result = await request('/browser/mdf', {
       method: 'POST',
