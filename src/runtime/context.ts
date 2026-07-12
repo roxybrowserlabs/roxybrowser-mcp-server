@@ -1,6 +1,15 @@
 import type { ContextBinding, RuntimeContext, ToolDefinition } from './types.js'
 import { cloneSchema, removePropertyFromArrayItemSchema, removePropertyFromObjectSchema } from './schema.js'
 
+export function toPublicToolName(name: string): string {
+  const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_')
+  return safeName.startsWith('roxy_') ? safeName : `roxy_${safeName}`
+}
+
+export function toSafeToolName(name: string): string {
+  return name.replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
 function defaultBindingsForScope(scope: ToolDefinition['scope']): ContextBinding[] {
   if (scope === 'workspace')
     return [{ name: 'workspaceId', location: 'root' }]
@@ -40,7 +49,7 @@ export function createPublicToolSchema(tool: ToolDefinition, context: RuntimeCon
   }
 
   return {
-    name: tool.name,
+    name: toPublicToolName(tool.name),
     description: tool.description,
     inputSchema,
   }

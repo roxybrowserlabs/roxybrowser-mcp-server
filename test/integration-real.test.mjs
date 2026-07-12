@@ -58,7 +58,7 @@ describe('real RoxyBrowser API integration', () => {
     assert.equal(result.code, 0, `health endpoint returned non-zero code: ${result.msg}`)
   })
 
-  test('workspace.list returns real workspace data through MCP', async () => {
+  test('roxy_workspace_list returns real workspace data through MCP', async () => {
     const config = getRealConfig()
     const server = createRoxyMcpServer({
       roxy: config,
@@ -67,7 +67,7 @@ describe('real RoxyBrowser API integration', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'workspace.list',
+        name: 'roxy_workspace_list',
         arguments: { pageIndex: 1, pageSize: 20 },
       })
       const text = getTextContent(result)
@@ -91,34 +91,34 @@ describe('real RoxyBrowser API integration', () => {
     try {
       const tools = await session.client.listTools()
       const toolNames = tools.tools.map(tool => tool.name)
-      assert.equal(toolNames.includes('workspace.list'), false)
-      assert.equal(toolNames.includes('project.list'), true)
-      for (const name of ['browser.list', 'proxy.list', 'account.list']) {
+      assert.equal(toolNames.includes('roxy_workspace_list'), false)
+      assert.equal(toolNames.includes('roxy_project_list'), true)
+      for (const name of ['roxy_browser_list', 'roxy_proxy_list', 'roxy_account_list']) {
         const tool = tools.tools.find(item => item.name === name)
         assert.ok(tool, `${name} should be listed`)
         assert.equal(tool.inputSchema.properties.workspaceId, undefined)
       }
 
       const projectResult = await session.client.callTool({
-        name: 'project.list',
+        name: 'roxy_project_list',
         arguments: {},
       })
-      assert.match(getTextContent(projectResult), new RegExp(`workspaceId: ${config.workspaceId}`))
+      assert.match(getTextContent(projectResult), new RegExp(`workspaceId:? ${config.workspaceId}`))
 
       const browserResult = await session.client.callTool({
-        name: 'browser.list',
+        name: 'roxy_browser_list',
         arguments: { pageIndex: 1, pageSize: 5 },
       })
       assert.match(getTextContent(browserResult), new RegExp(`workspace ${config.workspaceId}`))
 
       const proxyResult = await session.client.callTool({
-        name: 'proxy.list',
+        name: 'roxy_proxy_list',
         arguments: { pageIndex: 1, pageSize: 5 },
       })
       assert.match(getTextContent(proxyResult), /(proxy list|get proxy list failed)/i)
 
       const accountResult = await session.client.callTool({
-        name: 'account.list',
+        name: 'roxy_account_list',
         arguments: { pageIndex: 1, pageSize: 5 },
       })
       assert.match(getTextContent(accountResult), /(accounts in workspace|Failed to list accounts)/)

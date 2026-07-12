@@ -66,14 +66,14 @@ describe('ROXY_TOOLS_V2', () => {
     try {
       const result = await session.client.listTools()
       const names = result.tools.map(tool => tool.name)
-      const browserList = result.tools.find(tool => tool.name === 'browser.list')
-      const browserCreate = result.tools.find(tool => tool.name === 'browser.create')
-      const browserUpdate = result.tools.find(tool => tool.name === 'browser.update')
-      const proxyCreate = result.tools.find(tool => tool.name === 'proxy.create')
-      const accountCreate = result.tools.find(tool => tool.name === 'account.create')
+      const browserList = result.tools.find(tool => tool.name === 'roxy_browser_list')
+      const browserCreate = result.tools.find(tool => tool.name === 'roxy_browser_create')
+      const browserUpdate = result.tools.find(tool => tool.name === 'roxy_browser_update')
+      const proxyCreate = result.tools.find(tool => tool.name === 'roxy_proxy_create')
+      const accountCreate = result.tools.find(tool => tool.name === 'roxy_account_create')
 
-      assert.equal(names.includes('workspace.list'), false)
-      assert.equal(names.includes('project.list'), true)
+      assert.equal(names.includes('roxy_workspace_list'), false)
+      assert.equal(names.includes('roxy_project_list'), true)
       assert.equal(browserList.inputSchema.properties.workspaceId, undefined)
       assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.workspaceId, undefined)
       assert.deepEqual(browserCreate.inputSchema.properties.browsers.items.required, ['browserCore'])
@@ -100,7 +100,7 @@ describe('ROXY_TOOLS_V2', () => {
     }
   })
 
-  test('lists workspace.list without fixed workspace context', async () => {
+  test('lists roxy_workspace_list without fixed workspace context', async () => {
     const server = createRoxyMcpServer({
       roxy: { apiKey: 'secret-token' },
       tools: ROXY_TOOLS_V2,
@@ -111,8 +111,8 @@ describe('ROXY_TOOLS_V2', () => {
       const result = await session.client.listTools()
       const names = result.tools.map(tool => tool.name)
 
-      assert.equal(names.includes('workspace.list'), true)
-      assert.equal(names.includes('project.list'), false)
+      assert.equal(names.includes('roxy_workspace_list'), true)
+      assert.equal(names.includes('roxy_project_list'), false)
     }
     finally {
       await session.close()
@@ -150,7 +150,7 @@ describe('ROXY_TOOLS_V2', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'project.list',
+        name: 'roxy_project_list',
         arguments: { pageIndex: 2, pageSize: 5 },
       })
       const text = getTextContent(result)
@@ -194,7 +194,7 @@ describe('ROXY_TOOLS_V2', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'browser.list',
+        name: 'roxy_browser_list',
         arguments: { pageIndex: 2, pageSize: 5 },
       })
 
@@ -235,7 +235,7 @@ describe('ROXY_TOOLS_V2', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'browser.create',
+        name: 'roxy_browser_create',
         arguments: {
           browsers: [
             { browserCore: 'chromium', projectId: 11 },
@@ -281,7 +281,7 @@ describe('ROXY_TOOLS_V2', () => {
 
     try {
       await session.client.callTool({
-        name: 'proxy.create',
+        name: 'roxy_proxy_create',
         arguments: {
           proxyList: [
             { protocol: 'HTTP', host: '1.2.3.4', port: '8080' },
@@ -326,7 +326,7 @@ describe('ROXY_TOOLS_V2', () => {
 
     try {
       await session.client.callTool({
-        name: 'account.create',
+        name: 'roxy_account_create',
         arguments: {
           accountList: [
             {

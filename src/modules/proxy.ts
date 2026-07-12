@@ -41,7 +41,7 @@ function formatCheckStatus(checkStatus?: number) {
 
 function proxyDetectionGuidance(proxyId?: number | string) {
   const idText = proxyId !== undefined ? ` for proxy id ${proxyId}` : ''
-  return `This is historical detection data, not a live availability verdict. Call \`proxy.detect\`${idText} before telling the user whether the proxy is currently usable.`
+  return `This is historical detection data, not a live availability verdict. Call \`roxy_proxy_detect\`${idText} before telling the user whether the proxy is currently usable.`
 }
 
 function formatValue(value: any) {
@@ -180,7 +180,7 @@ export class ProxyList {
             return baseInfo
           }).join('\n\n')
         : ''
-      text = `📵 **proxy list** (total: ${data.total})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\nProxy check status is historical. If a proxy shows a failed or unknown last check, call \`proxy.detect\` before judging current availability.\n\n${proxyListText}
+      text = `📵 **proxy list** (total: ${data.total})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\nProxy check status is historical. If a proxy shows a failed or unknown last check, call \`roxy_proxy_detect\` before judging current availability.\n\n${proxyListText}
 
 Pagination:
 - currentPage: ${currentPage}
@@ -437,7 +437,7 @@ class CreateProxies {
 **Default Check Channel:** ${params.checkChannel}`
   : ''}
 
-*All proxies have been created. Run \`proxy.detect\` before judging availability; list/detail check status is historical data.*`
+*All proxies have been created. Run \`roxy_proxy_detect\` before judging availability; list/detail check status is historical data.*`
     }
 
     return {
@@ -517,7 +517,7 @@ class DetectProxy {
 **Proxy ID:** ${params.id}
 **Workspace:** ${params.workspaceId}
 
-*Proxy detection is in progress. This may take a few seconds. Use \`proxy.list\` or \`proxy.detail\` to check the updated historical status after detection completes.*
+*Proxy detection is in progress. This may take a few seconds. Use \`roxy_proxy_list\` or \`roxy_proxy_detail\` to check the updated historical status after detection completes.*
 `
       }
     }
@@ -641,7 +641,7 @@ class ModifyProxy {
 **Remark:** ${params.remark}`
   : ''}
 
-*Proxy configuration has been updated. Run \`proxy.detect\` before judging availability; list/detail check status is historical data.*`
+*Proxy configuration has been updated. Run \`roxy_proxy_detect\` before judging availability; list/detail check status is historical data.*`
     }
 
     return {

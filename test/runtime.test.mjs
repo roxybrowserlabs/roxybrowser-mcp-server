@@ -28,7 +28,7 @@ describe('runtime context handling', () => {
   test('hides bound workspaceId from public schema', () => {
     const schema = createPublicToolSchema(workspaceTool, { workspaceId: 7 })
 
-    assert.equal(schema.name, 'browser.list')
+    assert.equal(schema.name, 'roxy_browser_list')
     assert.deepEqual(Object.keys(schema.inputSchema.properties), ['pageIndex'])
     assert.deepEqual(schema.inputSchema.required, undefined)
   })
@@ -69,11 +69,39 @@ describe('ToolRegistry', () => {
 
     const tools = registry.listTools({ workspaceId: 42 })
     assert.equal(tools.length, 1)
-    assert.equal(tools[0].name, 'proxy.list')
+    assert.equal(tools[0].name, 'roxy_proxy_list')
     assert.equal(tools[0].inputSchema.properties.workspaceId, undefined)
 
-    const result = await registry.callTool('proxy.list', {}, { workspaceId: 42 })
+    const result = await registry.callTool('roxy_proxy_list', {}, { workspaceId: 42 })
     assert.equal(result.content[0].text, 'workspace=42')
+
+    const legacyResult = await registry.callTool('proxy_list', {}, { workspaceId: 42 })
+    assert.equal(legacyResult.content[0].text, 'workspace=42')
+  })
+
+  test('public tool names are safe for OpenAI function tools', async () => {
+    const registry = new ToolRegistry([
+      defineTool({
+        name: 'browser.connection_info',
+        description: 'Get browser connection info',
+        scope: 'global',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+        handler: async () => ({
+          content: [{ type: 'text', text: 'ok' }],
+        }),
+      }),
+    ])
+
+    const tools = registry.listTools()
+    assert.equal(tools[0].name, 'roxy_browser_connection_info')
+    assert.match(tools[0].name, /^[a-zA-Z0-9_-]+$/)
+    assert.match(tools[0].name, /^roxy_/)
+
+    const result = await registry.callTool('roxy_browser_connection_info')
+    assert.equal(result.content[0].text, 'ok')
   })
 
   test('throws a readable error for unknown tools', async () => {

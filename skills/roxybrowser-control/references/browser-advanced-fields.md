@@ -1,6 +1,6 @@
 # Browser Advanced Fields
 
-Use these fields only when the user explicitly asks to bind platform accounts or proxy settings during `browser.create` or `browser.update`. For ordinary browser creation and editing, omit `windowPlatformList` and `proxyInfo`.
+Use these fields only when the user explicitly asks to bind platform accounts or proxy settings during `roxy_browser_create` or `roxy_browser_update`. For ordinary browser creation and editing, omit `windowPlatformList` and `proxyInfo`.
 
 The MCP tool schema intentionally keeps these fields compact. Read this reference only when a request needs these advanced objects.
 
@@ -10,7 +10,7 @@ The MCP tool schema intentionally keeps these fields compact. Read this referenc
 
 | Field | Type | Values | Description |
 | --- | --- | --- | --- |
-| `id` | number | - | Platform account ID from `account.list`. When provided, use it to bind an existing account and omit the other account credential fields. |
+| `id` | number | - | Platform account ID from `roxy_account_list`. When provided, use it to bind an existing account and omit the other account credential fields. |
 | `platformUrl` | string | - | Platform URL. |
 | `platformUserName` | string | - | Platform username. |
 | `platformPassword` | string | - | Platform password. |
@@ -19,11 +19,11 @@ The MCP tool schema intentionally keeps these fields compact. Read this referenc
 
 ## proxyInfo
 
-Prefer binding an existing proxy by `moduleId` from `proxy.list` when possible. If `moduleId` is provided, do not pass custom proxy host, port, username, password, protocol, or refresh fields.
+Prefer binding an existing proxy by `moduleId` from `roxy_proxy_list` when possible. If `moduleId` is provided, do not pass custom proxy host, port, username, password, protocol, or refresh fields.
 
 | Field | Type | Values | Description |
 | --- | --- | --- | --- |
-| `moduleId` | number | - | Existing proxy module ID from `proxy.list` field `id`. |
+| `moduleId` | number | - | Existing proxy module ID from `roxy_proxy_list` field `id`. |
 | `proxyMethod` | string | `custom`, `choose`, `api` | Proxy selection method. |
 | `proxyCategory` | string | `noproxy`, `HTTP`, `HTTPS`, `SOCKS5`, `SSH` | Proxy category. |
 | `ipType` | string | `IPV4`, `IPV6` | Proxy IP type. |

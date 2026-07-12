@@ -158,7 +158,7 @@ describe('tool handlers', () => {
 
       assert.match(text, /last check failed/i)
       assert.match(text, /historical/i)
-      assert.match(text, /proxy\.detect/)
+      assert.match(text, /roxy_proxy_detect/)
       assert.doesNotMatch(text, /❌ unavailable/)
       assert.doesNotMatch(text, /unusable proxy/i)
     }
@@ -167,7 +167,7 @@ describe('tool handlers', () => {
     }
   })
 
-  test('proxyDetail explains check status is historical and recommends proxy.detect', async () => {
+  test('proxyDetail explains check status is historical and recommends roxy_proxy_detect', async () => {
     process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
     process.env.ROXY_API_KEY = 'secret-token'
 
@@ -199,7 +199,7 @@ describe('tool handlers', () => {
 
       assert.match(text, /last check failed/i)
       assert.match(text, /historical/i)
-      assert.match(text, /proxy\.detect/)
+      assert.match(text, /roxy_proxy_detect/)
       assert.doesNotMatch(text, /❌ unavailable/)
     }
     finally {
@@ -237,7 +237,7 @@ describe('tool handlers', () => {
     }
   })
 
-  test('createProxies and modifyProxy tell agents to run proxy.detect before judging availability', async () => {
+  test('createProxies and modifyProxy tell agents to run roxy_proxy_detect before judging availability', async () => {
     process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
     process.env.ROXY_API_KEY = 'secret-token'
 
@@ -256,9 +256,9 @@ describe('tool handlers', () => {
         protocol: 'HTTP',
       })
 
-      assert.match(getTextContent(createResult), /proxy\.detect/)
+      assert.match(getTextContent(createResult), /roxy_proxy_detect/)
       assert.match(getTextContent(createResult), /before judging availability/i)
-      assert.match(getTextContent(modifyResult), /proxy\.detect/)
+      assert.match(getTextContent(modifyResult), /roxy_proxy_detect/)
       assert.match(getTextContent(modifyResult), /before judging availability/i)
     }
     finally {

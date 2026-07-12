@@ -46,7 +46,7 @@ await server.connect(serverTransport)
 
 When `context.workspaceId` is provided, workspace-scoped tools no longer expose `workspaceId` in their public MCP schema. The runtime injects it into tool calls automatically and rejects conflicting caller-provided values.
 
-In fixed workspace mode, `workspace.list` is hidden and `project.list` is exposed instead. `project.list` returns projects under the bound workspace.
+In fixed workspace mode, `roxy_workspace_list` is hidden and `roxy_project_list` is exposed instead. `roxy_project_list` returns projects under the bound workspace.
 
 ## SDK Client
 
@@ -63,32 +63,32 @@ const health = await client.request('/health')
 
 ## Tool Names
 
-2.0 uses domain-style tool names:
+Public MCP tool names use OpenAI-safe underscores:
 
-- `workspace.list`
-- `project.list` (fixed workspace mode)
-- `health.check`
-- `browser.list`
-- `browser.create` (array input; supports one or many browsers)
-- `browser.open`
-- `browser.close`
-- `browser.update`
-- `browser.delete`
-- `browser.detail`
-- `browser.connection_info`
-- `browser.clear_local_cache`
-- `browser.clear_server_cache`
-- `browser.list_labels`
-- `proxy.list`
-- `proxy.detail`
-- `proxy.create` (array input; supports one or many proxies)
-- `proxy.detect`
-- `proxy.modify`
-- `proxy.delete`
-- `account.list`
-- `account.create` (array input; supports one or many accounts)
-- `account.modify`
-- `account.delete`
+- `roxy_workspace_list`
+- `roxy_project_list` (fixed workspace mode)
+- `roxy_health_check`
+- `roxy_browser_list`
+- `roxy_browser_create` (array input; supports one or many browsers)
+- `roxy_browser_open`
+- `roxy_browser_close`
+- `roxy_browser_update`
+- `roxy_browser_delete`
+- `roxy_browser_detail`
+- `roxy_browser_connection_info`
+- `roxy_browser_clear_local_cache`
+- `roxy_browser_clear_server_cache`
+- `roxy_browser_list_labels`
+- `roxy_proxy_list`
+- `roxy_proxy_detail`
+- `roxy_proxy_create` (array input; supports one or many proxies)
+- `roxy_proxy_detect`
+- `roxy_proxy_modify`
+- `roxy_proxy_delete`
+- `roxy_account_list`
+- `roxy_account_create` (array input; supports one or many accounts)
+- `roxy_account_modify`
+- `roxy_account_delete`
 
 ## Development
 

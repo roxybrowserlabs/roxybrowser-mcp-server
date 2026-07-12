@@ -61,11 +61,11 @@ describe('createRoxyMcpServer', () => {
     try {
       const tools = await session.client.listTools()
       assert.equal(tools.tools.length, 1)
-      assert.equal(tools.tools[0].name, 'browser.list')
+      assert.equal(tools.tools[0].name, 'roxy_browser_list')
       assert.equal(tools.tools[0].inputSchema.properties.workspaceId, undefined)
 
       const result = await session.client.callTool({
-        name: 'browser.list',
+        name: 'roxy_browser_list',
         arguments: { pageIndex: 3 },
       })
       assert.equal(getTextContent(result), 'workspace=88;page=3')

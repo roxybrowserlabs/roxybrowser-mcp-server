@@ -11,16 +11,16 @@ Use RoxyBrowser MCP as the source of truth for workspace, project, browser, prox
 
 ## First Steps
 
-- If `workspace.list` is available and the workspace is unclear, call it before choosing IDs.
-- If `project.list` is available, the MCP server is bound to a workspace; use it for project discovery.
-- For browser automation, list or create a browser profile, then call `browser.open` to get the CDP/Bidi endpoint.
-- For proxy availability, call `proxy.detect`; `proxy.list` and `proxy.detail` show historical check data.
+- If `roxy_workspace_list` is available and the workspace is unclear, call it before choosing IDs.
+- If `roxy_project_list` is available, the MCP server is bound to a workspace; use it for project discovery.
+- For browser automation, list or create a browser profile, then call `roxy_browser_open` to get the CDP/Bidi endpoint.
+- For proxy availability, call `roxy_proxy_detect`; `roxy_proxy_list` and `roxy_proxy_detail` show historical check data.
 
 ## Context Rules
 
-- Fixed workspace mode hides `workspace.list` and exposes `project.list`.
+- Fixed workspace mode hides `roxy_workspace_list` and exposes `roxy_project_list`.
 - In fixed workspace mode, workspace-scoped tools may not expose `workspaceId`; do not ask the user for it.
-- If `workspace.list` is visible, use it to discover `workspaceId` before workspace-scoped actions.
+- If `roxy_workspace_list` is visible, use it to discover `workspaceId` before workspace-scoped actions.
 - Never call delete tools unless the user explicitly asks.
 
 ## Common Workflows
@@ -37,7 +37,7 @@ Read [workflows.md](references/workflows.md) for browser setup, proxy diagnosis,
 
 ## Critical Mistakes To Avoid
 
-- Do not say a proxy is currently unusable based only on `proxy.list` or `proxy.detail`.
-- Do not use `workspace.list` as a project-list substitute; use `project.list` when the workspace is fixed.
-- Do not assume a browser is controllable until `browser.open` returns a CDP/Bidi WebSocket endpoint.
+- Do not say a proxy is currently unusable based only on `roxy_proxy_list` or `roxy_proxy_detail`.
+- Do not use `roxy_workspace_list` as a project-list substitute; use `roxy_project_list` when the workspace is fixed.
+- Do not assume a browser is controllable until `roxy_browser_open` returns a CDP/Bidi WebSocket endpoint.
 - Do not delete browsers, proxies, or accounts as cleanup unless requested.

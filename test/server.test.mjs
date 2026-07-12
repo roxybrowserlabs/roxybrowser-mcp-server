@@ -36,6 +36,7 @@ describe('RoxyBrowserMCPServer', () => {
         result.tools.map(tool => tool.name),
         TOOLS.map(tool => tool.name),
       )
+      assert.ok(result.tools.every(tool => /^[a-zA-Z0-9_-]+$/.test(tool.name)))
     }
     finally {
       await session.close()
@@ -93,7 +94,7 @@ describe('RoxyBrowserMCPServer', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'workspace.list',
+        name: 'roxy_workspace_list',
         arguments: { pageIndex: 1, pageSize: 5 },
       })
       const text = getTextContent(result)
