@@ -32,6 +32,10 @@ Read [workflows.md](references/workflows.md) for browser setup, proxy diagnosis,
 - Browser profile and CDP/Bidi rules: [browser-guidance.md](references/browser-guidance.md)
 - browser platform-account/proxy fields: [browser-advanced-fields.md](references/browser-advanced-fields.md)
 - Advanced browser fingerprint fields: [fingerprint-fields.md](references/fingerprint-fields.md)
+- Fingerprint resolution values: [fingerprint-resolutions.md](references/fingerprint-resolutions.md)
+- Fingerprint browser language values: [fingerprint-languages.md](references/fingerprint-languages.md)
+- Fingerprint interface language values: [fingerprint-interface-languages.md](references/fingerprint-interface-languages.md)
+- Fingerprint timezone values: [fingerprint-timezones.md](references/fingerprint-timezones.md)
 - Proxy availability and historical status rules: [proxy-guidance.md](references/proxy-guidance.md)
 - Current 2.0 tool names: [tool-reference.md](references/tool-reference.md)
 

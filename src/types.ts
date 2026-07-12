@@ -399,6 +399,9 @@ export interface FingerInfo {
   forbidImage?: boolean /**
                          * Enable/disable image loading
                          */
+  forbiddenPictureSize?: number /**
+                                  * Image load size threshold
+                                  */
   /**
    * Enable/disable video playback
    */
@@ -583,6 +586,34 @@ export interface FingerInfo {
    * Browser startup parameters
    */
   startupParam?: string
+
+  /**
+   * Battery API simulation settings
+   */
+  openBattery?: boolean
+  openCharging?: boolean
+  chargingTime?: string
+  dischargingTime?: string
+  level?: string
+
+  /**
+   * Network Information API simulation settings
+   */
+  openNetwork?: boolean
+  networkType?: 'wifi' | 'cellular' | 'ethernet' | 'bluetooth' | 'wimax' | 'other' | 'unknown'
+  networkSpeed?: 'slow-2G' | '2g' | '3g' | '4g'
+  downloadSpeed?: string
+  maxDownloadSpeed?: string
+  latency?: string | number
+  saveFlowMode?: boolean
+
+  /**
+   * Bluetooth and domain controls
+   */
+  openBluetooth?: boolean
+  bluetoothAdapter?: boolean
+  blockDomainList?: string
+  allowDomainList?: string
 }
 
 /** Complete browser creation configuration */
