@@ -94,119 +94,7 @@ ${hasNextPage ? `- nextPageHint: Call roxy_list_accounts again with pageIndex=${
 
 class CreateAccount {
   name = 'roxy_create_account'
-  description = 'Create a new platform account with credentials'
-  inputSchema = {
-    type: 'object',
-    properties: {
-      workspaceId: {
-        type: 'number',
-        description: 'Workspace ID',
-      },
-      platformUrl: {
-        type: 'string',
-        description: 'Business platform URL (e.g., https://www.tiktok.com/)',
-      },
-      platformUserName: {
-        type: 'string',
-        description: 'Account username',
-      },
-      platformPassword: {
-        type: 'string',
-        description: 'Account password',
-      },
-      platformEfa: {
-        type: 'string',
-        description: 'Account EFA',
-      },
-      platformCookies: {
-        type: 'array',
-        description: 'Account cookies',
-        items: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            value: { type: 'string' },
-            domain: { type: 'string' },
-          },
-          required: ['name', 'value', 'domain'],
-        },
-      },
-      platformName: {
-        type: 'string',
-        description: 'Platform name',
-      },
-      platformRemarks: {
-        type: 'string',
-        description: 'Platform remarks/notes',
-      },
-    },
-    required: ['workspaceId', 'platformUrl', 'platformUserName', 'platformPassword'],
-  }
-
-  get schema() {
-    return {
-      name: this.name,
-      description: this.description,
-      inputSchema: this.inputSchema,
-    }
-  }
-
-  async handle(params: any) {
-    if (!params.workspaceId || !params.platformUrl || !params.platformUserName || !params.platformPassword) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: '❌ **Failed to create account:**\n\n workspaceId, platformUrl, platformUserName, and platformPassword are required',
-          },
-        ],
-      }
-    }
-
-    const { workspaceId, ...accountData } = params
-
-    const result = await request('/account/create', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, ...accountData }),
-    })
-
-    let text = ''
-    if (result.code !== 0) {
-      text = `❌ **Failed to create account:**\n\n error message: ${result.msg}`
-    }
-    else {
-      text = `✅ **Account Created Successfully**
-
-**Platform:** ${params.platformName || params.platformUrl}
-**Username:** ${params.platformUserName}
-**Platform URL:** ${params.platformUrl}${params.platformRemarks
-  ? `
-**Remarks:** ${params.platformRemarks}`
-  : ''}${params.platformEfa
-  ? `
-**EFA:** ${params.platformEfa}`
-  : ''}${params.platformCookies && params.platformCookies.length > 0
-  ? `
-**Cookies:** ${params.platformCookies.length} cookie(s)`
-  : ''}
-
-*Account has been created successfully.*`
-    }
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text,
-        },
-      ],
-    }
-  }
-}
-
-class BatchCreateAccounts {
-  name = 'roxy_batch_create_accounts'
-  description = 'Batch create multiple platform accounts'
+  description = 'Create one or more platform accounts by passing an array of account configurations'
   inputSchema = {
     type: 'object',
     properties: {
@@ -255,33 +143,52 @@ class BatchCreateAccounts {
   }
 
   async handle(params: any) {
-    if (!params.workspaceId || !params.accountList || params.accountList.length === 0) {
+    const accountList = params?.accountList
+    const workspaceId = params?.workspaceId ?? accountList?.[0]?.workspaceId
+
+    if (!workspaceId || !Array.isArray(accountList) || accountList.length === 0) {
       return {
         content: [
           {
             type: 'text',
-            text: '❌ **Failed to batch create accounts:**\n\n workspaceId and accountList are required',
+            text: '❌ **Failed to create accounts:**\n\n workspaceId and accountList are required',
           },
         ],
       }
     }
 
-    const { workspaceId, accountList } = params
+    for (const account of accountList) {
+      if (account.workspaceId !== undefined && account.workspaceId !== workspaceId) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `❌ **Failed to create accounts:**\n\n all accountList items must use workspaceId ${workspaceId}`,
+            },
+          ],
+        }
+      }
+    }
+
+    const normalizedAccountList = accountList.map((account: any) => {
+      const { workspaceId: _workspaceId, ...accountData } = account
+      return accountData
+    })
 
     const result = await request('/account/batch_create', {
       method: 'POST',
-      body: JSON.stringify({ workspaceId, accountList }),
+      body: JSON.stringify({ workspaceId, accountList: normalizedAccountList }),
     })
 
     let text = ''
     if (result.code !== 0) {
-      text = `❌ **Failed to batch create accounts:**\n\n error message: ${result.msg}`
+      text = `❌ **Failed to create accounts:**\n\n error message: ${result.msg}`
     }
     else {
-      text = `✅ **Batch Account Creation Successful**
+      text = `✅ **Account Creation Successful**
 
 **Count:** ${params.accountList.length} account(s)
-**Workspace:** ${params.workspaceId}
+**Workspace:** ${workspaceId}
 
 *All accounts have been created successfully.*`
     }
@@ -489,6 +396,5 @@ ${params.ids.map((id: number, index: number) => `  ${index + 1}. ${id}`).join('\
 
 export const listAccounts = new ListAccounts()
 export const createAccount = new CreateAccount()
-export const batchCreateAccounts = new BatchCreateAccounts()
 export const modifyAccount = new ModifyAccount()
 export const deleteAccounts = new DeleteAccounts()

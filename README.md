@@ -69,8 +69,7 @@ const health = await client.request('/health')
 - `project.list` (fixed workspace mode)
 - `health.check`
 - `browser.list`
-- `browser.create`
-- `browser.batch_create`
+- `browser.create` (array input; supports one or many browsers)
 - `browser.open`
 - `browser.close`
 - `browser.update`
@@ -82,13 +81,12 @@ const health = await client.request('/health')
 - `browser.list_labels`
 - `proxy.list`
 - `proxy.detail`
-- `proxy.create`
+- `proxy.create` (array input; supports one or many proxies)
 - `proxy.detect`
 - `proxy.modify`
 - `proxy.delete`
 - `account.list`
-- `account.create`
-- `account.batch_create`
+- `account.create` (array input; supports one or many accounts)
 - `account.modify`
 - `account.delete`
 

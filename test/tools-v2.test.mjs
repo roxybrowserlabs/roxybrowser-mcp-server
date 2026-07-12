@@ -6,6 +6,7 @@ import {
   ROXY_TOOLS_V2,
   createRoxyMcpServer,
 } from '../lib/index.js'
+import * as publicApi from '../lib/index.js'
 import {
   createJsonResponse,
   getTextContent,
@@ -36,18 +37,25 @@ async function connect(server) {
 }
 
 describe('ROXY_TOOLS_V2', () => {
+  test('does not export batch-specific create handlers', () => {
+    assert.equal('batchCreateBrowsers' in publicApi, false)
+    assert.equal('batchCreateAccounts' in publicApi, false)
+  })
+
   test('exposes 2.0 domain-style tool names', () => {
     const names = ROXY_TOOLS_V2.map(tool => tool.name)
 
     assert.ok(names.includes('browser.list'))
-    assert.ok(names.includes('browser.batch_create'))
+    assert.ok(names.includes('browser.create'))
     assert.ok(names.includes('proxy.list'))
     assert.ok(names.includes('account.create'))
     assert.equal(names.includes('roxy_list_browsers'), false)
     assert.equal(names.includes('browser.random_fingerprint'), false)
+    assert.equal(names.includes('browser.batch_create'), false)
+    assert.equal(names.includes('account.batch_create'), false)
   })
 
-  test('hides fixed workspaceId from root and batch item schemas', async () => {
+  test('create tools accept arrays and hide fixed workspaceId from item schemas', async () => {
     const server = createRoxyMcpServer({
       roxy: { apiKey: 'secret-token' },
       context: { workspaceId: 77 },
@@ -59,13 +67,33 @@ describe('ROXY_TOOLS_V2', () => {
       const result = await session.client.listTools()
       const names = result.tools.map(tool => tool.name)
       const browserList = result.tools.find(tool => tool.name === 'browser.list')
-      const batchCreate = result.tools.find(tool => tool.name === 'browser.batch_create')
+      const browserCreate = result.tools.find(tool => tool.name === 'browser.create')
+      const browserUpdate = result.tools.find(tool => tool.name === 'browser.update')
+      const proxyCreate = result.tools.find(tool => tool.name === 'proxy.create')
+      const accountCreate = result.tools.find(tool => tool.name === 'account.create')
 
       assert.equal(names.includes('workspace.list'), false)
       assert.equal(names.includes('project.list'), true)
       assert.equal(browserList.inputSchema.properties.workspaceId, undefined)
-      assert.equal(batchCreate.inputSchema.properties.browsers.items.properties.workspaceId, undefined)
-      assert.deepEqual(batchCreate.inputSchema.properties.browsers.items.required, ['browserCore'])
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.workspaceId, undefined)
+      assert.deepEqual(browserCreate.inputSchema.properties.browsers.items.required, ['browserCore'])
+      assert.deepEqual(browserCreate.inputSchema.required, ['browsers'])
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.fingerInfo.type, 'object')
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.fingerInfo.properties, undefined)
+      assert.equal(browserUpdate.inputSchema.properties.fingerInfo.type, 'object')
+      assert.equal(browserUpdate.inputSchema.properties.fingerInfo.properties, undefined)
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.proxyInfo.type, 'object')
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.proxyInfo.properties, undefined)
+      assert.equal(browserUpdate.inputSchema.properties.proxyInfo.type, 'object')
+      assert.equal(browserUpdate.inputSchema.properties.proxyInfo.properties, undefined)
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.windowPlatformList.type, 'array')
+      assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.windowPlatformList.items.properties, undefined)
+      assert.equal(browserUpdate.inputSchema.properties.windowPlatformList.type, 'array')
+      assert.equal(browserUpdate.inputSchema.properties.windowPlatformList.items.properties, undefined)
+      assert.equal(proxyCreate.inputSchema.properties.proxyList.items.properties.workspaceId, undefined)
+      assert.deepEqual(proxyCreate.inputSchema.required, ['proxyList'])
+      assert.equal(accountCreate.inputSchema.properties.accountList.items.properties.workspaceId, undefined)
+      assert.deepEqual(accountCreate.inputSchema.required, ['accountList'])
     }
     finally {
       await session.close()
@@ -175,6 +203,145 @@ describe('ROXY_TOOLS_V2', () => {
       assert.match(calledUrl, /page_index=2/)
       assert.equal(calledOptions.headers.token, 'instance-token')
       assert.match(getTextContent(result), /No browsers found in workspace 77/)
+    }
+    finally {
+      restoreFetch()
+      await session.close()
+    }
+  })
+
+  test('browser.create uses the batch-shaped input and injects workspaceId into each item', async () => {
+    const calledRequests = []
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calledRequests.push({ url, options })
+      return createJsonResponse({
+        code: 0,
+        msg: 'ok',
+        data: {
+          dirId: `browser-${calledRequests.length}`,
+        },
+      })
+    })
+
+    const server = createRoxyMcpServer({
+      roxy: {
+        apiHost: 'http://127.0.0.1:50000',
+        apiKey: 'instance-token',
+      },
+      context: { workspaceId: 77 },
+      tools: ROXY_TOOLS_V2,
+    })
+    const session = await connect(server)
+
+    try {
+      const result = await session.client.callTool({
+        name: 'browser.create',
+        arguments: {
+          browsers: [
+            { browserCore: 'chromium', projectId: 11 },
+            { browserCore: 'chromium', projectId: 12 },
+          ],
+        },
+      })
+
+      assert.equal(calledRequests.length, 2)
+      assert.match(calledRequests[0].url, /^http:\/\/127\.0\.0\.1:50000\/browser\/create$/)
+      assert.equal(calledRequests[0].options.headers.token, 'instance-token')
+      assert.equal(JSON.parse(calledRequests[0].options.body).workspaceId, 77)
+      assert.equal(JSON.parse(calledRequests[1].options.body).workspaceId, 77)
+      assert.match(getTextContent(result), /Successfully created 2 browsers/)
+    }
+    finally {
+      restoreFetch()
+      await session.close()
+    }
+  })
+
+  test('proxy.create uses array input and sends one batch request with bound workspaceId', async () => {
+    let calledUrl
+    let calledBody
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calledUrl = url
+      calledBody = JSON.parse(options.body)
+      return createJsonResponse({
+        code: 0,
+        msg: 'ok',
+      })
+    })
+
+    const server = createRoxyMcpServer({
+      roxy: {
+        apiHost: 'http://127.0.0.1:50000',
+        apiKey: 'instance-token',
+      },
+      context: { workspaceId: 77 },
+      tools: ROXY_TOOLS_V2,
+    })
+    const session = await connect(server)
+
+    try {
+      await session.client.callTool({
+        name: 'proxy.create',
+        arguments: {
+          proxyList: [
+            { protocol: 'HTTP', host: '1.2.3.4', port: '8080' },
+            { protocol: 'SOCKS5', host: '5.6.7.8', port: '1080' },
+          ],
+        },
+      })
+
+      assert.match(calledUrl, /^http:\/\/127\.0\.0\.1:50000\/proxy\/batch_create$/)
+      assert.equal(calledBody.workspaceId, 77)
+      assert.equal(calledBody.proxyList.length, 2)
+      assert.equal(calledBody.proxyList[0].workspaceId, undefined)
+      assert.equal(calledBody.proxyList[1].workspaceId, undefined)
+    }
+    finally {
+      restoreFetch()
+      await session.close()
+    }
+  })
+
+  test('account.create uses array input and sends one batch request with bound workspaceId', async () => {
+    let calledUrl
+    let calledBody
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calledUrl = url
+      calledBody = JSON.parse(options.body)
+      return createJsonResponse({
+        code: 0,
+        msg: 'ok',
+      })
+    })
+
+    const server = createRoxyMcpServer({
+      roxy: {
+        apiHost: 'http://127.0.0.1:50000',
+        apiKey: 'instance-token',
+      },
+      context: { workspaceId: 77 },
+      tools: ROXY_TOOLS_V2,
+    })
+    const session = await connect(server)
+
+    try {
+      await session.client.callTool({
+        name: 'account.create',
+        arguments: {
+          accountList: [
+            {
+              platformUrl: 'https://www.tiktok.com/',
+              platformUserName: 'alice',
+              platformPassword: 'secret',
+            },
+          ],
+        },
+      })
+
+      assert.match(calledUrl, /^http:\/\/127\.0\.0\.1:50000\/account\/batch_create$/)
+      assert.equal(calledBody.workspaceId, 77)
+      assert.equal(calledBody.accountList.length, 1)
+      assert.equal(calledBody.accountList[0].workspaceId, undefined)
     }
     finally {
       restoreFetch()

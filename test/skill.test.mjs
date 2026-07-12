@@ -25,7 +25,9 @@ describe('roxybrowser-mcp skill', () => {
     const refs = [...text.matchAll(/\(references\/([^)]+\.md)\)/g)].map(match => match[1])
 
     assert.deepEqual(refs.sort(), [
+      'browser-advanced-fields.md',
       'browser-guidance.md',
+      'fingerprint-fields.md',
       'proxy-guidance.md',
       'tool-reference.md',
       'workflows.md',
@@ -41,6 +43,8 @@ describe('roxybrowser-mcp skill', () => {
       await readFile(resolve(skillDir, 'references/proxy-guidance.md'), 'utf8'),
       await readFile(resolve(skillDir, 'references/workflows.md'), 'utf8'),
       await readFile(resolve(skillDir, 'references/tool-reference.md'), 'utf8'),
+      await readFile(resolve(skillDir, 'references/fingerprint-fields.md'), 'utf8'),
+      await readFile(resolve(skillDir, 'references/browser-advanced-fields.md'), 'utf8'),
     ].join('\n')
 
     assert.match(allText, /project\.list/)
@@ -48,6 +52,10 @@ describe('roxybrowser-mcp skill', () => {
     assert.match(allText, /proxy\.detect/)
     assert.match(allText, /historical/i)
     assert.match(allText, /CDP/)
+    assert.match(allText, /omit `fingerInfo`/)
+    assert.match(allText, /omit `windowPlatformList`/)
+    assert.match(allText, /proxyInfo/)
+    assert.match(allText, /webRTC/)
     assert.doesNotMatch(allText, /browser\.random_fingerprint/)
   })
 })

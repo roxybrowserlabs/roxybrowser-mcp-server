@@ -29,4 +29,6 @@ unless the statement is based on a fresh `proxy.detect` result.
 
 ## After Create Or Modify
 
+Use one `proxy.create` call with all requested proxies in `proxyList`; the array form also handles a single proxy.
+
 After `proxy.create` or `proxy.modify`, call `proxy.detect` before deciding whether the proxy works. Configuration success is not an availability check.

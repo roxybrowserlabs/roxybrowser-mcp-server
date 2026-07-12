@@ -218,8 +218,8 @@ const firefoxMacosAllOf = [
 
 class CreateBrowser {
   name = 'roxy_create_browser'
-  description = 'Create a browser with complete configuration control - for expert users needing full parameter access'
-  inputSchema = {
+  description = 'Create one or more browsers by passing an array of browser configurations'
+  itemInputSchema = {
     type: 'object',
     properties: {
       workspaceId: {
@@ -283,206 +283,32 @@ class CreateBrowser {
       },
       windowPlatformList: {
         type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            // 平台账号id，非必传，通过平台账号列表接口【roxy_list_accounts】获取，可以判定已在平台账号列表中的账号，有该参数时其他参数不需要传。
-            id: { type: 'number', description: 'Platform account ID, which can be obtained from [roxy_list_accounts] (field: id). Used to bind an account that already exists in the platform account list. If this parameter is provided, other parameters do not need to be passed.' },
-            platformUrl: { type: 'string', description: 'Platform URL' },
-            platformUserName: { type: 'string', description: 'Platform username' },
-            platformPassword: { type: 'string', description: 'Platform password' },
-            platformEfa: { type: 'string', description: 'Platform EFA' },
-            platformRemarks: { type: 'string', description: 'Platform remarks' },
-          },
-        },
-        description: 'Platform account information',
+        items: { type: 'object' },
+        // 浏览器如何绑定平台账号，当用户需要为browser绑定平台账号时，需要传入。
+        description: 'How to bind a platform account to the browser, when the user needs to bind a platform account to the browser, it needs to be passed in. See `roxybrowser-mcp` skills for supported fields.',
       },
       proxyInfo: {
         type: 'object',
-        description: 'Complete proxy configuration object',
-        properties: {
-          // 如果有 moduleId ，则其他参数不可传递 (moduleId 可通过 roxy_list_proxies 或 roxy_store_proxies 获取) 优先使用该参数来绑定代理IP
-          moduleId: { type: 'number', description: `If moduleId is provided, no other parameters may be passed. (moduleId can be obtained via ${proxyList.name} field: id) Priority to use this parameter to bind proxy IP` },
-          proxyMethod: { type: 'string', enum: ['custom', 'choose', 'api'] },
-          proxyCategory: { type: 'string', enum: ['noproxy', 'HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
-          ipType: { type: 'string', enum: ['IPV4', 'IPV6'] },
-          protocol: { type: 'string', enum: ['HTTP', 'HTTPS', 'SOCKS5'] },
-          host: { type: 'string' },
-          port: { type: 'string' },
-          proxyUserName: { type: 'string' },
-          proxyPassword: { type: 'string' },
-          refreshUrl: { type: 'string' },
-          checkChannel: { type: 'string', enum: ['IPRust.io', 'IP-API', 'IP123.in'] },
-        },
+        // 浏览器如何绑定代理IP，当用户需要为browser绑定IP时，需要传入。
+        description: 'How does the browser bind the proxy IP? When the user needs to bind the IP for the browser, it needs to be transmitted. See `roxybrowser-mcp` skills for supported fields.',
       },
       fingerInfo: {
         type: 'object',
-        description: 'Complete fingerprint configuration',
-        properties: {
-          // Language and timezone
-          isLanguageBaseIp: { type: 'boolean', description: 'Follow IP for browser language' },
-          language: { type: 'string', description: 'Custom browser language' },
-          isDisplayLanguageBaseIp: { type: 'boolean', description: 'Follow IP for display language' },
-          displayLanguage: { type: 'string', description: 'Custom display language' },
-          isTimeZone: { type: 'boolean', description: 'Follow IP for timezone' },
-          timeZone: { type: 'string', description: 'Custom timezone' },
-
-          // Geolocation
-          position: { type: 'number', description: 'Geolocation prompt: 0=ask, 1=allow, 2=deny' },
-          isPositionBaseIp: { type: 'boolean', description: 'Follow IP for geolocation' },
-          longitude: { type: 'string', description: 'Custom longitude' },
-          latitude: { type: 'string', description: 'Custom latitude' },
-          precisionPos: { type: 'string', description: 'Precision in meters' },
-
-          // Media settings
-          forbidAudio: { type: 'boolean', description: 'Enable/disable sound' },
-          forbidImage: { type: 'boolean', description: 'Enable/disable image loading' },
-          forbiddenPictureSize: { type: 'number', description: 'Image load size threshold (KB, positive integer). When forbidImage is false, set forbiddenPictureSize = 0 to disable all image loading. Default 0.' },
-          forbidMedia: { type: 'boolean', description: 'Enable/disable video playback' },
-
-          // Window settings
-          openWidth: { type: 'string', description: 'Window width' },
-          openHeight: { type: 'string', description: 'Window height' },
-          openBookmarks: { type: 'boolean', description: 'Enable bookmarks' },
-          positionSwitch: { type: 'boolean', description: 'Window position switch' },
-          windowRatioPosition: { type: 'string', description: 'Window position ratio' },
-          isDisplayName: { type: 'boolean', description: 'Show window name in title bar' },
-
-          // Sync settings
-          syncBookmark: { type: 'boolean', description: 'Sync bookmarks' },
-          syncHistory: { type: 'boolean', description: 'Sync history' },
-          syncTab: { type: 'boolean', description: 'Sync tabs' },
-          syncCookie: { type: 'boolean', description: 'Sync cookies' },
-          syncExtensions: { type: 'boolean', description: 'Sync extensions' },
-          syncPassword: { type: 'boolean', description: 'Sync saved passwords' },
-          syncIndexedDb: { type: 'boolean', description: 'Sync IndexedDB' },
-          syncLocalStorage: { type: 'boolean', description: 'Sync LocalStorage' },
-
-          // Cleanup settings
-          clearCacheFile: { type: 'boolean', description: 'Clear cache files on startup' },
-          clearCookie: { type: 'boolean', description: 'Clear cookies on startup' },
-          clearLocalStorage: { type: 'boolean', description: 'Clear LocalStorage on startup' },
-
-          // Advanced settings
-          randomFingerprint: { type: 'boolean', description: 'Generate random fingerprint' },
-          forbidSavePassword: { type: 'boolean', description: 'Disable password save prompts' },
-          stopOpenNet: { type: 'boolean', description: 'Stop opening if network fails' },
-          stopOpenIP: { type: 'boolean', description: 'Stop opening if IP changes' },
-          stopOpenPosition: { type: 'boolean', description: 'Stop opening if IP location changes' },
-          openWorkbench: { type: 'number', description: 'Open workbench: 0=close, 1=open, 2=follow app' },
-
-          // Display settings
-          resolutionType: { type: 'boolean', description: 'Custom resolution vs follow system' },
-          resolutionX: { type: 'string', description: 'Custom resolution width' },
-          resolutionY: { type: 'string', description: 'Custom resolution height' },
-          fontType: { type: 'boolean', description: 'Random fonts vs system fonts' },
-
-          // Browser fingerprint settings
-          webRTC: { type: 'number', description: 'WebRTC: 0=replace, 1=real, 2=disable' },
-          webGL: { type: 'boolean', description: 'WebGL: random vs real' },
-          webGLInfo: { type: 'boolean', description: 'WebGL info: custom vs real' },
-          webGLManufacturer: { type: 'string', description: 'Custom WebGL manufacturer' },
-          webGLRender: { type: 'string', description: 'Custom WebGL renderer' },
-          webGpu: { type: 'string', enum: ['webgl', 'real', 'block'], description: 'WebGPU setting' },
-          canvas: { type: 'boolean', description: 'Canvas: random vs real' },
-          audioContext: { type: 'boolean', description: 'AudioContext: random vs real' },
-          speechVoices: { type: 'boolean', description: 'Speech Voices: random vs real' },
-          doNotTrack: { type: 'boolean', description: 'Enable Do Not Track' },
-          clientRects: { type: 'boolean', description: 'ClientRects: random vs real' },
-          deviceInfo: { type: 'boolean', description: 'Media devices: random vs real' },
-          deviceNameSwitch: { type: 'boolean', description: 'Device names: random vs real' },
-          macInfo: { type: 'boolean', description: 'MAC address: custom vs real' },
-
-          // Hardware settings
-          hardwareConcurrent: { type: 'string', description: 'Hardware concurrency' },
-          deviceMemory: { type: 'string', description: 'Device memory' },
-
-          // Security settings
-          disableSsl: { type: 'boolean', description: 'SSL fingerprint settings' },
-          disableSslList: { type: 'array', items: { type: 'string' }, description: 'SSL feature list' },
-          portScanProtect: { type: 'boolean', description: 'Port scan protection' },
-          portScanList: { type: 'string', description: 'Port scan whitelist' },
-          useGpu: { type: 'boolean', description: 'Use GPU acceleration' },
-          sandboxPermission: { type: 'boolean', description: 'Disable sandbox' },
-          startupParam: { type: 'string', description: 'Browser startup parameters (--headless=new startup headless)' },
-        },
+        description: 'Advanced fingerprint options. Usually omit this unless the user explicitly asks for fingerprint customization. See `roxybrowser-mcp` skills for supported fields.',
       },
     },
     required: ['workspaceId', 'browserCore'],
   }
 
-  get schema() {
-    return {
-      name: this.name,
-      description: this.description,
-      inputSchema: this.inputSchema,
-    }
-  }
-
-  async handle(params: any) {
-
-    // Cross-field validation
-    const validationError = validateBrowserConfig(params)
-    if (validationError) {
-      return {
-        content: [{ type: 'text', text: `❌ **Invalid configuration:**\n\n${validationError}` }],
-      }
-    }
-
-    if (params.browserCore) {
-      const [coreType, coreVersion] = params.browserCore.split(' ')
-      params.coreType = coreType || 'Chrome';
-      params.coreVersion = coreVersion;
-      delete params.browserCore
-    } else {
-      params.coreType = 'Chrome';
-    }
-
-    resolveCookieParam(params)
-
-    const result = await request('/browser/create', {
-      method: 'POST',
-      body: JSON.stringify(params),
-    })
-
-    const data = result.data
-
-    let text = ''
-    if (result.code !== 0) {
-      text = `❌ **Failed to create browser:**\n\n error message: ${result.msg}`
-    }
-    else {
-      text = `✅ **Simple Browser Created**\n\n`
-        + `**Browser ID:** \`${data.dirId}\`\n`
-        + `**Core Type:** ${data.coreType || 'Chrome'}\n`
-        + `*Use this browser ID with \`roxy_open_browsers\` to start the browser and get CDP endpoints for automation.*`
-    }
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text,
-        },
-      ],
-    }
-  }
-}
-
-export const createBrowser = new CreateBrowser()
-
-class BatchCreateBrowsers {
-  name = 'roxy_batch_create_browsers'
-  description = 'Create multiple browsers in batch by passing an array of browser configurations'
   inputSchema = {
     type: 'object',
     properties: {
       browsers: {
         type: 'array',
-        description: 'Array of browser configuration objects to create',
+        description: 'Array of browser configuration objects to create. Pass one item for a single browser.',
         items: {
           type: 'object',
-          properties: createBrowser.inputSchema.properties,
+          properties: this.itemInputSchema.properties,
           required: ['workspaceId', 'browserCore'],
           allOf: firefoxMacosAllOf,
         },
@@ -500,7 +326,7 @@ class BatchCreateBrowsers {
   }
 
   async handle(params: any) {
-    if (!Array.isArray(params.browsers) || params.browsers.length === 0) {
+    if (!Array.isArray(params?.browsers) || params.browsers.length === 0) {
       return {
         content: [
           {
@@ -601,7 +427,7 @@ class BatchCreateBrowsers {
   }
 }
 
-export const batchCreateBrowsers = new BatchCreateBrowsers()
+export const createBrowser = new CreateBrowser()
 
 class UpdateBrowser {
   name = 'roxy_update_browser'
@@ -609,7 +435,7 @@ class UpdateBrowser {
   inputSchema = {
     type: 'object',
     properties: {
-      ...createBrowser.inputSchema.properties,
+      ...createBrowser.itemInputSchema.properties,
     },
     required: ['workspaceId', 'dirId'],
   }

@@ -69,8 +69,7 @@ const health = await client.request('/health')
 - `project.list`（固定 workspace 模式）
 - `health.check`
 - `browser.list`
-- `browser.create`
-- `browser.batch_create`
+- `browser.create`（数组入参，支持创建一个或多个浏览器）
 - `browser.open`
 - `browser.close`
 - `browser.update`
@@ -82,13 +81,12 @@ const health = await client.request('/health')
 - `browser.list_labels`
 - `proxy.list`
 - `proxy.detail`
-- `proxy.create`
+- `proxy.create`（数组入参，支持创建一个或多个代理）
 - `proxy.detect`
 - `proxy.modify`
 - `proxy.delete`
 - `account.list`
-- `account.create`
-- `account.batch_create`
+- `account.create`（数组入参，支持创建一个或多个账号）
 - `account.modify`
 - `account.delete`
 

@@ -24,7 +24,6 @@ export async function runServer(options: RoxyMcpServerOptions = {}): Promise<voi
 }
 
 export {
-  batchCreateBrowsers,
   clearLocalCache,
   clearServerCache,
   closeBrowsers,
@@ -49,7 +48,6 @@ export {
 } from './modules/proxy.js'
 
 export {
-  batchCreateAccounts,
   createAccount,
   deleteAccounts,
   listAccounts,

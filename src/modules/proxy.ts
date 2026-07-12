@@ -377,43 +377,62 @@ class CreateProxies {
   }
 
   async handle(params: any) {
-    if (!params.workspaceId || !params.proxyList || params.proxyList.length === 0) {
+    const proxyList = params?.proxyList
+    const workspaceId = params?.workspaceId ?? proxyList?.[0]?.workspaceId
+
+    if (!workspaceId || !Array.isArray(proxyList) || proxyList.length === 0) {
       return {
         content: [
           {
             type: 'text',
-            text: '❌ **Failed to batch create proxies:**\n\n workspaceId and proxyList are required',
+            text: '❌ **Failed to create proxies:**\n\n workspaceId and proxyList are required',
           },
         ],
       }
     }
 
-    const { workspaceId, proxyList } = params
+    for (const item of proxyList) {
+      if (item.workspaceId !== undefined && item.workspaceId !== workspaceId) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `❌ **Failed to create proxies:**\n\n all proxyList items must use workspaceId ${workspaceId}`,
+            },
+          ],
+        }
+      }
+    }
 
-    proxyList.forEach((item: any) => {
+    const normalizedProxyList = proxyList.map((item: any) => {
+      const { workspaceId: _workspaceId, ...proxyData } = item
+      return proxyData
+    })
+
+    normalizedProxyList.forEach((item: any) => {
       item.ipType = item.ipType ? item.ipType : 'IPV4'
       item.checkChannel = item.checkChannel ? channelList.find((channel: any) => channel.label === item.checkChannel)?.value : null
     })
 
     const result = await request('/proxy/batch_create', {
       method: 'POST',
-      body: JSON.stringify({ workspaceId, proxyList }),
+      body: JSON.stringify({ workspaceId, proxyList: normalizedProxyList }),
     })
 
     let text = ''
     if (result.code !== 0) {
       if (result.data) {
-        text = `❌ **Failed to batch create proxies:**\n\n error message: ${result.msg}\n\n${result.data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
+        text = `❌ **Failed to create proxies:**\n\n error message: ${result.msg}\n\n${result.data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
       }
       else {
-        text = `❌ **Failed to batch create proxies:**\n\n error message: ${result.msg}`
+        text = `❌ **Failed to create proxies:**\n\n error message: ${result.msg}`
       }
     }
     else {
-      text = `✅ **Batch Proxy Creation Successful**
+      text = `✅ **Proxy Creation Successful**
 
 **Count:** ${params.proxyList.length} proxy/proxies
-**Workspace:** ${params.workspaceId}${params.checkChannel
+**Workspace:** ${workspaceId}${params.checkChannel
   ? `
 **Default Check Channel:** ${params.checkChannel}`
   : ''}

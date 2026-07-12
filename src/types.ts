@@ -1254,8 +1254,8 @@ export interface AccountListParams {
   page_size?: number
 }
 
-/** Account create parameters */
-export interface AccountCreateParams {
+/** Single account configuration used inside account create requests */
+export interface AccountCreateItem {
   workspaceId: number
   /**
    * Business platform URL (required)
@@ -1291,8 +1291,8 @@ export interface AccountCreateParams {
   platformRemarks?: string
 }
 
-/** Account modify parameters (same as create but with id) */
-export interface AccountModifyParams extends AccountCreateParams {
+/** Account modify parameters (same as account create item but with id) */
+export interface AccountModifyParams extends AccountCreateItem {
   /**
    * Account ID (required for modify)
    */
@@ -1308,13 +1308,13 @@ export interface AccountDeleteParams {
   ids: number[]
 }
 
-/** Batch create account parameters */
-export interface AccountBatchCreateParams {
+/** Account create parameters */
+export interface AccountCreateParams {
   workspaceId: number
   /**
    * Array of account configurations
    */
-  accountList: AccountCreateParams[]
+  accountList: AccountCreateItem[]
 }
 
 // ========== Label Types ==========
@@ -1519,8 +1519,8 @@ export interface ProxyListParams {
   [key: string]: any // Allow additional query parameters
 }
 
-/** Proxy create parameters */
-export interface ProxyCreateParams {
+/** Single proxy configuration used inside proxy create requests */
+export interface ProxyCreateItem {
   workspaceId: number
   /**
    * Proxy protocol: HTTP, HTTPS, SOCKS5, SSH
@@ -1565,8 +1565,8 @@ export interface ProxyCreateParams {
   [key: string]: any // Allow additional fields
 }
 
-/** Proxy modify parameters (same as create but with id) */
-export interface ProxyModifyParams extends ProxyCreateParams {
+/** Proxy modify parameters (same as proxy create item but with id) */
+export interface ProxyModifyParams extends ProxyCreateItem {
   /**
    * Proxy ID (required for modify)
    */
@@ -1591,8 +1591,8 @@ export interface ProxyDeleteParams {
   ids: number[]
 }
 
-/** Batch create proxy parameters */
-export interface ProxyBatchCreateParams {
+/** Proxy create parameters */
+export interface ProxyCreateParams {
   workspaceId: number
   /**
    * Default check channel for all proxies
@@ -1601,7 +1601,7 @@ export interface ProxyBatchCreateParams {
   /**
    * Array of proxy configurations
    */
-  proxyList: ProxyCreateParams[]
+  proxyList: ProxyCreateItem[]
 }
 
 /** Detect channel item */

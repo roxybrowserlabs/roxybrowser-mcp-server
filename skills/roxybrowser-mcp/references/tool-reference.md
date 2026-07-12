@@ -9,8 +9,7 @@
 ## Browser
 
 - `browser.list`
-- `browser.create`
-- `browser.batch_create`
+- `browser.create`: create one or more browsers using the `browsers` array. Use this array form even for a single browser.
 - `browser.open`
 - `browser.close`
 - `browser.update`
@@ -25,7 +24,7 @@
 
 - `proxy.list`
 - `proxy.detail`
-- `proxy.create`
+- `proxy.create`: create one or more proxies using the `proxyList` array. Use this array form even for a single proxy.
 - `proxy.detect`
 - `proxy.modify`
 - `proxy.delete`
@@ -33,7 +32,6 @@
 ## Account
 
 - `account.list`
-- `account.create`
-- `account.batch_create`
+- `account.create`: create one or more accounts using the `accountList` array. Use this array form even for a single account.
 - `account.modify`
 - `account.delete`
