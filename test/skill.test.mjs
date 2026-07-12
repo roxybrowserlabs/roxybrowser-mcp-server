@@ -4,20 +4,20 @@ import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const skillDir = resolve('skills/roxybrowser-mcp')
+const skillDir = resolve('skills/roxybrowser-control')
 const skillPath = resolve(skillDir, 'SKILL.md')
 
 async function readSkill() {
   return readFile(skillPath, 'utf8')
 }
 
-describe('roxybrowser-mcp skill', () => {
+describe('roxybrowser-control skill', () => {
   test('has valid discovery frontmatter', async () => {
     const text = await readSkill()
 
-    assert.match(text, /^---\nname: roxybrowser-mcp\n/m)
+    assert.match(text, /^---\nname: roxybrowser-control\n/m)
     assert.match(text, /^description: Use when .*RoxyBrowser.*MCP/m)
-    assert.match(text, /^---\n\n# RoxyBrowser MCP/m)
+    assert.match(text, /^---\n\n# RoxyBrowser Control/m)
   })
 
   test('references bundled guidance files that exist', async () => {

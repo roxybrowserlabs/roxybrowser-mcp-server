@@ -285,16 +285,16 @@ class CreateBrowser {
         type: 'array',
         items: { type: 'object' },
         // 浏览器如何绑定平台账号，当用户需要为browser绑定平台账号时，需要传入。
-        description: 'How to bind a platform account to the browser, when the user needs to bind a platform account to the browser, it needs to be passed in. See `roxybrowser-mcp` skills for supported fields.',
+        description: 'How to bind a platform account to the browser, when the user needs to bind a platform account to the browser, it needs to be passed in. See `roxybrowser-control` skills for supported fields.',
       },
       proxyInfo: {
         type: 'object',
         // 浏览器如何绑定代理IP，当用户需要为browser绑定IP时，需要传入。
-        description: 'How does the browser bind the proxy IP? When the user needs to bind the IP for the browser, it needs to be transmitted. See `roxybrowser-mcp` skills for supported fields.',
+        description: 'How does the browser bind the proxy IP? When the user needs to bind the IP for the browser, it needs to be transmitted. See `roxybrowser-control` skills for supported fields.',
       },
       fingerInfo: {
         type: 'object',
-        description: 'Advanced fingerprint options. Usually omit this unless the user explicitly asks for fingerprint customization. See `roxybrowser-mcp` skills for supported fields.',
+        description: 'Advanced fingerprint options. Usually omit this unless the user explicitly asks for fingerprint customization. See `roxybrowser-control` skills for supported fields.',
       },
     },
     required: ['workspaceId', 'browserCore'],

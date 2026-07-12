@@ -1,9 +1,9 @@
 ---
-name: roxybrowser-mcp
+name: roxybrowser-control
 description: Use when controlling RoxyBrowser through MCP tools, managing browser profiles, proxies, accounts, workspaces, projects, CDP/Bidi endpoints, or diagnosing RoxyBrowser automation setup.
 ---
 
-# RoxyBrowser MCP
+# RoxyBrowser Control
 
 ## Core Rule
 
