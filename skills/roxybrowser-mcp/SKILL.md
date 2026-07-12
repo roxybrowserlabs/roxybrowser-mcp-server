@@ -1,0 +1,41 @@
+---
+name: roxybrowser-mcp
+description: Use when controlling RoxyBrowser through MCP tools, managing browser profiles, proxies, accounts, workspaces, projects, CDP endpoints, or diagnosing RoxyBrowser automation setup.
+---
+
+# RoxyBrowser MCP
+
+## Core Rule
+
+Use RoxyBrowser MCP as the source of truth for workspace, project, browser, proxy, account, and CDP endpoint IDs. Do not invent IDs or infer live proxy/browser state from stale list output.
+
+## First Steps
+
+- If `workspace.list` is available and the workspace is unclear, call it before choosing IDs.
+- If `project.list` is available, the MCP server is bound to a workspace; use it for project discovery.
+- For browser automation, list or create a browser profile, then call `browser.open` to get the CDP endpoint.
+- For proxy availability, call `proxy.detect`; `proxy.list` and `proxy.detail` show historical check data.
+
+## Context Rules
+
+- Fixed workspace mode hides `workspace.list` and exposes `project.list`.
+- In fixed workspace mode, workspace-scoped tools may not expose `workspaceId`; do not ask the user for it.
+- If `workspace.list` is visible, use it to discover `workspaceId` before workspace-scoped actions.
+- Never call delete tools unless the user explicitly asks.
+
+## Common Workflows
+
+Read [workflows.md](references/workflows.md) for browser setup, proxy diagnosis, CDP handoff, and cleanup flows.
+
+## Domain Guidance
+
+- Browser profile and CDP rules: [browser-guidance.md](references/browser-guidance.md)
+- Proxy availability and historical status rules: [proxy-guidance.md](references/proxy-guidance.md)
+- Current 2.0 tool names: [tool-reference.md](references/tool-reference.md)
+
+## Critical Mistakes To Avoid
+
+- Do not say a proxy is currently unusable based only on `proxy.list` or `proxy.detail`.
+- Do not use `workspace.list` as a project-list substitute; use `project.list` when the workspace is fixed.
+- Do not assume a browser is controllable until `browser.open` returns a CDP WebSocket endpoint.
+- Do not delete browsers, proxies, or accounts as cleanup unless requested.
