@@ -32,9 +32,16 @@ function formatProxySource(dataType?: string) {
 }
 
 function formatCheckStatus(checkStatus?: number) {
-  return checkStatus === 1
-    ? '✅ available'
-    : '❌ unavailable'
+  if (checkStatus === 1)
+    return '✅ last check passed'
+  if (checkStatus === 0 || checkStatus === 2)
+    return '⚠️ last check failed'
+  return '⚪ not checked / unknown'
+}
+
+function proxyDetectionGuidance(proxyId?: number | string) {
+  const idText = proxyId !== undefined ? ` for proxy id ${proxyId}` : ''
+  return `This is historical detection data, not a live availability verdict. Call \`proxy.detect\`${idText} before telling the user whether the proxy is currently usable.`
 }
 
 function formatValue(value: any) {
@@ -173,7 +180,7 @@ export class ProxyList {
             return baseInfo
           }).join('\n\n')
         : ''
-      text = `📵 **proxy list** (total: ${data.total})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\n${proxyListText}
+      text = `📵 **proxy list** (total: ${data.total})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\nProxy check status is historical. If a proxy shows a failed or unknown last check, call \`proxy.detect\` before judging current availability.\n\n${proxyListText}
 
 Pagination:
 - currentPage: ${currentPage}
@@ -268,6 +275,7 @@ class GetProxyDetail {
           `**Bound Browser IDs:** ${formatValue(detail.bindList)}`,
           `**Direct Connection:** ${formatBool(detail.isDirect)}`,
           `**Check Status:** ${formatCheckStatus(detail.checkStatus)}`,
+          `**Availability Guidance:** ${proxyDetectionGuidance(detail.id)}`,
           `**Check Channel:** ${formatValue(detail.checkChannel)}`,
           `**Check Channel Value:** ${formatValue(detail.checkChannelValue)}`,
           `**Last Check Time:** ${formatValue(detail.checkTime)}`,
@@ -410,7 +418,7 @@ class CreateProxies {
 **Default Check Channel:** ${params.checkChannel}`
   : ''}
 
-*All proxies have been created. IP detection will be performed automatically.*`
+*All proxies have been created. Run \`proxy.detect\` before judging availability; list/detail check status is historical data.*`
     }
 
     return {
@@ -476,7 +484,7 @@ class DetectProxy {
     else {
       const data = result.data
       if (data) {
-        text = `✅ **Proxy Detection ${data.checkStatus === 1 ? 'Success' : data.checkStatus === 2 ? 'Failed' : ''}**
+        text = `✅ **Fresh Proxy Detection ${data.checkStatus === 1 ? 'Success' : data.checkStatus === 2 ? 'Failed' : ''}**
 
 **ip address:** ${data.lastIp}
 **country:** ${data.lastCountry}
@@ -490,7 +498,7 @@ class DetectProxy {
 **Proxy ID:** ${params.id}
 **Workspace:** ${params.workspaceId}
 
-*Proxy detection is in progress. This may take a few seconds. Use \`roxy_list_proxies\` | \`roxy_store_proxies\` to check the updated status.*
+*Proxy detection is in progress. This may take a few seconds. Use \`proxy.list\` or \`proxy.detail\` to check the updated historical status after detection completes.*
 `
       }
     }
@@ -614,7 +622,7 @@ class ModifyProxy {
 **Remark:** ${params.remark}`
   : ''}
 
-*Proxy configuration has been updated. Use \`roxy_detect_proxy\` to test the new configuration.*`
+*Proxy configuration has been updated. Run \`proxy.detect\` before judging availability; list/detail check status is historical data.*`
     }
 
     return {

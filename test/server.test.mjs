@@ -93,7 +93,7 @@ describe('RoxyBrowserMCPServer', () => {
 
     try {
       const result = await session.client.callTool({
-        name: 'roxy_list_workspaces',
+        name: 'workspace.list',
         arguments: { pageIndex: 1, pageSize: 5 },
       })
       const text = getTextContent(result)

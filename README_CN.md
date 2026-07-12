@@ -1,352 +1,111 @@
-# RoxyBrowser MCP 服务器
+# RoxyBrowser MCP Server 2.0
 
 [English](README.md) | [中文](README_CN.md)
 
-一个为 [RoxyBrowser](https://www.roxybrowser.com/) 设计的模型上下文协议（MCP）服务器，为 AI 助手提供管理浏览器实例和获取 Chrome DevTools Protocol (CDP) WebSocket 端点的能力。
+RoxyBrowser MCP Server 2.0 是一次破坏性重构。1.x 继续作为兼容维护线存在；2.0 面向嵌入式 MCP、固定 workspace/project 上下文、实例化配置和可单测 runtime 重新设计。
 
-## 功能特性
-
-- 🚀 **浏览器管理**：通过编程方式打开和关闭 RoxyBrowser 实例
-- 🔗 **CDP 集成**：获取用于 Chrome DevTools Protocol 自动化的 WebSocket 端点
-- 🤖 **AI 友好**：通过 MCP 与 AI 助手无缝集成
-- 🎯 **Playwright 就绪**：与 [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp)（RoxyBrowser 定制的 Playwright MCP）配合使用
-- 📊 **工作区支持**：跨不同工作区和项目管理浏览器
-- 🛠️ **浏览器创建**：支持单个或批量创建浏览器，可完整配置
-- 🌐 **代理管理**：代理列表、创建、检测与管理
-- 👤 **账号管理**：在工作区中管理平台账号与凭证
-- 🔧 **高级配置**：指纹、清缓存、随机指纹等
-- 🏥 **健康检查**：服务器与工作区连通性诊断
-
-## 快速开始
-
-### 前置条件
-
-1. **RoxyBrowser** 已安装并运行
-2. **RoxyBrowser API** 在设置中已启用：
-   - 打开 RoxyBrowser → API
-   - 设置"API状态"为"启用"
-   - 复制您的 API Key
-   - 记下 API 端口（默认：50000）
-
-### MCP 客户端配置
-
-将 RoxyBrowser OpenAPI 和 RoxyBrowser Playwright MCP 添加到您的 MCP 客户端配置中：
-
-**Claude Desktop / VS Code / Cursor：**
-```json
-{
-  "mcpServers": {
-    "roxybrowser-openapi": {
-      "command": "npx",
-      "args": ["@roxybrowser/openapi@latest"],
-      "env": {
-        "ROXY_API_KEY": "YOUR API KEY",
-        "ROXY_API_HOST": "http://127.0.0.1:50000"
-      }
-    },
-    "roxybrowser-playwright-mcp": {
-      "command": "npx",
-      "args": ["@roxybrowser/playwright-mcp@latest"]
-    }
-  }
-}
-```
-
-**注意：** 将 `YOUR API KEY` 和 `YOUR API HOST` 替换为您实际的 RoxyBrowser 凭证。
-
-## 使用方式
-
-本包支持三种使用方式：**CLI 直接启动**、**进程内启动**、以及**作为库引入**做二次开发。
-
-### 1. CLI 直接启动
-
-在命令行直接启动 MCP 服务，适合被 MCP 客户端以子进程方式拉起。
+## 安装
 
 ```bash
-# 全局安装后
-roxy-browser-mcp
-
-# 或使用 npx（无需全局安装）
-npx @roxybrowser/openapi
-
-# 本地构建后
-npm run build && node lib/index.js
+npm install @roxybrowser/openapi@beta
 ```
 
-CLI 参数（配置优先级：**CLI 参数 > 环境变量 > 默认值**）：
-
-- `-V, --version` — 显示版本
-- `-h, --help` — 显示用法
-- `-H, --api-host <url>` — RoxyBrowser API 地址（默认：`http://127.0.0.1:50000`）
-- `-k, --api-key <key>` — API 密钥（未通过环境变量设置时必填）
-- `-t, --timeout <ms>` — 请求超时毫秒数（默认：`30000`）
-
-环境变量（在未传对应 CLI 参数时生效）：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`。
-
-示例：
+## CLI 使用
 
 ```bash
-roxy-browser-mcp --api-key "your-key"
-roxy-browser-mcp -k "your-key" -H http://127.0.0.1:50000
-ROXY_API_KEY=your-key roxy-browser-mcp
+roxybrowser-openapi-mcp --api-key "YOUR_API_KEY"
 ```
 
-### 2. 进程内启动（编程方式）
+参数：
 
-在你自己进程内启动 MCP 服务（同一进程、stdio 传输），适合从代码里启动而不是单独开一个 CLI 进程。
+- `-H, --api-host <url>`：RoxyBrowser API 地址，默认 `http://127.0.0.1:50000`
+- `-k, --api-key <key>`：RoxyBrowser API Key
+- `-t, --timeout <ms>`：请求超时时间，默认 `30000`
 
-```ts
-import { runServer } from '@roxybrowser/openapi'
+也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`。
 
-// 在 stdio 上启动 MCP 服务，会一直运行直到进程退出
-await runServer()
-```
-
-也可以使用 Server 类做更多控制：
+## 嵌入式 MCP 使用
 
 ```ts
-import { RoxyBrowserMCPServer } from '@roxybrowser/openapi'
+import { createRoxyMcpServer } from '@roxybrowser/openapi'
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 
-const server = new RoxyBrowserMCPServer()
-await server.run()
-```
-
-在调用 `runServer()` 前设置环境变量（`ROXY_API_KEY`、`ROXY_API_HOST`）；配置在进程启动时读取，运行中不可修改。
-
-### 3. 库模式（二次开发）
-
-在自己的应用里直接使用导出的工具和 API，调用 RoxyBrowser 接口，而无需运行 MCP 服务。
-
-```ts
-import {
-  listBrowsers,
-  openBrowser,
-  createBrowser,
-  listWorkspaces,
-  healthCheck,
-} from '@roxybrowser/openapi'
-
-// 在发起请求前设置 ROXY_API_KEY、ROXY_API_HOST（环境变量）；配置在进程启动时固定
-// 直接调用工具 handler（与 MCP 工具入参一致）
-const listResult = await listBrowsers.handle({ workspaceId: 1 })
-const openResult = await openBrowser.handle({
-  workspaceId: 1,
-  dirIds: ['browser-dir-id'],
+const server = createRoxyMcpServer({
+  roxy: {
+    apiKey: 'YOUR_API_KEY',
+    apiHost: 'http://127.0.0.1:50000',
+  },
+  context: {
+    workspaceId: 123,
+  },
 })
-const createResult = await createBrowser.handle({
-  workspaceId: 1,
-  windowName: 'My Browser',
-})
+
+const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
+await server.connect(serverTransport)
 ```
 
-每个工具都导出：
+当传入 `context.workspaceId` 后，workspace 级工具的 MCP schema 不再暴露 `workspaceId`。runtime 会在调用时自动注入，并拒绝调用方传入冲突的 workspace。
 
-- `.name` — 工具名（如 `roxy_list_browsers`）
-- `.schema` — MCP 工具 schema（`name`、`description`、`inputSchema`）
-- `.handle(args)` — 异步执行；传入与 MCP 工具相同的参数
+固定 workspace 模式下，`workspace.list` 会被隐藏，并改为暴露 `project.list`。`project.list` 返回当前绑定 workspace 下的项目。
 
-也可以使用底层 `request()` 与类型做自定义请求：
+## SDK Client
 
 ```ts
-import { request, resolveConfig } from '@roxybrowser/openapi'
-import type { RoxyClientConfig, BrowserListItem, Workspace } from '@roxybrowser/openapi'
+import { RoxyClient } from '@roxybrowser/openapi'
 
-const res = await request('/browser/list_v3?workspaceId=1', { method: 'GET' })
+const client = new RoxyClient({
+  apiKey: 'YOUR_API_KEY',
+  apiHost: 'http://127.0.0.1:50000',
+})
+
+const health = await client.request('/health')
 ```
 
-这样可以在自定义界面、脚本或其它 MCP 服务中复用 RoxyBrowser 的能力。
+## 工具命名
 
-## 可用工具
+2.0 使用领域化工具名：
 
-### 工作区
-- `roxy_list_workspaces` - 列出所有可用的工作区及其项目
-
-### 浏览器
-- `roxy_list_browsers` - 列出工作区/项目中的浏览器并支持筛选
-- `roxy_create_browser` - 使用完整配置创建浏览器
-- `roxy_batch_create_browsers` - 批量创建多个浏览器
-- `roxy_open_browsers` - 打开浏览器并获取用于自动化的 CDP WebSocket 端点
-- `roxy_update_browser` - 更新现有浏览器配置
-- `roxy_close_browsers` - 关闭运行中的浏览器（不释放额度）
-- `roxy_delete_browsers` - 永久删除浏览器配置文件（释放额度）
-- `roxy_get_browser_detail` - 获取详细的浏览器信息和配置
-- `roxy_get_connection_info` - 获取已打开浏览器的 CDP 端点和进程 ID
-- `roxy_clear_local_cache` - 清除本地浏览器缓存
-- `roxy_clear_server_cache` - 清除服务端浏览器缓存
-- `roxy_random_fingerprint` - 随机化浏览器指纹
-- `roxy_list_labels` - 获取用于组织的浏览器标签
-
-### 代理
-- `roxy_list_proxies` - 列出工作区中的代理配置
-- `roxy_store_proxies` - 获取已购买的代理列表（商店）
-- `roxy_create_proxy` - 创建代理配置
-- `roxy_batch_create_proxies` - 批量创建代理
-- `roxy_detect_proxy` - 检测/测试代理可用性
-- `roxy_modify_proxy` - 修改现有代理配置
-- `roxy_delete_proxies` - 删除代理配置
-
-### 账号
-- `roxy_list_accounts` - 列出工作区中的平台账号和凭证
-- `roxy_create_account` - 创建平台账号
-- `roxy_batch_create_accounts` - 批量创建账号
-- `roxy_modify_account` - 修改现有账号
-- `roxy_delete_accounts` - 删除账号
-
-### 实用工具
-- `roxy_health_check` - 服务器健康检查及工作区/浏览器连通性诊断
-
-## 完整工作流示例
-
-### 示例 1：快速浏览器自动化设置
-
-```
-1. AI："在工作区 1 中创建一个名为'测试浏览器'的浏览器"
-   → 使用 roxy_create_browser
-   → 返回可供使用的浏览器 ID
-
-2. AI："打开我刚创建的浏览器"
-   → 使用 roxy_open_browsers 及返回的 ID
-   → 返回 CDP WebSocket URL，例如：ws://127.0.0.1:52314/devtools/browser/xxx
-
-3. AI："导航到 gmail.com，登录并发送邮件"
-   → 使用 RoxyBrowser Playwright MCP 工具（browser_navigate、browser_type、browser_click 等）
-   → RoxyBrowser Playwright MCP 通过 CDP 端点连接到已打开的浏览器
-
-4. AI："完成后关闭浏览器"
-   → 使用 roxy_close_browsers
-```
-
-### 示例 2：使用代理的浏览器设置
-
-```
-1. AI："在创建浏览器之前检测我的代理"
-   → 使用 roxy_detect_proxy
-   → 确认代理可用
-
-2. AI："在工作区 2 中创建一个使用 SOCKS5 代理和 1920x1080 分辨率的浏览器"
-   → 使用 roxy_create_browser 配置代理
-   → 返回配置好的浏览器 ID
-
-3. AI："打开浏览器并开始自动化"
-   → 使用 roxy_open_browsers → 获取 CDP 端点
-   → RoxyBrowser Playwright MCP 连接并开始自动化
-```
-
-## 与 Playwright MCP 集成
-
-RoxyBrowser MCP 旨在与 [RoxyBrowser Playwright MCP](https://github.com/roxybrowserlabs/roxybrowser-playwright-mcp) 无缝协作，这是我们专为 RoxyBrowser 兼容性构建的定制 Playwright MCP 服务器。
-
-**RoxyBrowser Playwright MCP** 基于 [Microsoft 的 Playwright MCP](https://github.com/microsoft/playwright-mcp)，并针对 RoxyBrowser 的指纹浏览器功能进行了增强。
-
-### 工作流程
-
-1. 使用 RoxyBrowser OpenAPI MCP 创建和打开浏览器
-2. 从打开的浏览器获取 CDP WebSocket 端点
-3. 使用 RoxyBrowser Playwright MCP 以完整的 Playwright 功能自动化浏览器任务
-
-两个服务器在 MCP 客户端中配置后可无缝协作（参见上面的配置）。
+- `workspace.list`
+- `project.list`（固定 workspace 模式）
+- `health.check`
+- `browser.list`
+- `browser.create`
+- `browser.batch_create`
+- `browser.open`
+- `browser.close`
+- `browser.update`
+- `browser.delete`
+- `browser.detail`
+- `browser.connection_info`
+- `browser.clear_local_cache`
+- `browser.clear_server_cache`
+- `browser.list_labels`
+- `proxy.list`
+- `proxy.detail`
+- `proxy.create`
+- `proxy.detect`
+- `proxy.modify`
+- `proxy.delete`
+- `account.list`
+- `account.create`
+- `account.batch_create`
+- `account.modify`
+- `account.delete`
 
 ## 开发
 
 ```bash
-# 开发模式（自动重新构建）
-npm run dev
-
-# 生产构建
+npm install
 npm run build
-
-# 构建并运行测试
 npm test
-
-# 用 MCP Inspector 连接本地 stdio server
-ROXY_API_KEY=your-key npm run inspect
 ```
 
-### 测试策略
+测试使用 `node:test`，覆盖 runtime、client、MCP InMemoryTransport、工具 catalog 和真实 RoxyBrowser API 集成。
 
-仓库现在内置了一套基于 Node 原生 test runner 的轻量测试方案，不需要额外接入测试框架就能先跑起来。
-
-- `test/utils.test.mjs`：配置解析与 HTTP 请求封装
-- `test/tools.test.mjs`：工具处理函数的文本格式化与健康检查输出
-- `test/server.test.mjs`：基于官方 SDK Client 和内存 Transport 的 MCP 集成测试
-
-`npm test` 会先构建 `lib/`，再针对构建产物执行测试，这样更接近实际发布后的运行路径。
-
-### MCP Inspector
-
-可以使用官方 MCP Inspector 本地调试工具发现和调用：
+真实集成测试会通过 `dotenv/config` 加载 `.env`，需要配置：
 
 ```bash
-# Web 界面
-ROXY_API_KEY=your-key npm run inspect
-
-# CLI 模式
-ROXY_API_KEY=your-key npm run inspect:cli -- --method tools/list
+ROXY_API_KEY="YOUR_API_KEY"
+ROXY_API_HOST="http://127.0.0.1:50000"
+ROXY_TEST_WORKSPACE_ID="123"
 ```
-
-如果 API 地址不是默认值，请同时设置 `ROXY_API_HOST`。
-
-## API 参考
-
-### 配置说明
-
-配置解析顺序：**CLI 参数 > 环境变量 > 默认值**。
-
-| 来源 | 选项 / 变量 | 说明 |
-|--------|----------------|-------------|
-| CLI | `-H, --api-host`、`-k, --api-key`、`-t, --timeout` | 启动时传入 |
-| 环境变量 | `ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT` | 未传 CLI 参数时使用 |
-| 默认值 | `apiHost: http://127.0.0.1:50000`、`timeout: 30000` | 内置默认 |
-
-配置仅从环境变量读取；可用 `resolveConfig()` 查看当前生效配置（环境变量 + 默认值）。
-
-## 故障排除
-
-### 连接问题
-
-**错误："无法连接到 RoxyBrowser API"**
-
-检查：
-1. RoxyBrowser 正在运行
-2. API 已启用：RoxyBrowser → API → API状态 = 启用
-3. API key 正确：从 RoxyBrowser → API → API Key 复制
-4. 端口正确：检查 RoxyBrowser → API → 端口设置（默认：50000）
-5. 防火墙未阻止 http://127.0.0.1:50000
-
-### 认证问题
-
-**错误："配置错误：需要 API key"**
-
-设置环境变量：
-```bash
-export ROXY_API_KEY="your_actual_api_key_from_roxybrowser"
-```
-
-### 浏览器打开问题
-
-**错误："窗口额度不足"（错误代码 101 或 409）**
-
-解决方案：
-- 在 RoxyBrowser 费用中心购买更多窗口
-- 使用 `roxy_delete_browsers` **删除**未使用的浏览器配置文件（仅关闭不会释放额度）
-- 升级您的订阅计划
-- 在工作区设置中检查当前额度使用情况
-
-**部分浏览器无法打开：**
-
-- 检查浏览器配置文件存在且未损坏
-- 确保系统资源充足（RAM、CPU）
-- 验证 dirIds 有效（先使用 `roxy_list_browsers`）
-- 运行 `roxy_health_check` 进行连通性与健康诊断
-
-## 许可证
-
-MIT License - 详见 LICENSE 文件。
-
-## 贡献
-
-1. Fork 仓库
-2. 创建功能分支
-3. 进行更改
-4. 如适用，添加测试
-5. 提交 pull request

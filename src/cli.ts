@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 
 dotenv.config()
 
-const PKG_VERSION = '1.0.9'
+const PKG_VERSION = '2.0.0-beta.0'
 
 const program = new Command()
 

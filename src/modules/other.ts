@@ -73,6 +73,97 @@ class ListWorkspaces {
   }
 }
 
+class ListProjects {
+  name = 'roxy_list_projects'
+  description = 'Get project list for the current fixed workspace'
+  inputSchema = {
+    type: 'object',
+    properties: {
+      workspaceId: {
+        type: 'number',
+        description: 'Current workspace ID',
+      },
+      pageIndex: {
+        type: 'number',
+        description: 'Page index for pagination',
+        default: 1,
+      },
+      pageSize: {
+        type: 'number',
+        description: 'Number of projects per page',
+        default: 15,
+      },
+    },
+    required: ['workspaceId'],
+  }
+
+  get schema() {
+    return {
+      name: this.name,
+      description: this.description,
+      inputSchema: this.inputSchema,
+    }
+  }
+
+  async handle(params: any) {
+    if (!params.workspaceId) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: '❌ **Failed to list projects:**\n\n workspaceId is required',
+          },
+        ],
+      }
+    }
+
+    const { workspaceId, pageIndex = 1, pageSize = 15 } = params
+    const searchParams = new URLSearchParams()
+    searchParams.append('workspaceId', workspaceId.toString())
+    searchParams.append('page_index', pageIndex.toString())
+    searchParams.append('page_size', pageSize.toString())
+
+    const result = await request(`/project/list?${searchParams}`, {
+      method: 'GET',
+    })
+
+    let text = ''
+    if (result.code !== 0) {
+      text = `❌ **Failed to list projects:**\n\n error message: ${result.msg}`
+    }
+    else {
+      const data = result.data || {}
+      const rows = Array.isArray(data.rows)
+        ? data.rows
+        : Array.isArray(data)
+          ? data
+          : []
+      const total = typeof data.total === 'number' ? data.total : rows.length
+      const totalPages = Math.max(1, Math.ceil(total / pageSize))
+      const hasNextPage = pageIndex < totalPages
+
+      const projectLines = rows.length > 0
+        ? rows.map((proj: any) => {
+            const projectId = proj.projectId ?? proj.id
+            const projectName = proj.projectName ?? proj.name ?? proj.project_name ?? 'Unnamed'
+            return `  - ${projectName} → projectId: **${projectId}**`
+          }).join('\n')
+        : '  (no projects)'
+
+      text = `Found ${total} project(s) in workspaceId ${workspaceId}:\n\n${projectLines}\n\nPagination: page=${pageIndex}, pageSize=${pageSize}, totalPages=${totalPages}, hasNext=${hasNextPage}`
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text,
+        },
+      ],
+    }
+  }
+}
+
 class HealthCheck {
   name = 'roxy_health_check'
   description = 'Check whether the RoxyBrowser server is running and reachable.'
@@ -117,4 +208,5 @@ class HealthCheck {
 }
 
 export const listWorkspaces = new ListWorkspaces()
+export const listProjects = new ListProjects()
 export const healthCheck = new HealthCheck()
