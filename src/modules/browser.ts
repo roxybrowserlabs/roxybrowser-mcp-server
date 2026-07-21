@@ -344,16 +344,17 @@ class CreateBrowser {
       error?: string
     }> = []
 
-    const createPromises = params.browsers.map(async (browserParams: any, index: number) => {
+    for (const [index, browserParams] of params.browsers.entries()) {
       try {
         // Cross-field validation for each browser config
         const validationError = validateBrowserConfig(browserParams)
         if (validationError) {
-          return {
+          results.push({
             index,
             success: false,
             error: validationError,
-          }
+          })
+          continue
         }
 
         resolveCookieParam(browserParams)
@@ -364,30 +365,28 @@ class CreateBrowser {
         })
 
         if (result.code !== 0) {
-          return {
+          results.push({
             index,
             success: false,
             error: result.msg,
-          }
+          })
+          continue
         }
 
-        return {
+        results.push({
           index,
           success: true,
           dirId: result.data?.dirId,
-        }
+        })
       }
       catch (error: any) {
-        return {
+        results.push({
           index,
           success: false,
           error: error.message || 'Unknown error',
-        }
+        })
       }
-    })
-
-    const createResults = await Promise.all(createPromises)
-    results.push(...createResults)
+    }
 
     const successResults = results.filter(r => r.success)
     const failureResults = results.filter(r => !r.success)

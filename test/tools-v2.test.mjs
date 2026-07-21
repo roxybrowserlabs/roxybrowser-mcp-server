@@ -212,15 +212,25 @@ describe('ROXY_TOOLS_V2', () => {
 
   test('browser.create uses the batch-shaped input and injects workspaceId into each item', async () => {
     const calledRequests = []
+    let activeRequests = 0
+    let maxConcurrentRequests = 0
     const restoreFetch = installFetchMock(async (url, options) => {
+      activeRequests += 1
+      maxConcurrentRequests = Math.max(maxConcurrentRequests, activeRequests)
       calledRequests.push({ url, options })
-      return createJsonResponse({
-        code: 0,
-        msg: 'ok',
-        data: {
-          dirId: `browser-${calledRequests.length}`,
-        },
-      })
+      try {
+        await new Promise(resolve => setTimeout(resolve, 10))
+        return createJsonResponse({
+          code: 0,
+          msg: 'ok',
+          data: {
+            dirId: `browser-${calledRequests.length}`,
+          },
+        })
+      }
+      finally {
+        activeRequests -= 1
+      }
     })
 
     const server = createRoxyMcpServer({
@@ -245,6 +255,7 @@ describe('ROXY_TOOLS_V2', () => {
       })
 
       assert.equal(calledRequests.length, 2)
+      assert.equal(maxConcurrentRequests, 1)
       assert.match(calledRequests[0].url, /^http:\/\/127\.0\.0\.1:50000\/browser\/create$/)
       assert.equal(calledRequests[0].options.headers.token, 'instance-token')
       assert.equal(JSON.parse(calledRequests[0].options.body).workspaceId, 77)
