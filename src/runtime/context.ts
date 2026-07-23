@@ -52,6 +52,7 @@ export function createPublicToolSchema(tool: ToolDefinition, context: RuntimeCon
     name: toPublicToolName(tool.name),
     description: tool.description,
     inputSchema,
+    ...(tool.annotations ? { annotations: tool.annotations } : {}),
   }
 }
 

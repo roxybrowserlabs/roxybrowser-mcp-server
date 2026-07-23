@@ -16,6 +16,7 @@ export interface LegacyToolAdapterOptions {
   legacyTool: LegacyTool
   description?: string
   inputSchema?: Record<string, any>
+  annotations?: ToolDefinition['annotations']
   contextBindings?: ContextBinding[]
   isAvailable?: ToolDefinition['isAvailable']
 }
@@ -26,6 +27,7 @@ export function adaptLegacyTool(options: LegacyToolAdapterOptions): ToolDefiniti
     description: options.description ?? options.legacyTool.description,
     scope: options.scope,
     inputSchema: options.inputSchema ?? options.legacyTool.schema.inputSchema,
+    annotations: options.annotations,
     contextBindings: options.contextBindings,
     isAvailable: options.isAvailable,
     handler: async (args, context) => {

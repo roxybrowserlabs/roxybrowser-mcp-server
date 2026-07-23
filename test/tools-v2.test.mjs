@@ -55,6 +55,55 @@ describe('ROXY_TOOLS_V2', () => {
     assert.equal(names.includes('account.batch_create'), false)
   })
 
+  test('marks delete tools as destructive for MCP clients', async () => {
+    const server = createRoxyMcpServer({
+      roxy: { apiKey: 'secret-token' },
+      context: { workspaceId: 77 },
+      tools: ROXY_TOOLS_V2,
+    })
+    const session = await connect(server)
+
+    try {
+      const result = await session.client.listTools()
+      const deleteTools = result.tools
+        .filter(tool => tool.name.endsWith('_delete'))
+        .map(tool => [tool.name, tool.annotations])
+
+      assert.deepEqual(deleteTools, [
+        [
+          'roxy_browser_delete',
+          {
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: false,
+          },
+        ],
+        [
+          'roxy_proxy_delete',
+          {
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: false,
+          },
+        ],
+        [
+          'roxy_account_delete',
+          {
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: false,
+          },
+        ],
+      ])
+    }
+    finally {
+      await session.close()
+    }
+  })
+
   test('create tools accept arrays and hide fixed workspaceId from item schemas', async () => {
     const server = createRoxyMcpServer({
       roxy: { apiKey: 'secret-token' },

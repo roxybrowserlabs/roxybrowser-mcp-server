@@ -33,6 +33,41 @@ describe('runtime context handling', () => {
     assert.deepEqual(schema.inputSchema.required, undefined)
   })
 
+  test('preserves MCP tool annotations in public schema', () => {
+    const schema = createPublicToolSchema(
+      defineTool({
+        name: 'browser.delete',
+        description: 'Delete browsers',
+        scope: 'workspace',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            workspaceId: { type: 'number' },
+            dirIds: { type: 'array', items: { type: 'string' } },
+          },
+          required: ['workspaceId', 'dirIds'],
+        },
+        annotations: {
+          readOnlyHint: false,
+          destructiveHint: true,
+          idempotentHint: true,
+          openWorldHint: false,
+        },
+        handler: async () => ({
+          content: [{ type: 'text', text: 'ok' }],
+        }),
+      }),
+      { workspaceId: 7 },
+    )
+
+    assert.deepEqual(schema.annotations, {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    })
+  })
+
   test('injects bound workspaceId into tool arguments', () => {
     const args = applyContextToArgs(workspaceTool, { pageIndex: 2 }, { workspaceId: 7 })
 

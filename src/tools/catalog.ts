@@ -29,6 +29,13 @@ import {
 import type { ToolDefinition } from '../runtime/index.js'
 import { adaptLegacyTool } from './adapters.js'
 
+const DESTRUCTIVE_DELETE_ANNOTATIONS: ToolDefinition['annotations'] = {
+  readOnlyHint: false,
+  destructiveHint: true,
+  idempotentHint: true,
+  openWorldHint: false,
+}
+
 function moveRootWorkspaceIdIntoArrayItems(schema: Record<string, any>, arrayProperty: string): Record<string, any> {
   const nextSchema = JSON.parse(JSON.stringify(schema))
   const workspaceIdSchema = nextSchema.properties?.workspaceId
@@ -76,7 +83,12 @@ export const ROXY_TOOLS_V2: ToolDefinition[] = [
   adaptLegacyTool({ name: 'browser.open', scope: 'workspace', legacyTool: openBrowser }),
   adaptLegacyTool({ name: 'browser.close', scope: 'global', legacyTool: closeBrowsers }),
   adaptLegacyTool({ name: 'browser.update', scope: 'workspace', legacyTool: updateBrowser }),
-  adaptLegacyTool({ name: 'browser.delete', scope: 'workspace', legacyTool: deleteBrowsers }),
+  adaptLegacyTool({
+    name: 'browser.delete',
+    scope: 'workspace',
+    legacyTool: deleteBrowsers,
+    annotations: DESTRUCTIVE_DELETE_ANNOTATIONS,
+  }),
   adaptLegacyTool({ name: 'browser.detail', scope: 'workspace', legacyTool: getBrowserDetail }),
   adaptLegacyTool({ name: 'browser.connection_info', scope: 'global', legacyTool: getConnectionInfo }),
   adaptLegacyTool({ name: 'browser.clear_local_cache', scope: 'global', legacyTool: clearLocalCache }),
@@ -95,7 +107,12 @@ export const ROXY_TOOLS_V2: ToolDefinition[] = [
   }),
   adaptLegacyTool({ name: 'proxy.detect', scope: 'workspace', legacyTool: detectProxy }),
   adaptLegacyTool({ name: 'proxy.modify', scope: 'workspace', legacyTool: modifyProxy }),
-  adaptLegacyTool({ name: 'proxy.delete', scope: 'workspace', legacyTool: deleteProxies }),
+  adaptLegacyTool({
+    name: 'proxy.delete',
+    scope: 'workspace',
+    legacyTool: deleteProxies,
+    annotations: DESTRUCTIVE_DELETE_ANNOTATIONS,
+  }),
 
   adaptLegacyTool({ name: 'account.list', scope: 'workspace', legacyTool: listAccounts }),
   adaptLegacyTool({
@@ -107,5 +124,10 @@ export const ROXY_TOOLS_V2: ToolDefinition[] = [
     contextBindings: [{ name: 'workspaceId', location: 'arrayItems', arrayProperty: 'accountList' }],
   }),
   adaptLegacyTool({ name: 'account.modify', scope: 'workspace', legacyTool: modifyAccount }),
-  adaptLegacyTool({ name: 'account.delete', scope: 'workspace', legacyTool: deleteAccounts }),
+  adaptLegacyTool({
+    name: 'account.delete',
+    scope: 'workspace',
+    legacyTool: deleteAccounts,
+    annotations: DESTRUCTIVE_DELETE_ANNOTATIONS,
+  }),
 ]

@@ -1,3 +1,5 @@
+import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js'
+
 export type ToolScope = 'global' | 'workspace' | 'project'
 
 export interface RuntimeContext {
@@ -17,6 +19,7 @@ export interface ToolDefinition<TArgs extends Record<string, any> = Record<strin
   description: string
   scope: ToolScope
   inputSchema: Record<string, any>
+  annotations?: ToolAnnotations
   contextBindings?: ContextBinding[]
   isAvailable?: (context: RuntimeContext) => boolean
   handler: (args: TArgs, context: RuntimeContext) => Promise<any>
@@ -26,4 +29,5 @@ export interface PublicToolSchema {
   name: string
   description: string
   inputSchema: Record<string, any>
+  annotations?: ToolAnnotations
 }
