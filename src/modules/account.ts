@@ -1,4 +1,4 @@
-import { request } from '../utils/index.js'
+import { getRoxyOpenAPI } from '../utils/index.js'
 
 class ListAccounts {
   name = 'roxy_list_accounts'
@@ -46,11 +46,9 @@ class ListAccounts {
     if (params.pageSize)
       searchParams.append('page_size', params.pageSize.toString())
 
-    const result = await request(`/account/list?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().account.list(Object.fromEntries(searchParams.entries()) as any)
 
-    const data = result.data
+    const data: any = result.data ?? { total: 0, rows: [] }
 
     let text = ''
     if (result.code !== 0) {
@@ -175,10 +173,7 @@ class CreateAccount {
       return accountData
     })
 
-    const result = await request('/account/batch_create', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, accountList: normalizedAccountList }),
-    })
+    const result = await getRoxyOpenAPI().account.batchCreate({ workspaceId, accountList: normalizedAccountList })
 
     let text = ''
     if (result.code !== 0) {
@@ -281,10 +276,7 @@ class ModifyAccount {
 
     const { workspaceId, ...accountData } = params
 
-    const result = await request('/account/modify', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, ...accountData }),
-    })
+    const result = await getRoxyOpenAPI().account.modify({ workspaceId, ...accountData })
 
     let text = ''
     if (result.code !== 0) {
@@ -362,10 +354,7 @@ class DeleteAccounts {
 
     const { workspaceId, ids } = params
 
-    const result = await request('/account/delete', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, ids }),
-    })
+    const result = await getRoxyOpenAPI().account.delete({ workspaceId, ids })
 
     let text = ''
     if (result.code !== 0) {

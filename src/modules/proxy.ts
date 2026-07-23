@@ -1,4 +1,4 @@
-import { request } from '../utils/index.js'
+import { getRoxyOpenAPI } from '../utils/index.js'
 
 const channelList = [
   {
@@ -144,10 +144,10 @@ export class ProxyList {
       throw new Error('workspaceId is required')
     }
 
-    const result = await request(`/proxy/list_merged?${searchParams}`)
+    const result = await getRoxyOpenAPI().proxy.list(Object.fromEntries(searchParams.entries()) as any)
     let text = ''
     if (result.code === 0) {
-      const data = result.data
+      const data: any = result.data ?? { total: 0, rows: [] }
       const currentPage = params.pageIndex ?? 1
       const pageSize = params.pageSize ?? 15
       const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
@@ -239,14 +239,15 @@ class GetProxyDetail {
     searchParams.append('workspaceId', params.workspaceId.toString())
     searchParams.append('id', params.id.toString())
 
-    const result = await request(`/proxy/detail?${searchParams}`)
+    const result = await getRoxyOpenAPI().proxy.detail(Object.fromEntries(searchParams.entries()) as any)
 
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to get proxy detail:**\n\n error message: ${result.msg}`
     }
     else {
-      const detail = result.data?.rows?.[0] || result.data || null
+      const data: any = result.data
+      const detail = data?.rows?.[0] || data || null
 
       if (!detail) {
         text = `❌ **Proxy Not Found**\n\nNo proxy detail found for ID ${params.id} in workspace ${params.workspaceId}.`
@@ -414,15 +415,13 @@ class CreateProxies {
       item.checkChannel = item.checkChannel ? channelList.find((channel: any) => channel.label === item.checkChannel)?.value : null
     })
 
-    const result = await request('/proxy/batch_create', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, proxyList: normalizedProxyList }),
-    })
+    const result = await getRoxyOpenAPI().proxy.batchCreate({ workspaceId, proxyList: normalizedProxyList })
 
     let text = ''
     if (result.code !== 0) {
-      if (result.data) {
-        text = `❌ **Failed to create proxies:**\n\n error message: ${result.msg}\n\n${result.data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
+      const data: any = result.data
+      if (Array.isArray(data)) {
+        text = `❌ **Failed to create proxies:**\n\n error message: ${result.msg}\n\n${data.map((item: any) => `  - index: ${item.index}, error message: ${item.msg.join(', ')}`).join('\n')}`
       }
       else {
         text = `❌ **Failed to create proxies:**\n\n error message: ${result.msg}`
@@ -491,17 +490,14 @@ class DetectProxy {
 
     const { workspaceId, id } = params
 
-    const result = await request('/proxy/detect', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, id }),
-    })
+    const result = await getRoxyOpenAPI().proxy.detect({ workspaceId, id })
 
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to detect proxy:**\n\n error message: ${result.msg}`
     }
     else {
-      const data = result.data
+      const data: any = result.data
       if (data) {
         text = `✅ **Fresh Proxy Detection ${data.checkStatus === 1 ? 'Success' : data.checkStatus === 2 ? 'Failed' : ''}**
 
@@ -618,10 +614,7 @@ class ModifyProxy {
       proxyCategory: params.protocol,
     }
 
-    const result = await request('/proxy/modify', {
-      method: 'POST',
-      body: JSON.stringify(proxyParams),
-    })
+    const result = await getRoxyOpenAPI().proxy.modify(proxyParams)
 
     let text = ''
     if (result.code !== 0) {
@@ -696,10 +689,7 @@ class DeleteProxies {
 
     const { workspaceId, ids } = params
 
-    const result = await request('/proxy/delete', {
-      method: 'POST',
-      body: JSON.stringify({ workspaceId, ids }),
-    })
+    const result = await getRoxyOpenAPI().proxy.delete({ workspaceId, ids })
 
     let text = ''
     if (result.code !== 0) {

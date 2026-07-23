@@ -1,3 +1,5 @@
+import { ConfigError } from '../types.js'
+
 export type JsonObject = Record<string, unknown>
 
 export interface RoxyOpenAPIOptions {
@@ -42,6 +44,19 @@ export interface Workspace {
   project_details: WorkspaceProject[]
 }
 
+export interface ProjectListParams extends PageParams {
+  workspaceId: number
+}
+
+export interface Project {
+  id?: number
+  name?: string
+  projectId?: number
+  projectName?: string
+  project_name?: string
+  [key: string]: unknown
+}
+
 export interface BrowserAccountListParams extends PageParams {
   workspaceId: number
   accountId?: number
@@ -80,6 +95,7 @@ export interface BrowserListParams extends PageParams {
   workspaceId: number
   dirIds?: string
   windowName?: string
+  windowSortNum?: string
   sortNums?: string
   os?: string
   projectIds?: string
@@ -103,6 +119,7 @@ export interface BrowserSummary extends JsonObject {
 export interface BrowserDetailParams {
   workspaceId: number
   dirId: string
+  windowSortNum?: string
 }
 
 export interface WindowPlatformAccount extends JsonObject {
@@ -312,6 +329,11 @@ export interface ProxyListParams extends PageParams {
   pageSize?: number
 }
 
+export interface ProxyDetailParams {
+  workspaceId: number
+  id: number
+}
+
 export interface ProxyDetectChannel extends JsonObject {
   label: string
   type: string
@@ -370,7 +392,7 @@ export interface ProxyRecord extends JsonObject {
 }
 
 export interface ProxyInput extends JsonObject {
-  checkChannel: string
+  checkChannel?: string
   ipType: 'IPV4' | 'IPV6' | string
   protocol: 'HTTP' | 'HTTPS' | 'SOCKS5' | string
   host: string
@@ -387,7 +409,7 @@ export interface ProxyCreateParams extends ProxyInput {
 
 export interface ProxyBatchCreateParams {
   workspaceId: number
-  checkChannel: string
+  checkChannel?: string
   proxyList: ProxyInput[]
 }
 
@@ -396,8 +418,10 @@ export interface ProxyDetectParams {
   id: number
 }
 
-export interface ProxyModifyParams extends ProxyCreateParams {
+export interface ProxyModifyParams extends Partial<ProxyInput>, JsonObject {
+  workspaceId: number
   id: number
+  proxyCategory?: string
 }
 
 export interface ProxyDeleteParams {
@@ -472,7 +496,8 @@ export interface AccountBatchCreateParams {
   accountList: AccountInput[]
 }
 
-export interface AccountModifyParams extends AccountCreateParams {
+export interface AccountModifyParams extends Partial<AccountInput>, JsonObject {
+  workspaceId: number
   id: number
 }
 
@@ -549,7 +574,7 @@ export class RoxyOpenAPI {
 
   async request<T = unknown>({ method, path, params }: RequestOptions): Promise<RoxyApiResponse<T>> {
     if (!this.apiKey.trim()) {
-      throw new Error('RoxyOpenAPI apikey is required')
+      throw new ConfigError('API key is required for RoxyOpenAPI; apikey is required unless apiKey or ROXY_API_KEY is provided.')
     }
 
     const url = new URL(path, this.baseUrl.replace(/\/$/, '') + '/')
@@ -576,7 +601,7 @@ export class RoxyOpenAPI {
       const response = await this.fetchImpl(url.toString(), init)
       if (!response.ok) {
         const responseText = await response.text().catch(() => '')
-        throw new Error(`RoxyOpenAPI request failed: HTTP ${response.status} ${response.statusText}${responseText ? ` ${responseText}` : ''}`)
+        throw new Error(`RoxyOpenAPI request failed: HTTP ${response.status}: ${response.statusText}${responseText ? ` ${responseText}` : ''}`)
       }
 
       return await response.json() as RoxyApiResponse<T>
@@ -592,6 +617,10 @@ export class RoxyWorkspaceAPI {
 
   list(params: WorkspaceListParams = {}): Promise<RoxyApiResponse<PaginatedData<Workspace>>> {
     return this.client.get('/browser/workspace', params)
+  }
+
+  projects(params: WithDefaultWorkspace<ProjectListParams>): Promise<RoxyApiResponse<PaginatedData<Project> | Project[]>> {
+    return this.client.get('/project/list', applyWorkspaceId(params, this.client.workspaceId))
   }
 }
 
@@ -699,6 +728,10 @@ export class RoxyProxyAPI {
 
   detectChannel(): Promise<RoxyApiResponse<ProxyDetectChannel[]>> {
     return this.client.get('/proxy/detect_channel')
+  }
+
+  detail(params: WithDefaultWorkspace<ProxyDetailParams>): Promise<RoxyApiResponse<ProxyRecord>> {
+    return this.client.get('/proxy/detail', applyWorkspaceId(params, this.client.workspaceId))
   }
 
   list(params: WithDefaultWorkspace<ProxyListParams>): Promise<RoxyApiResponse<PaginatedData<ProxyRecord>>> {

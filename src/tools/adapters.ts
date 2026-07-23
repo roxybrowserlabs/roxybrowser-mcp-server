@@ -1,6 +1,6 @@
-import { RoxyClient } from '../client/index.js'
+import { RoxyOpenAPI } from '../client/index.js'
 import { defineTool, type ContextBinding, type ToolDefinition, type ToolScope } from '../runtime/index.js'
-import { runWithRoxyClient } from '../utils/index.js'
+import { runWithRoxyOpenAPI } from '../utils/index.js'
 
 interface LegacyTool {
   description: string
@@ -32,8 +32,8 @@ export function adaptLegacyTool(options: LegacyToolAdapterOptions): ToolDefiniti
     isAvailable: options.isAvailable,
     handler: async (args, context) => {
       const client = context.client
-      if (client instanceof RoxyClient)
-        return runWithRoxyClient(client, () => options.legacyTool.handle(args))
+      if (client instanceof RoxyOpenAPI)
+        return runWithRoxyOpenAPI(client, () => options.legacyTool.handle(args))
 
       return options.legacyTool.handle(args)
     },

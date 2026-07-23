@@ -56,7 +56,7 @@ export {
 
 export { healthCheck, listProjects, listWorkspaces } from './modules/other.js'
 
-export { DEFAULT_CONFIG, request, resolveConfig, runWithRoxyClient } from './utils/index.js'
+export { DEFAULT_CONFIG, getRoxyOpenAPI, request, resolveConfig, runWithRoxyOpenAPI } from './utils/index.js'
 export * from './client/index.js'
 export * from './runtime/index.js'
 export * from './server/index.js'

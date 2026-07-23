@@ -6,3 +6,4 @@ export {
 export type { RoxyClientOptions, RoxyClientOptionsInput } from './config.js'
 export { RoxyClient } from './roxy-client.js'
 export { RoxyOpenAPI } from './openapi.js'
+export type { RoxyOpenAPIOptions } from './openapi.js'

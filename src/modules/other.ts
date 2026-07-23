@@ -1,4 +1,4 @@
-import { request } from '../utils/index.js'
+import { getRoxyOpenAPI } from '../utils/index.js'
 
 class ListWorkspaces {
   name = 'roxy_list_workspaces'
@@ -34,16 +34,14 @@ class ListWorkspaces {
     searchParams.append('page_index', pageIndex.toString())
     searchParams.append('page_size', pageSize.toString())
 
-    const result = await request(`/browser/workspace?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().workspace.list(Object.fromEntries(searchParams.entries()) as any)
 
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to list workspaces:**\n\n error message: ${result.msg}`
     }
     else {
-      const data = result.data
+      const data: any = result.data ?? { total: 0, rows: [] }
       const currentPage = pageIndex
       const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
       const hasNextPage = currentPage < totalPages
@@ -123,16 +121,14 @@ class ListProjects {
     searchParams.append('page_index', pageIndex.toString())
     searchParams.append('page_size', pageSize.toString())
 
-    const result = await request(`/project/list?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().workspace.projects(Object.fromEntries(searchParams.entries()) as any)
 
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to list projects:**\n\n error message: ${result.msg}`
     }
     else {
-      const data = result.data || {}
+      const data: any = result.data || {}
       const rows = Array.isArray(data.rows)
         ? data.rows
         : Array.isArray(data)
@@ -184,9 +180,7 @@ class HealthCheck {
     let text = ''
 
     try {
-      const result = await request('/health', {
-        method: 'GET',
-      })
+      const result = await getRoxyOpenAPI().health()
 
       text = result.code === 0
         ? '✅ **Server is healthy**\n\nThe RoxyBrowser server is running and reachable.'

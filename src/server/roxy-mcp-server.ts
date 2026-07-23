@@ -5,14 +5,15 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
-import { createRoxyClientConfigFromEnv, RoxyClient, type RoxyClientOptionsInput } from '../client/index.js'
+import { createRoxyClientConfigFromEnv, RoxyOpenAPI, type RoxyOpenAPIOptions } from '../client/index.js'
 import { ToolRegistry, type RuntimeContext, type ToolDefinition } from '../runtime/index.js'
 import { ROXY_TOOLS_V2 } from '../tools/catalog.js'
 
 export interface RoxyMcpServerOptions {
-  roxy?: RoxyClientOptionsInput
+  roxy?: RoxyOpenAPIOptions
   context?: RuntimeContext
   tools?: ToolDefinition[]
+  name?: string
 }
 
 export class RoxyMcpServer {
@@ -21,7 +22,12 @@ export class RoxyMcpServer {
   private readonly context: RuntimeContext
 
   constructor(options: RoxyMcpServerOptions = {}) {
-    const client = new RoxyClient(options.roxy ?? createRoxyClientConfigFromEnv())
+    const envConfig = createRoxyClientConfigFromEnv()
+    const client = new RoxyOpenAPI({
+      ...envConfig,
+      ...options.roxy,
+      workspaceId: options.roxy?.workspaceId ?? options.context?.workspaceId,
+    })
     this.registry = new ToolRegistry(options.tools ?? ROXY_TOOLS_V2)
     this.context = {
       ...options.context,
@@ -29,7 +35,7 @@ export class RoxyMcpServer {
     }
     this.server = new Server(
       {
-        name: 'roxybrowser-openapi-mcp',
+        name: options.name ?? 'roxybrowser-openapi-mcp',
         version: '2.0.0',
       },
       {

@@ -1,4 +1,4 @@
-import { request } from '../utils/index.js'
+import { getRoxyOpenAPI } from '../utils/index.js'
 import { normalizeCookies, parseImportCookies } from '../utils/cookie.js'
 import { proxyList } from './proxy.js'
 
@@ -359,10 +359,7 @@ class CreateBrowser {
 
         resolveCookieParam(browserParams)
 
-        const result = await request('/browser/create', {
-          method: 'POST',
-          body: JSON.stringify(browserParams),
-        })
+        const result = await getRoxyOpenAPI().browser.create(browserParams)
 
         if (result.code !== 0) {
           results.push({
@@ -468,10 +465,7 @@ class UpdateBrowser {
 
     resolveCookieParam(params)
 
-    const result = await request('/browser/mdf', {
-      method: 'POST',
-      body: JSON.stringify(params),
-    })
+    const result = await getRoxyOpenAPI().browser.modify(params)
 
     let text = ''
     if (result.code !== 0) {
@@ -554,14 +548,11 @@ class OpenBrowser {
 
     const openPromises = dirIds.map(async (dirId: string) => {
       try {
-        const result = await request('/browser/open', {
-          method: 'POST',
-          body: JSON.stringify({
-            workspaceId,
-            dirId,
-            forceOpen,
-            args,
-          }),
+        const result = await getRoxyOpenAPI().browser.open({
+          workspaceId,
+          dirId,
+          forceOpen,
+          args,
         })
 
         if (result.code !== 0) {
@@ -706,11 +697,9 @@ class ListBrowsers {
       }
     }
 
-    const result = await request(`/browser/list_v3?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().browser.list(Object.fromEntries(searchParams.entries()) as any)
 
-    const data = result.data
+    const data: any = result.data ?? { total: 0, rows: [] }
 
     let text = ''
     if (result.code !== 0) {
@@ -801,10 +790,7 @@ class CloseBrowsers {
     // Close browsers in parallel
     const closePromises = params.dirIds.map(async (dirId: string) => {
       try {
-        const result = await request('/browser/close', {
-          method: 'POST',
-          body: JSON.stringify({ dirId }),
-        })
+        const result = await getRoxyOpenAPI().browser.close({ dirId })
 
         if (result.code !== 0) {
           return { dirId, success: false, error: result.msg }
@@ -883,13 +869,10 @@ class DeleteBrowsers {
       }
     }
 
-    const result = await request('/browser/delete', {
-      method: 'POST',
-      body: JSON.stringify({
-        workspaceId: params.workspaceId,
-        dirIds: params.dirIds,
-        isSoftDelete: true,
-      }),
+    const result = await getRoxyOpenAPI().browser.delete({
+      workspaceId: params.workspaceId,
+      dirIds: params.dirIds,
+      isSoftDelete: true,
     })
 
     let text = ''
@@ -976,16 +959,15 @@ class GetBrowserDetail {
       }
     }
 
-    const result = await request(`/browser/detail?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().browser.detail(Object.fromEntries(searchParams.entries()) as any)
 
     let text = ''
     if (result.code !== 0) {
       text = `❌ **Failed to get browser detail:**\n\n error message: ${result.msg}`
     }
     else {
-      const detail = result.data.rows && result.data.rows.length > 0 ? result.data.rows[0] : null
+      const data: any = result.data ?? { rows: [] }
+      const detail = data.rows && data.rows.length > 0 ? data.rows[0] : null
 
       if (!detail) {
         text = '❌ **Browser not found or no data returned**'
@@ -1065,10 +1047,7 @@ class ClearLocalCache {
       }
     }
 
-    const result = await request('/browser/clear_local_cache', {
-      method: 'POST',
-      body: JSON.stringify({ dirIds: params.dirIds }),
-    })
+    const result = await getRoxyOpenAPI().browser.clearLocalCache({ dirIds: params.dirIds })
 
     let text = ''
     if (result.code !== 0) {
@@ -1133,12 +1112,9 @@ class ClearServerCache {
       }
     }
 
-    const result = await request('/browser/clear_server_cache', {
-      method: 'POST',
-      body: JSON.stringify({
-        workspaceId: params.workspaceId,
-        dirIds: params.dirIds,
-      }),
+    const result = await getRoxyOpenAPI().browser.clearServerCache({
+      workspaceId: params.workspaceId,
+      dirIds: params.dirIds,
     })
 
     let text = ''
@@ -1204,12 +1180,9 @@ class RandomFingerprint {
       }
     }
 
-    const result = await request('/browser/random_env', {
-      method: 'POST',
-      body: JSON.stringify({
-        workspaceId: params.workspaceId,
-        dirId: params.dirId,
-      }),
+    const result = await getRoxyOpenAPI().browser.randomEnv({
+      workspaceId: params.workspaceId,
+      dirId: params.dirId,
     })
 
     let text = ''
@@ -1273,9 +1246,7 @@ class ListLabels {
     const searchParams = new URLSearchParams()
     searchParams.append('workspaceId', params.workspaceId.toString())
 
-    const result = await request(`/browser/label?${searchParams}`, {
-      method: 'GET',
-    })
+    const result = await getRoxyOpenAPI().browser.labels(Object.fromEntries(searchParams.entries()) as any)
 
     let text = ''
     if (result.code !== 0) {
@@ -1324,18 +1295,8 @@ class GetConnectionInfo {
   }
 
   async handle(params: any) {
-    const searchParams = new URLSearchParams()
-    if (params.dirIds && params.dirIds.length > 0) {
-      searchParams.append('dirIds', params.dirIds.join(','))
-    }
-
-    const queryString = searchParams.toString()
-    const endpoint = queryString
-      ? `/browser/connection_info?${queryString}`
-      : '/browser/connection_info'
-
-    const result = await request(endpoint, {
-      method: 'GET',
+    const result = await getRoxyOpenAPI().browser.connectionInfo({
+      dirIds: params.dirIds && params.dirIds.length > 0 ? params.dirIds.join(',') : undefined,
     })
 
     let text = ''
