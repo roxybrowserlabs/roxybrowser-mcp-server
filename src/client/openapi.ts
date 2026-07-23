@@ -5,9 +5,13 @@ export interface RoxyOpenAPIOptions {
   apiKey?: string
   baseUrl?: string
   apiHost?: string
+  workspaceId?: number
   timeout?: number
   fetch?: typeof fetch
 }
+
+export type WithDefaultWorkspace<T extends { workspaceId: number }> =
+  Omit<T, 'workspaceId'> & { workspaceId?: number }
 
 export interface RoxyApiResponse<T = unknown> {
   code: number
@@ -494,9 +498,21 @@ function appendQuery(url: URL, params?: object): void {
   }
 }
 
+function applyWorkspaceId<T extends object>(params: T, workspaceId?: number): T {
+  if (workspaceId === undefined)
+    return params
+
+  const normalized = { ...params } as T & { workspaceId?: number | null }
+  if (normalized.workspaceId === undefined || normalized.workspaceId === null)
+    normalized.workspaceId = workspaceId
+
+  return normalized as T
+}
+
 export class RoxyOpenAPI {
   readonly apiKey: string
   readonly baseUrl: string
+  readonly workspaceId?: number
   readonly timeout: number
 
   readonly browser: RoxyBrowserAPI
@@ -509,6 +525,7 @@ export class RoxyOpenAPI {
   constructor(options: RoxyOpenAPIOptions = {}) {
     this.apiKey = options.apiKey ?? options.apikey ?? ''
     this.baseUrl = options.baseUrl ?? options.apiHost ?? 'http://127.0.0.1:50000'
+    this.workspaceId = options.workspaceId
     this.timeout = options.timeout ?? 30_000
     this.fetchImpl = options.fetch ?? fetch
 
@@ -589,60 +606,60 @@ export class RoxyBrowserAPI {
     return this.client.get('/browser/workspace', params)
   }
 
-  accounts(params: BrowserAccountListParams): Promise<RoxyApiResponse<PaginatedData<BrowserAccount>>> {
-    return this.client.get('/browser/account', params)
+  accounts(params: WithDefaultWorkspace<BrowserAccountListParams>): Promise<RoxyApiResponse<PaginatedData<BrowserAccount>>> {
+    return this.client.get('/browser/account', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  labels(params: LabelListParams): Promise<RoxyApiResponse<BrowserLabel[]>> {
-    return this.client.get('/browser/label', params)
+  labels(params: WithDefaultWorkspace<LabelListParams>): Promise<RoxyApiResponse<BrowserLabel[]>> {
+    return this.client.get('/browser/label', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  list(params: BrowserListParams): Promise<RoxyApiResponse<PaginatedData<BrowserSummary>>> {
-    return this.client.get('/browser/list_v3', params)
+  list(params: WithDefaultWorkspace<BrowserListParams>): Promise<RoxyApiResponse<PaginatedData<BrowserSummary>>> {
+    return this.client.get('/browser/list_v3', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  detail(params: BrowserDetailParams): Promise<RoxyApiResponse<PaginatedData<BrowserSummary>>> {
-    return this.client.get('/browser/detail', params)
+  detail(params: WithDefaultWorkspace<BrowserDetailParams>): Promise<RoxyApiResponse<PaginatedData<BrowserSummary>>> {
+    return this.client.get('/browser/detail', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  create(params: BrowserCreateParams): Promise<RoxyApiResponse<BrowserIdData>> {
-    return this.client.post('/browser/create', params)
+  create(params: WithDefaultWorkspace<BrowserCreateParams>): Promise<RoxyApiResponse<BrowserIdData>> {
+    return this.client.post('/browser/create', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  modify(params: BrowserModifyParams): Promise<RoxyApiResponse<BrowserIdData>> {
-    return this.client.post('/browser/mdf', params)
+  modify(params: WithDefaultWorkspace<BrowserModifyParams>): Promise<RoxyApiResponse<BrowserIdData>> {
+    return this.client.post('/browser/mdf', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  update(params: BrowserModifyParams): Promise<RoxyApiResponse<BrowserIdData>> {
+  update(params: WithDefaultWorkspace<BrowserModifyParams>): Promise<RoxyApiResponse<BrowserIdData>> {
     return this.modify(params)
   }
 
-  delete(params: BrowserDeleteParams): Promise<RoxyApiResponse> {
-    return this.client.post('/browser/delete', params)
+  delete(params: WithDefaultWorkspace<BrowserDeleteParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/browser/delete', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  open(params: BrowserOpenParams): Promise<RoxyApiResponse<BrowserConnectionInfo>> {
-    return this.client.post('/browser/open', params)
+  open(params: WithDefaultWorkspace<BrowserOpenParams>): Promise<RoxyApiResponse<BrowserConnectionInfo>> {
+    return this.client.post('/browser/open', applyWorkspaceId(params, this.client.workspaceId))
   }
 
   close(params: BrowserCloseParams): Promise<RoxyApiResponse> {
     return this.client.post('/browser/close', params)
   }
 
-  randomEnv(params: BrowserRandomEnvParams): Promise<RoxyApiResponse> {
-    return this.client.post('/browser/random_env', params)
+  randomEnv(params: WithDefaultWorkspace<BrowserRandomEnvParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/browser/random_env', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  randomFingerprint(params: BrowserRandomEnvParams): Promise<RoxyApiResponse> {
+  randomFingerprint(params: WithDefaultWorkspace<BrowserRandomEnvParams>): Promise<RoxyApiResponse> {
     return this.randomEnv(params)
   }
 
   clearLocalCache(params: BrowserClearLocalCacheParams): Promise<RoxyApiResponse> {
-    return this.client.post('/browser/clear_local_cache', params)
+    return this.client.post('/browser/clear_local_cache', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  clearServerCache(params: BrowserClearServerCacheParams): Promise<RoxyApiResponse> {
-    return this.client.post('/browser/clear_server_cache', params)
+  clearServerCache(params: WithDefaultWorkspace<BrowserClearServerCacheParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/browser/clear_server_cache', applyWorkspaceId(params, this.client.workspaceId))
   }
 
   connectionInfo(params: BrowserConnectionInfoParams = {}): Promise<RoxyApiResponse<BrowserConnectionInfo[]>> {
@@ -650,7 +667,8 @@ export class RoxyBrowserAPI {
   }
 }
 
-function normalizeProxyListParams(params: ProxyListParams): object {
+function normalizeProxyListParams(params: WithDefaultWorkspace<ProxyListParams>, workspaceId?: number): object {
+  const paramsWithWorkspace = applyWorkspaceId(params, workspaceId)
   const {
     pageIndex,
     pageSize,
@@ -659,7 +677,7 @@ function normalizeProxyListParams(params: ProxyListParams): object {
     endDate,
     proxyType,
     ...rest
-  } = params
+  } = paramsWithWorkspace
 
   return {
     ...rest,
@@ -683,67 +701,67 @@ export class RoxyProxyAPI {
     return this.client.get('/proxy/detect_channel')
   }
 
-  list(params: ProxyListParams): Promise<RoxyApiResponse<PaginatedData<ProxyRecord>>> {
-    return this.client.get('/proxy/list_merged', normalizeProxyListParams(params))
+  list(params: WithDefaultWorkspace<ProxyListParams>): Promise<RoxyApiResponse<PaginatedData<ProxyRecord>>> {
+    return this.client.get('/proxy/list_merged', normalizeProxyListParams(params, this.client.workspaceId))
   }
 
-  userList(params: ProxyListParams): Promise<RoxyApiResponse<PaginatedData<ProxyRecord>>> {
-    return this.client.get('/proxy/list', normalizeProxyListParams(params))
+  userList(params: WithDefaultWorkspace<ProxyListParams>): Promise<RoxyApiResponse<PaginatedData<ProxyRecord>>> {
+    return this.client.get('/proxy/list', normalizeProxyListParams(params, this.client.workspaceId))
   }
 
-  create(params: ProxyCreateParams): Promise<RoxyApiResponse> {
-    return this.client.post('/proxy/create', params)
+  create(params: WithDefaultWorkspace<ProxyCreateParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/proxy/create', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  batchCreate(params: ProxyBatchCreateParams): Promise<RoxyApiResponse> {
-    return this.client.post('/proxy/batch_create', params)
+  batchCreate(params: WithDefaultWorkspace<ProxyBatchCreateParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/proxy/batch_create', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  detect(params: ProxyDetectParams): Promise<RoxyApiResponse> {
-    return this.client.post('/proxy/detect', params)
+  detect(params: WithDefaultWorkspace<ProxyDetectParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/proxy/detect', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  modify(params: ProxyModifyParams): Promise<RoxyApiResponse> {
-    return this.client.post('/proxy/modify', params)
+  modify(params: WithDefaultWorkspace<ProxyModifyParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/proxy/modify', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  update(params: ProxyModifyParams): Promise<RoxyApiResponse> {
+  update(params: WithDefaultWorkspace<ProxyModifyParams>): Promise<RoxyApiResponse> {
     return this.modify(params)
   }
 
-  delete(params: ProxyDeleteParams): Promise<RoxyApiResponse> {
-    return this.client.post('/proxy/delete', params)
+  delete(params: WithDefaultWorkspace<ProxyDeleteParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/proxy/delete', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  boughtList(params: ProxyBoughtListParams): Promise<RoxyApiResponse<PaginatedData<BoughtProxyRecord>>> {
-    return this.client.get('/proxy/bought_list', params)
+  boughtList(params: WithDefaultWorkspace<ProxyBoughtListParams>): Promise<RoxyApiResponse<PaginatedData<BoughtProxyRecord>>> {
+    return this.client.get('/proxy/bought_list', applyWorkspaceId(params, this.client.workspaceId))
   }
 }
 
 export class RoxyAccountAPI {
   constructor(private readonly client: RoxyOpenAPI) {}
 
-  list(params: AccountListParams): Promise<RoxyApiResponse<PaginatedData<PlatformAccount>>> {
-    return this.client.get('/account/list', params)
+  list(params: WithDefaultWorkspace<AccountListParams>): Promise<RoxyApiResponse<PaginatedData<PlatformAccount>>> {
+    return this.client.get('/account/list', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  create(params: AccountCreateParams): Promise<RoxyApiResponse<AccountCreateData>> {
-    return this.client.post('/account/create', params)
+  create(params: WithDefaultWorkspace<AccountCreateParams>): Promise<RoxyApiResponse<AccountCreateData>> {
+    return this.client.post('/account/create', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  batchCreate(params: AccountBatchCreateParams): Promise<RoxyApiResponse> {
-    return this.client.post('/account/batch_create', params)
+  batchCreate(params: WithDefaultWorkspace<AccountBatchCreateParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/account/batch_create', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  modify(params: AccountModifyParams): Promise<RoxyApiResponse> {
-    return this.client.post('/account/modify', params)
+  modify(params: WithDefaultWorkspace<AccountModifyParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/account/modify', applyWorkspaceId(params, this.client.workspaceId))
   }
 
-  update(params: AccountModifyParams): Promise<RoxyApiResponse> {
+  update(params: WithDefaultWorkspace<AccountModifyParams>): Promise<RoxyApiResponse> {
     return this.modify(params)
   }
 
-  delete(params: AccountDeleteParams): Promise<RoxyApiResponse> {
-    return this.client.post('/account/delete', params)
+  delete(params: WithDefaultWorkspace<AccountDeleteParams>): Promise<RoxyApiResponse> {
+    return this.client.post('/account/delete', applyWorkspaceId(params, this.client.workspaceId))
   }
 }

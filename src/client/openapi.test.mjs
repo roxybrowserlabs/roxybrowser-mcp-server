@@ -23,11 +23,12 @@ function installRecorder() {
   }
 }
 
-function createClient() {
+function createClient(options = {}) {
   return new RoxyOpenAPI({
     apikey: 'secret-token',
     baseUrl: 'http://127.0.0.1:50000/',
     timeout: 30000,
+    ...options,
   })
 }
 
@@ -74,6 +75,44 @@ describe('RoxyOpenAPI transport', () => {
         workspaceId: 1,
         windowName: 'Roxytest',
       })
+    }
+    finally {
+      restoreFetch()
+    }
+  })
+
+  test('applies default workspaceId to workspace-scoped requests', async () => {
+    const { calls, restoreFetch } = installRecorder()
+
+    try {
+      const client = createClient({ workspaceId: 19744 })
+
+      await client.browser.list({ windowName: 'test' })
+      await client.proxy.create({
+        checkChannel: 'IPRust.io',
+        ipType: 'IPV4',
+        protocol: 'SOCKS5',
+        host: '127.0.0.1',
+        port: '8000',
+      })
+      await client.account.list({ workspaceId: 2 })
+
+      assert.equal(calls[0].url.pathname, '/browser/list_v3')
+      assert.equal(calls[0].url.searchParams.get('workspaceId'), '19744')
+      assert.equal(calls[0].url.searchParams.get('windowName'), 'test')
+
+      assert.equal(calls[1].url.pathname, '/proxy/create')
+      assert.deepEqual(calls[1].body, {
+        workspaceId: 19744,
+        checkChannel: 'IPRust.io',
+        ipType: 'IPV4',
+        protocol: 'SOCKS5',
+        host: '127.0.0.1',
+        port: '8000',
+      })
+
+      assert.equal(calls[2].url.pathname, '/account/list')
+      assert.equal(calls[2].url.searchParams.get('workspaceId'), '2')
     }
     finally {
       restoreFetch()

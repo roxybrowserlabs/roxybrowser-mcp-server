@@ -1512,9 +1512,13 @@ None
 | value            | string     | Channel value                     |
 | msg              | string     | Response message                  |
 
-### Get Proxy List
+### Get Proxy List (Deprecated)
 
 <b style="font-size: 18px">GET /proxy/list</b>
+
+::: warning Deprecated
+This endpoint is deprecated and will be removed in a future release. Use [`GET /proxy/list_merged`](#get-merged-proxy-list) instead. The merged list returns both user-added proxies and proxy-store purchased proxies in one response.
+:::
 
 
 
@@ -1593,6 +1597,161 @@ None
 | checkTime         | string     | Check time                        |
 | createTime        | string     | Creation time                     |
 | updateTime        | string     | Update time                       |
+
+### Get Merged Proxy List
+
+<b style="font-size: 18px">GET /proxy/list_merged</b>
+
+<p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
+
+```Json
+{
+    "workspaceId": 1,              // Team ID, int type, required, obtained through team API [/browser/workspace]
+    "type": "available_list",      // Query type, str type, optional
+    "page_index": 1,               // Page index, int/string type, optional, default: 1
+    "page_size": 100,              // Page size, int/string type, optional, default: 15
+    "orderName": "lastCountry",    // Sort field, str type, optional
+    "orderType": "asc",            // Sort direction, enum values: asc, desc, optional
+    "proxyType": "0",              // Proxy source, str type, optional, 0: user-added proxy, 1: proxy-store proxy
+    "proxyBindStatus": "1",        // Binding status, str type, optional, empty means all
+    "proxyAutoRenew": "1"          // Auto-renew status, str type, optional, empty means all
+}
+```
+
+| Parameter Name  | Required                                   | Parameter Type | Default | Description  |
+| ---------------- | ------------------------------------------ | -------------- | ------- | ------------ |
+| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID |
+| type             | No                                         | string         | --      | Query type, for example: available_list |
+| page_index       | No                                         | int/string     | 1       | Page index |
+| page_size        | No                                         | int/string     | 15      | Page size |
+| orderName        | No                                         | string         | --      | Sort field, for example: lastCountry |
+| orderType        | No                                         | string         | --      | Sort direction, asc or desc |
+| proxyType        | No                                         | string         | --      | Proxy source, 0: user-added proxy, 1: proxy-store proxy |
+| proxyBindStatus  | No                                         | string         | --      | Binding status. Do not pass this field or pass an empty value to query all |
+| proxyAutoRenew   | No                                         | string         | --      | Auto-renew status. Do not pass this field or pass an empty value to query all |
+| country          | No                                         | string         | --      | Filter by country |
+| check_status     | No                                         | int            | --      | Filter by last check status |
+| start_date       | No                                         | string         | --      | Filter by detection start date, YYYY-MM-DD |
+| end_date         | No                                         | string         | --      | Filter by detection end date, YYYY-MM-DD |
+| checker          | No                                         | string         | --      | Filter by detection channel |
+
+<p style="font-weight: 600"> <span class="order">2</span> Response</p>
+
+```Json
+{
+    "code": 0,
+    "data": {
+        "total": 1,
+        "rows": [
+            {
+                "id": 395935,                                      // Proxy ID
+                "userId": 37245,                                   // User ID
+                "workspaceId": 19744,                               // Team ID
+                "canBandwidthUpgrade": true,                        // Whether bandwidth can be upgraded
+                "proxyProviderId": 1,                               // Proxy provider ID
+                "orderNo": "",                                     // Order number
+                "orderStatus": 1,                                   // Order status
+                "ipType": "IPV4",                                  // IP type
+                "host": "gate12.rola.vip",                         // Proxy host
+                "protocol": "SOCKS5",                              // Proxy protocol
+                "country": "",                                     // Country filter/source value
+                "lastIp": "",                                      // Last IP
+                "port": "2000",                                    // Proxy port
+                "proxyUserName": "QWERFGKL_8998811-country-us",    // Proxy username
+                "proxyPassword": "Q1",                             // Proxy password
+                "proxyCheckChannel": "http://iprust.io/ip.json",    // Proxy check channel
+                "remark": "4561",                                  // Remark
+                "lastCountry": "",                                 // Last detected country
+                "lastState": "",                                   // Last detected state
+                "lastCity": "",                                    // Last detected city
+                "checkStatus": 2,                                   // Last check status
+                "proxyExpireStatus": 1,                             // Expiration status
+                "checkTime": "2026-04-28 15:14:43",                 // Last check time
+                "renewalTime": "",                                 // Renewal time
+                "createTime": "2026-03-25 12:09:54",                // Creation time
+                "proxyMonths": 0,                                   // Proxy months
+                "updateTime": "2026-04-28 15:14:48",                // Update time
+                "expireDate": "2026-04-28 15:14:48",                // Expiration date
+                "replaceStatus": 0,                                 // Replacement status
+                "proxyProviderName": "",                           // Proxy provider name
+                "proxyType": 0,                                     // Proxy source type
+                "providerType": "",                                // Provider type
+                "opName": "",                                      // Operator name
+                "giftDays": 0,                                      // Gift days
+                "autoRenew": 0,                                     // Auto-renew status
+                "canRenew": false,                                  // Whether it can be renewed
+                "modelParam": "",                                  // Model parameter
+                "refreshUrl": "",                                  // Refresh URL
+                "isDirect": false,                                  // Whether direct connection is used
+                "badgeTypeDesc": "",                               // Badge type description
+                "dataType": "proxyModule",                          // Data source, proxyModule: user-added, buyProxy: proxy-store
+                "checkChannel": "http://iprust.io/ip.json",         // Check channel address
+                "checkChannelValue": "IPRust.io",                   // Check channel label
+                "isBind": true,                                     // Whether bound to profiles
+                "bindCount": 2,                                     // Bound profile count
+                "bindList": [994, 992],                             // Bound profile list
+                "canRefund": false,                                 // Whether it can be refunded
+                "bandwidthSpeed": 10                                // Bandwidth speed
+            }
+        ]
+    },
+    "msg": "success"
+}
+```
+
+| Field Name          | Field Type | Description |
+| ------------------- | ---------- | ----------- |
+| code                | int        | Status code, 0: success, 500: failure |
+| msg                 | string     | Response message |
+| total               | int        | Total count |
+| id                  | int        | Proxy ID |
+| userId              | int        | User ID |
+| workspaceId         | int        | Team ID |
+| canBandwidthUpgrade | boolean    | Whether bandwidth can be upgraded |
+| proxyProviderId     | int        | Proxy provider ID |
+| orderNo             | string     | Order number |
+| orderStatus         | int        | Order status |
+| ipType              | string     | IP type |
+| host                | string     | Proxy host |
+| protocol            | string     | Proxy protocol |
+| country             | string     | Country filter/source value |
+| lastIp              | string     | Last IP |
+| port                | string     | Proxy port |
+| proxyUserName       | string     | Proxy username |
+| proxyPassword       | string     | Proxy password |
+| proxyCheckChannel   | string     | Proxy check channel |
+| remark              | string     | Remark |
+| lastCountry         | string     | Last detected country |
+| lastState           | string     | Last detected state |
+| lastCity            | string     | Last detected city |
+| checkStatus         | int        | Last check status |
+| proxyExpireStatus   | int        | Expiration status |
+| checkTime           | string     | Last check time |
+| renewalTime         | string     | Renewal time |
+| createTime          | string     | Creation time |
+| proxyMonths         | int        | Proxy months |
+| updateTime          | string     | Update time |
+| expireDate          | string     | Expiration date |
+| replaceStatus       | int        | Replacement status |
+| proxyProviderName   | string     | Proxy provider name |
+| proxyType           | int        | Proxy source type |
+| providerType        | string     | Provider type |
+| opName              | string     | Operator name |
+| giftDays            | int        | Gift days |
+| autoRenew           | int        | Auto-renew status |
+| canRenew            | boolean    | Whether it can be renewed |
+| modelParam          | string     | Model parameter |
+| refreshUrl          | string     | Refresh URL |
+| isDirect            | boolean    | Whether direct connection is used |
+| badgeTypeDesc       | string     | Badge type description |
+| dataType            | string     | Data source, proxyModule: user-added, buyProxy: proxy-store |
+| checkChannel        | string     | Check channel address |
+| checkChannelValue   | string     | Check channel label |
+| isBind              | boolean    | Whether bound to profiles |
+| bindCount           | int        | Bound profile count |
+| bindList            | List       | Bound profile list |
+| canRefund           | boolean    | Whether it can be refunded |
+| bandwidthSpeed      | int        | Bandwidth speed |
 
 ### Create Proxy
 
@@ -1821,9 +1980,13 @@ None
 | code       | int        | Status code, 0: success, 500: failure |
 | msg        | string     | Response message                  |
 
-### Get Purchased Proxy IP List (v3.7.0 +)
+### Get Purchased Proxy IP List (Deprecated)
 
 <b style="font-size: 18px">GET /proxy/bought_list</b>
+
+::: warning Deprecated
+This endpoint is deprecated and will be removed in a future release. Use [`GET /proxy/list_merged`](#get-merged-proxy-list) instead. The merged list returns proxy-store purchased proxies together with user-added proxies.
+:::
 
 
 
