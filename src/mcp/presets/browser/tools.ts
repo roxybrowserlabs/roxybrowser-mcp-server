@@ -133,7 +133,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_profile_list",
     operationId: "browser.profile.list",
     endpoint: "GET /browser/list_v3",
-    description: "List browser profiles.",
+    description: "List browser profiles with their window dirId values.",
     inputSchema: objectSchema({
       ...paginationSchema,
       projectIds: numberArray,

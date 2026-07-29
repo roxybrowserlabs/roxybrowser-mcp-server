@@ -162,10 +162,12 @@ describe("MCP tool handlers", () => {
       await toolByName(BROWSER_MCP_TOOLS, "roxy_label_list").handler({}, context),
       /Warm/,
     );
-    assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_list").handler({ page: 1 }, context),
-      /Alpha/,
+    const profileList = await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_list").handler(
+      { page: 1 },
+      context,
     );
+    assert.match(profileList, /Alpha/);
+    assert.match(profileList, /dirId: profile-1/);
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler({ id: "profile-1" }, context),
       /profile-1/,
