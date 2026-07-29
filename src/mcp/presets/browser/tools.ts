@@ -136,6 +136,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "List browser profiles with their window dirId values.",
     inputSchema: objectSchema({
       ...paginationSchema,
+      dirIds: stringArray,
       projectIds: numberArray,
       name: { type: "string" },
       serialNumber: { type: "string" },
@@ -148,8 +149,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.get",
     endpoint: "GET /browser/detail",
     description: "Get one browser profile.",
-    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
-    handler: async (args, context) => formatProfile(await context.browser!.profiles.get(args.id)),
+    inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
+    handler: async (args, context) =>
+      formatProfile(await context.browser!.profiles.get(args.dirId)),
   },
   {
     name: "roxy_profile_create",
@@ -166,15 +168,15 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Update a browser profile.",
     inputSchema: objectSchema(
       {
-        id: { type: "string" },
+        dirId: { type: "string" },
         ...profilePatchSchema,
       },
-      ["id"],
+      ["dirId"],
     ),
     handler: async (args, context) => {
-      const { id, ...patch } = args;
-      await context.browser!.profiles.update(id, patch);
-      return `Updated profile ${id}.`;
+      const { dirId, ...patch } = args;
+      await context.browser!.profiles.update(dirId, patch);
+      return `Updated profile ${dirId}.`;
     },
   },
   {
@@ -184,19 +186,19 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Open a browser profile.",
     inputSchema: objectSchema(
       {
-        id: { type: "string" },
+        dirId: { type: "string" },
         force: { type: "boolean" },
         args: stringArray,
         headless: { type: "boolean" },
       },
-      ["id"],
+      ["dirId"],
     ),
     handler: async (args, context) => {
       const opened = await context.browser!.profiles.open(
-        args.id,
+        args.dirId,
         removeUndefined({ force: args.force, args: args.args, headless: args.headless }),
       );
-      return `Opened profile ${args.id}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
+      return `Opened profile ${args.dirId}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
     },
   },
   {
@@ -204,10 +206,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.close",
     endpoint: "POST /browser/close",
     description: "Close a browser profile.",
-    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
+    inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     handler: async (args, context) => {
-      await context.browser!.profiles.close(args.id);
-      return `Closed profile ${args.id}.`;
+      await context.browser!.profiles.close(args.dirId);
+      return `Closed profile ${args.dirId}.`;
     },
   },
   {
@@ -217,14 +219,14 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Delete browser profiles.",
     inputSchema: objectSchema(
       {
-        ids: stringArray,
+        dirIds: stringArray,
         soft: { type: "boolean" },
       },
-      ["ids"],
+      ["dirIds"],
     ),
     handler: async (args, context) => {
-      await context.browser!.profiles.delete(args.ids, removeUndefined({ soft: args.soft }));
-      return `Deleted ${args.ids.length} profile(s).`;
+      await context.browser!.profiles.delete(args.dirIds, removeUndefined({ soft: args.soft }));
+      return `Deleted ${args.dirIds.length} profile(s).`;
     },
   },
   {
@@ -232,9 +234,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.connectionInfo",
     endpoint: "GET /browser/connection_info",
     description: "Get CDP connection information for opened browser profiles.",
-    inputSchema: objectSchema({ ids: stringArray }),
+    inputSchema: objectSchema({ dirIds: stringArray }),
     handler: async (args, context) => {
-      const info = await context.browser!.profiles.connectionInfo(args.ids);
+      const info = await context.browser!.profiles.connectionInfo(args.dirIds);
       return info.length === 0 ? "No connection info found." : JSON.stringify(info, null, 2);
     },
   },
@@ -243,10 +245,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.randomizeFingerprint",
     endpoint: "POST /browser/random_env",
     description: "Randomize a browser profile fingerprint.",
-    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
+    inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     handler: async (args, context) => {
-      await context.browser!.profiles.randomizeFingerprint(args.id);
-      return `Randomized fingerprint for profile ${args.id}.`;
+      await context.browser!.profiles.randomizeFingerprint(args.dirId);
+      return `Randomized fingerprint for profile ${args.dirId}.`;
     },
   },
   {
@@ -254,13 +256,13 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.clearLocalCache",
     endpoint: "POST /browser/clear_local_cache",
     description: "Clear local cache for browser profiles.",
-    inputSchema: objectSchema({ ids: stringArray, type: { type: "string" } }, ["ids"]),
+    inputSchema: objectSchema({ dirIds: stringArray, type: { type: "string" } }, ["dirIds"]),
     handler: async (args, context) => {
       await context.browser!.profiles.clearLocalCache(
-        args.ids,
+        args.dirIds,
         removeUndefined({ type: args.type }),
       );
-      return `Cleared local cache for ${args.ids.length} profile(s).`;
+      return `Cleared local cache for ${args.dirIds.length} profile(s).`;
     },
   },
   {
@@ -268,10 +270,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.clearServerCache",
     endpoint: "POST /browser/clear_server_cache",
     description: "Clear server cache for browser profiles.",
-    inputSchema: objectSchema({ ids: stringArray }, ["ids"]),
+    inputSchema: objectSchema({ dirIds: stringArray }, ["dirIds"]),
     handler: async (args, context) => {
-      await context.browser!.profiles.clearServerCache(args.ids);
-      return `Cleared server cache for ${args.ids.length} profile(s).`;
+      await context.browser!.profiles.clearServerCache(args.dirIds);
+      return `Cleared server cache for ${args.dirIds.length} profile(s).`;
     },
   },
   {

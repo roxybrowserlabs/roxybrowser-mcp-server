@@ -12,7 +12,7 @@ export interface Project {
 }
 
 export interface BrowserProfile {
-  id: string;
+  dirId: string;
   serialNumber?: number;
   name?: string;
   core?: {
@@ -28,6 +28,7 @@ export interface BrowserProfile {
 }
 
 export interface ProfileListParams extends PaginationParams {
+  dirIds?: string[];
   projectIds?: number[];
   name?: string;
   serialNumber?: string;

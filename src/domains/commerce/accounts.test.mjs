@@ -5,7 +5,7 @@ import { CommerceAccountDomain } from "../../../lib/domains/commerce/index.js";
 function createProfilesRecorder() {
   const calls = [];
   const profile = {
-    id: "account-1",
+    dirId: "account-1",
     name: "Amazon Store A",
     raw: { projectId: 3, marker: "profile" },
   };
@@ -21,13 +21,13 @@ function createProfilesRecorder() {
           rows: [profile],
         };
       },
-      get: async (id) => {
-        calls.push(["get", id]);
-        return { ...profile, id };
+      get: async (dirId) => {
+        calls.push(["get", dirId]);
+        return { ...profile, dirId };
       },
       create: async (input) => {
         calls.push(["create", input]);
-        return { ...profile, id: "created-account", name: input.name };
+        return { ...profile, dirId: "created-account", name: input.name };
       },
       update: async (id, patch) => {
         calls.push(["update", id, patch]);

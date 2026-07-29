@@ -93,7 +93,7 @@ const roxy = new RoxyBrowserClient({
 });
 
 const profiles = await roxy.profiles.list({ page: 1, pageSize: 20 });
-const opened = await roxy.profiles.open(profiles.rows[0].id, { force: true });
+const opened = await roxy.profiles.open(profiles.rows[0].dirId, { force: true });
 ```
 
 电商产品 SDK：

@@ -118,7 +118,7 @@ src/
 Keep these names distinct:
 
 - Backend endpoint: `POST /browser/open`
-- SDK operation: `roxy.profiles.open(id, options)`
+- SDK operation: `roxy.profiles.open(dirId, options)`
 - Browser MCP tool: `roxy_profile_open`
 - Ecommerce MCP tool: `roxy_account_open`
 

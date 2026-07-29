@@ -18,6 +18,7 @@ export class ProfileDomain {
   async list(params: ProfileListParams = {}) {
     const rawParams = removeUndefined({
       ...toPageRequest(params),
+      dirIds: params.dirIds?.join(","),
       projectIds: params.projectIds?.join(","),
       windowName: params.name,
       windowSortNum: params.serialNumber,
@@ -33,10 +34,10 @@ export class ProfileDomain {
     );
   }
 
-  async get(id: string): Promise<BrowserProfile> {
-    const data = unwrapData(await this.api.browser.detail({ dirId: id }));
+  async get(dirId: string): Promise<BrowserProfile> {
+    const data = unwrapData(await this.api.browser.detail({ dirId }));
     const profile = data.rows[0];
-    if (!profile) throw new Error(`Profile not found: ${id}`);
+    if (!profile) throw new Error(`Profile not found: ${dirId}`);
     return toProfile(profile);
   }
 
@@ -45,32 +46,32 @@ export class ProfileDomain {
     return this.get(data.dirId);
   }
 
-  async update(id: string, patch: ProfileUpdateInput): Promise<void> {
+  async update(dirId: string, patch: ProfileUpdateInput): Promise<void> {
     ensureSuccess(
       await this.api.browser.modify({
         ...toProfileCreateRequest(patch),
-        dirId: id,
+        dirId,
       }),
     );
   }
 
-  async delete(ids: OneOrMany<string>, options: ProfileDeleteOptions = {}): Promise<void> {
+  async delete(dirIds: OneOrMany<string>, options: ProfileDeleteOptions = {}): Promise<void> {
     ensureSuccess(
       await this.api.browser.delete({
-        dirIds: asArray(ids),
+        dirIds: asArray(dirIds),
         isSoftDelete: options.soft ?? true,
       }),
     );
   }
 
-  async open(ids: OneOrMany<string>, options: ProfileOpenOptions = {}) {
+  async open(dirIds: OneOrMany<string>, options: ProfileOpenOptions = {}) {
     const opened = [];
-    for (const id of asArray(ids)) {
+    for (const dirId of asArray(dirIds)) {
       opened.push(
         unwrapData(
           await this.api.browser.open(
             removeUndefined({
-              dirId: id,
+              dirId,
               forceOpen: options.force,
               args: options.args,
               headless: options.headless,
@@ -79,44 +80,44 @@ export class ProfileDomain {
         ),
       );
     }
-    return Array.isArray(ids) ? opened : opened[0];
+    return Array.isArray(dirIds) ? opened : opened[0];
   }
 
-  async close(ids: OneOrMany<string>): Promise<void> {
-    for (const id of asArray(ids)) {
-      ensureSuccess(await this.api.browser.close({ dirId: id }));
+  async close(dirIds: OneOrMany<string>): Promise<void> {
+    for (const dirId of asArray(dirIds)) {
+      ensureSuccess(await this.api.browser.close({ dirId }));
     }
   }
 
-  async connectionInfo(ids?: string[]) {
+  async connectionInfo(dirIds?: string[]) {
     return (
       unwrapData(
         await this.api.browser.connectionInfo({
-          dirIds: ids?.join(","),
+          dirIds: dirIds?.join(","),
         }),
       ) ?? []
     );
   }
 
-  async randomizeFingerprint(id: string): Promise<void> {
-    ensureSuccess(await this.api.browser.randomEnv({ dirId: id }));
+  async randomizeFingerprint(dirId: string): Promise<void> {
+    ensureSuccess(await this.api.browser.randomEnv({ dirId }));
   }
 
-  async clearLocalCache(ids: OneOrMany<string>, options: { type?: string } = {}): Promise<void> {
+  async clearLocalCache(dirIds: OneOrMany<string>, options: { type?: string } = {}): Promise<void> {
     ensureSuccess(
       await this.api.browser.clearLocalCache(
         removeUndefined({
-          dirIds: asArray(ids),
+          dirIds: asArray(dirIds),
           type: options.type,
         }),
       ),
     );
   }
 
-  async clearServerCache(ids: OneOrMany<string>): Promise<void> {
+  async clearServerCache(dirIds: OneOrMany<string>): Promise<void> {
     ensureSuccess(
       await this.api.browser.clearServerCache({
-        dirIds: asArray(ids),
+        dirIds: asArray(dirIds),
       }),
     );
   }
@@ -124,7 +125,7 @@ export class ProfileDomain {
 
 export function toProfile(raw: RawBrowserProfile): BrowserProfile {
   return {
-    id: raw.dirId,
+    dirId: raw.dirId,
     serialNumber: raw.windowSortNum,
     name: raw.windowName,
     core: {

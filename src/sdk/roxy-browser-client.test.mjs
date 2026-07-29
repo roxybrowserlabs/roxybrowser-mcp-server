@@ -65,6 +65,7 @@ describe("RoxyBrowserClient", () => {
     const page = await client.profiles.list({
       page: 2,
       pageSize: 10,
+      dirIds: ["profile-1"],
       projectIds: [1, 2],
       name: "Alpha",
     });
@@ -72,9 +73,10 @@ describe("RoxyBrowserClient", () => {
     assert.equal(calls[0].url.pathname, "/browser/list_v3");
     assert.equal(calls[0].url.searchParams.get("page_index"), "2");
     assert.equal(calls[0].url.searchParams.get("page_size"), "10");
+    assert.equal(calls[0].url.searchParams.get("dirIds"), "profile-1");
     assert.equal(calls[0].url.searchParams.get("projectIds"), "1,2");
     assert.equal(calls[0].url.searchParams.get("windowName"), "Alpha");
-    assert.equal(page.rows[0].id, "profile-1");
+    assert.equal(page.rows[0].dirId, "profile-1");
     assert.equal(page.rows[0].name, "Alpha");
   });
 
@@ -96,7 +98,7 @@ describe("RoxyBrowserClient", () => {
     assert.equal(calls[0].body.projectId, 3);
     assert.deepEqual(calls[0].body.proxyInfo, { moduleId: 9, proxyMethod: "choose" });
     assert.equal(calls[1].url.pathname, "/browser/detail");
-    assert.equal(profile.id, "profile-1");
+    assert.equal(profile.dirId, "profile-1");
   });
 
   test("maps proxy filters to merged proxy list params", async () => {

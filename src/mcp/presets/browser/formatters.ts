@@ -14,7 +14,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
     ...page.rows.map((profile) =>
       [
         `Profile Name: ${profile.name ?? "Unnamed"}`,
-        `  - dirId: ${profile.id}`,
+        `  - dirId: ${profile.dirId}`,
         `  - core: ${profile.core?.type ?? "Unknown"} ${profile.core?.version ?? ""}`.trimEnd(),
         `  - os: ${profile.os?.name ?? "Unknown"} ${profile.os?.version ?? ""}`.trimEnd(),
       ].join("\n"),
@@ -25,7 +25,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
 export function formatProfile(profile: BrowserProfile): string {
   return [
     `Profile: ${profile.name ?? "Unnamed"}`,
-    `id: ${profile.id}`,
+    `dirId: ${profile.dirId}`,
     `core: ${profile.core?.type ?? "Unknown"} ${profile.core?.version ?? ""}`.trimEnd(),
     `os: ${profile.os?.name ?? "Unknown"} ${profile.os?.version ?? ""}`.trimEnd(),
   ].join("\n");

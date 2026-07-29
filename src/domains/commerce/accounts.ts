@@ -74,7 +74,7 @@ export class CommerceAccountDomain {
 
 function toCommerceAccount(profile: BrowserProfile): CommerceAccount {
   return {
-    id: profile.id,
+    id: profile.dirId,
     name: profile.name,
     projectId: profile.raw.projectId as number | undefined,
     raw: profile.raw,

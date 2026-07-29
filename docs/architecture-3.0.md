@@ -105,7 +105,7 @@ The 3.0 tree contains only the rewritten API, SDK, domain, MCP, and CLI layers. 
 Three names must remain distinct:
 
 - Backend endpoint: `POST /browser/open`
-- SDK operation: `roxy.profiles.open(id, options)`
+- SDK operation: `roxy.profiles.open(dirId, options)`
 - MCP tool: `roxy_profile_open`
 
 Each MCP tool should carry debug metadata:
@@ -124,7 +124,7 @@ This makes incident debugging explicit:
 tool: roxy_account_open
 operation: commerce.account.open
 endpoint: POST /browser/open
-dirId/profileId: xxx
+dirId: xxx
 ```
 
 ## Low-Level API
@@ -176,13 +176,13 @@ const profile = await roxy.profiles.create({
   urls: ["https://www.tiktok.com"],
 });
 
-const opened = await roxy.profiles.open(profile.id, {
+const opened = await roxy.profiles.open(profile.dirId, {
   force: true,
   args: ["--disable-audio-output"],
 });
 
-await roxy.profiles.close(profile.id);
-await roxy.profiles.delete([profile.id], { soft: true });
+await roxy.profiles.close(profile.dirId);
+await roxy.profiles.delete([profile.dirId], { soft: true });
 ```
 
 ### Browser SDK Surface
@@ -192,16 +192,16 @@ roxy.workspaces.list(params?)
 roxy.projects.list(params?)
 
 roxy.profiles.list(params?)
-roxy.profiles.get(id)
+roxy.profiles.get(dirId)
 roxy.profiles.create(input)
-roxy.profiles.update(id, patch)
-roxy.profiles.delete(ids, options?)
-roxy.profiles.open(id | ids, options?)
-roxy.profiles.close(id | ids)
-roxy.profiles.connectionInfo(ids?)
-roxy.profiles.randomizeFingerprint(id)
-roxy.profiles.clearLocalCache(ids, options?)
-roxy.profiles.clearServerCache(ids)
+roxy.profiles.update(dirId, patch)
+roxy.profiles.delete(dirIds, options?)
+roxy.profiles.open(dirId | dirIds, options?)
+roxy.profiles.close(dirId | dirIds)
+roxy.profiles.connectionInfo(dirIds?)
+roxy.profiles.randomizeFingerprint(dirId)
+roxy.profiles.clearLocalCache(dirIds, options?)
+roxy.profiles.clearServerCache(dirIds)
 
 roxy.proxies.list(params?)
 roxy.proxies.get(id)

@@ -46,16 +46,16 @@ describe("MCP tool handlers", () => {
             calls.push(["profiles.list", args]);
             return {
               total: 1,
-              rows: [{ id: "profile-1", name: "Alpha", serialNumber: 11, raw: {} }],
+              rows: [{ dirId: "profile-1", name: "Alpha", serialNumber: 11, raw: {} }],
             };
           },
-          get: async (id) => {
-            calls.push(["profiles.get", id]);
-            return { id, name: "Alpha", raw: {} };
+          get: async (dirId) => {
+            calls.push(["profiles.get", dirId]);
+            return { dirId, name: "Alpha", raw: {} };
           },
           create: async (args) => {
             calls.push(["profiles.create", args]);
-            return { id: "created-profile", name: args.name, raw: {} };
+            return { dirId: "created-profile", name: args.name, raw: {} };
           },
           update: async (id, patch) => {
             calls.push(["profiles.update", id, patch]);
@@ -169,7 +169,10 @@ describe("MCP tool handlers", () => {
     assert.match(profileList, /Alpha/);
     assert.match(profileList, /dirId: profile-1/);
     assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler({ id: "profile-1" }, context),
+      await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
+        { dirId: "profile-1" },
+        context,
+      ),
       /profile-1/,
     );
     assert.match(
@@ -181,56 +184,56 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_update").handler(
-        { id: "profile-1", name: "Updated" },
+        { dirId: "profile-1", name: "Updated" },
         context,
       ),
       /Updated profile/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_open").handler(
-        { id: "profile-1", force: true, args: ["--flag"] },
+        { dirId: "profile-1", force: true, args: ["--flag"] },
         context,
       ),
       /ws:\/\/profile-1/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_close").handler(
-        { id: "profile-1" },
+        { dirId: "profile-1" },
         context,
       ),
       /Closed profile/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_delete").handler(
-        { ids: ["profile-1"], soft: false },
+        { dirIds: ["profile-1"], soft: false },
         context,
       ),
       /Deleted 1/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_connection_info").handler(
-        { ids: ["profile-1"] },
+        { dirIds: ["profile-1"] },
         context,
       ),
       /ws:\/\/profile-1/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_randomize_fingerprint").handler(
-        { id: "profile-1" },
+        { dirId: "profile-1" },
         context,
       ),
       /Randomized fingerprint/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_clear_local_cache").handler(
-        { ids: ["profile-1"], type: "cookie" },
+        { dirIds: ["profile-1"], type: "cookie" },
         context,
       ),
       /Cleared local cache/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_clear_server_cache").handler(
-        { ids: ["profile-1"] },
+        { dirIds: ["profile-1"] },
         context,
       ),
       /Cleared server cache/,
@@ -339,7 +342,7 @@ describe("MCP tool handlers", () => {
         total: 1,
         rows: [
           {
-            id: "profile-rich",
+            dirId: "profile-rich",
             name: "Rich Profile",
             core: { type: "Chrome", version: "140" },
             os: { name: "Windows", version: "11" },
@@ -351,7 +354,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       formatProfile({
-        id: "profile-rich",
+        dirId: "profile-rich",
         name: "Rich Profile",
         core: { type: "Chrome", version: "140" },
         os: { name: "Windows", version: "11" },
@@ -393,7 +396,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_open").handler(
-        { id: "profile-empty" },
+        { dirId: "profile-empty" },
         browserContext,
       ),
       /N\/A/,
@@ -676,9 +679,9 @@ describe("MCP tool handlers", () => {
 
   test("formatters use empty and fallback labels consistently", () => {
     assert.equal(formatProfiles({ total: 0, rows: [] }), "No profiles found.");
-    assert.match(formatProfile({ id: "profile-1", raw: {} }), /Profile: Unnamed/);
+    assert.match(formatProfile({ dirId: "profile-1", raw: {} }), /Profile: Unnamed/);
     assert.match(
-      formatProfiles({ total: 1, rows: [{ id: "profile-1", raw: {} }] }),
+      formatProfiles({ total: 1, rows: [{ dirId: "profile-1", raw: {} }] }),
       /core: Unknown/,
     );
     assert.equal(formatPlatformAccounts({ total: 0, rows: [] }), "No platform accounts found.");

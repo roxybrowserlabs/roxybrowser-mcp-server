@@ -222,6 +222,7 @@ describe("browser domains", () => {
     const page = await profiles.list({
       page: 1,
       pageSize: 20,
+      dirIds: ["profile-1", "profile-2"],
       projectIds: [3, 4],
       name: "Alpha",
       serialNumber: "11",
@@ -251,12 +252,13 @@ describe("browser domains", () => {
     await profiles.clearLocalCache("profile-1", { type: "cookie" });
     await profiles.clearServerCache(["profile-1"]);
 
-    assert.equal(page.rows[0].id, "profile-1");
-    assert.equal(created.id, "created-profile");
+    assert.equal(page.rows[0].dirId, "profile-1");
+    assert.equal(created.dirId, "created-profile");
     assert.equal(openedOne.ws, "ws://profile-1");
     assert.equal(openedMany.length, 2);
     assert.equal(info[0].ws, "ws://profile-1");
     assert.equal(calls.find((call) => call[0] === "browser.list")[1].projectIds, "3,4");
+    assert.equal(calls.find((call) => call[0] === "browser.list")[1].dirIds, "profile-1,profile-2");
     assert.equal(
       calls.find((call) => call[0] === "browser.create")[1].windowPlatformList[0].platformUserName,
       "seller",

@@ -40,6 +40,12 @@ describe("3.0 MCP presets", () => {
       assert.ok(names.includes("roxy_profile_open"));
       assert.ok(names.includes("roxy_profile_update"));
       assert.ok(names.includes("roxy_profile_connection_info"));
+      const profileGet = result.tools.find((tool) => tool.name === "roxy_profile_get");
+      const profileDelete = result.tools.find((tool) => tool.name === "roxy_profile_delete");
+      assert.ok(profileGet.inputSchema.properties.dirId);
+      assert.equal(profileGet.inputSchema.properties.id, undefined);
+      assert.ok(profileDelete.inputSchema.properties.dirIds);
+      assert.equal(profileDelete.inputSchema.properties.ids, undefined);
       assert.ok(names.includes("roxy_proxy_create"));
       assert.equal(names.includes("roxy_proxy_create_many"), false);
       assert.ok(names.includes("roxy_proxy_detect_channels"));
