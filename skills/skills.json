@@ -1,0 +1,11 @@
+{
+  "$schema": "./skills.schema.json",
+  "version": 1,
+  "skills": [
+    {
+      "name": "roxybrowser-control",
+      "description": "Use when controlling RoxyBrowser through MCP tools, managing browser profiles, proxies, accounts, workspaces, projects, CDP/Bidi endpoints, or diagnosing RoxyBrowser automation setup.",
+      "path": "skills/roxybrowser-control/SKILL.md"
+    }
+  ]
+}

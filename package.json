@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "type": "module",
   "main": "lib/index.cjs",
@@ -15,7 +15,9 @@
     }
   },
   "bin": {
-    "roxybrowser-openapi-mcp": "lib/cli.js"
+    "roxybrowser-openapi-mcp": "lib/cli/browser.js",
+    "roxybrowser-mcp": "lib/cli/browser.js",
+    "roxycommerce-mcp": "lib/cli/commerce.js"
   },
   "repository": {
     "type": "git",
@@ -27,12 +29,16 @@
   },
   "scripts": {
     "build": "tsup",
-    "start": "node lib/index.js",
+    "start": "node lib/cli/browser.js",
     "dev": "tsup --watch",
-    "test": "npm run build && node --test",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli.js",
-    "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli.js",
+    "test": "npm run build && node --test $(find src/api src/sdk src/domains src/mcp -name '*.test.mjs' -print)",
+    "coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include=lib/api/** --test-coverage-include=lib/sdk/** --test-coverage-include=lib/domains/** --test-coverage-include=lib/mcp/** --test-coverage-lines=90 --test-coverage-functions=90 --test-coverage-branches=90 $(find src/api src/sdk src/domains src/mcp -name '*.test.mjs' -print)",
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli/browser.js",
+    "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli/browser.js",
     "clean": "npx rimraf lib",
+    "skills:apply": "node support/sync-skills-metadata.mjs apply",
+    "skills:check": "node support/sync-skills-metadata.mjs check",
+    "skills:pull": "node support/sync-skills-metadata.mjs pull",
     "publish:release": "npm run clean && npm version patch --no-git-tag-version && npm run build && npm publish",
     "publish:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm run build && npm publish --tag beta"
   },

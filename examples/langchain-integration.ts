@@ -11,6 +11,7 @@
  * Environment variables:
  *   ROXY_API_KEY     - Required. Your RoxyBrowser API key.
  *   ROXY_API_HOST    - Optional. Default: http://127.0.0.1:50000
+ *   ROXY_WORKSPACE_ID - Optional. Default workspace ID.
  *   ANTHROPIC_API_KEY - Required for the example agent below.
  */
 
@@ -18,7 +19,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { loadMcpTools } from '@langchain/mcp-adapters'
 import type { StructuredToolInterface } from '@langchain/core/tools'
-import { RoxyBrowserMCPServer } from '../src/index.js'
+import { createRoxyBrowserMcpServer } from '../src/index.js'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Core helper: returns all Roxy tools as LangChain StructuredTool instances.
@@ -28,8 +29,14 @@ export async function getRoxyLangChainTools(): Promise<StructuredToolInterface[]
   // Both ends of the in-memory channel — no sockets, no child process.
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
 
-  // Start the Roxy MCP server attached to the server-side transport.
-  const roxyServer = new RoxyBrowserMCPServer()
+  // Start the browser-mode Roxy MCP server attached to the server-side transport.
+  const roxyServer = createRoxyBrowserMcpServer({
+    roxy: {
+      apiKey: process.env.ROXY_API_KEY,
+      apiHost: process.env.ROXY_API_HOST,
+      workspaceId: process.env.ROXY_WORKSPACE_ID ? Number(process.env.ROXY_WORKSPACE_ID) : undefined,
+    },
+  })
   await roxyServer.connect(serverTransport)
 
   // Connect the MCP client to the other end.
@@ -63,7 +70,7 @@ async function main() {
   })
 
   const result = await agent.invoke({
-    messages: [new HumanMessage('帮我列出当前所有浏览器，每个显示名称和状态')],
+    messages: [new HumanMessage('帮我列出当前所有 profile，每个显示名称和 id')],
   })
 
   const last = result.messages.at(-1)
