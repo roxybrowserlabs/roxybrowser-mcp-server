@@ -1,11 +1,11 @@
-import { ProfileDomain, type BrowserProfile } from '../browser/index.js'
+import { ProfileDomain, type BrowserProfile } from "../browser/index.js";
 import type {
   CommerceAccount,
   CommerceAccountDeleteOptions,
   CommerceAccountInput,
   CommerceAccountListParams,
   CommerceAccountOpenOptions,
-} from './types.js'
+} from "./types.js";
 
 export class CommerceAccountDomain {
   constructor(private readonly profiles: ProfileDomain) {}
@@ -16,15 +16,15 @@ export class CommerceAccountDomain {
       pageSize: params.pageSize,
       name: params.keyword,
       projectIds: params.projectIds,
-    })
+    });
     return {
       ...page,
       rows: page.rows.map(toCommerceAccount),
-    }
+    };
   }
 
   async get(id: string): Promise<CommerceAccount> {
-    return toCommerceAccount(await this.profiles.get(id))
+    return toCommerceAccount(await this.profiles.get(id));
   }
 
   async create(input: CommerceAccountInput): Promise<CommerceAccount> {
@@ -34,17 +34,19 @@ export class CommerceAccountDomain {
       proxyId: input.proxyId,
       urls: input.urls ?? (input.platform?.url ? [input.platform.url] : undefined),
       platformAccounts: input.platform
-        ? [{
-            platformUrl: input.platform.url,
-            username: input.platform.username,
-            password: input.platform.password,
-            twoFactorKey: input.platform.twoFactorKey,
-            remarks: input.platform.remarks,
-          }]
+        ? [
+            {
+              platformUrl: input.platform.url,
+              username: input.platform.username,
+              password: input.platform.password,
+              twoFactorKey: input.platform.twoFactorKey,
+              remarks: input.platform.remarks,
+            },
+          ]
         : undefined,
       raw: input.raw,
-    })
-    return toCommerceAccount(profile)
+    });
+    return toCommerceAccount(profile);
   }
 
   async update(id: string, patch: Partial<CommerceAccountInput>): Promise<void> {
@@ -54,19 +56,19 @@ export class CommerceAccountDomain {
       proxyId: patch.proxyId,
       urls: patch.urls,
       raw: patch.raw,
-    })
+    });
   }
 
   open(id: string, options: CommerceAccountOpenOptions = {}) {
-    return this.profiles.open(id, options)
+    return this.profiles.open(id, options);
   }
 
   close(id: string): Promise<void> {
-    return this.profiles.close(id)
+    return this.profiles.close(id);
   }
 
   delete(ids: string[], options: CommerceAccountDeleteOptions = {}): Promise<void> {
-    return this.profiles.delete(ids, options)
+    return this.profiles.delete(ids, options);
   }
 }
 
@@ -76,5 +78,5 @@ function toCommerceAccount(profile: BrowserProfile): CommerceAccount {
     name: profile.name,
     projectId: profile.raw.projectId as number | undefined,
     raw: profile.raw,
-  }
+  };
 }

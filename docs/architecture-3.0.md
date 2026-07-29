@@ -134,17 +134,17 @@ The low-level API client only models RoxyBrowser's local HTTP API. It may keep m
 Example:
 
 ```ts
-api.browser.create(rawParams)
-api.browser.modify(rawParams)
-api.browser.open(rawParams)
-api.browser.list(rawParams)
+api.browser.create(rawParams);
+api.browser.modify(rawParams);
+api.browser.open(rawParams);
+api.browser.list(rawParams);
 
-api.proxy.listMerged(rawParams)
-api.proxy.create(rawParams)
-api.proxy.batchCreate(rawParams)
+api.proxy.listMerged(rawParams);
+api.proxy.create(rawParams);
+api.proxy.batchCreate(rawParams);
 
-api.account.create(rawParams)
-api.account.batchCreate(rawParams)
+api.account.create(rawParams);
+api.account.batchCreate(rawParams);
 ```
 
 ## Browser SDK
@@ -152,37 +152,37 @@ api.account.batchCreate(rawParams)
 The standard SDK is the public API for the normal RoxyBrowser product shape.
 
 ```ts
-import { RoxyBrowserClient } from '@roxybrowser/openapi'
+import { RoxyBrowserClient } from "@roxybrowser/openapi";
 
 const roxy = new RoxyBrowserClient({
-  apiKey: 'xxxx',
-  baseUrl: 'http://127.0.0.1:50000',
+  apiKey: "xxxx",
+  baseUrl: "http://127.0.0.1:50000",
   workspaceId: 19744,
-})
+});
 
 const profiles = await roxy.profiles.list({
   page: 1,
   pageSize: 20,
   projectIds: [1, 2],
-  name: 'test',
-})
+  name: "test",
+});
 
 const profile = await roxy.profiles.create({
-  name: 'TikTok Account A',
+  name: "TikTok Account A",
   projectId: 1,
-  core: { type: 'Chrome', version: '140' },
-  os: { name: 'Windows', version: '11' },
+  core: { type: "Chrome", version: "140" },
+  os: { name: "Windows", version: "11" },
   proxyId: 395935,
-  urls: ['https://www.tiktok.com'],
-})
+  urls: ["https://www.tiktok.com"],
+});
 
 const opened = await roxy.profiles.open(profile.id, {
   force: true,
-  args: ['--disable-audio-output'],
-})
+  args: ["--disable-audio-output"],
+});
 
-await roxy.profiles.close(profile.id)
-await roxy.profiles.delete([profile.id], { soft: true })
+await roxy.profiles.close(profile.id);
+await roxy.profiles.delete([profile.id], { soft: true });
 ```
 
 ### Browser SDK Surface
@@ -226,36 +226,36 @@ roxy.labels.list()
 The ecommerce SDK exposes ecommerce account language while using the same underlying browser profile APIs.
 
 ```ts
-import { RoxyCommerceClient } from '@roxybrowser/openapi'
+import { RoxyCommerceClient } from "@roxybrowser/openapi";
 
 const commerce = new RoxyCommerceClient({
-  apiKey: 'xxxx',
-  baseUrl: 'http://127.0.0.1:50000',
+  apiKey: "xxxx",
+  baseUrl: "http://127.0.0.1:50000",
   workspaceId: 19744,
-})
+});
 
 const accounts = await commerce.accounts.list({
   page: 1,
   pageSize: 20,
-  keyword: 'shop-a',
-})
+  keyword: "shop-a",
+});
 
 const account = await commerce.accounts.create({
-  name: 'Amazon Store A',
+  name: "Amazon Store A",
   projectId: 1,
   platform: {
-    url: 'https://sellercentral.amazon.com',
-    username: 'seller@example.com',
-    password: 'xxxx',
+    url: "https://sellercentral.amazon.com",
+    username: "seller@example.com",
+    password: "xxxx",
   },
   proxyId: 395935,
-})
+});
 
 const session = await commerce.accounts.open(account.id, {
   force: true,
-})
+});
 
-await commerce.accounts.close(account.id)
+await commerce.accounts.close(account.id);
 ```
 
 ## Parameter Style
@@ -264,23 +264,24 @@ The SDK must use business naming and hide backend snake_case.
 
 ```ts
 type Pagination = {
-  page?: number
-  pageSize?: number
-}
+  page?: number;
+  pageSize?: number;
+};
 
 type Sort = {
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-}
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
 
-type ProxyListParams = Pagination & Sort & {
-  source?: 'user' | 'store' | 'all'
-  type?: 'available' | 'all'
-  bindStatus?: 'bound' | 'unbound' | 'all'
-  autoRenew?: boolean
-  country?: string
-  checkStatus?: 'passed' | 'failed' | 'unknown'
-}
+type ProxyListParams = Pagination &
+  Sort & {
+    source?: "user" | "store" | "all";
+    type?: "available" | "all";
+    bindStatus?: "bound" | "unbound" | "all";
+    autoRenew?: boolean;
+    country?: string;
+    checkStatus?: "passed" | "failed" | "unknown";
+  };
 ```
 
 Mappings to raw API parameters:

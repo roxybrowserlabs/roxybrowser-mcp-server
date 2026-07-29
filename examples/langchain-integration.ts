@@ -6,7 +6,7 @@
  * an in-memory transport channel.
  *
  * Dependencies (install in your own project):
- *   npm install @langchain/mcp-adapters @langchain/core @langchain/langgraph @langchain/anthropic @modelcontextprotocol/sdk
+ *   pnpm add @langchain/mcp-adapters @langchain/core @langchain/langgraph @langchain/anthropic @modelcontextprotocol/sdk
  *
  * Environment variables:
  *   ROXY_API_KEY     - Required. Your RoxyBrowser API key.
@@ -15,11 +15,11 @@
  *   ANTHROPIC_API_KEY - Required for the example agent below.
  */
 
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { loadMcpTools } from '@langchain/mcp-adapters'
-import type { StructuredToolInterface } from '@langchain/core/tools'
-import { createRoxyBrowserMcpServer } from '../src/index.js'
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { loadMcpTools } from "@langchain/mcp-adapters";
+import type { StructuredToolInterface } from "@langchain/core/tools";
+import { createRoxyBrowserMcpServer } from "../src/index.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Core helper: returns all Roxy tools as LangChain StructuredTool instances.
@@ -27,59 +27,62 @@ import { createRoxyBrowserMcpServer } from '../src/index.js'
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getRoxyLangChainTools(): Promise<StructuredToolInterface[]> {
   // Both ends of the in-memory channel — no sockets, no child process.
-  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 
   // Start the browser-mode Roxy MCP server attached to the server-side transport.
   const roxyServer = createRoxyBrowserMcpServer({
     roxy: {
       apiKey: process.env.ROXY_API_KEY,
       apiHost: process.env.ROXY_API_HOST,
-      workspaceId: process.env.ROXY_WORKSPACE_ID ? Number(process.env.ROXY_WORKSPACE_ID) : undefined,
+      workspaceId: process.env.ROXY_WORKSPACE_ID
+        ? Number(process.env.ROXY_WORKSPACE_ID)
+        : undefined,
     },
-  })
-  await roxyServer.connect(serverTransport)
+  });
+  await roxyServer.connect(serverTransport);
 
   // Connect the MCP client to the other end.
   const mcpClient = new Client(
-    { name: 'roxy-langchain-client', version: '1.0.0' },
+    { name: "roxy-langchain-client", version: "1.0.0" },
     { capabilities: { tools: {} } },
-  )
-  await mcpClient.connect(clientTransport)
+  );
+  await mcpClient.connect(clientTransport);
 
   // Convert all MCP tool definitions → LangChain StructuredTool[].
   // loadMcpTools handles JSON-Schema → Zod conversion automatically.
-  const tools = await loadMcpTools('roxybrowser', mcpClient)
-  return tools
+  const tools = await loadMcpTools("roxybrowser", mcpClient);
+  return tools;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Example agent (requires @langchain/langgraph and @langchain/anthropic).
-// Run:  npx tsx examples/langchain-integration.ts
+// Run:  pnpm dlx tsx examples/langchain-integration.ts
 // ─────────────────────────────────────────────────────────────────────────────
 async function main() {
-  const { ChatAnthropic } = await import('@langchain/anthropic')
-  const { createReactAgent } = await import('@langchain/langgraph/prebuilt')
-  const { HumanMessage } = await import('@langchain/core/messages')
+  const { ChatAnthropic } = await import("@langchain/anthropic");
+  const { createReactAgent } = await import("@langchain/langgraph/prebuilt");
+  const { HumanMessage } = await import("@langchain/core/messages");
 
-  const tools = await getRoxyLangChainTools()
-  console.log(`Loaded ${tools.length} Roxy tools:`, tools.map(t => t.name).join(', '))
+  const tools = await getRoxyLangChainTools();
+  console.log(`Loaded ${tools.length} Roxy tools:`, tools.map((t) => t.name).join(", "));
 
   const agent = createReactAgent({
-    llm: new ChatAnthropic({ model: 'claude-opus-4-6' }),
+    llm: new ChatAnthropic({ model: "claude-opus-4-6" }),
     tools,
-  })
+  });
 
   const result = await agent.invoke({
-    messages: [new HumanMessage('帮我列出当前所有 profile，每个显示名称和 id')],
-  })
+    messages: [new HumanMessage("帮我列出当前所有 profile，每个显示名称和 id")],
+  });
 
-  const last = result.messages.at(-1)
-  console.log('\nAgent reply:\n', last?.content)
+  const last = result.messages.at(-1);
+  console.log("\nAgent reply:\n", last?.content);
 }
 
 // Only run when executed directly (not when imported as a module).
-const isMain = process.argv[1]?.endsWith('langchain-integration.ts')
-  || process.argv[1]?.endsWith('langchain-integration.js')
+const isMain =
+  process.argv[1]?.endsWith("langchain-integration.ts") ||
+  process.argv[1]?.endsWith("langchain-integration.js");
 if (isMain) {
-  main().catch(console.error)
+  main().catch(console.error);
 }

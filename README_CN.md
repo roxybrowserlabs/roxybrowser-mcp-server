@@ -7,7 +7,7 @@ RoxyBrowser OpenAPI 3.0 是一次破坏性重写。新的结构把底层 RoxyBro
 ## 安装
 
 ```bash
-npm install @roxybrowser/openapi
+pnpm add @roxybrowser/openapi
 ```
 
 ## CLI 使用
@@ -38,53 +38,53 @@ roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 浏览器产品 SDK：
 
 ```ts
-import { RoxyBrowserClient } from '@roxybrowser/openapi'
+import { RoxyBrowserClient } from "@roxybrowser/openapi";
 
 const roxy = new RoxyBrowserClient({
-  apiKey: 'YOUR_API_KEY',
-  apiHost: 'http://127.0.0.1:50000',
+  apiKey: "YOUR_API_KEY",
+  apiHost: "http://127.0.0.1:50000",
   workspaceId: 19744,
-})
+});
 
-const profiles = await roxy.profiles.list({ page: 1, pageSize: 20 })
-const opened = await roxy.profiles.open(profiles.rows[0].id, { force: true })
+const profiles = await roxy.profiles.list({ page: 1, pageSize: 20 });
+const opened = await roxy.profiles.open(profiles.rows[0].id, { force: true });
 ```
 
 电商产品 SDK：
 
 ```ts
-import { RoxyCommerceClient } from '@roxybrowser/openapi'
+import { RoxyCommerceClient } from "@roxybrowser/openapi";
 
 const commerce = new RoxyCommerceClient({
-  apiKey: 'YOUR_API_KEY',
+  apiKey: "YOUR_API_KEY",
   workspaceId: 19744,
-})
+});
 
-const accounts = await commerce.accounts.list({ keyword: 'Amazon' })
-await commerce.accounts.open(accounts.rows[0].id)
+const accounts = await commerce.accounts.list({ keyword: "Amazon" });
+await commerce.accounts.open(accounts.rows[0].id);
 ```
 
 如果需要直接调用接近后端接口形态的能力，可以使用低层 `RoxyApiClient`：
 
 ```ts
-import { RoxyApiClient } from '@roxybrowser/openapi'
+import { RoxyApiClient } from "@roxybrowser/openapi";
 
-const api = new RoxyApiClient({ apiKey: 'YOUR_API_KEY', workspaceId: 19744 })
-const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 })
+const api = new RoxyApiClient({ apiKey: "YOUR_API_KEY", workspaceId: 19744 });
+const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 ```
 
 ## 嵌入式 MCP 使用
 
 ```ts
-import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from '@roxybrowser/openapi'
+import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
 
 const browserServer = createRoxyBrowserMcpServer({
-  roxy: { apiKey: 'YOUR_API_KEY', workspaceId: 19744 },
-})
+  roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
+});
 
 const commerceServer = createRoxyCommerceMcpServer({
-  roxy: { apiKey: 'YOUR_API_KEY', workspaceId: 19744 },
-})
+  roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
+});
 ```
 
 ## 对外 MCP 工具名
@@ -162,10 +162,11 @@ const commerceServer = createRoxyCommerceMcpServer({
 ## 开发
 
 ```bash
-npm install
-npm run build
-npm test
-npm run coverage
+pnpm install
+pnpm check
+pnpm build
+pnpm test
+pnpm coverage
 ```
 
-`npm run coverage` 会先构建，再运行 3.0 单元测试，并强制 API、SDK、领域层和 MCP 层的行覆盖率、分支覆盖率、函数覆盖率都达到 90%。
+Vite+ 统一管理格式化、lint、类型检查、测试、覆盖率、任务执行和库打包。`pnpm coverage` 会先构建，再运行 3.0 单元测试，并强制 API、SDK、领域层和 MCP 层的行覆盖率、分支覆盖率、函数覆盖率都达到 90%。

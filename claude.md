@@ -16,14 +16,14 @@ Keep changes inside the rewritten 3.0 layers. Do not introduce parallel compatib
 ## Development Commands
 
 ```bash
-npm install
-npm run build
-npm test
-npm run coverage
-npm run clean
+pnpm install
+pnpm build
+pnpm test
+pnpm coverage
+pnpm clean
 ```
 
-`npm run coverage` builds the package, runs the 3.0 unit tests, and enforces 90% coverage for lines, branches, and functions across `lib/api`, `lib/sdk`, `lib/domains`, and `lib/mcp`.
+`pnpm coverage` builds the package, runs the 3.0 unit tests, and enforces 90% coverage for lines, branches, and functions across `lib/api`, `lib/sdk`, `lib/domains`, and `lib/mcp`.
 
 ## Runtime Requirements
 
@@ -119,15 +119,15 @@ Only `src/api` should contain raw endpoint paths such as `/browser/open` or `/pr
 Use `RoxyApiClient` for raw RoxyBrowser HTTP operations:
 
 ```ts
-import { RoxyApiClient } from '@roxybrowser/openapi'
+import { RoxyApiClient } from "@roxybrowser/openapi";
 
 const api = new RoxyApiClient({
-  apiKey: 'YOUR_API_KEY',
+  apiKey: "YOUR_API_KEY",
   workspaceId: 19744,
-})
+});
 
-await api.browser.open({ dirId: 'profile-1' })
-await api.proxy.listMerged({ page_index: 1, page_size: 20 })
+await api.browser.open({ dirId: "profile-1" });
+await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 ```
 
 `workspaceId` is configured once on the client and injected into workspace-scoped requests by `withDefaultWorkspace`.
@@ -137,12 +137,12 @@ await api.proxy.listMerged({ page_index: 1, page_size: 20 })
 Use `RoxyBrowserClient` for normal browser-product workflows:
 
 ```ts
-const roxy = new RoxyBrowserClient({ apiKey, workspaceId })
+const roxy = new RoxyBrowserClient({ apiKey, workspaceId });
 
-await roxy.profiles.list()
-await roxy.profiles.open('profile-1')
-await roxy.proxies.list({ source: 'all' })
-await roxy.platformAccounts.list()
+await roxy.profiles.list();
+await roxy.profiles.open("profile-1");
+await roxy.proxies.list({ source: "all" });
+await roxy.platformAccounts.list();
 ```
 
 ## Ecommerce SDK
@@ -150,10 +150,10 @@ await roxy.platformAccounts.list()
 Use `RoxyCommerceClient` for ecommerce-product workflows. Ecommerce accounts are backed by browser profile endpoints internally.
 
 ```ts
-const commerce = new RoxyCommerceClient({ apiKey, workspaceId })
+const commerce = new RoxyCommerceClient({ apiKey, workspaceId });
 
-await commerce.accounts.list({ keyword: 'Amazon' })
-await commerce.accounts.open('account-1')
+await commerce.accounts.list({ keyword: "Amazon" });
+await commerce.accounts.open("account-1");
 ```
 
 ## MCP Presets
@@ -161,13 +161,13 @@ await commerce.accounts.open('account-1')
 Browser mode:
 
 ```ts
-import { createRoxyBrowserMcpServer } from '@roxybrowser/openapi'
+import { createRoxyBrowserMcpServer } from "@roxybrowser/openapi";
 ```
 
 Commerce mode:
 
 ```ts
-import { createRoxyCommerceMcpServer } from '@roxybrowser/openapi'
+import { createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
 ```
 
 Each MCP tool definition includes:
@@ -187,4 +187,4 @@ Add tests beside the rewritten layer they cover:
 - `src/domains/**/*.test.mjs`
 - `src/mcp/**/*.test.mjs`
 
-Tests should import from `lib` after `npm run build`, matching how consumers use the package.
+Tests should import from `lib` after `pnpm build`, matching how consumers use the package.

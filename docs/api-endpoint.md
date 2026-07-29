@@ -5,11 +5,10 @@ This documentation reflects the local API of the latest RoxyBrowser client. Endp
 :::
 
 ## Browser Health Check
+
 ### Health Check
 
- <b style="font-size: 18px">GET /health</b>
-
-
+<b style="font-size: 18px">GET /health</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
@@ -19,8 +18,6 @@ None
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
-
-
 ```Json
 {
     "code": 0,         // Status code, 0: Success, 500: Failure, type: int
@@ -28,22 +25,18 @@ None
 }
 ```
 
-| Field Name | Field Type | Description |
-| ---------------- | ------ | ---------------- |
-| code | int | Status code, 0: Success, 500: Failure |
-| msg | string | Response message |
-
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: Success, 500: Failure |
+| msg        | string     | Response message                      |
 
 ## Team Project API
+
 ### Get Team Project List
 
 <b style="font-size: 18px">GET /browser/workspace</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -52,14 +45,12 @@ None
 }
 ```
 
-| Parameter   | Required | Type | Default | Description |
-| ----------- | -------- | ---- | ------- | ----------- |
-| page_index  | No       | int  | 1       | Page index  |
-| page_size   | No       | int  | 15      | Page size   |
+| Parameter  | Required | Type | Default | Description |
+| ---------- | -------- | ---- | ------- | ----------- |
+| page_index | No       | int  | 1       | Page index  |
+| page_size  | No       | int  | 15      | Page size   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
-
-
 
 ```Json
 {
@@ -83,18 +74,16 @@ None
 }
 ```
 
-
-
-| Field Name | Field Type | Description |
-| --------------- | ------ | ---------------- |
-| code | int | Status code, 0: Success, 500: Failed |
-| total | int | Total count |
-| id | int | Team ID |
-| workspaceName | string | Team name |
-| project_details | List | Project details |
-| projectId | int | Project ID |
-| projectName | string | Project name |
-| msg | string | Response message |
+| Field Name      | Field Type | Description                          |
+| --------------- | ---------- | ------------------------------------ |
+| code            | int        | Status code, 0: Success, 500: Failed |
+| total           | int        | Total count                          |
+| id              | int        | Team ID                              |
+| workspaceName   | string     | Team name                            |
+| project_details | List       | Project details                      |
+| projectId       | int        | Project ID                           |
+| projectName     | string     | Project name                         |
+| msg             | string     | Response message                     |
 
 ### Get Account List
 
@@ -111,16 +100,14 @@ None
 }
 ```
 
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">Yes</span> | int | -- | Team ID |
-| accountId | No | int | 1 | Account library ID |
-| page_index | No | int | 1 | Page index |
-| page_size | No | int | 15 | Page size |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description        |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ------------------ |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID            |
+| accountId      | No                                         | int            | 1             | Account library ID |
+| page_index     | No                                         | int            | 1             | Page index         |
+| page_size      | No                                         | int            | 15            | Page size          |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
-
-
 
 ```Json
 {
@@ -146,22 +133,21 @@ None
 }
 ```
 
-| Field Name       | Data Type | Description                              |
-| ---------------- | --------- | ---------------------------------------- |
-| code             | int       | Status code, 0: success, 500: failed     |
-| msg              | string    | Response message                         |
-| total            | int       | Total count                             |
-| id               | int       | Account ID                              |
-| platformUrl      | string    | Platform URL                            |
-| platformUserName | string    | Platform username                       |
-| platformPassword | string    | Platform password                       |
-| platformEfa      | string    | Platform EFA                            |
-| platformCookies  | object    | Platform cookies                        |
-| platformName     | string    | Platform name                           |
-| platformRemarks  | string    | Platform remarks                        |
-| createTime       | string    | Creation time                           |
-| updateTime       | string    | Update time                             |
-
+| Field Name       | Data Type | Description                          |
+| ---------------- | --------- | ------------------------------------ |
+| code             | int       | Status code, 0: success, 500: failed |
+| msg              | string    | Response message                     |
+| total            | int       | Total count                          |
+| id               | int       | Account ID                           |
+| platformUrl      | string    | Platform URL                         |
+| platformUserName | string    | Platform username                    |
+| platformPassword | string    | Platform password                    |
+| platformEfa      | string    | Platform EFA                         |
+| platformCookies  | object    | Platform cookies                     |
+| platformName     | string    | Platform name                        |
+| platformRemarks  | string    | Platform remarks                     |
+| createTime       | string    | Creation time                        |
+| updateTime       | string    | Update time                          |
 
 ### Get Label List
 
@@ -169,17 +155,15 @@ None
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
-
-
 ```Json
 {
     "workspaceId": 1       // Team ID, type: int, required, obtainable through [/browser/workspace] interface
 }
 ```
 
-| Parameter Name | Required | Type | Default | Description |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">Yes</span> | int  | --  | Team ID |
+| Parameter Name | Required                                   | Type | Default | Description |
+| -------------- | ------------------------------------------ | ---- | ------- | ----------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int  | --      | Team ID     |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -197,25 +181,21 @@ None
 }
 ```
 
-| Field Name | Field Type | Description |
-| ---------------- | ------ | ---------------- |
-| code | int | Status code, 0: success, 500: failure |
-| msg | string | Response message |
-| id | int | Tag ID |
-| color | string | Tag color |
-| name | string | Tag name |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
+| id         | int        | Tag ID                                |
+| color      | string     | Tag color                             |
+| name       | string     | Tag name                              |
 
 ## Browser Profile Interface
-### Get Browser Profile List 
+
+### Get Browser Profile List
 
 <b style="font-size: 18px">GET /browser/list_v3</b>
 
-
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -231,21 +211,19 @@ None
 }
 ```
 
-
-| Parameter Name        | Required                                      | Parameter Type   | Default Value | Description      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| workspaceId | <span class="parameter-require">Yes</span> | int    | --  | Team ID  |
-| dirIds      | No                                        | string | --  | Browser Profile ID |
-| windowName  | No                                        | string | --  | Browser Profile name |
-| sortNums    | No                                        | string | --  | Profile number |
-| os          | No                                        | string | --  | Operating system |
-| projectIds  | No                                        | string | --  | Project ID |
-| windowRemark| No                                        | string | --  | Profile remark |
-| page_index  | No                                        | int    | 1   | Page index    |
-| page_size   | No                                        | int    | 15  | Page size    |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description          |
+| -------------- | ------------------------------------------ | -------------- | ------------- | -------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID              |
+| dirIds         | No                                         | string         | --            | Browser Profile ID   |
+| windowName     | No                                         | string         | --            | Browser Profile name |
+| sortNums       | No                                         | string         | --            | Profile number       |
+| os             | No                                         | string         | --            | Operating system     |
+| projectIds     | No                                         | string         | --            | Project ID           |
+| windowRemark   | No                                         | string         | --            | Profile remark       |
+| page_index     | No                                         | int            | 1             | Page index           |
+| page_size      | No                                         | int            | 15            | Page size            |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
 
 ```Json
 {
@@ -255,12 +233,12 @@ None
         "rows": [
             {
                 "dirId": "dc1e73d4dd954a",                                       // Browser Profile ID, str type
-                "windowSortNum": 99,                                             // Profile number, int type  
+                "windowSortNum": 99,                                             // Profile number, int type
                 "windowName": "Roxytest",                                        // Profile name, str type
                 "coreVersion": "117",                                            // Core version, enum values: 135，133，130，125，117，109, str type
                 "coreType": "Chrome",                                            // Browser core type, Chrome/Firefox, str type
                 "os": "Windows",                                                 // Operating system, enum values: Windows、macOS、Android、IOS, str type
-                "osVersion": "11",                                               // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7, enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type   
+                "osVersion": "11",                                               // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7, enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type
                 "windowRemark": "Roxytest",                                      // Profile remarks, str type
                 "createTime": "2024-01-09 12:12:12",                             // Creation time, str type
                 "updateTime": "2024-01-09 12:12:12",                             // Update time, str type
@@ -272,35 +250,25 @@ None
 }
 ```
 
+| Field Name<div style="min-width: 250px"></div> | Field Type<div style="min-width: 150px"></div> | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dirId                                          | string                                         | Browser Profile ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| windowSortNum                                  | int                                            | Profile number                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| windowName                                     | string                                         | Profile name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| coreVersion                                    | string                                         | Core version, enum values: 135，133，130，125，117，109                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| coreType                                       | string                                         | Browser core type, Chrome/Firefox                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| os                                             | string                                         | Operating system, enum values: Windows, macOS, Linux, Android, IOS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| osVersion                                      | string                                         | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
+| windowRemark                                   | string                                         | Profile remark                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| createTime                                     | string                                         | Profile creation time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| updateTime                                     | string                                         | Profile modification time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| userName                                       | string                                         | Username of the Profile owner, i.e., account                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
-
-
-| Field Name<div style="min-width: 250px"></div> | Field Type<div style="min-width: 150px"></div> | Description                                                     |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| dirId                                    | string                                   | Browser Profile ID                                                |
-| windowSortNum                            | int                                      | Profile number                                                   |
-| windowName                               | string                                   | Profile name                                                   |
-| coreVersion                              | string                                   | Core version, enum values: 135，133，130，125，117，109                                   |
-| coreType                                 | string                                   | Browser core type, Chrome/Firefox                                   |
-| os                                       | string                                   | Operating system, enum values: Windows, macOS, Linux, Android, IOS                           |
-| osVersion                                | string                                   | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
-| windowRemark                             | string                                   | Profile remark                                                   |
-| createTime                               | string                                   | Profile creation time                                                 |
-| updateTime                               | string                                   | Profile modification time                                                 |
-| userName                                 | string                                   | Username of the Profile owner, i.e., account                                         |
-
-
- 
 ### Get Browser Profile Detail
 
 <b style="font-size: 18px">GET /browser/detail</b>
 
-
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -309,14 +277,12 @@ None
 }
 ```
 
-
-| Parameter Name        | Required                                      | Parameter Type   | Default Value | Description      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| workspaceId | <span class="parameter-require">Yes</span> | int    | --  | Team ID  |
-| dirId      | <span class="parameter-require">Yes</span> | string | --  | Browser Profile ID | 
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description        |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ------------------ |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID            |
+| dirId          | <span class="parameter-require">Yes</span> | string         | --            | Browser Profile ID |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
 
 ```Json
 {
@@ -326,16 +292,16 @@ None
         "rows": [
             {
                 "dirId": "dc1e73d4dd954a",                                       // Browser Profile ID, str type
-                "windowSortNum": 99,                                             // Profile number, int type  
+                "windowSortNum": 99,                                             // Profile number, int type
                 "windowName": "Roxytest",                                        // Profile name, str type
                 "coreVersion": "117",                                            // Core version, enum values: 135，133，130，125，117，109, str type
                 "os": "Windows",                                                 // Operating system, enum values: Windows、macOS、Linux、Android、IOS, str type
-                "osVersion": "11",                                               // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for Linux: ALL; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type   
+                "osVersion": "11",                                               // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for Linux: ALL; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type
                 "userAgent": "Mozilla/5.0 (Windows NT 10.0)",                    // User Agent, str type
                 "cookie": [
                     {
                         "name": "1",
-                        "value": "2", 
+                        "value": "2",
                         "domain": "3"
                     }
                 ],                                                               // cookie, List type
@@ -392,92 +358,81 @@ None
 }
 ```
 
-
-
-
-| Field Name<div style="min-width: 250px"></div> | Field Type<div style="min-width: 150px"></div> | Description                                                     |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| dirId                                    | string                                   | Browser Profile ID                                                |
-| windowSortNum                            | int                                      | Profile number                                                   |
-| windowName                               | string                                   | Profile name                                                   |
-| coreVersion                              | string                                   | Core version, enum values: 135，133，130，125，117，109                                   |
-| os                                       | string                                   | Operating system, enum values: Windows, macOS, Linux, Android, IOS                           |
-| osVersion                                | string                                   | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
-| userAgent                                | string                                   | User Agent                                             |
-| cookie                                   | List                                     | Cookie                                                 |
-| searchEngine                             | string                                   | Search engine, enum values: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo |
-| defaultOpenUrl                           | List                                     | Stored browser tabs                                               |
-| windowRemark                             | string                                   | Profile remark                                                   |
-| projectId                                | int                                      | Project ID                                                   |
-| projectName                              | string                                   | Project name                                                   |
-| openStatus                               | boolean                                  | Whether opened within the team, enum values: true: opened, false: not opened                     |
-| createTime                               | string                                   | Profile creation time                                                 |
-| updateTime                               | string                                   | Profile modification time                                                 |
-| userName                                 | string                                   | Username of the Profile owner, i.e., account                                         |
-| openTime                                 | string                                   | Last open time of the Profile                                                 |
-| closeTime                                | string                                   | Last close time of the Profile                                                 |
-| isOften                                  | boolean                                  | Whether bookmarked, true: yes, false: no                                                   |
-| windowPlatformList                       | List                                     | See [windowPlatformList](#window-platform-list)          |
-| statusInfo                               | object                                   | Detailed information when the Profile is opened, see [statusInfo](#status-info)                |
-| proxyInfo                                | object                                   | See [proxyInfo](#proxy-info)                             |                         |
-| labelInfo                                | object                                   | See [labelInfo](#label-info)                             |                         |
-
+| Field Name<div style="min-width: 250px"></div> | Field Type<div style="min-width: 150px"></div> | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dirId                                          | string                                         | Browser Profile ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| windowSortNum                                  | int                                            | Profile number                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| windowName                                     | string                                         | Profile name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| coreVersion                                    | string                                         | Core version, enum values: 135，133，130，125，117，109                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| os                                             | string                                         | Operating system, enum values: Windows, macOS, Linux, Android, IOS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| osVersion                                      | string                                         | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
+| userAgent                                      | string                                         | User Agent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| cookie                                         | List                                           | Cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| searchEngine                                   | string                                         | Search engine, enum values: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| defaultOpenUrl                                 | List                                           | Stored browser tabs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| windowRemark                                   | string                                         | Profile remark                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| projectId                                      | int                                            | Project ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| projectName                                    | string                                         | Project name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| openStatus                                     | boolean                                        | Whether opened within the team, enum values: true: opened, false: not opened                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| createTime                                     | string                                         | Profile creation time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| updateTime                                     | string                                         | Profile modification time                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| userName                                       | string                                         | Username of the Profile owner, i.e., account                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| openTime                                       | string                                         | Last open time of the Profile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| closeTime                                      | string                                         | Last close time of the Profile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| isOften                                        | boolean                                        | Whether bookmarked, true: yes, false: no                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowPlatformList                             | List                                           | See [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| statusInfo                                     | object                                         | Detailed information when the Profile is opened, see [statusInfo](#status-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| proxyInfo                                      | object                                         | See [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |     |
+| labelInfo                                      | object                                         | See [labelInfo](#label-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |     |
 
 <a id="window-platform-list">windowPlatformList:</a>
 
-| Parameter Name             | Parameter Type   | Description      |
-| ---------------- | ------ | ------- |
-| platformUrl      | string | Platform Account URL |
-| platformUserName | string | Platform account    |
-| platformPassword | string | Platform password    |
-| platformEfa      | string | EFA     |
-| platformRemarks  | string | Platform remark    |
+| Parameter Name   | Parameter Type | Description          |
+| ---------------- | -------------- | -------------------- |
+| platformUrl      | string         | Platform Account URL |
+| platformUserName | string         | Platform account     |
+| platformPassword | string         | Platform password    |
+| platformEfa      | string         | EFA                  |
+| platformRemarks  | string         | Platform remark      |
 
 <a id="status-info">statusInfo:</a>
 
-| Field Name         | Field Type   | Description     |
-| ------------ | ------ | ------ |
-| openUserName | string | Username of the opener |
-| openTime     | string | Open time   |
+| Field Name   | Field Type | Description            |
+| ------------ | ---------- | ---------------------- |
+| openUserName | string     | Username of the opener |
+| openTime     | string     | Open time              |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| Field Name          | Field Type   | Description                                         |
-| ------------- | ------ | ------------------------------------------ |
-| moduleId      | int    | Proxy ID, 0 means not using |
-| proxyMethod   | string | Proxy method, enum values: custom (manual), choose (select proxy IP) |
-| proxyCategory | string | Proxy type, enum values: noproxy, HTTP, HTTPS, SOCKS5      |
-| ipType        | string | Network protocol, enum values: IPV4, IPV6                       |
-| protocol      | string | Proxy protocol, enum values: HTTP, HTTPS, SOCKS5               |
-| host          | string | Proxy host                                       |
-| port          | string | Proxy port                                       |
-| proxyUserName | string | Proxy account                                       |
-| proxyPassword | string | Proxy password                                       |
-| refreshUrl    | string | Refresh URL                                      |
-| lastIp        | string | Exit IP                                       |
-| lastCountry   | string | Exit country                                       |
-| checkChannel  | string | IP query channel                                       |
-
+| Field Name    | Field Type | Description                                                          |
+| ------------- | ---------- | -------------------------------------------------------------------- |
+| moduleId      | int        | Proxy ID, 0 means not using                                          |
+| proxyMethod   | string     | Proxy method, enum values: custom (manual), choose (select proxy IP) |
+| proxyCategory | string     | Proxy type, enum values: noproxy, HTTP, HTTPS, SOCKS5                |
+| ipType        | string     | Network protocol, enum values: IPV4, IPV6                            |
+| protocol      | string     | Proxy protocol, enum values: HTTP, HTTPS, SOCKS5                     |
+| host          | string     | Proxy host                                                           |
+| port          | string     | Proxy port                                                           |
+| proxyUserName | string     | Proxy account                                                        |
+| proxyPassword | string     | Proxy password                                                       |
+| refreshUrl    | string     | Refresh URL                                                          |
+| lastIp        | string     | Exit IP                                                              |
+| lastCountry   | string     | Exit country                                                         |
+| checkChannel  | string     | IP query channel                                                     |
 
 <a id="label-info">labelInfo:</a>
 
-| Field Name          | Field Type   | Description                                         |
-| ------------- | ------ | ------------------------------------------ |
-| labelId       | int    | Tag ID                                         |
-| labelName     | string | Tag name                                       |
-| labelColor    | string | Tag color                                       |
+| Field Name | Field Type | Description |
+| ---------- | ---------- | ----------- |
+| labelId    | int        | Tag ID      |
+| labelName  | string     | Tag name    |
+| labelColor | string     | Tag color   |
 
-
- 
 ### Create Browser Profile
 
 <b style="font-size: 18px">POST /browser/create</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -601,136 +556,134 @@ None
 
 ```
 
-| Parameter Name | Required<div style="min-width: 65px"></div> |  Parameter Type <div style="min-width: 120px"></div> | Default Value<div style="min-width: 120px"></div> | Description |
-|-----------------|-----------|-----------------|----------------|-------------|
-| workspaceId | <span class="parameter-require">Yes</span> | int | -- | Team ID |
-| windowName | No | string | -- | Profile name |
-| coreVersion | No | string | Latest | Core version, enum values: 135，133，130，125，117，109 |
-| coreType | No | string | Chrome | Browser core type, Chrome/Firefox |
-| os | No | string | Windows | Operating system, enum values: Windows, macOS, IOS, Android |
-| osVersion | No | string | Maximum value | Operating system version, enum values for Windows: 11, 10, 8, 7;<br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android: 14,13,12,11,10,9; enum values for IOS: 18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
-| cookie | No | List | [] | Cookie |
-| searchEngine | No | string | Google | Search engine, options include: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo
-| labelIds | No | List | -- | Tag ID list, obtained through the Tag List interface [/browser/label] |
-| defaultOpenUrl | No | List | -- | Stored browser tabs |
-| windowRemark | No | string | -- | Profile remark |
-| projectId | No | number | -- | Project ID |
-| windowPlatformList | No | List | -- | See [windowPlatformList](#window-platform-list) |
-| proxyInfo | No | object | -- | See [proxyInfo](#proxy-info) | 
-| fingerInfo | No | object | -- | See [fingerInfo](#finger-info) | 
+| Parameter Name     | Required<div style="min-width: 65px"></div> | Parameter Type <div style="min-width: 120px"></div> | Default Value<div style="min-width: 120px"></div> | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| workspaceId        | <span class="parameter-require">Yes</span>  | int                                                 | --                                                | Team ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| windowName         | No                                          | string                                              | --                                                | Profile name                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| coreVersion        | No                                          | string                                              | Latest                                            | Core version, enum values: 135，133，130，125，117，109                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| coreType           | No                                          | string                                              | Chrome                                            | Browser core type, Chrome/Firefox                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| os                 | No                                          | string                                              | Windows                                           | Operating system, enum values: Windows, macOS, IOS, Android                                                                                                                                                                                                                                                                                                                                                                                                              |
+| osVersion          | No                                          | string                                              | Maximum value                                     | Operating system version, enum values for Windows: 11, 10, 8, 7;<br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android: 14,13,12,11,10,9; enum values for IOS: 18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
+| cookie             | No                                          | List                                                | []                                                | Cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| searchEngine       | No                                          | string                                              | Google                                            | Search engine, options include: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                                        |
+| labelIds           | No                                          | List                                                | --                                                | Tag ID list, obtained through the Tag List interface [/browser/label]                                                                                                                                                                                                                                                                                                                                                                                                    |
+| defaultOpenUrl     | No                                          | List                                                | --                                                | Stored browser tabs                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| windowRemark       | No                                          | string                                              | --                                                | Profile remark                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| projectId          | No                                          | number                                              | --                                                | Project ID                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowPlatformList | No                                          | List                                                | --                                                | See [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| proxyInfo          | No                                          | object                                              | --                                                | See [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| fingerInfo         | No                                          | object                                              | --                                                | See [fingerInfo](#finger-info)                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 <a id="window-platform-list">windowPlatformList:</a>
 
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| --------------- | --- | ------------ | --- | ----------- |
-| platformUrl | No | string | -- | Platform Account URL |
-| platformUserName | No | string | -- | Platform Account |
-| platformPassword | No | string | -- | Platform Password |
-| platformEfa | No | string | -- | efa |
-| platformRemarks | No | string | -- | Platform Remarks |
-
+| Parameter Name   | Required | Parameter Type | Default Value | Description          |
+| ---------------- | -------- | -------------- | ------------- | -------------------- |
+| platformUrl      | No       | string         | --            | Platform Account URL |
+| platformUserName | No       | string         | --            | Platform Account     |
+| platformPassword | No       | string         | --            | Platform Password    |
+| platformEfa      | No       | string         | --            | efa                  |
+| platformRemarks  | No       | string         | --            | Platform Remarks     |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| ------------- | --- | ------------ | ------- | ------------------------------------- |
-| moduleId | No | int | 0 | Proxy ID, 0 means not using, obtained through proxy list API [/proxy/list] |
-| proxyMethod | No | string | custom | Proxy Method, Enum: custom (manual), choose (select proxy IP) |
-| proxyCategory | No | string | noproxy | Proxies Category, Enum: noproxy, HTTP, HTTPS, SOCKS5, SSH |
-| ipType | No | string | IPV4 | Network Protocol, Enum: IPV4, IPV6 |
-| host | No | string | -- | Proxies Host |
-| port | No | string | -- | Proxies Port |
-| proxyUserName | No | string | -- | Proxies Account |
-| proxyPassword | No | string | -- | Proxies Password |
-| refreshUrl | No | string | -- | Refresh URL |
-| checkChannel | No | string | -- | IP Query Channel |
-
+| Parameter Name | Required | Parameter Type | Default Value | Description                                                                |
+| -------------- | -------- | -------------- | ------------- | -------------------------------------------------------------------------- |
+| moduleId       | No       | int            | 0             | Proxy ID, 0 means not using, obtained through proxy list API [/proxy/list] |
+| proxyMethod    | No       | string         | custom        | Proxy Method, Enum: custom (manual), choose (select proxy IP)              |
+| proxyCategory  | No       | string         | noproxy       | Proxies Category, Enum: noproxy, HTTP, HTTPS, SOCKS5, SSH                  |
+| ipType         | No       | string         | IPV4          | Network Protocol, Enum: IPV4, IPV6                                         |
+| host           | No       | string         | --            | Proxies Host                                                               |
+| port           | No       | string         | --            | Proxies Port                                                               |
+| proxyUserName  | No       | string         | --            | Proxies Account                                                            |
+| proxyPassword  | No       | string         | --            | Proxies Password                                                           |
+| refreshUrl     | No       | string         | --            | Refresh URL                                                                |
+| checkChannel   | No       | string         | --            | IP Query Channel                                                           |
 
 <a id="finger-info">fingerInfo:</a>
 
-| Parameter Name | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value<div style="min-width: 50px"></div> | Description |
-| ----------------------- | -------------------------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------------------------------- |
-| isLanguageBaseIp | No | boolean | true | Browser Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| language | No | string | -- | Custom Browser Language Value, str type, Optional, See [Appendix-Language List](#api_language) |
-| isDisplayLanguageBaseIp | No | boolean | true | Display Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| displayLanguage | No | string | -- | Custom Display Language Value, str type, Optional, See [Appendix-Display Language List](#api_dispalylanguage) |
-| isTimeZone | No | boolean | true | Time Zone Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| timeZone | No | string | -- | Custom Time Zone Value, str type, Optional, See [Appendix-Time Zone List](#api_timezone) |
-| position | No | int | 1 | Geolocation Prompt Type, Ask: 0, Allow: 1, Disable: 2 |
-| isPositionBaseIp | No | boolean | true | Geolocation Type, Follow IP: true, Custom: false |
-| longitude | No | string | -- | Longitude Value, Set when isPositionBaseIp is false |
-| latitude | No | string | -- | Latitude Value, Set when isPositionBaseIp is false |
-| precisionPos | No | string | -- | Precision Value (meters), Set when isPositionBaseIp is false |
-| forbidAudio | No | boolean | true | Disable Web Page Audio, Enable: true, Disable: false |
-| forbidImage | No | boolean | true | Disable Web Page Images, Enable: true, Disable: false |
-| forbiddenPictureSize | No | number | 0 | When forbidImage is false, setting forbiddenPictureSize = 0 will disable all image loading. |
-| forbidMedia | No | boolean | true | Disable Web Page Videos, Enable: true, Disable: false |
-| openWidth | No | string | 1000 | Profile Size, Width |
-| openHeight | No | string | 1000 | Profile Size, Height |
-| openBookmarks | No | boolean | false | Whether to enable bookmarks, true: enable, false: disable
-| positionSwitch | No | boolean | true | Window Position Switch, true: Custom, false: Full Screen |
-| windowRatioPosition| No | string| 0,0| See [windowRatioPosition](#windowRatioPosition) |
-| isDisplayName | No | boolean | false | Show Profile Name in Title Bar, Show: true, Hide: false |
-| syncBookmark | No | boolean | false | Sync Bookmarks, true: Yes, false: No |
-| syncHistory | No | boolean | false | Sync History, true: Yes, false: No |
-| syncTab | No | boolean | true | Sync Tabs, true: Yes, false: No |
-| syncCookie | No | boolean | true | Sync Cookies, true: Yes, false: No |
-| syncExtensions | No | boolean | false | Sync Extensions Data, true: Yes, false: No |
-| syncPassword | No | boolean | true | Sync Saved Passwords, true: Yes, false: No |
-| syncIndexedDb | No | boolean | false | Sync IndexedDB, true: Yes, false: No |
-| syncLocalStorage | No | boolean | false | Sync Local Storage, true: Yes, false: No |
-| clearCacheFile | No | boolean | false | Clear Cache Files on Browser Start, true: Yes, false: No |
-| clearCookie | No | boolean | false | Clear Cookies on Browser Start, true: Yes, false: No |
-| clearLocalStorage | No | boolean | false | Clear Local Storage on Browser Start, true: Yes, false: No |
-| randomFingerprint | No | boolean | false | Randomize Fingerprint on Browser Start, true: Yes, false: No |
-| forbidSavePassword | No | boolean | false | Disable Save Password Prompt, true: Yes, false: No |
-| stopOpenNet | No | boolean | false | Stop Opening Profile on Network Failure, true: Yes, false: No |
-| stopOpenIP | No | boolean | false | Stop Opening Profile on IP Change, true: Yes, false: No |
-| stopOpenPosition | No | boolean | false | Stop Opening Profile on Country/Region Change, true: Yes, false: No |
-| openWorkbench | No | int | 1 | Whether to open workbench, 1: Enable, 0: Disable, Follow software settings: 2 
-| resolutionType | No | boolean | false | Resolution, true: Custom, false: System Default |
-| resolutionX | No | string | -- | Custom Resolution Width Value, str type, See [Appendix-Resolution List](#api_relution) |
-| resolutionY | No | string | -- | Custom Resolution Height Value, str type, See [Appendix-Resolution List](#api_relution) |
-| fontType | No | boolean | false | Font Fingerprint, Random: true, Follow System: false |
-| webRTC | No | int | 2 | WebRTC, Replace: 0, Real: 1, Disable: 2 |
-| webGL | No | boolean | true | WebGL Image, Random: true, Real: false |
-| webGLInfo | No | boolean | true | WebGLInfo Switch, Custom: true, Real: false |
-| webGLManufacturer | No | string | -- | Custom WebGL Manufacturer Value when webGLInfo is Custom |
-| webGLRender | No | string | -- | Custom WebGL Renderer Value when webGLInfo is Custom |
-| webGpu | No | string | webgl | WebGpu, Match WebGL: webgl, Real: real, Disable: block |
-| canvas | No | boolean | true | Canvas, Random: true, Real: false |
-| audioContext | No | boolean | true | AudioContext Value, Random: true, Real: false |
-| speechVoices | No | boolean | true | Speech Voices, Random: true, Real: false |
-| doNotTrack | No | boolean | true | Do Not Track, true: Enable, false: Disable |
-| clientRects | No | boolean | true | ClientRects, Random: true, Real: false |
-| deviceInfo | No | boolean | true | Media Devices, Random: true, Real: false |
-| deviceNameSwitch | No | boolean | true | Device Name, Random: true, Real: false |
-| macInfo | No | boolean | true | MAC Address, Custom: true, Real: false |
-| hardwareConcurrent | No | string | -- | Hardware Concurrency |
-| deviceMemory | No | string | -- | Device Memory |
-| disableSsl | No | boolean | false | SSL Fingerprint Setting, true: Enable, false: Disable |
-| disableSslList | No | List | -- | SSL Feature Value List, List type |
-| portScanProtect | No | boolean | true | Port Scan Protection, false: Disable, true: Enable |
-| portScanList | No | string | -- | Port Scan Protection Whitelist, Comma-separated |
-| useGpu | No | boolean | true | Use GPU Acceleration Mode, true: Yes, false: No |
-| sandboxPermission | No | boolean | false | Disable Sandbox, true: Yes, false: No |
-| startupParam | No | string | -- | Browser Startup Parameters |
-| openBattery | No | boolean | false | Battery API simulation master switch |
-| openCharging | No | boolean | false | Simulated charging state when battery simulation is enabled |
-| chargingTime | No | string | -- | Seconds until full charge (numeric string, no unit suffix) |
-| dischargingTime | No | string | -- | Seconds until empty (numeric string, no unit suffix) |
-| level | No | string | -- | Battery level, 0–1 |
-| openNetwork | No | boolean | false | Network Information API simulation master switch |
-| networkType | No | string | -- | Connection type: wifi, cellular, ethernet, bluetooth, wimax, other, unknown |
-| networkSpeed | No | string | -- | Effective type: slow-2G, 2g, 3g, 4g; when `networkType` is cellular, `slow-2G` is normalized to `2G` for the engine nettype |
-| downloadSpeed | No | string | -- | Downlink speed (Mbps) |
-| maxDownloadSpeed | No | string | -- | Maximum downlink speed (Mbps) |
-| latency | No | string / number | -- | Round-trip time (ms) |
-| saveFlowMode | No | boolean | false | Save-Data / reduced data mode |
-| openBluetooth | No | boolean | false | Bluetooth simulation master switch |
-| bluetoothAdapter | No | boolean | false | Simulated Bluetooth adapter present |
-| blockDomainList | No | string | -- | Domain blocklist, multiple domains separated by \n |
-| allowDomainList | No | string | -- | Domain allowlist, multiple domains separated by \n |
+| Parameter Name          | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value<div style="min-width: 50px"></div> | Description                                                                                                                 |
+| ----------------------- | ------------------------------------------- | ------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| isLanguageBaseIp        | No                                          | boolean                                           | true                                             | Browser Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                      |
+| language                | No                                          | string                                            | --                                               | Custom Browser Language Value, str type, Optional, See [Appendix-Language List](#api_language)                              |
+| isDisplayLanguageBaseIp | No                                          | boolean                                           | true                                             | Display Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                      |
+| displayLanguage         | No                                          | string                                            | --                                               | Custom Display Language Value, str type, Optional, See [Appendix-Display Language List](#api_dispalylanguage)               |
+| isTimeZone              | No                                          | boolean                                           | true                                             | Time Zone Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                             |
+| timeZone                | No                                          | string                                            | --                                               | Custom Time Zone Value, str type, Optional, See [Appendix-Time Zone List](#api_timezone)                                    |
+| position                | No                                          | int                                               | 1                                                | Geolocation Prompt Type, Ask: 0, Allow: 1, Disable: 2                                                                       |
+| isPositionBaseIp        | No                                          | boolean                                           | true                                             | Geolocation Type, Follow IP: true, Custom: false                                                                            |
+| longitude               | No                                          | string                                            | --                                               | Longitude Value, Set when isPositionBaseIp is false                                                                         |
+| latitude                | No                                          | string                                            | --                                               | Latitude Value, Set when isPositionBaseIp is false                                                                          |
+| precisionPos            | No                                          | string                                            | --                                               | Precision Value (meters), Set when isPositionBaseIp is false                                                                |
+| forbidAudio             | No                                          | boolean                                           | true                                             | Disable Web Page Audio, Enable: true, Disable: false                                                                        |
+| forbidImage             | No                                          | boolean                                           | true                                             | Disable Web Page Images, Enable: true, Disable: false                                                                       |
+| forbiddenPictureSize    | No                                          | number                                            | 0                                                | When forbidImage is false, setting forbiddenPictureSize = 0 will disable all image loading.                                 |
+| forbidMedia             | No                                          | boolean                                           | true                                             | Disable Web Page Videos, Enable: true, Disable: false                                                                       |
+| openWidth               | No                                          | string                                            | 1000                                             | Profile Size, Width                                                                                                         |
+| openHeight              | No                                          | string                                            | 1000                                             | Profile Size, Height                                                                                                        |
+| openBookmarks           | No                                          | boolean                                           | false                                            | Whether to enable bookmarks, true: enable, false: disable                                                                   |
+| positionSwitch          | No                                          | boolean                                           | true                                             | Window Position Switch, true: Custom, false: Full Screen                                                                    |
+| windowRatioPosition     | No                                          | string                                            | 0,0                                              | See [windowRatioPosition](#windowRatioPosition)                                                                             |
+| isDisplayName           | No                                          | boolean                                           | false                                            | Show Profile Name in Title Bar, Show: true, Hide: false                                                                     |
+| syncBookmark            | No                                          | boolean                                           | false                                            | Sync Bookmarks, true: Yes, false: No                                                                                        |
+| syncHistory             | No                                          | boolean                                           | false                                            | Sync History, true: Yes, false: No                                                                                          |
+| syncTab                 | No                                          | boolean                                           | true                                             | Sync Tabs, true: Yes, false: No                                                                                             |
+| syncCookie              | No                                          | boolean                                           | true                                             | Sync Cookies, true: Yes, false: No                                                                                          |
+| syncExtensions          | No                                          | boolean                                           | false                                            | Sync Extensions Data, true: Yes, false: No                                                                                  |
+| syncPassword            | No                                          | boolean                                           | true                                             | Sync Saved Passwords, true: Yes, false: No                                                                                  |
+| syncIndexedDb           | No                                          | boolean                                           | false                                            | Sync IndexedDB, true: Yes, false: No                                                                                        |
+| syncLocalStorage        | No                                          | boolean                                           | false                                            | Sync Local Storage, true: Yes, false: No                                                                                    |
+| clearCacheFile          | No                                          | boolean                                           | false                                            | Clear Cache Files on Browser Start, true: Yes, false: No                                                                    |
+| clearCookie             | No                                          | boolean                                           | false                                            | Clear Cookies on Browser Start, true: Yes, false: No                                                                        |
+| clearLocalStorage       | No                                          | boolean                                           | false                                            | Clear Local Storage on Browser Start, true: Yes, false: No                                                                  |
+| randomFingerprint       | No                                          | boolean                                           | false                                            | Randomize Fingerprint on Browser Start, true: Yes, false: No                                                                |
+| forbidSavePassword      | No                                          | boolean                                           | false                                            | Disable Save Password Prompt, true: Yes, false: No                                                                          |
+| stopOpenNet             | No                                          | boolean                                           | false                                            | Stop Opening Profile on Network Failure, true: Yes, false: No                                                               |
+| stopOpenIP              | No                                          | boolean                                           | false                                            | Stop Opening Profile on IP Change, true: Yes, false: No                                                                     |
+| stopOpenPosition        | No                                          | boolean                                           | false                                            | Stop Opening Profile on Country/Region Change, true: Yes, false: No                                                         |
+| openWorkbench           | No                                          | int                                               | 1                                                | Whether to open workbench, 1: Enable, 0: Disable, Follow software settings: 2                                               |
+| resolutionType          | No                                          | boolean                                           | false                                            | Resolution, true: Custom, false: System Default                                                                             |
+| resolutionX             | No                                          | string                                            | --                                               | Custom Resolution Width Value, str type, See [Appendix-Resolution List](#api_relution)                                      |
+| resolutionY             | No                                          | string                                            | --                                               | Custom Resolution Height Value, str type, See [Appendix-Resolution List](#api_relution)                                     |
+| fontType                | No                                          | boolean                                           | false                                            | Font Fingerprint, Random: true, Follow System: false                                                                        |
+| webRTC                  | No                                          | int                                               | 2                                                | WebRTC, Replace: 0, Real: 1, Disable: 2                                                                                     |
+| webGL                   | No                                          | boolean                                           | true                                             | WebGL Image, Random: true, Real: false                                                                                      |
+| webGLInfo               | No                                          | boolean                                           | true                                             | WebGLInfo Switch, Custom: true, Real: false                                                                                 |
+| webGLManufacturer       | No                                          | string                                            | --                                               | Custom WebGL Manufacturer Value when webGLInfo is Custom                                                                    |
+| webGLRender             | No                                          | string                                            | --                                               | Custom WebGL Renderer Value when webGLInfo is Custom                                                                        |
+| webGpu                  | No                                          | string                                            | webgl                                            | WebGpu, Match WebGL: webgl, Real: real, Disable: block                                                                      |
+| canvas                  | No                                          | boolean                                           | true                                             | Canvas, Random: true, Real: false                                                                                           |
+| audioContext            | No                                          | boolean                                           | true                                             | AudioContext Value, Random: true, Real: false                                                                               |
+| speechVoices            | No                                          | boolean                                           | true                                             | Speech Voices, Random: true, Real: false                                                                                    |
+| doNotTrack              | No                                          | boolean                                           | true                                             | Do Not Track, true: Enable, false: Disable                                                                                  |
+| clientRects             | No                                          | boolean                                           | true                                             | ClientRects, Random: true, Real: false                                                                                      |
+| deviceInfo              | No                                          | boolean                                           | true                                             | Media Devices, Random: true, Real: false                                                                                    |
+| deviceNameSwitch        | No                                          | boolean                                           | true                                             | Device Name, Random: true, Real: false                                                                                      |
+| macInfo                 | No                                          | boolean                                           | true                                             | MAC Address, Custom: true, Real: false                                                                                      |
+| hardwareConcurrent      | No                                          | string                                            | --                                               | Hardware Concurrency                                                                                                        |
+| deviceMemory            | No                                          | string                                            | --                                               | Device Memory                                                                                                               |
+| disableSsl              | No                                          | boolean                                           | false                                            | SSL Fingerprint Setting, true: Enable, false: Disable                                                                       |
+| disableSslList          | No                                          | List                                              | --                                               | SSL Feature Value List, List type                                                                                           |
+| portScanProtect         | No                                          | boolean                                           | true                                             | Port Scan Protection, false: Disable, true: Enable                                                                          |
+| portScanList            | No                                          | string                                            | --                                               | Port Scan Protection Whitelist, Comma-separated                                                                             |
+| useGpu                  | No                                          | boolean                                           | true                                             | Use GPU Acceleration Mode, true: Yes, false: No                                                                             |
+| sandboxPermission       | No                                          | boolean                                           | false                                            | Disable Sandbox, true: Yes, false: No                                                                                       |
+| startupParam            | No                                          | string                                            | --                                               | Browser Startup Parameters                                                                                                  |
+| openBattery             | No                                          | boolean                                           | false                                            | Battery API simulation master switch                                                                                        |
+| openCharging            | No                                          | boolean                                           | false                                            | Simulated charging state when battery simulation is enabled                                                                 |
+| chargingTime            | No                                          | string                                            | --                                               | Seconds until full charge (numeric string, no unit suffix)                                                                  |
+| dischargingTime         | No                                          | string                                            | --                                               | Seconds until empty (numeric string, no unit suffix)                                                                        |
+| level                   | No                                          | string                                            | --                                               | Battery level, 0–1                                                                                                          |
+| openNetwork             | No                                          | boolean                                           | false                                            | Network Information API simulation master switch                                                                            |
+| networkType             | No                                          | string                                            | --                                               | Connection type: wifi, cellular, ethernet, bluetooth, wimax, other, unknown                                                 |
+| networkSpeed            | No                                          | string                                            | --                                               | Effective type: slow-2G, 2g, 3g, 4g; when `networkType` is cellular, `slow-2G` is normalized to `2G` for the engine nettype |
+| downloadSpeed           | No                                          | string                                            | --                                               | Downlink speed (Mbps)                                                                                                       |
+| maxDownloadSpeed        | No                                          | string                                            | --                                               | Maximum downlink speed (Mbps)                                                                                               |
+| latency                 | No                                          | string / number                                   | --                                               | Round-trip time (ms)                                                                                                        |
+| saveFlowMode            | No                                          | boolean                                           | false                                            | Save-Data / reduced data mode                                                                                               |
+| openBluetooth           | No                                          | boolean                                           | false                                            | Bluetooth simulation master switch                                                                                          |
+| bluetoothAdapter        | No                                          | boolean                                           | false                                            | Simulated Bluetooth adapter present                                                                                         |
+| blockDomainList         | No                                          | string                                            | --                                               | Domain blocklist, multiple domains separated by \n                                                                          |
+| allowDomainList         | No                                          | string                                            | --                                               | Domain allowlist, multiple domains separated by \n                                                                          |
 
 The <a id="windowRatioPosition">windowRatioPosition</a> parameter employs a proportional coordinate system to precisely position windows across single or multiple displays, irrespective of screen resolutions.
 
@@ -770,7 +723,6 @@ For vertically arranged dual display:<br />
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
 
-
 ```Json
 {
     "code": 0,                 // Status Code, 0: Success, 500: Failure, int type
@@ -781,20 +733,16 @@ For vertically arranged dual display:<br />
 }
 ```
 
-| Field Name | Field Type | Description |
-| ---- | ------ | ---------------- |
-| code | int | Status Code, 0: Success, 500: Failure |
-| msg | string | Response Message |
-
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status Code, 0: Success, 500: Failure |
+| msg        | string     | Response Message                      |
 
 ### Modify Browser Profile
 
 <b style="font-size: 18px">POST /browser/mdf</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
 
 ```Json
 {
@@ -803,7 +751,7 @@ For vertically arranged dual display:<br />
     "windowName": "Roxytest",                                      // Profile Name, str type, Optional
     "coreVersion": "117",                                          // Core version, enum values such as: 138，137，136 etc., str type, optional
     "os": "Windows",                                               // Operating System, Enum: Windows, macOS, Linux, IOS, Android, str type, Optional, Default Windows
-    "osVersion": "11",                                             // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for Linux: ALL; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type 
+    "osVersion": "11",                                             // Operating system version, enum values for Profile: 11, 10, 8, 7; enum values for Linux: ALL; enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; enum values for Android：14、13、12、11、10、9; enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str type
     "cookie": [],                                                  // Cookies, List type, Optional
     "searchEngine": "Google",                                      // Search engine, enum values: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo, str type, optional, default is Google
     "labelIds": [12,13],                                           // Label IDs, List type, Optional, Obtained from Label List API [/browser/label]
@@ -914,141 +862,138 @@ For vertically arranged dual display:<br />
         "blockDomainList": "",                                   // Domain blocklist, multiple domains separated by \n
         "allowDomainList": ""                                    // Domain allowlist, multiple domains separated by \n
     }
-    
-}       
+
+}
 ```
 
-
-
-| Parameter Name | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value | Description |
-| ------------------ | ---------------------------------------- | --------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dirId | <span class="parameter-require">Yes</span> | string | -- | Browser Profile ID |
-| workspaceId | <span class="parameter-require">Yes</span> | int | -- | Team ID |
-| windowName | No | string | -- | Profile Name |
-| coreVersion | No | string | Latest | Core Version, Enum such as: 138，137，136 etc.|
-| os | No | string | Windows | Operating System, Enum: Windows, macOS, Linux, IOS, Android, |
-| osVersion | No | string | 11 | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
-| cookie | No | List | [] | Cookie |
-| searchEngine | No | string | Google | Search engine, enum values: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo |
-| labelIds | No | List | -- | Tag ID list, obtained through the Tag List interface [/browser/label] |
-| defaultOpenUrl | No | List | -- | Stored browser tabs |
-| windowRemark | No | string | -- | Profile remark |
-| projectId | No | number | -- | Project ID |
-| windowPlatformList | No | List | -- | See [windowPlatformList](#window-platform-list)  |
-| proxyInfo | No | object | -- | See [proxyInfo](#proxy-info) |
-| fingerInfo | No | object | -- | See [fingerInfo](#finger-info) |
-
+| Parameter Name     | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------ | ------------------------------------------- | ------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dirId              | <span class="parameter-require">Yes</span>  | string                                            | --            | Browser Profile ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| workspaceId        | <span class="parameter-require">Yes</span>  | int                                               | --            | Team ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| windowName         | No                                          | string                                            | --            | Profile Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| coreVersion        | No                                          | string                                            | Latest        | Core Version, Enum such as: 138，137，136 etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| os                 | No                                          | string                                            | Windows       | Operating System, Enum: Windows, macOS, Linux, IOS, Android,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| osVersion          | No                                          | string                                            | 11            | Operating system version, enum values for Profiles：11、10、8、7; <br/>enum values for Linux: ALL; <br/>enum values for macOS: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> enum values for Android：14、13、12、11、10、9; <br/> enum values for IOS：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
+| cookie             | No                                          | List                                              | []            | Cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| searchEngine       | No                                          | string                                            | Google        | Search engine, enum values: Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| labelIds           | No                                          | List                                              | --            | Tag ID list, obtained through the Tag List interface [/browser/label]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| defaultOpenUrl     | No                                          | List                                              | --            | Stored browser tabs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| windowRemark       | No                                          | string                                            | --            | Profile remark                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| projectId          | No                                          | number                                            | --            | Project ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| windowPlatformList | No                                          | List                                              | --            | See [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| proxyInfo          | No                                          | object                                            | --            | See [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| fingerInfo         | No                                          | object                                            | --            | See [fingerInfo](#finger-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 <a id="window-platform-list">windowPlatformList:</a>
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| --------------- | --- | ------------ | --- | ----------- |
-| platformUrl | No | string | -- | Platform Account URL |
-| platformUserName | No | string | -- | Platform Account |
-| platformPassword | No | string | -- | Platform Password |
-| platformEfa | No | string | -- | efa |
-| platformRemarks | No | string | -- | Platform Remarks |
 
+| Parameter Name   | Required | Parameter Type | Default Value | Description          |
+| ---------------- | -------- | -------------- | ------------- | -------------------- |
+| platformUrl      | No       | string         | --            | Platform Account URL |
+| platformUserName | No       | string         | --            | Platform Account     |
+| platformPassword | No       | string         | --            | Platform Password    |
+| platformEfa      | No       | string         | --            | efa                  |
+| platformRemarks  | No       | string         | --            | Platform Remarks     |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| ------------- | --- | ------------ | ------- | ------------------------------------- |
-| moduleId | No | int | 0 | Proxy ID, 0 means not using, obtained through proxy list API [/proxy/list] |
-| proxyMethod | No | string | custom | Proxy Method, Enum: custom (manual), choose (select proxy IP) |
-| proxyCategory | No | string | noproxy | Proxies Category, Enum: noproxy, HTTP, HTTPS, SOCKS5 |
-| ipType | No | string | IPV4 | Network Protocol, Enum: IPV4, IPV6 |
-| host | No | string | -- | Proxies Host |
-| port | No | string | -- | Proxies Port |
-| proxyUserName | No | string | -- | Proxies Account |
-| proxyPassword | No | string | -- | Proxies Password |
-| refreshUrl | No | string | -- | Refresh URL |
-| checkChannel | No | string | -- | IP Query Channel |
+| Parameter Name | Required | Parameter Type | Default Value | Description                                                                |
+| -------------- | -------- | -------------- | ------------- | -------------------------------------------------------------------------- |
+| moduleId       | No       | int            | 0             | Proxy ID, 0 means not using, obtained through proxy list API [/proxy/list] |
+| proxyMethod    | No       | string         | custom        | Proxy Method, Enum: custom (manual), choose (select proxy IP)              |
+| proxyCategory  | No       | string         | noproxy       | Proxies Category, Enum: noproxy, HTTP, HTTPS, SOCKS5                       |
+| ipType         | No       | string         | IPV4          | Network Protocol, Enum: IPV4, IPV6                                         |
+| host           | No       | string         | --            | Proxies Host                                                               |
+| port           | No       | string         | --            | Proxies Port                                                               |
+| proxyUserName  | No       | string         | --            | Proxies Account                                                            |
+| proxyPassword  | No       | string         | --            | Proxies Password                                                           |
+| refreshUrl     | No       | string         | --            | Refresh URL                                                                |
+| checkChannel   | No       | string         | --            | IP Query Channel                                                           |
 
 <a id="finger-info">fingerInfo:</a>
 
-| Parameter Name | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value<div style="min-width: 50px"></div> | Description |
-| ----------------------- | -------------------------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------------------------------- |
-| isLanguageBaseIp | No | boolean | true | Browser Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| language | No | string | -- | Custom Browser Language Value, str type, Optional, See [Appendix-Language List](#api_language) |
-| isDisplayLanguageBaseIp | No | boolean | true | Display Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| displayLanguage | No | string | -- | Custom Display Language Value, str type, Optional, See [Appendix-Display Language List](#api_dispalylanguage) |
-| isTimeZone | No | boolean | true | Time Zone Type, Follow IP: true, Custom: false, Boolean, Optional, Default true |
-| timeZone | No | string | -- | Custom Time Zone Value, str type, Optional, See [Appendix-Time Zone List](#api_timezone) |
-| position | No | int | 1 | Geolocation Prompt Type, Ask: 0, Allow: 1, Disable: 2 |
-| isPositionBaseIp | No | boolean | true | Geolocation Type, Follow IP: true, Custom: false |
-| longitude | No | string | -- | Longitude Value, Set when isPositionBaseIp is false |
-| latitude | No | string | -- | Latitude Value, Set when isPositionBaseIp is false |
-| precisionPos | No | string | -- | Precision Value (meters), Set when isPositionBaseIp is false |
-| forbidAudio | No | boolean | true | Disable Web Page Audio, Enable: true, Disable: false |
-| forbidImage | No | boolean | true | Disable Web Page Images, Enable: true, Disable: false |
-| forbiddenPictureSize | No | number | 0 | When forbidImage is false, setting forbiddenPictureSize = 0 will disable all image loading. |
-| forbidMedia | No | boolean | true | Disable Web Page Videos, Enable: true, Disable: false |
-| openWidth | No | string | 1000 | Profile Size, Width |
-| openHeight | No | string | 1000 | Profile Size, Height |
-| openBookmarks | No | boolean | false | Whether to enable bookmarks, true: enable, false: disable |
-| positionSwitch | No | boolean | true | Window Position Switch, true: Custom, false: Full Screen |
-| windowRatioPosition | No | string | 0,0 | See [windowRatioPosition](#windowRatioPosition) |
-| isDisplayName | No | boolean | false | Show Profile Name in Title Bar, Show: true, Hide: false |
-| syncBookmark | No | boolean | false | Sync Bookmarks, true: Yes, false: No |
-| syncHistory | No | boolean | false | Sync History, true: Yes, false: No |
-| syncTab | No | boolean | true | Sync Tabs, true: Yes, false: No |
-| syncCookie | No | boolean | true | Sync Cookies, true: Yes, false: No |
-| syncExtensions | No | boolean | false | Sync Extensions Data, true: Yes, false: No |
-| syncPassword | No | boolean | true | Sync Saved Passwords, true: Yes, false: No |
-| syncIndexedDb | No | boolean | false | Sync IndexedDB, true: Yes, false: No |
-| syncLocalStorage | No | boolean | false | Sync Local Storage, true: Yes, false: No |
-| clearCacheFile | No | boolean | false | Clear Cache Files on Browser Start, true: Yes, false: No |
-| clearCookie | No | boolean | false | Clear Cookies on Browser Start, true: Yes, false: No |
-| clearLocalStorage | No | boolean | false | Clear Local Storage on Browser Start, true: Yes, false: No |
-| randomFingerprint | No | boolean | false | Randomize Fingerprint on Browser Start, true: Yes, false: No |
-| forbidSavePassword | No | boolean | false | Disable Save Password Prompt, true: Yes, false: No |
-| stopOpenNet | No | boolean | false | Stop Opening Profile on Network Failure, true: Yes, false: No |
-| stopOpenIP | No | boolean | false | Stop Opening Profile on IP Change, true: Yes, false: No |
-| stopOpenPosition | No | boolean | false | Stop Opening Profile on Country/Region Change, true: Yes, false: No |
-| openWorkbench | No | int | 1 | Whether to open workbench, 1: Enable, 0: Disable, Follow software settings: 2 |
-| resolutionType | No | boolean | false | Resolution, true: Custom, false: System Default |
-| resolutionX | No | string | -- | Custom Resolution Width Value, str type, See [Appendix-Resolution List](#api_relution) |
-| resolutionY | No | string | -- | Custom Resolution Height Value, str type, See [Appendix-Resolution List](#api_relution) |
-| fontType | No | boolean | false | Font Fingerprint, Random: true, Follow System: false |
-| webRTC | No | int | 2 | WebRTC, Replace: 0, Real: 1, Disable: 2 |
-| webGL | No | boolean | true | WebGL Image, Random: true, Real: false |
-| webGLInfo | No | boolean | true | WebGLInfo Switch, Custom: true, Real: false |
-| webGLManufacturer | No | string | -- | Custom WebGL Manufacturer Value when webGLInfo is Custom |
-| webGLRender | No | string | -- | Custom WebGL Renderer Value when webGLInfo is Custom |
-| webGpu | No | string | webgl | WebGpu, Match WebGL: webgl, Real: real, Disable: block |
-| canvas | No | boolean | true | Canvas, Random: true, Real: false |
-| audioContext | No | boolean | true | AudioContext Value, Random: true, Real: false |
-| speechVoices | No | boolean | true | Speech Voices, Random: true, Real: false |
-| doNotTrack | No | boolean | true | Do Not Track, true: Enable, false: Disable |
-| clientRects | No | boolean | true | ClientRects, Random: true, Real: false |
-| deviceInfo | No | boolean | true | Media Devices, Random: true, Real: false |
-| deviceNameSwitch | No | boolean | true | Device Name, Random: true, Real: false |
-| macInfo | No | boolean | true | MAC Address, Custom: true, Real: false |
-| hardwareConcurrent | No | string | -- | Hardware Concurrency |
-| deviceMemory | No | string | -- | Device Memory |
-| disableSsl | No | boolean | false | SSL Fingerprint Setting, true: Enable, false: Disable |
-| disableSslList | No | List | -- | SSL Feature Value List, List type |
-| portScanProtect | No | boolean | true | Port Scan Protection, false: Disable, true: Enable |
-| portScanList | No | string | -- | Port Scan Protection Whitelist, Comma-separated |
-| useGpu | No | boolean | true | Use GPU Acceleration Mode, true: Yes, false: No |
-| sandboxPermission | No | boolean | false | Disable Sandbox, true: Yes, false: No |
-| startupParam | No | string | -- | Browser Startup Parameters |
-| openBattery | No | boolean | false | Battery API simulation master switch |
-| openCharging | No | boolean | false | Simulated charging state when battery simulation is enabled |
-| chargingTime | No | string | -- | Seconds until full charge (numeric string, no unit suffix) |
-| dischargingTime | No | string | -- | Seconds until empty (numeric string, no unit suffix) |
-| level | No | string | -- | Battery level, 0–1 |
-| openNetwork | No | boolean | false | Network Information API simulation master switch |
-| networkType | No | string | -- | Connection type: wifi, cellular, ethernet, bluetooth, wimax, other, unknown |
-| networkSpeed | No | string | -- | Effective type: slow-2G, 2g, 3g, 4g; when `networkType` is cellular, `slow-2G` is normalized to `2G` for the engine nettype |
-| downloadSpeed | No | string | -- | Downlink speed (Mbps) |
-| maxDownloadSpeed | No | string | -- | Maximum downlink speed (Mbps) |
-| latency | No | string / number | -- | Round-trip time (ms) |
-| saveFlowMode | No | boolean | false | Save-Data / reduced data mode |
-| openBluetooth | No | boolean | false | Bluetooth simulation master switch |
-| bluetoothAdapter | No | boolean | false | Simulated Bluetooth adapter present |
-| blockDomainList | No | string | -- | Domain blocklist, multiple domains separated by \n |
-| allowDomainList | No | string | -- | Domain allowlist, multiple domains separated by \n |
+| Parameter Name          | Required<div style="min-width: 50px"></div> | Parameter Type<div style="min-width: 65px"></div> | Default Value<div style="min-width: 50px"></div> | Description                                                                                                                 |
+| ----------------------- | ------------------------------------------- | ------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| isLanguageBaseIp        | No                                          | boolean                                           | true                                             | Browser Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                      |
+| language                | No                                          | string                                            | --                                               | Custom Browser Language Value, str type, Optional, See [Appendix-Language List](#api_language)                              |
+| isDisplayLanguageBaseIp | No                                          | boolean                                           | true                                             | Display Language Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                      |
+| displayLanguage         | No                                          | string                                            | --                                               | Custom Display Language Value, str type, Optional, See [Appendix-Display Language List](#api_dispalylanguage)               |
+| isTimeZone              | No                                          | boolean                                           | true                                             | Time Zone Type, Follow IP: true, Custom: false, Boolean, Optional, Default true                                             |
+| timeZone                | No                                          | string                                            | --                                               | Custom Time Zone Value, str type, Optional, See [Appendix-Time Zone List](#api_timezone)                                    |
+| position                | No                                          | int                                               | 1                                                | Geolocation Prompt Type, Ask: 0, Allow: 1, Disable: 2                                                                       |
+| isPositionBaseIp        | No                                          | boolean                                           | true                                             | Geolocation Type, Follow IP: true, Custom: false                                                                            |
+| longitude               | No                                          | string                                            | --                                               | Longitude Value, Set when isPositionBaseIp is false                                                                         |
+| latitude                | No                                          | string                                            | --                                               | Latitude Value, Set when isPositionBaseIp is false                                                                          |
+| precisionPos            | No                                          | string                                            | --                                               | Precision Value (meters), Set when isPositionBaseIp is false                                                                |
+| forbidAudio             | No                                          | boolean                                           | true                                             | Disable Web Page Audio, Enable: true, Disable: false                                                                        |
+| forbidImage             | No                                          | boolean                                           | true                                             | Disable Web Page Images, Enable: true, Disable: false                                                                       |
+| forbiddenPictureSize    | No                                          | number                                            | 0                                                | When forbidImage is false, setting forbiddenPictureSize = 0 will disable all image loading.                                 |
+| forbidMedia             | No                                          | boolean                                           | true                                             | Disable Web Page Videos, Enable: true, Disable: false                                                                       |
+| openWidth               | No                                          | string                                            | 1000                                             | Profile Size, Width                                                                                                         |
+| openHeight              | No                                          | string                                            | 1000                                             | Profile Size, Height                                                                                                        |
+| openBookmarks           | No                                          | boolean                                           | false                                            | Whether to enable bookmarks, true: enable, false: disable                                                                   |
+| positionSwitch          | No                                          | boolean                                           | true                                             | Window Position Switch, true: Custom, false: Full Screen                                                                    |
+| windowRatioPosition     | No                                          | string                                            | 0,0                                              | See [windowRatioPosition](#windowRatioPosition)                                                                             |
+| isDisplayName           | No                                          | boolean                                           | false                                            | Show Profile Name in Title Bar, Show: true, Hide: false                                                                     |
+| syncBookmark            | No                                          | boolean                                           | false                                            | Sync Bookmarks, true: Yes, false: No                                                                                        |
+| syncHistory             | No                                          | boolean                                           | false                                            | Sync History, true: Yes, false: No                                                                                          |
+| syncTab                 | No                                          | boolean                                           | true                                             | Sync Tabs, true: Yes, false: No                                                                                             |
+| syncCookie              | No                                          | boolean                                           | true                                             | Sync Cookies, true: Yes, false: No                                                                                          |
+| syncExtensions          | No                                          | boolean                                           | false                                            | Sync Extensions Data, true: Yes, false: No                                                                                  |
+| syncPassword            | No                                          | boolean                                           | true                                             | Sync Saved Passwords, true: Yes, false: No                                                                                  |
+| syncIndexedDb           | No                                          | boolean                                           | false                                            | Sync IndexedDB, true: Yes, false: No                                                                                        |
+| syncLocalStorage        | No                                          | boolean                                           | false                                            | Sync Local Storage, true: Yes, false: No                                                                                    |
+| clearCacheFile          | No                                          | boolean                                           | false                                            | Clear Cache Files on Browser Start, true: Yes, false: No                                                                    |
+| clearCookie             | No                                          | boolean                                           | false                                            | Clear Cookies on Browser Start, true: Yes, false: No                                                                        |
+| clearLocalStorage       | No                                          | boolean                                           | false                                            | Clear Local Storage on Browser Start, true: Yes, false: No                                                                  |
+| randomFingerprint       | No                                          | boolean                                           | false                                            | Randomize Fingerprint on Browser Start, true: Yes, false: No                                                                |
+| forbidSavePassword      | No                                          | boolean                                           | false                                            | Disable Save Password Prompt, true: Yes, false: No                                                                          |
+| stopOpenNet             | No                                          | boolean                                           | false                                            | Stop Opening Profile on Network Failure, true: Yes, false: No                                                               |
+| stopOpenIP              | No                                          | boolean                                           | false                                            | Stop Opening Profile on IP Change, true: Yes, false: No                                                                     |
+| stopOpenPosition        | No                                          | boolean                                           | false                                            | Stop Opening Profile on Country/Region Change, true: Yes, false: No                                                         |
+| openWorkbench           | No                                          | int                                               | 1                                                | Whether to open workbench, 1: Enable, 0: Disable, Follow software settings: 2                                               |
+| resolutionType          | No                                          | boolean                                           | false                                            | Resolution, true: Custom, false: System Default                                                                             |
+| resolutionX             | No                                          | string                                            | --                                               | Custom Resolution Width Value, str type, See [Appendix-Resolution List](#api_relution)                                      |
+| resolutionY             | No                                          | string                                            | --                                               | Custom Resolution Height Value, str type, See [Appendix-Resolution List](#api_relution)                                     |
+| fontType                | No                                          | boolean                                           | false                                            | Font Fingerprint, Random: true, Follow System: false                                                                        |
+| webRTC                  | No                                          | int                                               | 2                                                | WebRTC, Replace: 0, Real: 1, Disable: 2                                                                                     |
+| webGL                   | No                                          | boolean                                           | true                                             | WebGL Image, Random: true, Real: false                                                                                      |
+| webGLInfo               | No                                          | boolean                                           | true                                             | WebGLInfo Switch, Custom: true, Real: false                                                                                 |
+| webGLManufacturer       | No                                          | string                                            | --                                               | Custom WebGL Manufacturer Value when webGLInfo is Custom                                                                    |
+| webGLRender             | No                                          | string                                            | --                                               | Custom WebGL Renderer Value when webGLInfo is Custom                                                                        |
+| webGpu                  | No                                          | string                                            | webgl                                            | WebGpu, Match WebGL: webgl, Real: real, Disable: block                                                                      |
+| canvas                  | No                                          | boolean                                           | true                                             | Canvas, Random: true, Real: false                                                                                           |
+| audioContext            | No                                          | boolean                                           | true                                             | AudioContext Value, Random: true, Real: false                                                                               |
+| speechVoices            | No                                          | boolean                                           | true                                             | Speech Voices, Random: true, Real: false                                                                                    |
+| doNotTrack              | No                                          | boolean                                           | true                                             | Do Not Track, true: Enable, false: Disable                                                                                  |
+| clientRects             | No                                          | boolean                                           | true                                             | ClientRects, Random: true, Real: false                                                                                      |
+| deviceInfo              | No                                          | boolean                                           | true                                             | Media Devices, Random: true, Real: false                                                                                    |
+| deviceNameSwitch        | No                                          | boolean                                           | true                                             | Device Name, Random: true, Real: false                                                                                      |
+| macInfo                 | No                                          | boolean                                           | true                                             | MAC Address, Custom: true, Real: false                                                                                      |
+| hardwareConcurrent      | No                                          | string                                            | --                                               | Hardware Concurrency                                                                                                        |
+| deviceMemory            | No                                          | string                                            | --                                               | Device Memory                                                                                                               |
+| disableSsl              | No                                          | boolean                                           | false                                            | SSL Fingerprint Setting, true: Enable, false: Disable                                                                       |
+| disableSslList          | No                                          | List                                              | --                                               | SSL Feature Value List, List type                                                                                           |
+| portScanProtect         | No                                          | boolean                                           | true                                             | Port Scan Protection, false: Disable, true: Enable                                                                          |
+| portScanList            | No                                          | string                                            | --                                               | Port Scan Protection Whitelist, Comma-separated                                                                             |
+| useGpu                  | No                                          | boolean                                           | true                                             | Use GPU Acceleration Mode, true: Yes, false: No                                                                             |
+| sandboxPermission       | No                                          | boolean                                           | false                                            | Disable Sandbox, true: Yes, false: No                                                                                       |
+| startupParam            | No                                          | string                                            | --                                               | Browser Startup Parameters                                                                                                  |
+| openBattery             | No                                          | boolean                                           | false                                            | Battery API simulation master switch                                                                                        |
+| openCharging            | No                                          | boolean                                           | false                                            | Simulated charging state when battery simulation is enabled                                                                 |
+| chargingTime            | No                                          | string                                            | --                                               | Seconds until full charge (numeric string, no unit suffix)                                                                  |
+| dischargingTime         | No                                          | string                                            | --                                               | Seconds until empty (numeric string, no unit suffix)                                                                        |
+| level                   | No                                          | string                                            | --                                               | Battery level, 0–1                                                                                                          |
+| openNetwork             | No                                          | boolean                                           | false                                            | Network Information API simulation master switch                                                                            |
+| networkType             | No                                          | string                                            | --                                               | Connection type: wifi, cellular, ethernet, bluetooth, wimax, other, unknown                                                 |
+| networkSpeed            | No                                          | string                                            | --                                               | Effective type: slow-2G, 2g, 3g, 4g; when `networkType` is cellular, `slow-2G` is normalized to `2G` for the engine nettype |
+| downloadSpeed           | No                                          | string                                            | --                                               | Downlink speed (Mbps)                                                                                                       |
+| maxDownloadSpeed        | No                                          | string                                            | --                                               | Maximum downlink speed (Mbps)                                                                                               |
+| latency                 | No                                          | string / number                                   | --                                               | Round-trip time (ms)                                                                                                        |
+| saveFlowMode            | No                                          | boolean                                           | false                                            | Save-Data / reduced data mode                                                                                               |
+| openBluetooth           | No                                          | boolean                                           | false                                            | Bluetooth simulation master switch                                                                                          |
+| bluetoothAdapter        | No                                          | boolean                                           | false                                            | Simulated Bluetooth adapter present                                                                                         |
+| blockDomainList         | No                                          | string                                            | --                                               | Domain blocklist, multiple domains separated by \n                                                                          |
+| allowDomainList         | No                                          | string                                            | --                                               | Domain allowlist, multiple domains separated by \n                                                                          |
 
 The <a id="windowRatioPosition">windowRatioPosition</a> parameter employs a proportional coordinate system to precisely position windows across single or multiple displays, irrespective of screen resolutions.
 
@@ -1091,30 +1036,23 @@ For vertically arranged dual display:<br />
 ```Json
 {
     "code": 0,          // Status Code, 0: Success, 500: Failure, int type
-    "msg": "Success",   // Response Message, str type 
+    "msg": "Success",   // Response Message, str type
     "data": {
         "dirId": "05299704c4a89337bd6a37cdb9b95d96"  // Browser Profile ID
     }
 }
 ```
 
-
-
-| Field Name | Field Type | Description |
-| ---- | ------ | ---------------- |
-| code | int    | Status Code, 0: Success, 500: Failure |
-| msg  | string | Response Message |
-
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status Code, 0: Success, 500: Failure |
+| msg        | string     | Response Message                      |
 
 ### Delete Browser Profile
 
 <b style="font-size: 18px">POST /browser/delete</b>
 
-
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
 
 ```Json
 {
@@ -1124,12 +1062,10 @@ For vertically arranged dual display:<br />
 }
 ```
 
-
-| Parameter Name | Required | Parameter Type | Default Value | Description |
-| --------------- | --- | ------------ | --- | ----------- |
-| workspaceId | Yes | int | -- | Team ID |
-| dirIds | Yes | List | -- | Browser Profile ID List |
-
+| Parameter Name | Required | Parameter Type | Default Value | Description             |
+| -------------- | -------- | -------------- | ------------- | ----------------------- |
+| workspaceId    | Yes      | int            | --            | Team ID                 |
+| dirIds         | Yes      | List           | --            | Browser Profile ID List |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
 
@@ -1140,25 +1076,19 @@ For vertically arranged dual display:<br />
 }
 ```
 
-| Field Name | Field Type | Description |
-| ---------- | ---------- | ----------- |
-| code | int | Status Code, 0: Success, 500: Failure |
-| msg | string | Response Message |
-
-
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status Code, 0: Success, 500: Failure |
+| msg        | string     | Response Message                      |
 
 ### Open Browser Profile{#open-browser}
 
 <b style="font-size: 18px">POST /browser/open</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                                                   // Team ID, int type, required, obtained through the Team Project API [/browser/workspace]
     "dirId": "dc1e73d4dd954a3a8ca087d53d2e18ce",                        // Browser Profile ID, str type, required
     "args": ["--remote-allow-origins=*", "--disable-audio-output"],      // Browser startup parameters, List type, optional
@@ -1167,38 +1097,34 @@ For vertically arranged dual display:<br />
 }
 
 Note: The following startup parameters are built-in system parameters and will not take effect when modified:
---disable-background-mode           
---disable-popup-blocking          
---no-first-run                      
---no-default-browser-check          
---remote-debugging-port=0           
---use-mock-keychain                 
---user-data-dir                     
---window-position=0,0               
---window-size=1000,1000             
---no-sandbox                        
---disable-setuid-sandbox  
-          
+--disable-background-mode
+--disable-popup-blocking
+--no-first-run
+--no-default-browser-check
+--remote-debugging-port=0
+--use-mock-keychain
+--user-data-dir
+--window-position=0,0
+--window-size=1000,1000
+--no-sandbox
+--disable-setuid-sandbox
+
 For detailed parameter descriptions, please visit: https://peter.sh/experiments/chromium-command-line-switches/
 The browser currently does not support headless mode (passing --headless will not take effect)
 ```
 
-
-
-| Parameter Name | Required                                  | Parameter Type | Default Value | Description |
-| -------------- | ------------------------------------------ | -------------- | ------------- | ----------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID  |
-| dirId          | <span class="parameter-require">Yes</span> | string         | --            | Browser Profile ID |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description                |
+| -------------- | ------------------------------------------ | -------------- | ------------- | -------------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID                    |
+| dirId          | <span class="parameter-require">Yes</span> | string         | --            | Browser Profile ID         |
 | args           | No                                         | List           | --            | Browser startup parameters |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
 
-
-
 ```Json
  {
     "code": 0,                                                                              // Status code, 0: success, 500: failure, int type
-    "data": {       
+    "data": {
         "ws": "ws://127.0.0.1:52314/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb", // WebSocket interface for automation tools
         "http": "127.0.0.1:52314",                                                          // HTTP interface for automation tools
         "coreVersion": "112",                                                               // Core version
@@ -1209,34 +1135,27 @@ The browser currently does not support headless mode (passing --headless will no
         "pid":1111                                                                          // Process ID
     },
     "msg": "Success"                                                                        // Result message, str type
-}  
+}
 ```
 
-
-
-| Field Name   | Field Type | Description                                |
-| ------------ | ---------- | ------------------------------------------ |
-| code         | int        | Status code, 0: success, 500: failure      |
-| ws           | string     | WebSocket interface for automation tools   |
-| http         | string     | HTTP interface for automation tools        |
-| coreVersion  | string     | Core version                               |
-| driver       | string     | WebDriver for automation tools             |
-| sortNum      | int        | Profile sort number                        |
-| windowName   | string     | Profile name                               |
-| windowRemark | string     | Profile remark                             |
-| pid          | int        | Process ID                                 |
-| msg          | string     | Result message                             |
-
+| Field Name   | Field Type | Description                              |
+| ------------ | ---------- | ---------------------------------------- |
+| code         | int        | Status code, 0: success, 500: failure    |
+| ws           | string     | WebSocket interface for automation tools |
+| http         | string     | HTTP interface for automation tools      |
+| coreVersion  | string     | Core version                             |
+| driver       | string     | WebDriver for automation tools           |
+| sortNum      | int        | Profile sort number                      |
+| windowName   | string     | Profile name                             |
+| windowRemark | string     | Profile remark                           |
+| pid          | int        | Process ID                               |
+| msg          | string     | Result message                           |
 
 ### Close Browser Profile
 
 <b style="font-size: 18px">POST /browser/close</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -1244,15 +1163,11 @@ The browser currently does not support headless mode (passing --headless will no
 }
 ```
 
-
-
-| Parameter Name | Required                                  | Parameter Type | Default Value | Description      |
-| -------------- | ------------------------------------------ | -------------- | ------------- | ---------------- |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description        |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ------------------ |
 | dirId          | <span class="parameter-require">Yes</span> | string         | --            | Browser Profile ID |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
-
 
 ```Json
 {
@@ -1261,23 +1176,16 @@ The browser currently does not support headless mode (passing --headless will no
 }
 ```
 
-
-
-| Field Name | Field Type | Description                        |
-| ---------- | ---------- | ---------------------------------- |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Result message                     |
-
+| msg        | string     | Result message                        |
 
 ### Randomize Profile Fingerprint
 
 <b style="font-size: 18px">POST /browser/random_env</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {   "workspaceId": 1,                                      // Team ID, int type, required, obtained through the Team Project API [/browser/workspace]
@@ -1285,41 +1193,30 @@ The browser currently does not support headless mode (passing --headless will no
 }
 ```
 
-
-
-| Parameter Name | Required                                   | Parameter Type | Default Value | Description |
-| -------------- | ------------------------------------------- | -------------- | ------------- | ----------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID  |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description        |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ------------------ |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID            |
 | dirId          | <span class="parameter-require">Yes</span> | string         | --            | Browser Profile ID |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
-
 
 ```Json
 {
     "code": 0,         // Status code, 0: success, 500: failure, int type
     "msg": "Success"   // Result message, str type
-}   
+}
 ```
 
-
-
-| Field Name | Field Type | Description                        |
-| ---------- | ---------- | ---------------------------------- |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Result message                     |
-
+| msg        | string     | Result message                        |
 
 ### Clear Local Cache for Profile
 
 <b style="font-size: 18px">POST /browser/clear_local_cache</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
-
-
 
 ```Json
 {
@@ -1329,17 +1226,13 @@ The browser currently does not support headless mode (passing --headless will no
 }
 ```
 
-
-
-| Parameter Name | Required                                  | Parameter Type | Default Value | Description      |
-| -------------- | ------------------------------------------ | -------------- | ------------- | ---------------- |
-| dirIds         | <span class="parameter-require">Yes</span> | List           | --            | Browser Profile ID list |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description                                                                                                                                                                                                                                                                                                                                                              |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| dirIds         | <span class="parameter-require">Yes</span> | List           | --            | Browser Profile ID list                                                                                                                                                                                                                                                                                                                                                  |
 | type           | No                                         | string         | all           | Clear type, enum values: partial (clear all local cache files except extension data; login state remains valid; fingerprint and IP are not cleared), all (clear all local cache files; login state remains valid; fingerprint and IP are not cleared), cloud (clear local and server Cookie and all cache; synced tabs and browser login states will all become invalid) |
-| workspaceId    | Required when type is cloud                | int            | --            | Team ID     |
+| workspaceId    | Required when type is cloud                | int            | --            | Team ID                                                                                                                                                                                                                                                                                                                                                                  |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
-
 
 ```Json
 {
@@ -1348,88 +1241,66 @@ The browser currently does not support headless mode (passing --headless will no
 }
 ```
 
-
-
-| Field Name | Field Type | Description                        |
-| ---------- | ---------- | ---------------------------------- |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Result message                     |
-
+| msg        | string     | Result message                        |
 
 ### Clear Server Cache for Profile
 
 <b style="font-size: 18px">POST /browser/clear_server_cache</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                              // Team ID, int type, required, obtained through the Team Project API [/browser/workspace]
     "dirIds": ["dc1ed4d","2e18ce","yy67yegk"]      // Browser Profile ID list, List type, required
 }
 ```
 
-
-
-| Parameter Name | Required                                   | Parameter Type | Default Value | Description      |
-| -------------- | ------------------------------------------- | -------------- | ------------- | ---------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID       |
+| Parameter Name | Required                                   | Parameter Type | Default Value | Description             |
+| -------------- | ------------------------------------------ | -------------- | ------------- | ----------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --            | Team ID                 |
 | dirIds         | <span class="parameter-require">Yes</span> | List           | --            | Browser Profile ID list |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
-
 
 ```Json
 {
     "code": 0,         // Status code, 0: success, 500: failure, int type
     "msg": "Success"   // Result message, str type
-}   
+}
 ```
 
-
-
-| Field Name | Field Type | Description                        |
-| ---------- | ---------- | ---------------------------------- |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Result message                     |
-
+| msg        | string     | Result message                        |
 
 ### Connection Information for Opened Profiles
 
 <b style="font-size: 18px">GET /browser/connection_info</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
-
-
 ```Json
-{   
+{
     "dirIds": "dc1e73d4dd954a,157d4e73ae4f1ac8"                       // List of Browser Profile IDs, str type, multiple IDs separated by commas, optional
 }
 ```
 
-
-
-| Parameter Name | Required | Parameter Type | Default Value | Description      |
-| -------------- | -------- | -------------- | ------------- | ---------------- |
+| Parameter Name | Required | Parameter Type | Default Value | Description                 |
+| -------------- | -------- | -------------- | ------------- | --------------------------- |
 | dirIds         | No       | string         | --            | List of Browser Profile IDs |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response Result</p>
-
-
 
 ```Json
 {
     "code": 0,                                                                                  // Status code, 0: success, 500: failure, int type
     "data": [
-        {       
+        {
             "ws": "ws://127.0.0.1:52314/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb", // WebSocket interface for automation tools
             "http": "127.0.0.1:52314",                                                          // HTTP interface for automation tools
             "coreVersion": "112",                                                               // Core version
@@ -1440,44 +1311,40 @@ The browser currently does not support headless mode (passing --headless will no
             "pid":1111,                                                                         // Process ID
             "dirId": "doc64hdyy7e"                                                              // Profile ID
         },
-        {       
+        {
             "ws": "ws://127.0.0.1:53325/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb",
             "http": "127.0.0.1:53325",
-            "coreVersion": "112", 
+            "coreVersion": "112",
             "driver": "C:\\Users\\lumibrowser\\AppData\\Roaming\\lumibrowser\\chrome-bin\\125\\chromedriver.exe",
-            "sortNum": 3474, 
-            "windowName": "", 
-            "windowRemark": "",  
-            "pid":2222, 
+            "sortNum": 3474,
+            "windowName": "",
+            "windowRemark": "",
+            "pid":2222,
             "dirId": "doc64hdyy7e"
         }
     ],
     "msg": "Success"
-}    
+}
 ```
 
-
-
-| Field Name   | Field Type | Description                                |
-| ------------ | ---------- | ------------------------------------------ |
-| code         | int        | Status code, 0: success, 500: failure      |
-| ws           | string     | WebSocket interface for automation tools   |
-| http         | string     | HTTP interface for automation tools        |
-| coreVersion  | string     | Core version                               |
-| driver       | string     | WebDriver for automation tools             |
-| sortNum      | int        | Profile sort number                        |
-| windowName   | string     | Profile name                               |
-| windowRemark | string     | Profile remark                             |
-| pid          | int        | Process ID                                 |
-| dirId        | string     | Profile ID                                 |
-
+| Field Name   | Field Type | Description                              |
+| ------------ | ---------- | ---------------------------------------- |
+| code         | int        | Status code, 0: success, 500: failure    |
+| ws           | string     | WebSocket interface for automation tools |
+| http         | string     | HTTP interface for automation tools      |
+| coreVersion  | string     | Core version                             |
+| driver       | string     | WebDriver for automation tools           |
+| sortNum      | int        | Profile sort number                      |
+| windowName   | string     | Profile name                             |
+| windowRemark | string     | Profile remark                           |
+| pid          | int        | Process ID                               |
+| dirId        | string     | Profile ID                               |
 
 ## Proxy API
+
 ### Get Detection Channel
 
- <b style="font-size: 18px">GET /proxy/detect_channel</b>
-
-
+<b style="font-size: 18px">GET /proxy/detect_channel</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
@@ -1486,7 +1353,6 @@ None
 ```
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
-
 
 ```Json
 {
@@ -1499,18 +1365,16 @@ None
         }
     ],
     "msg": "Success"   // Response message, str type
-}   
+}
 ```
 
-
-
-| Field Name       | Field Type | Description                       |
-| ---------------- | ---------- | --------------------------------- |
-| code             | int        | Status code, 0: success, 500: failure |
-| label            | string     | Channel label                     |
-| type             | string     | Channel type                      |
-| value            | string     | Channel value                     |
-| msg              | string     | Response message                  |
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| label      | string     | Channel label                         |
+| type       | string     | Channel type                          |
+| value      | string     | Channel value                         |
+| msg        | string     | Response message                      |
 
 ### Get Proxy List (Deprecated)
 
@@ -1520,23 +1384,21 @@ None
 This endpoint is deprecated and will be removed in a future release. Use [`GET /proxy/list_merged`](#get-merged-proxy-list) instead. The merged list returns both user-added proxies and proxy-store purchased proxies in one response.
 :::
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,    // Team ID, int type, required, obtained through team API [/browser/workspace]
     "page_index": 1,     // Page index, int type, optional, default: 1
     "page_size": 15      // Page size, int type, optional, default: 15
 }
 ```
 
-| Parameter Name | Required                                   | Parameter Type | Default | Description  |
-| -------------- | ------------------------------------------ | -------------- | ------- | ------------ |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID |
-| page_index     | No                                         | int            | 1       | Page index   |
-| page_size      | No                                         | int            | 15      | Page size    |
+| Parameter Name | Required                                   | Parameter Type | Default | Description |
+| -------------- | ------------------------------------------ | -------------- | ------- | ----------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID     |
+| page_index     | No                                         | int            | 1       | Page index  |
+| page_size      | No                                         | int            | 15      | Page size   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1567,36 +1429,36 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
                 "createTime": "",             // Creation time, str
                 "updateTime": "",             // Update time, str
             }
-        ] 
+        ]
     },
     "msg": "Success"                          // Response message, str type
-} 
+}
 ```
 
-| Field Name        | Field Type | Description                       |
-| ----------------- | ---------- | --------------------------------- |
+| Field Name        | Field Type | Description                           |
+| ----------------- | ---------- | ------------------------------------- |
 | code              | int        | Status code, 0: success, 500: failure |
-| msg               | string     | Response message                  |
-| total             | int        | Total count                       |
-| id                | int        | Proxy ID                          |
-| checkStatus       | int        | Check status                      |
-| checkChannel      | string     | Check channel address             |
-| checkChannelValue | string     | Check channel value               |
-| lastIp            | string     | Last IP                           |
-| lastCountry       | string     | Last country                      |
-| lastState         | string     | Last state                        |
-| lastCity          | string     | Last city                         |
-| ipType            | string     | IP type                           |
-| protocol          | string     | Protocol                          |
-| host              | string     | Host                              |
-| port              | string     | Port                              |
-| proxyPassword     | string     | Proxy password                    |
-| proxyUserName     | string     | Proxy username                    |
-| refreshUrl        | string     | Refresh URL                       |
-| remark            | string     | Remark                            |
-| checkTime         | string     | Check time                        |
-| createTime        | string     | Creation time                     |
-| updateTime        | string     | Update time                       |
+| msg               | string     | Response message                      |
+| total             | int        | Total count                           |
+| id                | int        | Proxy ID                              |
+| checkStatus       | int        | Check status                          |
+| checkChannel      | string     | Check channel address                 |
+| checkChannelValue | string     | Check channel value                   |
+| lastIp            | string     | Last IP                               |
+| lastCountry       | string     | Last country                          |
+| lastState         | string     | Last state                            |
+| lastCity          | string     | Last city                             |
+| ipType            | string     | IP type                               |
+| protocol          | string     | Protocol                              |
+| host              | string     | Host                                  |
+| port              | string     | Port                                  |
+| proxyPassword     | string     | Proxy password                        |
+| proxyUserName     | string     | Proxy username                        |
+| refreshUrl        | string     | Refresh URL                           |
+| remark            | string     | Remark                                |
+| checkTime         | string     | Check time                            |
+| createTime        | string     | Creation time                         |
+| updateTime        | string     | Update time                           |
 
 ### Get Merged Proxy List
 
@@ -1618,22 +1480,22 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter Name  | Required                                   | Parameter Type | Default | Description  |
-| ---------------- | ------------------------------------------ | -------------- | ------- | ------------ |
-| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID |
-| type             | No                                         | string         | --      | Query type, for example: available_list |
-| page_index       | No                                         | int/string     | 1       | Page index |
-| page_size        | No                                         | int/string     | 15      | Page size |
-| orderName        | No                                         | string         | --      | Sort field, for example: lastCountry |
-| orderType        | No                                         | string         | --      | Sort direction, asc or desc |
-| proxyType        | No                                         | string         | --      | Proxy source, 0: user-added proxy, 1: proxy-store proxy |
-| proxyBindStatus  | No                                         | string         | --      | Binding status. Do not pass this field or pass an empty value to query all |
-| proxyAutoRenew   | No                                         | string         | --      | Auto-renew status. Do not pass this field or pass an empty value to query all |
-| country          | No                                         | string         | --      | Filter by country |
-| check_status     | No                                         | int            | --      | Filter by last check status |
-| start_date       | No                                         | string         | --      | Filter by detection start date, YYYY-MM-DD |
-| end_date         | No                                         | string         | --      | Filter by detection end date, YYYY-MM-DD |
-| checker          | No                                         | string         | --      | Filter by detection channel |
+| Parameter Name  | Required                                   | Parameter Type | Default | Description                                                                   |
+| --------------- | ------------------------------------------ | -------------- | ------- | ----------------------------------------------------------------------------- |
+| workspaceId     | <span class="parameter-require">Yes</span> | int            | --      | Team ID                                                                       |
+| type            | No                                         | string         | --      | Query type, for example: available_list                                       |
+| page_index      | No                                         | int/string     | 1       | Page index                                                                    |
+| page_size       | No                                         | int/string     | 15      | Page size                                                                     |
+| orderName       | No                                         | string         | --      | Sort field, for example: lastCountry                                          |
+| orderType       | No                                         | string         | --      | Sort direction, asc or desc                                                   |
+| proxyType       | No                                         | string         | --      | Proxy source, 0: user-added proxy, 1: proxy-store proxy                       |
+| proxyBindStatus | No                                         | string         | --      | Binding status. Do not pass this field or pass an empty value to query all    |
+| proxyAutoRenew  | No                                         | string         | --      | Auto-renew status. Do not pass this field or pass an empty value to query all |
+| country         | No                                         | string         | --      | Filter by country                                                             |
+| check_status    | No                                         | int            | --      | Filter by last check status                                                   |
+| start_date      | No                                         | string         | --      | Filter by detection start date, YYYY-MM-DD                                    |
+| end_date        | No                                         | string         | --      | Filter by detection end date, YYYY-MM-DD                                      |
+| checker         | No                                         | string         | --      | Filter by detection channel                                                   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1699,73 +1561,71 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Field Name          | Field Type | Description |
-| ------------------- | ---------- | ----------- |
-| code                | int        | Status code, 0: success, 500: failure |
-| msg                 | string     | Response message |
-| total               | int        | Total count |
-| id                  | int        | Proxy ID |
-| userId              | int        | User ID |
-| workspaceId         | int        | Team ID |
-| canBandwidthUpgrade | boolean    | Whether bandwidth can be upgraded |
-| proxyProviderId     | int        | Proxy provider ID |
-| orderNo             | string     | Order number |
-| orderStatus         | int        | Order status |
-| ipType              | string     | IP type |
-| host                | string     | Proxy host |
-| protocol            | string     | Proxy protocol |
-| country             | string     | Country filter/source value |
-| lastIp              | string     | Last IP |
-| port                | string     | Proxy port |
-| proxyUserName       | string     | Proxy username |
-| proxyPassword       | string     | Proxy password |
-| proxyCheckChannel   | string     | Proxy check channel |
-| remark              | string     | Remark |
-| lastCountry         | string     | Last detected country |
-| lastState           | string     | Last detected state |
-| lastCity            | string     | Last detected city |
-| checkStatus         | int        | Last check status |
-| proxyExpireStatus   | int        | Expiration status |
-| checkTime           | string     | Last check time |
-| renewalTime         | string     | Renewal time |
-| createTime          | string     | Creation time |
-| proxyMonths         | int        | Proxy months |
-| updateTime          | string     | Update time |
-| expireDate          | string     | Expiration date |
-| replaceStatus       | int        | Replacement status |
-| proxyProviderName   | string     | Proxy provider name |
-| proxyType           | int        | Proxy source type |
-| providerType        | string     | Provider type |
-| opName              | string     | Operator name |
-| giftDays            | int        | Gift days |
-| autoRenew           | int        | Auto-renew status |
-| canRenew            | boolean    | Whether it can be renewed |
-| modelParam          | string     | Model parameter |
-| refreshUrl          | string     | Refresh URL |
-| isDirect            | boolean    | Whether direct connection is used |
-| badgeTypeDesc       | string     | Badge type description |
+| Field Name          | Field Type | Description                                                 |
+| ------------------- | ---------- | ----------------------------------------------------------- |
+| code                | int        | Status code, 0: success, 500: failure                       |
+| msg                 | string     | Response message                                            |
+| total               | int        | Total count                                                 |
+| id                  | int        | Proxy ID                                                    |
+| userId              | int        | User ID                                                     |
+| workspaceId         | int        | Team ID                                                     |
+| canBandwidthUpgrade | boolean    | Whether bandwidth can be upgraded                           |
+| proxyProviderId     | int        | Proxy provider ID                                           |
+| orderNo             | string     | Order number                                                |
+| orderStatus         | int        | Order status                                                |
+| ipType              | string     | IP type                                                     |
+| host                | string     | Proxy host                                                  |
+| protocol            | string     | Proxy protocol                                              |
+| country             | string     | Country filter/source value                                 |
+| lastIp              | string     | Last IP                                                     |
+| port                | string     | Proxy port                                                  |
+| proxyUserName       | string     | Proxy username                                              |
+| proxyPassword       | string     | Proxy password                                              |
+| proxyCheckChannel   | string     | Proxy check channel                                         |
+| remark              | string     | Remark                                                      |
+| lastCountry         | string     | Last detected country                                       |
+| lastState           | string     | Last detected state                                         |
+| lastCity            | string     | Last detected city                                          |
+| checkStatus         | int        | Last check status                                           |
+| proxyExpireStatus   | int        | Expiration status                                           |
+| checkTime           | string     | Last check time                                             |
+| renewalTime         | string     | Renewal time                                                |
+| createTime          | string     | Creation time                                               |
+| proxyMonths         | int        | Proxy months                                                |
+| updateTime          | string     | Update time                                                 |
+| expireDate          | string     | Expiration date                                             |
+| replaceStatus       | int        | Replacement status                                          |
+| proxyProviderName   | string     | Proxy provider name                                         |
+| proxyType           | int        | Proxy source type                                           |
+| providerType        | string     | Provider type                                               |
+| opName              | string     | Operator name                                               |
+| giftDays            | int        | Gift days                                                   |
+| autoRenew           | int        | Auto-renew status                                           |
+| canRenew            | boolean    | Whether it can be renewed                                   |
+| modelParam          | string     | Model parameter                                             |
+| refreshUrl          | string     | Refresh URL                                                 |
+| isDirect            | boolean    | Whether direct connection is used                           |
+| badgeTypeDesc       | string     | Badge type description                                      |
 | dataType            | string     | Data source, proxyModule: user-added, buyProxy: proxy-store |
-| checkChannel        | string     | Check channel address |
-| checkChannelValue   | string     | Check channel label |
-| isBind              | boolean    | Whether bound to profiles |
-| bindCount           | int        | Bound profile count |
-| bindList            | List       | Bound profile list |
-| canRefund           | boolean    | Whether it can be refunded |
-| bandwidthSpeed      | int        | Bandwidth speed |
+| checkChannel        | string     | Check channel address                                       |
+| checkChannelValue   | string     | Check channel label                                         |
+| isBind              | boolean    | Whether bound to profiles                                   |
+| bindCount           | int        | Bound profile count                                         |
+| bindList            | List       | Bound profile list                                          |
+| canRefund           | boolean    | Whether it can be refunded                                  |
+| bandwidthSpeed      | int        | Bandwidth speed                                             |
 
 ### Create Proxy
 
- <b style="font-size: 18px">POST /proxy/create</b>
-
-
+<b style="font-size: 18px">POST /proxy/create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // Team ID, int type, required, obtained through team API [/browser/workspace]
     "checkChannel": "",             // Check channel, required, obtained through [/proxy/detect_channel] API
-    "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required   
+    "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required
     "protocol": "SOCKS5",           // Proxy protocol, HTTP, HTTPS, SOCKS5, required
     "host": "",                     // Proxy host, str, required
     "port": "",                     // Proxy port, str, required
@@ -1775,18 +1635,19 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     "remark":"",                    // Remark
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel  |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description      |
+| -------------- | ------------------------------------------ | -------------- | ------- | ---------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID          |
+| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel    |
 | ipType         | <span class="parameter-require">Yes</span> | string         | --      | Network protocol |
-| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol |
-| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host     |
-| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port     |
-| proxyUserName  | No                                         | string         | --      | Proxy username |
-| proxyPassword  | No                                         | string         | --      | Proxy password |
-| refreshUrl     | No                                         | string         | --      | Refresh URL    |
-| remark         | No                                         | string         | --      | Remark         |
+| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol   |
+| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host       |
+| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port       |
+| proxyUserName  | No                                         | string         | --      | Proxy username   |
+| proxyPassword  | No                                         | string         | --      | Proxy password   |
+| refreshUrl     | No                                         | string         | --      | Refresh URL      |
+| remark         | No                                         | string         | --      | Remark           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1794,19 +1655,17 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ### Batch Create Proxy
 
- <b style="font-size: 18px">POST /proxy/batch_create</b>
-
-
+<b style="font-size: 18px">POST /proxy/batch_create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
@@ -1815,9 +1674,9 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "checkChannel": "",                 // Check channel, required, obtained through [/proxy/detect_channel] API
     "proxyList":[
-        {   
+        {
             "checkChannel": "",             // Check channel, uses outer check channel if not provided
-            "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required   
+            "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required
             "protocol": "SOCKS5",           // Proxy protocol, HTTP, HTTPS, SOCKS5, required
             "host": "",                     // Proxy host, str, required
             "port": "",                     // Proxy port, str, required
@@ -1829,25 +1688,26 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     ]
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel  |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description                  |
+| -------------- | ------------------------------------------ | -------------- | ------- | ---------------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID                      |
+| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel                |
 | proxyList      | <span class="parameter-require">Yes</span> | List           | --      | See [proxyList](#proxy-list) |
 
 <a id="proxy-list">proxyList:</a>
 
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel  |
+| Parameter Name | Required                                   | Parameter Type | Default | Description      |
+| -------------- | ------------------------------------------ | -------------- | ------- | ---------------- |
+| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel    |
 | ipType         | <span class="parameter-require">Yes</span> | string         | --      | Network protocol |
-| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol |
-| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host     |
-| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port     |
-| proxyUserName  | No                                         | string         | --      | Proxy username |
-| proxyPassword  | No                                         | string         | --      | Proxy password |
-| refreshUrl     | No                                         | string         | --      | Refresh URL    |
-| remark         | No                                         | string         | --      | Remark         |
+| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol   |
+| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host       |
+| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port       |
+| proxyUserName  | No                                         | string         | --      | Proxy username   |
+| proxyPassword  | No                                         | string         | --      | Proxy password   |
+| refreshUrl     | No                                         | string         | --      | Refresh URL      |
+| remark         | No                                         | string         | --      | Remark           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1855,32 +1715,31 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ### Detect Proxy
 
- <b style="font-size: 18px">POST /proxy/detect</b>
-
-
+<b style="font-size: 18px">POST /proxy/detect</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // Team ID, int type, required, obtained through team API [/browser/workspace]
     "id": 1,                        // Proxy ID, int type, required
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| id             | <span class="parameter-require">Yes</span> | int            | --      | Proxy ID       |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description |
+| -------------- | ------------------------------------------ | -------------- | ------- | ----------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID     |
+| id             | <span class="parameter-require">Yes</span> | int            | --      | Proxy ID    |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1888,29 +1747,26 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
+
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
-
-
+| msg        | string     | Response message                      |
 
 ### Modify Proxy
 
- <b style="font-size: 18px">POST /proxy/modify</b>
-
-
+<b style="font-size: 18px">POST /proxy/modify</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // Team ID, int type, required, obtained through team API [/browser/workspace]
     "id": 1,                        // Proxy ID, int type, required
     "checkChannel": "",             // Check channel, required, obtained through [/proxy/detect_channel] API
-    "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required   
+    "ipType": "IPV4",               // Network protocol, IPV4, IPV6, required
     "protocol": "SOCKS5",           // Proxy protocol, HTTP, HTTPS, SOCKS5, required
     "host": "",                     // Proxy host, str, required
     "port": "",                     // Proxy port, str, required
@@ -1920,19 +1776,20 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     "remark":"",                    // Remark
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| id             | <span class="parameter-require">Yes</span> | int            | --      | Proxy ID       |
-| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel  |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description      |
+| -------------- | ------------------------------------------ | -------------- | ------- | ---------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID          |
+| id             | <span class="parameter-require">Yes</span> | int            | --      | Proxy ID         |
+| checkChannel   | <span class="parameter-require">Yes</span> | string         | --      | Check channel    |
 | ipType         | <span class="parameter-require">Yes</span> | string         | --      | Network protocol |
-| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol |
-| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host     |
-| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port     |
-| proxyUserName  | No                                         | string         | --      | Proxy username |
-| proxyPassword  | No                                         | string         | --      | Proxy password |
-| refreshUrl     | No                                         | string         | --      | Refresh URL    |
-| remark         | No                                         | string         | --      | Remark         |
+| protocol       | <span class="parameter-require">Yes</span> | string         | --      | Proxy protocol   |
+| host           | <span class="parameter-require">Yes</span> | string         | --      | Proxy host       |
+| port           | <span class="parameter-require">Yes</span> | string         | --      | Proxy port       |
+| proxyUserName  | No                                         | string         | --      | Proxy username   |
+| proxyPassword  | No                                         | string         | --      | Proxy password   |
+| refreshUrl     | No                                         | string         | --      | Refresh URL      |
+| remark         | No                                         | string         | --      | Remark           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1940,32 +1797,31 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ### Delete Proxy (Batch Supported)
 
- <b style="font-size: 18px">POST /proxy/delete</b>
-
-
+<b style="font-size: 18px">POST /proxy/delete</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "ids": [],                          // Proxy IDs, List type, required
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| ids            | <span class="parameter-require">Yes</span> | List           | --      | Proxy IDs      |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description |
+| -------------- | ------------------------------------------ | -------------- | ------- | ----------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID     |
+| ids            | <span class="parameter-require">Yes</span> | List           | --      | Proxy IDs   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1973,12 +1829,13 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
+
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
 | code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
+| msg        | string     | Response message                      |
 
 ### Get Purchased Proxy IP List (Deprecated)
 
@@ -1988,12 +1845,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 This endpoint is deprecated and will be removed in a future release. Use [`GET /proxy/list_merged`](#get-merged-proxy-list) instead. The merged list returns proxy-store purchased proxies together with user-added proxies.
 :::
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,    // Team ID, int type, required, obtained through team API [/browser/workspace]
     "page_index": 1,     // Page index, int type, optional, default: 1
     "page_size": 15,     // Page size, int type, optional, default: 15
@@ -2001,12 +1856,12 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter Name | Required                                   | Parameter Type | Default | Description  |
-| -------------- | ------------------------------------------ | -------------- | ------- | ------------ |
+| Parameter Name | Required                                   | Parameter Type | Default | Description                                             |
+| -------------- | ------------------------------------------ | -------------- | ------- | ------------------------------------------------------- |
 | workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID, obtained through team API [/browser/workspace] |
-| page_index     | No                                         | int            | 1       | Page index   |
-| page_size      | No                                         | int            | 15      | Page size    |
-| type           | No                                         | int            | 0       | Query type, 0: query all, 1: query available |
+| page_index     | No                                         | int            | 1       | Page index                                              |
+| page_size      | No                                         | int            | 15      | Page size                                               |
+| type           | No                                         | int            | 0       | Query type, 0: query all, 1: query available            |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2040,66 +1895,61 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
                 "updateTime": "",             // Update time
                 "expireDate": "",             // Expiration date
             }
-        ] 
+        ]
     },
     "msg": "Success"                          // Response message, str type
-} 
+}
 ```
 
-| Field Name        | Field Type | Description                       |
-| ----------------- | ---------- | --------------------------------- |
+| Field Name        | Field Type | Description                           |
+| ----------------- | ---------- | ------------------------------------- |
 | code              | int        | Status code, 0: success, 500: failure |
-| msg               | string     | Response message                  |
-| total             | int        | Total count                       |
-| id                | int        | Purchased proxy IP ID             |
-| orderNo           | string     | Order number                      |
-| checkStatus       | int        | Check status                      |
-| proxyCheckChannel | string     | Check channel address             |
-| checkChannelValue | string     | Check channel value               |
-| lastIp            | string     | Last IP                           |
-| lastCountry       | string     | Last country                      |
-| lastState         | string     | Last state                        |
-| lastCity          | string     | Last city                         |
-| proxyProviderName | string     | Proxy provider name               |
-| providerType      | string     | Proxy provider type               |
-| ipType            | string     | IP type                           |
-| protocol          | string     | Protocol                          |
-| host              | string     | Host                              |
-| port              | string     | Port                              |
-| proxyUserName     | string     | Proxy username                    |
-| proxyPassword     | string     | Proxy password                    |
-| remark            | string     | Remark                            |
-| checkTime         | string     | Check time                        |
-| createTime        | string     | Creation time                     |
-| updateTime        | string     | Update time                       |
-| expireDate        | string     | Expiration date                   |
+| msg               | string     | Response message                      |
+| total             | int        | Total count                           |
+| id                | int        | Purchased proxy IP ID                 |
+| orderNo           | string     | Order number                          |
+| checkStatus       | int        | Check status                          |
+| proxyCheckChannel | string     | Check channel address                 |
+| checkChannelValue | string     | Check channel value                   |
+| lastIp            | string     | Last IP                               |
+| lastCountry       | string     | Last country                          |
+| lastState         | string     | Last state                            |
+| lastCity          | string     | Last city                             |
+| proxyProviderName | string     | Proxy provider name                   |
+| providerType      | string     | Proxy provider type                   |
+| ipType            | string     | IP type                               |
+| protocol          | string     | Protocol                              |
+| host              | string     | Host                                  |
+| port              | string     | Port                                  |
+| proxyUserName     | string     | Proxy username                        |
+| proxyPassword     | string     | Proxy password                        |
+| remark            | string     | Remark                                |
+| checkTime         | string     | Check time                            |
+| createTime        | string     | Creation time                         |
+| updateTime        | string     | Update time                           |
+| expireDate        | string     | Expiration date                       |
 
 ## Platform Account API
+
 ### Get Platform Account List
 
- <b style="font-size: 18px">GET /account/list</b>
-
-
+<b style="font-size: 18px">GET /account/list</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,       // Team ID, int type, required, obtained through team API [/browser/workspace]
     "page_index": 1,        // Page index, int type, optional, default: 1
     "page_size": 15         // Page size, int type, optional, default: 15
 }
 ```
 
-
-
-| Parameter Name | Required                                   | Parameter Type | Default | Description  |
-| -------------- | ------------------------------------------ | -------------- | ------- | ------------ |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID |
-| page_index     | No                                         | int            | 1       | Page index   |
-| page_size      | No                                         | int            | 15      | Page size    |
+| Parameter Name | Required                                   | Parameter Type | Default | Description |
+| -------------- | ------------------------------------------ | -------------- | ------- | ----------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID     |
+| page_index     | No                                         | int            | 1       | Page index  |
+| page_size      | No                                         | int            | 15      | Page size   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2120,39 +1970,35 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
                 "createTime": "2024-10-23 15:45:46",                            // Creation time
                 "updateTime": "2024-10-23 15:45:46"                             // Update time
             }
-        ] 
+        ]
     },
     "msg": "Success"                                                            // Response message, str type
-} 
+}
 ```
 
-
-
-| Field Name       | Field Type | Description                       |
-| ---------------- | ---------- | --------------------------------- |
+| Field Name       | Field Type | Description                           |
+| ---------------- | ---------- | ------------------------------------- |
 | code             | int        | Status code, 0: success, 500: failure |
-| msg              | string     | Response message                  |
-| total            | int        | Total count                       |
-| id               | int        | Account ID                        |
-| platformUrl      | string     | Platform URL                      |
-| platformUserName | string     | Platform username                 |
-| platformPassword | string     | Platform password                 |
-| platformEfa      | string     | Platform EFA                      |
-| platformCookies  | object     | Platform cookies                  |
-| platformRemarks  | string     | Platform remarks                  |
-| createTime       | string     | Creation time                     |
-| updateTime       | string     | Update time                       |
+| msg              | string     | Response message                      |
+| total            | int        | Total count                           |
+| id               | int        | Account ID                            |
+| platformUrl      | string     | Platform URL                          |
+| platformUserName | string     | Platform username                     |
+| platformPassword | string     | Platform password                     |
+| platformEfa      | string     | Platform EFA                          |
+| platformCookies  | object     | Platform cookies                      |
+| platformRemarks  | string     | Platform remarks                      |
+| createTime       | string     | Creation time                         |
+| updateTime       | string     | Update time                           |
 
 ### Create Platform Account
 
- <b style="font-size: 18px">POST /account/create</b>
-
-
+<b style="font-size: 18px">POST /account/create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "platformUrl":"https://www.x.com/", // Platform URL, str type, required
     "platformUserName":"",              // Platform account, str type
@@ -2161,14 +2007,15 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     "platformRemarks":""                // Remarks, str type
 }
 ```
-| Parameter Name   | Required                                   | Parameter Type | Default | Description    |
-| ---------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
-| platformUrl      | <span class="parameter-require">Yes</span> | string         | --      | Platform URL   |
-| platformUserName | No                                         | string         | --      | Platform account |
+
+| Parameter Name   | Required                                   | Parameter Type | Default | Description       |
+| ---------------- | ------------------------------------------ | -------------- | ------- | ----------------- |
+| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID           |
+| platformUrl      | <span class="parameter-require">Yes</span> | string         | --      | Platform URL      |
+| platformUserName | No                                         | string         | --      | Platform account  |
 | platformPassword | No                                         | string         | --      | Platform password |
-| platformEfa      | No                                         | string         | --      | 2FA            |
-| platformRemarks  | No                                         | string         | --      | Remarks        |
+| platformEfa      | No                                         | string         | --      | 2FA               |
+| platformRemarks  | No                                         | string         | --      | Remarks           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2179,20 +2026,18 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
         "platform_id":0 // Platform ID
     },
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name  | Field Type | Description                       |
-| ----------- | ---------- | --------------------------------- |
-| code        | int        | Status code, 0: success, 500: failure |
-| platform_id | int        | Platform account ID               |
-| msg         | string     | Response message                  |
 
+| Field Name  | Field Type | Description                           |
+| ----------- | ---------- | ------------------------------------- |
+| code        | int        | Status code, 0: success, 500: failure |
+| platform_id | int        | Platform account ID                   |
+| msg         | string     | Response message                      |
 
 ### Batch Create Platform Account
 
- <b style="font-size: 18px">POST /account/batch_create</b>
-
-
+<b style="font-size: 18px">POST /account/batch_create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
@@ -2200,7 +2045,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "accountList":[
-        {   
+        {
             "platformUrl":"https://www.x.com/", // Platform URL, str type, required
             "platformUserName":"",              // Platform account, str type
             "platformPassword":"",              // Platform password, str type
@@ -2210,20 +2055,21 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     ]
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description    |
-| -------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID   |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description                      |
+| -------------- | ------------------------------------------ | -------------- | ------- | -------------------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID                          |
 | accountList    | <span class="parameter-require">Yes</span> | List           | --      | See [accountList](#account-list) |
 
 <a id="account-list">accountList:</a>
 
-| Parameter Name   | Required                                   | Parameter Type | Default | Description    |
-| ---------------- | ------------------------------------------ | -------------- | ------- | -------------- |
-| platformUrl      | <span class="parameter-require">Yes</span> | string         | --      | Platform URL   |
-| platformUserName | No                                         | string         | --      | Platform account |
+| Parameter Name   | Required                                   | Parameter Type | Default | Description       |
+| ---------------- | ------------------------------------------ | -------------- | ------- | ----------------- |
+| platformUrl      | <span class="parameter-require">Yes</span> | string         | --      | Platform URL      |
+| platformUserName | No                                         | string         | --      | Platform account  |
 | platformPassword | No                                         | string         | --      | Platform password |
-| platformEfa      | No                                         | string         | --      | 2FA            |
-| platformRemarks  | No                                         | string         | --      | Remarks        |
+| platformEfa      | No                                         | string         | --      | 2FA               |
+| platformRemarks  | No                                         | string         | --      | Remarks           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2231,24 +2077,22 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ### Modify Platform Account
 
- <b style="font-size: 18px">POST /account/modify</b>
-
-
+<b style="font-size: 18px">POST /account/modify</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "id": 1,                            // Platform account ID, int type, required
     "platformUrl":"https://www.x.com/", // Platform URL, str type, required
@@ -2258,9 +2102,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
     "platformRemarks":""                // Remarks, str type
 }
 ```
+
 | Parameter Name   | Required                                   | Parameter Type | Default | Description         |
 | ---------------- | ------------------------------------------ | -------------- | ------- | ------------------- |
-| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID        |
+| workspaceId      | <span class="parameter-require">Yes</span> | int            | --      | Team ID             |
 | id               | <span class="parameter-require">Yes</span> | int            | --      | Platform account ID |
 | platformUrl      | <span class="parameter-require">Yes</span> | string         | --      | Platform URL        |
 | platformUserName | No                                         | string         | --      | Platform account    |
@@ -2274,31 +2119,30 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ### Delete Platform Account (Batch Supported)
 
- <b style="font-size: 18px">POST /account/delete</b>
-
-
+<b style="font-size: 18px">POST /account/delete</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> Request Parameters</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // Team ID, int type, required, obtained through team API [/browser/workspace]
     "ids": [],                          // Platform account IDs, List type, required
 }
 ```
-| Parameter Name | Required                                   | Parameter Type | Default | Description         |
-| -------------- | ------------------------------------------ | -------------- | ------- | ------------------- |
-| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID        |
+
+| Parameter Name | Required                                   | Parameter Type | Default | Description          |
+| -------------- | ------------------------------------------ | -------------- | ------- | -------------------- |
+| workspaceId    | <span class="parameter-require">Yes</span> | int            | --      | Team ID              |
 | ids            | <span class="parameter-require">Yes</span> | List           | --      | Platform account IDs |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
@@ -2307,15 +2151,16 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 {
     "code": 0,      // Status code, int
     "msg": "Success"    // Response message, str
-} 
+}
 ```
-| Field Name | Field Type | Description                       |
-| ---------- | ---------- | --------------------------------- |
-| code       | int        | Status code, 0: success, 500: failure |
-| msg        | string     | Response message                  |
 
+| Field Name | Field Type | Description                           |
+| ---------- | ---------- | ------------------------------------- |
+| code       | int        | Status code, 0: success, 500: failure |
+| msg        | string     | Response message                      |
 
 ## API Integration Code Examples
+
 ### Python Code Example{#python-example}
 
 #### 1. API Call Example
@@ -2331,17 +2176,17 @@ class RoxyClient:
     :param token: API service token
     '''
     def __init__(self,port:int,token:str) -> None:
-        self.port = port 
+        self.port = port
         self.host = "127.0.0.1"
         self.token = token
         self.url = f"http://{self.host}:{self.port}"
 
     def _build_headers(self):
         return {"Content-Type": "application/json","token":self.token}
-    
+
     def _post(self,path,data = None):
         return requests.post(self.url + path,json=data,headers=self._build_headers())
-    
+
     def _get(self,path,data = None):
         return requests.get(self.url + path,params=data,headers=self._build_headers())
 
@@ -2350,7 +2195,7 @@ class RoxyClient:
     '''
     def health(self):
         return self._get("/health").json()
-    
+
     '''
     Get the list of teams and projects, used to get the list of owned teams and projects
     :param page_index,page_size Pagination parameters
@@ -2381,7 +2226,7 @@ class RoxyClient:
     '''
     def browser_list(self,workspaceId:int,sortNums:str = "",page_index:int = 1,page_size:int = 15):
         return self._get("/browser/list_v3",{"workspaceId":workspaceId,"sortNums":sortNums,"page_index":page_index,"page_size":page_size}).json()
-    
+
     '''
     Get browser profile details
     :param workspaceId: The ID of the team, required. Specify which team's profile details to get, obtained through the workspace_project method
@@ -2398,7 +2243,7 @@ class RoxyClient:
     '''
     def browser_create(self,data:dict = None):
         return self._post("/browser/create",data).json()
-    
+
     '''
     Modify a Profile
     :param data: Modify Profile parameters, see documentation for details
@@ -2414,8 +2259,8 @@ class RoxyClient:
     '''
     def browser_delete(self, workspaceId:int, dirIds:list):
         return self._post("/browser/delete", {"workspaceId": workspaceId, "dirIds": dirIds}).json()
-    
-    
+
+
     '''
     Open a profile
     :param dirId: The ID of the profile to open, required
@@ -2424,7 +2269,7 @@ class RoxyClient:
     '''
     def browser_open(self,dirId:str,args=[]):
         return self._post("/browser/open",{"dirId":dirId,"args": args}).json()
-        
+
     '''
     Close a profile
     :param dirId: The ID of the profile to close, required
@@ -2441,7 +2286,7 @@ class RoxyClient:
     '''
     def browser_random_env(self,workspaceId:int,dirId:str):
         return self._post("/browser/random_env",{"workspaceId": workspaceId,"dirId":dirId}).json()
-    
+
     '''
     Clear local cache of a profile
     :param dirIds: A list of profile IDs, required. Specify the profiles to clear the local cache
@@ -2454,7 +2299,7 @@ class RoxyClient:
         if workspaceId is not None:
             data["workspaceId"] = workspaceId
         return self._post("/browser/clear_local_cache",data).json()
-    
+
     '''
     Clear server cache of a profile
     :param workspaceId: The ID of the team, required. Specify the team where the profile is located, obtained through the workspace_project method
@@ -2463,7 +2308,7 @@ class RoxyClient:
     '''
     def browser_server_cache(self,workspaceId:int,dirIds:list):
         return self._post("/browser/clear_server_cache",{"workspaceId": workspaceId,"dirIds":dirIds}).json()
-    
+
     '''
     Get information about open profiles
     :param dirIds: The IDs of the profiles to query, optional
@@ -2502,7 +2347,7 @@ if __name__ == "__main__":
         }
     }
     print(client.browser_create(data))
-    
+
     data = {
         "workspaceId": 10,
         "dirId":"ac4bd731074a6ef3bbe1e8f4f6667749",
@@ -2514,7 +2359,7 @@ if __name__ == "__main__":
         }
     }
     print(client.browser_mdf(data))
-    
+
     '''
     #print(client.browser_delete(workspaceId=10,dirIds=["ac4bd731074a6ef3bbe1e8f4f6667749"]))
     print(client.browser_open(dirId="ac4bd731074a6ef3bbe1e8f4f6667749"))
@@ -2563,7 +2408,6 @@ if __name__ == "__main__":
     #client.browser_close(browser_id)
 ```
 
-
 ### Node.js code example{#node-example}
 
 #### 1、API list: roxy_api.js
@@ -2592,7 +2436,7 @@ class RoxyClient {
     }
 
     async _get(path,data) {
-    
+
         let parmas = ""
         if (data) {
             for (var k in data) {
@@ -2610,7 +2454,7 @@ class RoxyClient {
             headers: this._build_headers(),
             timeout:10000});
         return await response.json();
-        
+
     }
 
     /*
@@ -2619,7 +2463,7 @@ class RoxyClient {
     health() {
         return this._get("/health")
     }
-    
+
     /*
     Get a list of teams and projects, used to get a list of owned teams and projects
     :param page_index,page_size Pagination parameters
@@ -2627,7 +2471,7 @@ class RoxyClient {
     workspace_project(self) {
         return this._get("/browser/workspace")
     }
-    
+
     /*
     Get a list of accounts, used to get configured platform accounts
     :param workspaceId: The ID of the team, required. Specify which team's platform accounts to get, obtained through the workspace_project method
@@ -2725,7 +2569,7 @@ class RoxyClient {
         }
         return this._post("/browser/clear_local_cache", data)
     }
-    
+
     /*
     Clear server cache of a profile
     :param workspaceId: The ID of the team, required. Specify the team where the profile is located, obtained through the workspace_project method
@@ -2745,7 +2589,7 @@ class RoxyClient {
     browser_random_env(workspaceId,dirid) {
         return this._post("/browser/random_env",{"workspaceId": workspaceId,"dirId":dirid})
     }
-    
+
     /*
     Get information about open profiles
     :param dirIds: The IDs of the profiles to query, optional
@@ -2762,13 +2606,11 @@ module.exports = {
 };
 ```
 
-
-
 #### 2、Main Program Entry
 
 ```JavaScript
 const {RoxyClient} = require("./roxy_api");
-const puppeteer = require("puppeteer-core"); 
+const puppeteer = require("puppeteer-core");
 const api_token = "9976uu37d2df8bdde7bcbd872396142";
 const roxy_client = new RoxyClient(50000, api_token);
 
@@ -2781,12 +2623,12 @@ const operate_window = async() => {
     // Create Profile
     let create_rsp = await roxy_client.browser_create();
     console.log(`browser_create----rsp:${JSON.stringify(create_rsp)}}`);
-    
+
     // Get Profile List
     let browser_id = create_rsp["data"]["dirId"];
     let browsers_rsp = await roxy_client.browser_list(browser_id);
     console.log(`browser_list----rsp:${JSON.stringify(browsers_rsp)}}`);
-    
+
     // Modify Profile
     let proxyInfo = {
         "proxyMethod":"custom",
@@ -2810,7 +2652,7 @@ const operate_window = async() => {
     });
 
     console.log(`${browser_id} browser_mdf----rsp:${JSON.stringify(mdf_rsp)}`);
-    
+
     try {
         // Open Profile
         const rsp = await roxy_client.browser_open(browser_id);
@@ -2826,7 +2668,7 @@ const operate_window = async() => {
             browserWSEndpoint:rsp["data"]["ws"],
             defaultViewport: null,
         });
-        
+
         // Start Business
         let newPage = await browser.newPage();
         try {
@@ -2838,7 +2680,7 @@ const operate_window = async() => {
         // Open Profile Process Information
         let conn_info_rsp = await roxy_client.browser_connection_info();
         console.log(`browser_connection_info----rsp:${JSON.stringify(conn_info_rsp)}}`);
-        
+
         // Close Profile
         // let close_rsp = await roxy_client.browser_close(browser_id);
         // console.log(`${browser_id} browser_close----rsp:${JSON.stringify(close_rsp)}`);
@@ -2869,11 +2711,11 @@ const operate_window = async() => {
 })();
 ```
 
-
 ## Appendix
+
 ### Appendix-Resolution List {#api_relution}
 
-#####  Format: Width x Height
+##### Format: Width x Height
 
 <br>
 
@@ -3292,7 +3134,6 @@ zh-CN    Chinese (Simplified) - 中文（简体）
 zh-HK    Chinese (Hong Kong) - 中文（香港）
 zu    Zulu - isiZulu
 ```
-
 
 ### Appendix-Timezone List {#api_timezone}
 
@@ -3774,5 +3615,5 @@ GMT+13:00 Pacific/Tongatapu
 GMT+13:45 Pacific/Chatham
 GMT+14:00 Etc/GMT-14
 GMT+14:00 Pacific/Apia
-GMT+14:00 Pacific/Kiritimati   
+GMT+14:00 Pacific/Kiritimati
 ```

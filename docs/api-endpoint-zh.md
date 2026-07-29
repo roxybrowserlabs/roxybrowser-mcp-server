@@ -5,11 +5,10 @@
 :::
 
 ## 浏览器健康检查
+
 ### 健康检查
 
- <b style="font-size: 18px">GET /health</b>
-
-
+<b style="font-size: 18px">GET /health</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
@@ -19,34 +18,25 @@
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
-
-
-
 ```Json
 {
     "code": 0,      // 状态码, 0:成功，500：失败，int类型
     "msg": "成功"   // 返回结果, str类型
-}   
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0：成功，500：失败 |
-| msg              | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ## 团队项目接口
+
 ### 获取团队项目列表
 
- <b style="font-size: 18px">GET /browser/workspace</b>
-
-
+<b style="font-size: 18px">GET /browser/workspace</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
-
-
 
 ```Json
 {
@@ -55,16 +45,12 @@
 }
 ```
 
-
-
-| 参数名称        | 必需项 | 参数类型 | 默认值 | 描述     |
-| ----------- | --- | ---- | --- | ------ |
-| page_index  | 否   | int  | 1   | 分页索引   |
-| page_size   | 否   | int  | 15  | 分页条数   |
+| 参数名称   | 必需项 | 参数类型 | 默认值 | 描述     |
+| ---------- | ------ | -------- | ------ | -------- |
+| page_index | 否     | int      | 1      | 分页索引 |
+| page_size  | 否     | int      | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -76,7 +62,7 @@
                 "id": 1,                                    // 团队ID
                 "workspaceName": "feihairui's Team",   // 团队名称
                 "project_details": [                        // 项目详细信息
-                    {   
+                    {
                         "projectId": 1,                     // 项目编号
                         "projectName": "xx项目"             // 项目名称
                     }
@@ -88,32 +74,25 @@
 }
 ```
 
-
-
-| 字段名称            | 字段类型   | 描述               |
-| --------------- | ------ | ---------------- |
-| code            | int    | 状态码, 0:成功，500：失败 |
-| total           | int    | 总条数              |
-| id              | int    | 团队ID           |
-| workspaceName   | string | 团队名称           |
-| project_details | List   | 项目详细信息           |
-| projectId       | int    | 项目编号             |
-| projectName     | string | 项目名称             |
-| msg             | string | 返回结果             |
-
+| 字段名称        | 字段类型 | 描述                      |
+| --------------- | -------- | ------------------------- |
+| code            | int      | 状态码, 0:成功，500：失败 |
+| total           | int      | 总条数                    |
+| id              | int      | 团队ID                    |
+| workspaceName   | string   | 团队名称                  |
+| project_details | List     | 项目详细信息              |
+| projectId       | int      | 项目编号                  |
+| projectName     | string   | 项目名称                  |
+| msg             | string   | 返回结果                  |
 
 ### 获取账号列表
 
- <b style="font-size: 18px">GET /browser/account</b>
-
-
+<b style="font-size: 18px">GET /browser/account</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,       // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "accountId": 1,         // 账号库id, int类型, 非必传
     "page_index": 1,        // 分页索引, int类型, 非必传, 默认1
@@ -121,18 +100,14 @@
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型 | 默认值 | 描述     |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| accountId   | 否                                        | int  | 1   | 账号库id  |
-| page_index  | 否                                        | int  | 1   | 分页索引   |
-| page_size   | 否                                        | int  | 15  | 分页条数   |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ----------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id   |
+| accountId   | 否                                        | int      | 1      | 账号库id |
+| page_index  | 否                                        | int      | 1      | 分页索引 |
+| page_size   | 否                                        | int      | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -152,56 +127,45 @@
                 "createTime": "2024-10-23 15:45:46",                            // 创建时间
                 "updateTime": "2024-10-23 15:45:46"                             // 修改时间
             }
-        ] 
+        ]
     },
     "msg": "成功"                                                               // 返回结果, str类型
-} 
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
-| total            | int    | 总条数              |
-| id               | int    | 账号库id            |
-| platformUrl      | string | 平台账号url          |
-| platformUserName | string | 账号库用户名           |
-| platformPassword | string | 账号库密码            |
-| platformEfa      | string | 账号库Efa           |
-| platformCookies  | object | 账号库Cookies       |
-| platformName     | string | 平台名称             |
-| platformRemarks  | string | 平台备注             |
-| createTime       | string | 创建时间             |
-| updateTime       | string | 修改时间             |
-
+| 字段名称         | 字段类型 | 描述                      |
+| ---------------- | -------- | ------------------------- |
+| code             | int      | 状态码, 0:成功，500：失败 |
+| msg              | string   | 返回结果                  |
+| total            | int      | 总条数                    |
+| id               | int      | 账号库id                  |
+| platformUrl      | string   | 平台账号url               |
+| platformUserName | string   | 账号库用户名              |
+| platformPassword | string   | 账号库密码                |
+| platformEfa      | string   | 账号库Efa                 |
+| platformCookies  | object   | 账号库Cookies             |
+| platformName     | string   | 平台名称                  |
+| platformRemarks  | string   | 平台备注                  |
+| createTime       | string   | 创建时间                  |
+| updateTime       | string   | 修改时间                  |
 
 ### 获取标签列表
 
 <b style="font-size: 18px">GET /browser/label</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1       // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型 | 默认值 | 描述     |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述   |
+| ----------- | ----------------------------------------- | -------- | ------ | ------ |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -214,34 +178,28 @@
         }
     ],
     "msg": "成功"                                                               // 返回结果, str类型
-} 
+}
 
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败  |
-| msg              | string | 返回结果                 |
-| id               | int    | 标签id                  |
-| color            | string | 标签颜色                 |
-| name             | string | 标签名称                 | 
-
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
+| id       | int      | 标签id                    |
+| color    | string   | 标签颜色                  |
+| name     | string   | 标签名称                  |
 
 ## 浏览器窗口接口
+
 ### 获取浏览器窗口列表
 
 <b style="font-size: 18px">GET /browser/list_v3</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 10,                              // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirIds": "dc1ed4d,2e18ce,yy67yegk",            // 浏览器窗口id，str类型，非必传，多个以英文逗号分隔
     "windowName": "Roxytest",                       // 浏览器窗口名称，str类型，非必传
@@ -251,27 +209,23 @@
     "windowRemark": "Windows",                      // 窗口备注，str类型，非必传
     "page_index": 1,                                // 分页索引, int类型, 非必传, 默认1
     "page_size": 15                                 // 分页条数, int类型, 非必传, 默认15
-    
+
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| workspaceId | <span class="parameter-require">是</span> | int    | --  | 团队id  |
-| dirIds      | 否                                        | string | --  | 浏览器窗口id |
-| windowName  | 否                                        | string | --  | 浏览器窗口名称 |
-| sortNums    | 否                                        | string | --  | 窗口序号 |
-| os          | 否                                        | string | --  | 操作系统 |
-| projectIds  | 否                                        | string | --  | 项目ID |
-| windowRemark| 否                                        | string | --  | 窗口备注 |
-| page_index  | 否                                        | int    | 1   | 分页索引    |
-| page_size   | 否                                        | int    | 15  | 分页条数    |
+| 参数名称     | 必需项                                    | 参数类型 | 默认值 | 描述           |
+| ------------ | ----------------------------------------- | -------- | ------ | -------------- |
+| workspaceId  | <span class="parameter-require">是</span> | int      | --     | 团队id         |
+| dirIds       | 否                                        | string   | --     | 浏览器窗口id   |
+| windowName   | 否                                        | string   | --     | 浏览器窗口名称 |
+| sortNums     | 否                                        | string   | --     | 窗口序号       |
+| os           | 否                                        | string   | --     | 操作系统       |
+| projectIds   | 否                                        | string   | --     | 项目ID         |
+| windowRemark | 否                                        | string   | --     | 窗口备注       |
+| page_index   | 否                                        | int      | 1      | 分页索引       |
+| page_size    | 否                                        | int      | 15     | 分页条数       |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -295,53 +249,42 @@
         ]
     },
     "msg": "成功"
-}    
+}
 ```
 
-
-
-| 字段名称<div style="min-width: 250px"></div> | 字段类型<div style="min-width: 150px"></div> | 描述                                                     |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| dirId                                    | string                                   | 浏览器窗口id                                                |
-| windowSortNum                            | int                                      | 窗口序号                                                   |
-| windowName                               | string                                   | 窗口名称                                                   |
-| coreVersion                              | string                                   | 内核版本，枚举值：135，133，130，125，117，109                                   |
-| coreType                                 | string                                   | 浏览器内核类型，Chrome/Firefox                                   |
-| os                                       | string                                   | 操作系统，枚举值：Windows、macOS、Linux、Android、IOS                           |
-| osVersion                                | string                                   | 操作系统版本, 枚举值：Windows的枚举值：11、10、8、7; <br/>Linux的枚举值: ALL; <br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> Android的枚举值：14、13、12、11、10、9; <br/> IOS的枚举值：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
-| windowRemark                             | string                                   | 窗口备注                                                   |
-| createTime                               | string                                   | 窗口创建时间                                                 |
-| updateTime                               | string                                   | 窗口修改时间                                                 |
-| userName                                 | string                                   | 窗口归属人用户名,即用户账号                                         |
- 
+| 字段名称<div style="min-width: 250px"></div> | 字段类型<div style="min-width: 150px"></div> | 描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dirId                                        | string                                       | 浏览器窗口id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| windowSortNum                                | int                                          | 窗口序号                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| windowName                                   | string                                       | 窗口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| coreVersion                                  | string                                       | 内核版本，枚举值：135，133，130，125，117，109                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| coreType                                     | string                                       | 浏览器内核类型，Chrome/Firefox                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| os                                           | string                                       | 操作系统，枚举值：Windows、macOS、Linux、Android、IOS                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| osVersion                                    | string                                       | 操作系统版本, 枚举值：Windows的枚举值：11、10、8、7; <br/>Linux的枚举值: ALL; <br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> Android的枚举值：14、13、12、11、10、9; <br/> IOS的枚举值：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
+| windowRemark                                 | string                                       | 窗口备注                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| createTime                                   | string                                       | 窗口创建时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| updateTime                                   | string                                       | 窗口修改时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| userName                                     | string                                       | 窗口归属人用户名,即用户账号                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ### 获取浏览器窗口明细
 
 <b style="font-size: 18px">GET /browser/detail</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 10,                              // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirId": "dc1e73d4dd954a"            			// 浏览器窗口id，str类型，必传
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| workspaceId | <span class="parameter-require">是</span> | int    | --  | 团队id  |
-| dirId      | <span class="parameter-require">是</span> | string | --  | 浏览器窗口id | 
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述         |
+| ----------- | ----------------------------------------- | -------- | ------ | ------------ |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id       |
+| dirId       | <span class="parameter-require">是</span> | string   | --     | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -357,7 +300,7 @@
                 "os": "Windows",                                        // 操作系统, 枚举值：Windows、macOS、Linux、Android、IOS, str类型
                 "osVersion": "11",                                      // 操作系统版本, 枚举值：Windows的枚举值：11、10、8、7; Linux的枚举值: ALL; macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; Android的枚举值：14、13、12、11、10、9; IOS的枚举值：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0; str类型
                 "userAgent": "Mozilla/5.0 (Windows NT 10.0)",           // User Agent, str类型
-                "cookie": [												 				
+                "cookie": [
                     {
                         "name": "1",
                         "value": "2",
@@ -370,16 +313,16 @@
                     "platformUrl": "https://www.tiktok.com/",           // 平台账号URL，str类型
                     "platformUserName": "Roxytest",                     // 平台账号，str类型
                     "platformPassword": "Roxytest",                     // 平台密码，str类型
-                    "platformEfa": "2F3CD67B6D",                        // efa，str类型                      
-                    "platformRemarks": "Roxytest"                       // 平台备注，str类型      
+                    "platformEfa": "2F3CD67B6D",                        // efa，str类型
+                    "platformRemarks": "Roxytest"                       // 平台备注，str类型
                 }],
                 "defaultOpenUrl": ["https://www.facebook.com"],         // 存储浏览器标签页，List类型
                 "windowRemark": "Roxytest",                             // 窗口备注, str类型
                 "projectId": 4,											// 项目ID, int类型
-                "projectName": "Roxytest",								// 项目名称, str类型	
+                "projectName": "Roxytest",								// 项目名称, str类型
                 "openStatus": false,                                    // 团队内是否已打开, 枚举值：true: 已打开，false: 未打开，布尔类型
                 "statusInfo":[
-                    {   
+                    {
                         "openTime": "2024-01-09 12:12:12",              // 打开时间，str类型
                         "openUserName": "test"                          // 打开人用户名，str类型
                     }
@@ -387,8 +330,8 @@
                 "createTime": "2023-12-04 21:55:58",                    // 窗口创建时间, str类型
                 "updateTime": "2023-12-04 21:56:01",                    // 窗口修改时间, str类型
                 "userName": "roxytest",                                 // 窗口归属人用户名,即用户账号, str类型
-                "openTime": "2024-12-05 10:57:43",						// 窗口最后打开时间, str类型	
-                "closeTime": "2024-12-05 10:40:54",						// 窗口最后关闭时间, str类型 
+                "openTime": "2024-12-05 10:57:43",						// 窗口最后打开时间, str类型
+                "closeTime": "2024-12-05 10:40:54",						// 窗口最后关闭时间, str类型
                 "proxyInfo": {
                     "moduleId": 0,                                      // 代理id，int类型，0 为不使用，非必传，通过代理列表接口【/proxy/list】获取
                     "proxyMethod": "custom",                            // 代理方式，枚举值：手动填写：custom，选择代理 IP：choose，str类型
@@ -405,7 +348,7 @@
                     "checkChannel": "http://iprust.io/ip.json"			// IP查询渠道，str类型
                 },
                 "isOften": false,										// 是否收藏，true：是，false：否，布尔类型
-                "labelInfo": [											
+                "labelInfo": [
                     {
                         "labelId": 859,									// 标签ID，int类型
                         "labelName": "Roxytest",						// 标签名称，str类型
@@ -416,93 +359,83 @@
         ]
     },
     "msg": "成功"
-}    
+}
 ```
 
-
-
-| 字段名称<div style="min-width: 250px"></div> | 字段类型<div style="min-width: 150px"></div> | 描述                                                     |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| dirId                                    | string                                   | 浏览器窗口id                                                |
-| windowSortNum                            | int                                      | 窗口序号                                                   |
-| windowName                               | string                                   | 窗口名称                                                   |
-| coreVersion                              | string                                   | 内核版本，枚举值：135，133，130，125，117，109                                   |
-| os                                       | string                                   | 操作系统，枚举值：Windows、macOS、Linux、Android、IOS                           |
-| osVersion                                | string                                   | 操作系统版本, 枚举值：Windows的枚举值：11、10、8、7; <br/>Linux的枚举值: ALL; <br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> Android的枚举值：14、13、12、11、10、9; <br/> IOS的枚举值：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
-| userAgent                                | string                                   | User Agent                                             |
-| cookie                                   | List                                     | cookie                                                 |
-| searchEngine                             | string                                   | 搜索引擎，枚举值：Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo |
-| defaultOpenUrl                           | List                                     | 存储浏览器标签页                                               |
-| windowRemark                             | string                                   | 窗口备注                                                   |
-| projectId                                | int                                      | 项目ID                                                   |
-| projectName                              | string                                   | 项目名称                                                   |
-| openStatus                               | boolean                                  | 团队内是否已打开, 枚举值：true: 已打开，false: 未打开                     |
-| createTime                               | string                                   | 窗口创建时间                                                 |
-| updateTime                               | string                                   | 窗口修改时间                                                 |
-| userName                                 | string                                   | 窗口归属人用户名,即用户账号                                         |
-| openTime                                 | string                                   | 窗口最后打开时间                                                 |
-| closeTime                                | string                                   | 窗口最后关闭时间                                                 |
-| isOften                                  | boolean                                  | 是否收藏，true：是，false：否                                                   |
-| windowPlatformList                       | List                                     | 见 [windowPlatformList](#window-platform-list)          |
-| statusInfo                               | object                                   | 窗口打开时的详细信息，见 [statusInfo](#status-info)                |
-| proxyInfo                                | object                                   | 见 [proxyInfo](#proxy-info)                             |                         |
-| labelInfo                                | object                                   | 见 [labelInfo](#label-info)                             |                         |
-
+| 字段名称<div style="min-width: 250px"></div> | 字段类型<div style="min-width: 150px"></div> | 描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dirId                                        | string                                       | 浏览器窗口id                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| windowSortNum                                | int                                          | 窗口序号                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| windowName                                   | string                                       | 窗口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| coreVersion                                  | string                                       | 内核版本，枚举值：135，133，130，125，117，109                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| os                                           | string                                       | 操作系统，枚举值：Windows、macOS、Linux、Android、IOS                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| osVersion                                    | string                                       | 操作系统版本, 枚举值：Windows的枚举值：11、10、8、7; <br/>Linux的枚举值: ALL; <br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7; <br/> Android的枚举值：14、13、12、11、10、9; <br/> IOS的枚举值：18.2、18.1、18.0、17.0、16.6、16.5、16.4、16.3、16.2、16.1、16.0、15.7、15.6、15.5、15.4、15.3、15.2、15.1、15.0、14.7、14.6、14.5、14.4、14.3、14.2、14.1、14.0 |
+| userAgent                                    | string                                       | User Agent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| cookie                                       | List                                         | cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| searchEngine                                 | string                                       | 搜索引擎，枚举值：Google, Microsoft Bing, Yahoo, Yandex, DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| defaultOpenUrl                               | List                                         | 存储浏览器标签页                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| windowRemark                                 | string                                       | 窗口备注                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| projectId                                    | int                                          | 项目ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| projectName                                  | string                                       | 项目名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| openStatus                                   | boolean                                      | 团队内是否已打开, 枚举值：true: 已打开，false: 未打开                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| createTime                                   | string                                       | 窗口创建时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| updateTime                                   | string                                       | 窗口修改时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| userName                                     | string                                       | 窗口归属人用户名,即用户账号                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| openTime                                     | string                                       | 窗口最后打开时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| closeTime                                    | string                                       | 窗口最后关闭时间                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| isOften                                      | boolean                                      | 是否收藏，true：是，false：否                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| windowPlatformList                           | List                                         | 见 [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| statusInfo                                   | object                                       | 窗口打开时的详细信息，见 [statusInfo](#status-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| proxyInfo                                    | object                                       | 见 [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |     |
+| labelInfo                                    | object                                       | 见 [labelInfo](#label-info)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |     |
 
 <a id="window-platform-list">windowPlatformList:</a>
 
-| 字段名称             | 字段类型   | 描述      |
-| ---------------- | ------ | ------- |
-| platformUrl      | string | 平台账号URL |
-| platformUserName | string | 平台账号    |
-| platformPassword | string | 平台密码    |
-| platformEfa      | string | efa     |
-| platformRemarks  | string | 平台备注    |
+| 字段名称         | 字段类型 | 描述        |
+| ---------------- | -------- | ----------- |
+| platformUrl      | string   | 平台账号URL |
+| platformUserName | string   | 平台账号    |
+| platformPassword | string   | 平台密码    |
+| platformEfa      | string   | efa         |
+| platformRemarks  | string   | 平台备注    |
 
 <a id="status-info">statusInfo:</a>
 
-| 字段名称         | 字段类型   | 描述     |
-| ------------ | ------ | ------ |
-| openUserName | string | 打开人用户名 |
-| openTime     | string | 打开时间   |
+| 字段名称     | 字段类型 | 描述         |
+| ------------ | -------- | ------------ |
+| openUserName | string   | 打开人用户名 |
+| openTime     | string   | 打开时间     |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| 字段名称          | 字段类型   | 描述                                         |
-| ------------- | ------ | ------------------------------------------ |
-| proxyMethod   | string | 代理方式，枚举值：自定义：custom，导入的IP：choose，API接入：api |
-| proxyCategory | string | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5      |
-| ipType        | string | 网络协议, 枚举值：IPV4, IPV6                       |
-| protocol      | string | 代理协议，枚举值：HTTP, HTTPS, SOCKS5               |
-| host          | string | 代理主机                                       |
-| port          | string | 代理端口                                       |
-| proxyUserName | string | 代理账号                                       |
-| proxyPassword | string | 代理密码                                       |
-| refreshUrl    | string | 刷新URL                                      |
-| lastIp        | string | 出口IP                                       |
-| lastCountry   | string | 出口国家                                       |
-| checkChannel  | string | IP查询渠道                                       |
-
+| 字段名称      | 字段类型 | 描述                                                             |
+| ------------- | -------- | ---------------------------------------------------------------- |
+| proxyMethod   | string   | 代理方式，枚举值：自定义：custom，导入的IP：choose，API接入：api |
+| proxyCategory | string   | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5                   |
+| ipType        | string   | 网络协议, 枚举值：IPV4, IPV6                                     |
+| protocol      | string   | 代理协议，枚举值：HTTP, HTTPS, SOCKS5                            |
+| host          | string   | 代理主机                                                         |
+| port          | string   | 代理端口                                                         |
+| proxyUserName | string   | 代理账号                                                         |
+| proxyPassword | string   | 代理密码                                                         |
+| refreshUrl    | string   | 刷新URL                                                          |
+| lastIp        | string   | 出口IP                                                           |
+| lastCountry   | string   | 出口国家                                                         |
+| checkChannel  | string   | IP查询渠道                                                       |
 
 <a id="label-info">labelInfo:</a>
 
-| 字段名称          | 字段类型   | 描述                                         |
-| ------------- | ------ | ------------------------------------------ |
-| labelId       | int    | 标签ID                                         |
-| labelName     | string | 标签名称                                       |
-| labelColor    | string | 标签颜色                                       |
+| 字段名称   | 字段类型 | 描述     |
+| ---------- | -------- | -------- |
+| labelId    | int      | 标签ID   |
+| labelName  | string   | 标签名称 |
+| labelColor | string   | 标签颜色 |
 
-
- 
 ### 创建浏览器窗口
 
 <b style="font-size: 18px">POST /browser/create</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
-
-
 
 ```Json
 {
@@ -521,8 +454,8 @@
         "platformUrl": "https://www.tiktok.com/",               // 平台账号URL，str类型，非必传
         "platformUserName": "Roxytest",                         // 平台账号，str类型，非必传
         "platformPassword": "12345655",                         // 平台密码，str类型，非必传
-        "platformEfa": "2F3CD67B6D",                            // efa，str类型，非必传                           
-        "platformRemarks": "Roxytest"                           // 平台备注，str类型，非必传      
+        "platformEfa": "2F3CD67B6D",                            // efa，str类型，非必传
+        "platformRemarks": "Roxytest"                           // 平台备注，str类型，非必传
     }],
     "defaultOpenUrl": ["https://www.facebook.com"],             // 存储浏览器标签页，List类型，非必传
     "windowRemark": "Roxytest",                                 // 窗口备注, str类型，非必传
@@ -625,137 +558,134 @@
 }
 ```
 
-
-
-| 参数名称               | 必需项<div style="min-width: 65px"></div>   | 参数类型<div style="min-width: 80px"></div> | 默认值<div style="min-width: 80px"></div> | 描述                                                                                                                                                                                                                               |
-| ------------------ | ---------------------------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| workspaceId        | <span class="parameter-require">是</span> | int                                     | --                                     | 团队id                                                                                                                                                                                                                           |
-| windowName         | 否                                        | string                                  | --                                     | 窗口名称                                                                                                                                                                                                                             |
-| coreVersion        | 否                                        | string                                  | 最新                                    | 内核版本，枚举值 例如：138，137，136等                                                                                                                                                                      |
-| coreType           | 否                                        | string                                  | Chrome                                 | 浏览器内核类型，Chrome/Firefox                                                                                                                                                                                                      |
-| os                 | 否                                        | string                                  | Windows                                | 操作系统, 枚举值：Windows、macOS、Linux、IOS、Android                                                                                                                                                                                       |
-| osVersion          | 否                                        | string                                  | 11                                     | 操作系统版本, <br/>Windows的枚举值：11、10、8、7;<br/>Linux的枚举值：ALL；<br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7，<br/>Android的枚举值：14,13,12,11,10,9；<br/>IOS的枚举值：18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
-| userAgent                 | 否                                        | string                                  | Mozilla/5.0 (Windows NT 10.0; Win64; x64)                                | userAgent
-| cookie             | 否                                        | boolean                                 | --                                     | cookie                                                                                                                                                                                                                           |
-| searchEngine             | 否                                        | string                                 | Google                                     | 搜索引擎                                                                                                                                                                                                                           |
-| labelIds           | 否                                        | List                                    | --                                     | 标签列表id 
-| defaultOpenUrl     | 否                                        | List                                    | --                                     | 存储浏览器标签页                                                                                                                                                                                                                         |
-| windowRemark       | 否                                        | string                                  | --                                     | 窗口备注                                                                                                                                                                                                                             |
-| projectId          | 否                                        | number                                  | --                                     | 项目ID                                                                                                                                                                                                                             |
-| windowPlatformList | 否                                        | List                                    | --                                     | 见 [windowPlatformList](#window-platform-list)                                                                                                                                                                                    |
-| proxyInfo          | 否                                        | object                                  | --                                     | 见 [proxyInfo](#proxy-info)                                                                                                                                                                                                       |
-| fingerInfo         | 否                                        | object                                  | --                                     | 见 [fingerInfo](#finger-info)                                                                                                                                                                                                     |
+| 参数名称           | 必需项<div style="min-width: 65px"></div> | 参数类型<div style="min-width: 80px"></div> | 默认值<div style="min-width: 80px"></div> | 描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------ | ----------------------------------------- | ------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| workspaceId        | <span class="parameter-require">是</span> | int                                         | --                                        | 团队id                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowName         | 否                                        | string                                      | --                                        | 窗口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| coreVersion        | 否                                        | string                                      | 最新                                      | 内核版本，枚举值 例如：138，137，136等                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| coreType           | 否                                        | string                                      | Chrome                                    | 浏览器内核类型，Chrome/Firefox                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| os                 | 否                                        | string                                      | Windows                                   | 操作系统, 枚举值：Windows、macOS、Linux、IOS、Android                                                                                                                                                                                                                                                                                                                                                                                                                |
+| osVersion          | 否                                        | string                                      | 11                                        | 操作系统版本, <br/>Windows的枚举值：11、10、8、7;<br/>Linux的枚举值：ALL；<br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7，<br/>Android的枚举值：14,13,12,11,10,9；<br/>IOS的枚举值：18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
+| userAgent          | 否                                        | string                                      | Mozilla/5.0 (Windows NT 10.0; Win64; x64) | userAgent                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| cookie             | 否                                        | boolean                                     | --                                        | cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| searchEngine       | 否                                        | string                                      | Google                                    | 搜索引擎                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| labelIds           | 否                                        | List                                        | --                                        | 标签列表id                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| defaultOpenUrl     | 否                                        | List                                        | --                                        | 存储浏览器标签页                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| windowRemark       | 否                                        | string                                      | --                                        | 窗口备注                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| projectId          | 否                                        | number                                      | --                                        | 项目ID                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowPlatformList | 否                                        | List                                        | --                                        | 见 [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| proxyInfo          | 否                                        | object                                      | --                                        | 见 [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| fingerInfo         | 否                                        | object                                      | --                                        | 见 [fingerInfo](#finger-info)                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 <a id="window-platform-list">windowPlatformList:</a>
 
-| 参数名称             | 必需项 | 参数类型   | 默认值 | 描述      |
-| ---------------- | --- | ------ | --- | ------- |
-| platformUrl      | 否   | string | --  | 平台账号URL |
-| platformUserName | 否   | string | --  | 平台账号    |
-| platformPassword | 否   | string | --  | 平台密码    |
-| platformEfa      | 否   | string | --  | efa     |
-| platformRemarks  | 否   | string | --  | 平台备注    |
+| 参数名称         | 必需项 | 参数类型 | 默认值 | 描述        |
+| ---------------- | ------ | -------- | ------ | ----------- |
+| platformUrl      | 否     | string   | --     | 平台账号URL |
+| platformUserName | 否     | string   | --     | 平台账号    |
+| platformPassword | 否     | string   | --     | 平台密码    |
+| platformEfa      | 否     | string   | --     | efa         |
+| platformRemarks  | 否     | string   | --     | 平台备注    |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| 参数名称          | 必需项 | 参数类型   | 默认值     | 描述                                    |
-| ------------- | --- | ------ | ------- | ------------------------------------- |
-| proxyMethod   | 否   | string | custom  | 代理方式，枚举值：自定义：custom                   |
-| proxyCategory | 否   | string | noproxy | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5, SSH |
-| ipType        | 否   | string | IPV4    | 网络协议, 枚举值：IPV4, IPV6                  |
-| host          | 否   | string | --      | 代理主机                                  |
-| port          | 否   | string | --      | 代理端口                                  |
-| proxyUserName | 否   | string | --      | 代理账号                                  |
-| proxyPassword | 否   | string | --      | 代理密码                                  |
-| refreshUrl    | 否   | string | --      | 刷新URL                                  |
-| checkChannel  | 否   | string | --      | IP查询渠道                                 |
-
+| 参数名称      | 必需项 | 参数类型 | 默认值  | 描述                                                |
+| ------------- | ------ | -------- | ------- | --------------------------------------------------- |
+| proxyMethod   | 否     | string   | custom  | 代理方式，枚举值：自定义：custom                    |
+| proxyCategory | 否     | string   | noproxy | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5, SSH |
+| ipType        | 否     | string   | IPV4    | 网络协议, 枚举值：IPV4, IPV6                        |
+| host          | 否     | string   | --      | 代理主机                                            |
+| port          | 否     | string   | --      | 代理端口                                            |
+| proxyUserName | 否     | string   | --      | 代理账号                                            |
+| proxyPassword | 否     | string   | --      | 代理密码                                            |
+| refreshUrl    | 否     | string   | --      | 刷新URL                                             |
+| checkChannel  | 否     | string   | --      | IP查询渠道                                          |
 
 <a id="finger-info">fingerInfo:</a>
 
-| 参数名称                    | 必需项<div style="min-width: 50px"></div> | 参数类型<div style="min-width: 65px"></div> | 默认值<div style="min-width: 50px"></div> | 描述                                                             |
-| ----------------------- | -------------------------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------------------------------- |
-| isLanguageBaseIp        | 否                                      | boolean                                 | true                                   | 浏览器语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                 |
-| language                | 否                                      | string                                  | --                                     | 浏览器语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-语言列表](#api_language)         |
-| isDisplayLanguageBaseIp | 否                                      | boolean                                 | true                                   | 界面语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                  |
-| displayLanguage         | 否                                      | string                                  | --                                     | 界面语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-界面语言列表](#api_dispalylanguage) |
-| isTimeZone              | 否                                      | boolean                                 | true                                   | 时区类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                    |
-| timeZone                | 否                                      | string                                  | --                                     | 时区类型为自定义时指定的时区值, str类型，非必传，见 [附录-时区列表](#api_timezone)           |
-| position                | 否                                      | int                                     | 1                                      | 地理位置提示类型，询问: 0，允许：1，禁用：2                                       |
-| isPositionBaseIp        | 否                                      | boolean                                 | true                                   | 地理位置类型，跟随IP匹配：true，自定义：false                                   |
-| longitude               | 否                                      | string                                  | --                                     | 经度值，isPositionBaseIp为false时设置                                  |
-| latitude                | 否                                      | string                                  | --                                     | 纬度值， isPositionBaseIp为false时设置                                 |
-| precisionPos            | 否                                      | string                                  | --                                     | 精度值(米)， isPositionBaseIp为false时设置                              |
-| forbidAudio             | 否                                      | boolean                                 | true                                   | 网页是否打开声音，开启：true，关闭：false                                      |
-| forbidImage             | 否                                      | boolean                                 | true                                   | 网页是否加载图片，开启：true，关闭：false                                      |
-| forbiddenPictureSize    | 否                                       | number                                 |   0                                   | 当 forbidImage 为 false 时，设置 forbiddenPictureSize = 0 将禁用所有图片加载。|
-| forbidMedia             | 否                                      | boolean                                 | true                                   | 网页是否播放视频，开启：true，关闭：false                                      |
-| openWidth               | 否                                      | string                                  | 1000                                   | 窗口尺寸，宽度                                                        |
-| openHeight              | 否                                      | string                                  | 1000                                   | 窗口尺寸，高度
-| openBookmarks            | 否                                      | boolean                                 | false                                  | 是否开启书签，true：开启，false：关闭
-| positionSwitch          | 否                                      | boolean                                 | true                                   | 窗口位置开关，true：自定义，false：全屏
-| windowRatioPosition     | 否                                      | string                                  | 0,0                                   | 见 [windowRatioPosition](#windowRatioPosition)                                                       |
-| isDisplayName           | 否                                      | boolean                                 | false                                  | 窗口名是否在标题栏显示，显示：true，不显示：false                                  |
-| syncBookmark            | 否                                      | boolean                                 | false                                  | 是否同步书签，true：是，false：否                                          |
-| syncHistory             | 否                                      | boolean                                 | false                                  | 是否同步历史记录，true：是，false：否                                        |
-| syncTab                 | 否                                      | boolean                                 | true                                   | 是否同步标签页，true：是，false：否                                         |
-| syncCookie              | 否                                      | boolean                                 | true                                   | 是否同步Cookie，true：是，false：否                                      |
-| syncExtensions          | 否                                      | boolean                                 | false                                  | 是否同步扩展应用数据，true：是，false：否                                      |
-| syncPassword            | 否                                      | boolean                                 | true                                   | 是否同步已保存的用户名密码，true：是，false：否                                   |
-| syncIndexedDb           | 否                                      | boolean                                 | false                                  | 是否同步IndexedDB，true：是，false：否                                   |
-| syncLocalStorage        | 否                                      | boolean                                 | false                                  | 是否同步Local Storage，true：是，false：否                               |
-| clearCacheFile          | 否                                      | boolean                                 | false                                  | 启动浏览器前是否删除缓存文件，true：是，false：否                                  |
-| clearCookie             | 否                                      | boolean                                 | false                                  | 启动浏览器前是否删除Cookie，true：是，false：否                                |
-| clearLocalStorage       | 否                                      | boolean                                 | false                                  | 启动浏览器前删除Local Storage，true：是，false：否                           |
-| randomFingerprint       | 否                                      | boolean                                 | false                                  | 启动浏览时是否随机生成指纹，true：是，false：否                                   |
-| forbidSavePassword      | 否                                      | boolean                                 | false                                  | 网页是否弹出保存密码提示，true：是，false：否                                    |
-| stopOpenNet             | 否                                      | boolean                                 | false                                  | 网络不通是否停止打开窗口，true：是，false：否                                    |
-| stopOpenIP              | 否                                      | boolean                                 | false                                  | 出口IP发生变化是否停止打开窗口，true：是，false：否                                |
-| stopOpenPosition        | 否                                      | boolean                                 | false                                  | 出口IP对应国家/地区发生变化是否停止打开窗口，true：是，false：否                         |
-| openWorkbench        | 否                                         | int                                     | 1                                      | 是否打开工作台, 1: 开启，关闭: 0，跟随软件设置: 2                         |
-| resolutionType          | 否                                      | boolean                                 | false                                  | 分辨率，true: 自定义, false: 跟随系统                                       |
-| resolutionX             | 否                                      | string                                  | --                                     | 自定义分辨率时，分辨率宽度值, str类型，见 [附录-分辨率列表](#api_relution)               |
-| resolutionY             | 否                                      | string                                  | --                                     | 自定义分辨率时，分辨率高度值, str类型，见 [附录-分辨率列表](#api_relution)               |
-| fontType                | 否                                      | boolean                                 | false                                  | 字体指纹，随机：true，跟随系统：false                                        |
-| webRTC                  | 否                                      | int                                     | 2                                      | webrtc 替换: 0，真实：1，禁止：2                                         |
-| webGL                   | 否                                      | boolean                                 | true                                   | webGL图像， 随机：true，真实：false                                      |
-| webGLInfo               | 否                                      | boolean                                 | true                                   | webGLInfo开关，自定义：true，真实：false                                  |
-| webGLManufacturer       | 否                                      | string                                  | --                                     | webGLInfo为自定义时指定的webGL厂商值                                      |
-| webGLRender             | 否                                      | string                                  | --                                     | webGLInfo为自定义时指定的webGL渲染值                                      |
-| webGpu                  | 否                                      | string                                  | webgl                                  | webGpu，基于webgl匹配：webgl，真实：real，禁用：block                        |
-| canvas                  | 否                                      | boolean                                 | true                                   | canvas，随机：true，真实：false                                        |
-| audioContext            | 否                                      | boolean                                 | true                                   | audioContext值，随机：true，真实：false                                 |
-| speechVoices            | 否                                      | boolean                                 | true                                   | Speech Voices，随机：true，真实：false                                 |
-| doNotTrack              | 否                                      | boolean                                 | true                                   | doNotTrack，true：开启，false：关闭                                    |
-| clientRects             | 否                                      | boolean                                 | true                                   | ClientRects，随机：true，真实：false                                   |
-| deviceInfo              | 否                                      | boolean                                 | true                                   | 媒体设备，随机：true，真实：false                                          |
-| deviceNameSwitch        | 否                                      | boolean                                 | true                                   | 设备名称，随机：true，真实：false                                          |
-| macInfo                 | 否                                      | boolean                                 | true                                   | MAC地址，自定义：true，真实：false                                        |
-| hardwareConcurrent      | 否                                      | string                                  | --                                     | 硬件并发数                                                          |
-| deviceMemory            | 否                                      | string                                  | --                                     | 设备内存                                                           |
-| disableSsl              | 否                                      | boolean                                 | false                                  | ssl指纹设置, true: 开启, false: 关闭                                   |
-| disableSslList          | 否                                      | List                                    | --                                     | ssl特性值列表，List格式类型                                              |
-| portScanProtect         | 否                                      | boolean                                 | true                                   | 端口扫描保护, false: 关闭, true: 开启                                    |
-| portScanList            | 否                                      | string                                  | --                                     | 端口扫描保护开启时的白名单，英文逗号分隔                                           |
-| useGpu                  | 否                                      | boolean                                 | true                                   | 使用硬件加速模式，true：是，false：否                                        |
-| sandboxPermission       | 否                                      | boolean                                 | false                                  | 禁用沙盒，true：是，false：否                                            |
-| startupParam            | 否                                      | string                                  | --                                     | 浏览器启动参数                                                        |
-| openBattery             | 否                                      | boolean                                 | false                                  | 电池 API 模拟总开关 |
-| openCharging            | 否                                      | boolean                                 | false                                  | 开启电池模拟时的充电状态 |
-| chargingTime            | 否                                      | string                                  | --                                     | 距离充满的秒数（纯数字字符串，不带单位后缀） |
-| dischargingTime         | 否                                      | string                                  | --                                     | 距离耗尽的秒数（纯数字字符串，不带单位后缀） |
-| level                   | 否                                      | string                                  | --                                     | 电量，0–1 |
-| openNetwork             | 否                                      | boolean                                 | false                                  | Network Information API 模拟总开关 |
-| networkType             | 否                                      | string                                  | --                                     | 连接类型：wifi、cellular、ethernet、bluetooth、wimax、other、unknown |
-| networkSpeed            | 否                                      | string                                  | --                                     | 有效类型：slow-2G、2g、3g、4g；当 `networkType` 为 cellular 时，`slow-2G` 会规范为 `2G` 作为底层 nettype |
-| downloadSpeed           | 否                                      | string                                  | --                                     | 下行速率（Mbps） |
-| maxDownloadSpeed        | 否                                      | string                                  | --                                     | 最大下行速率（Mbps） |
-| latency                 | 否                                      | string / number                         | --                                     | 往返时延（ms） |
-| saveFlowMode            | 否                                      | boolean                                 | false                                  | 省流 / Save-Data 模式 |
-| openBluetooth           | 否                                      | boolean                                 | false                                  | 蓝牙模拟总开关 |
-| bluetoothAdapter        | 否                                      | boolean                                 | false                                  | 是否模拟存在蓝牙适配器 |
-| blockDomainList         | 否                                      | string                                  | --                                     | 网址访问黑名单，多个域名使用 \n 分割                                           |
-| allowDomainList         | 否                                      | string                                  | --                                     | 网址访问白名单，多个域名使用 \n 分割                                           |
+| 参数名称                | 必需项<div style="min-width: 50px"></div> | 参数类型<div style="min-width: 65px"></div> | 默认值<div style="min-width: 50px"></div> | 描述                                                                                                     |
+| ----------------------- | ----------------------------------------- | ------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| isLanguageBaseIp        | 否                                        | boolean                                     | true                                      | 浏览器语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                              |
+| language                | 否                                        | string                                      | --                                        | 浏览器语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-语言列表](#api_language)                 |
+| isDisplayLanguageBaseIp | 否                                        | boolean                                     | true                                      | 界面语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                                |
+| displayLanguage         | 否                                        | string                                      | --                                        | 界面语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-界面语言列表](#api_dispalylanguage)        |
+| isTimeZone              | 否                                        | boolean                                     | true                                      | 时区类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                                    |
+| timeZone                | 否                                        | string                                      | --                                        | 时区类型为自定义时指定的时区值, str类型，非必传，见 [附录-时区列表](#api_timezone)                       |
+| position                | 否                                        | int                                         | 1                                         | 地理位置提示类型，询问: 0，允许：1，禁用：2                                                              |
+| isPositionBaseIp        | 否                                        | boolean                                     | true                                      | 地理位置类型，跟随IP匹配：true，自定义：false                                                            |
+| longitude               | 否                                        | string                                      | --                                        | 经度值，isPositionBaseIp为false时设置                                                                    |
+| latitude                | 否                                        | string                                      | --                                        | 纬度值， isPositionBaseIp为false时设置                                                                   |
+| precisionPos            | 否                                        | string                                      | --                                        | 精度值(米)， isPositionBaseIp为false时设置                                                               |
+| forbidAudio             | 否                                        | boolean                                     | true                                      | 网页是否打开声音，开启：true，关闭：false                                                                |
+| forbidImage             | 否                                        | boolean                                     | true                                      | 网页是否加载图片，开启：true，关闭：false                                                                |
+| forbiddenPictureSize    | 否                                        | number                                      | 0                                         | 当 forbidImage 为 false 时，设置 forbiddenPictureSize = 0 将禁用所有图片加载。                           |
+| forbidMedia             | 否                                        | boolean                                     | true                                      | 网页是否播放视频，开启：true，关闭：false                                                                |
+| openWidth               | 否                                        | string                                      | 1000                                      | 窗口尺寸，宽度                                                                                           |
+| openHeight              | 否                                        | string                                      | 1000                                      | 窗口尺寸，高度                                                                                           |
+| openBookmarks           | 否                                        | boolean                                     | false                                     | 是否开启书签，true：开启，false：关闭                                                                    |
+| positionSwitch          | 否                                        | boolean                                     | true                                      | 窗口位置开关，true：自定义，false：全屏                                                                  |
+| windowRatioPosition     | 否                                        | string                                      | 0,0                                       | 见 [windowRatioPosition](#windowRatioPosition)                                                           |
+| isDisplayName           | 否                                        | boolean                                     | false                                     | 窗口名是否在标题栏显示，显示：true，不显示：false                                                        |
+| syncBookmark            | 否                                        | boolean                                     | false                                     | 是否同步书签，true：是，false：否                                                                        |
+| syncHistory             | 否                                        | boolean                                     | false                                     | 是否同步历史记录，true：是，false：否                                                                    |
+| syncTab                 | 否                                        | boolean                                     | true                                      | 是否同步标签页，true：是，false：否                                                                      |
+| syncCookie              | 否                                        | boolean                                     | true                                      | 是否同步Cookie，true：是，false：否                                                                      |
+| syncExtensions          | 否                                        | boolean                                     | false                                     | 是否同步扩展应用数据，true：是，false：否                                                                |
+| syncPassword            | 否                                        | boolean                                     | true                                      | 是否同步已保存的用户名密码，true：是，false：否                                                          |
+| syncIndexedDb           | 否                                        | boolean                                     | false                                     | 是否同步IndexedDB，true：是，false：否                                                                   |
+| syncLocalStorage        | 否                                        | boolean                                     | false                                     | 是否同步Local Storage，true：是，false：否                                                               |
+| clearCacheFile          | 否                                        | boolean                                     | false                                     | 启动浏览器前是否删除缓存文件，true：是，false：否                                                        |
+| clearCookie             | 否                                        | boolean                                     | false                                     | 启动浏览器前是否删除Cookie，true：是，false：否                                                          |
+| clearLocalStorage       | 否                                        | boolean                                     | false                                     | 启动浏览器前删除Local Storage，true：是，false：否                                                       |
+| randomFingerprint       | 否                                        | boolean                                     | false                                     | 启动浏览时是否随机生成指纹，true：是，false：否                                                          |
+| forbidSavePassword      | 否                                        | boolean                                     | false                                     | 网页是否弹出保存密码提示，true：是，false：否                                                            |
+| stopOpenNet             | 否                                        | boolean                                     | false                                     | 网络不通是否停止打开窗口，true：是，false：否                                                            |
+| stopOpenIP              | 否                                        | boolean                                     | false                                     | 出口IP发生变化是否停止打开窗口，true：是，false：否                                                      |
+| stopOpenPosition        | 否                                        | boolean                                     | false                                     | 出口IP对应国家/地区发生变化是否停止打开窗口，true：是，false：否                                         |
+| openWorkbench           | 否                                        | int                                         | 1                                         | 是否打开工作台, 1: 开启，关闭: 0，跟随软件设置: 2                                                        |
+| resolutionType          | 否                                        | boolean                                     | false                                     | 分辨率，true: 自定义, false: 跟随系统                                                                    |
+| resolutionX             | 否                                        | string                                      | --                                        | 自定义分辨率时，分辨率宽度值, str类型，见 [附录-分辨率列表](#api_relution)                               |
+| resolutionY             | 否                                        | string                                      | --                                        | 自定义分辨率时，分辨率高度值, str类型，见 [附录-分辨率列表](#api_relution)                               |
+| fontType                | 否                                        | boolean                                     | false                                     | 字体指纹，随机：true，跟随系统：false                                                                    |
+| webRTC                  | 否                                        | int                                         | 2                                         | webrtc 替换: 0，真实：1，禁止：2                                                                         |
+| webGL                   | 否                                        | boolean                                     | true                                      | webGL图像， 随机：true，真实：false                                                                      |
+| webGLInfo               | 否                                        | boolean                                     | true                                      | webGLInfo开关，自定义：true，真实：false                                                                 |
+| webGLManufacturer       | 否                                        | string                                      | --                                        | webGLInfo为自定义时指定的webGL厂商值                                                                     |
+| webGLRender             | 否                                        | string                                      | --                                        | webGLInfo为自定义时指定的webGL渲染值                                                                     |
+| webGpu                  | 否                                        | string                                      | webgl                                     | webGpu，基于webgl匹配：webgl，真实：real，禁用：block                                                    |
+| canvas                  | 否                                        | boolean                                     | true                                      | canvas，随机：true，真实：false                                                                          |
+| audioContext            | 否                                        | boolean                                     | true                                      | audioContext值，随机：true，真实：false                                                                  |
+| speechVoices            | 否                                        | boolean                                     | true                                      | Speech Voices，随机：true，真实：false                                                                   |
+| doNotTrack              | 否                                        | boolean                                     | true                                      | doNotTrack，true：开启，false：关闭                                                                      |
+| clientRects             | 否                                        | boolean                                     | true                                      | ClientRects，随机：true，真实：false                                                                     |
+| deviceInfo              | 否                                        | boolean                                     | true                                      | 媒体设备，随机：true，真实：false                                                                        |
+| deviceNameSwitch        | 否                                        | boolean                                     | true                                      | 设备名称，随机：true，真实：false                                                                        |
+| macInfo                 | 否                                        | boolean                                     | true                                      | MAC地址，自定义：true，真实：false                                                                       |
+| hardwareConcurrent      | 否                                        | string                                      | --                                        | 硬件并发数                                                                                               |
+| deviceMemory            | 否                                        | string                                      | --                                        | 设备内存                                                                                                 |
+| disableSsl              | 否                                        | boolean                                     | false                                     | ssl指纹设置, true: 开启, false: 关闭                                                                     |
+| disableSslList          | 否                                        | List                                        | --                                        | ssl特性值列表，List格式类型                                                                              |
+| portScanProtect         | 否                                        | boolean                                     | true                                      | 端口扫描保护, false: 关闭, true: 开启                                                                    |
+| portScanList            | 否                                        | string                                      | --                                        | 端口扫描保护开启时的白名单，英文逗号分隔                                                                 |
+| useGpu                  | 否                                        | boolean                                     | true                                      | 使用硬件加速模式，true：是，false：否                                                                    |
+| sandboxPermission       | 否                                        | boolean                                     | false                                     | 禁用沙盒，true：是，false：否                                                                            |
+| startupParam            | 否                                        | string                                      | --                                        | 浏览器启动参数                                                                                           |
+| openBattery             | 否                                        | boolean                                     | false                                     | 电池 API 模拟总开关                                                                                      |
+| openCharging            | 否                                        | boolean                                     | false                                     | 开启电池模拟时的充电状态                                                                                 |
+| chargingTime            | 否                                        | string                                      | --                                        | 距离充满的秒数（纯数字字符串，不带单位后缀）                                                             |
+| dischargingTime         | 否                                        | string                                      | --                                        | 距离耗尽的秒数（纯数字字符串，不带单位后缀）                                                             |
+| level                   | 否                                        | string                                      | --                                        | 电量，0–1                                                                                                |
+| openNetwork             | 否                                        | boolean                                     | false                                     | Network Information API 模拟总开关                                                                       |
+| networkType             | 否                                        | string                                      | --                                        | 连接类型：wifi、cellular、ethernet、bluetooth、wimax、other、unknown                                     |
+| networkSpeed            | 否                                        | string                                      | --                                        | 有效类型：slow-2G、2g、3g、4g；当 `networkType` 为 cellular 时，`slow-2G` 会规范为 `2G` 作为底层 nettype |
+| downloadSpeed           | 否                                        | string                                      | --                                        | 下行速率（Mbps）                                                                                         |
+| maxDownloadSpeed        | 否                                        | string                                      | --                                        | 最大下行速率（Mbps）                                                                                     |
+| latency                 | 否                                        | string / number                             | --                                        | 往返时延（ms）                                                                                           |
+| saveFlowMode            | 否                                        | boolean                                     | false                                     | 省流 / Save-Data 模式                                                                                    |
+| openBluetooth           | 否                                        | boolean                                     | false                                     | 蓝牙模拟总开关                                                                                           |
+| bluetoothAdapter        | 否                                        | boolean                                     | false                                     | 是否模拟存在蓝牙适配器                                                                                   |
+| blockDomainList         | 否                                        | string                                      | --                                        | 网址访问黑名单，多个域名使用 \n 分割                                                                     |
+| allowDomainList         | 否                                        | string                                      | --                                        | 网址访问白名单，多个域名使用 \n 分割                                                                     |
 
 <a id="windowRatioPosition">windowRatioPosition:</a> 用于指定窗口在单/多显示器环境中的精确位置。该参数采用比例坐标系统，使您能够轻松定位窗口，无需考虑实际屏幕分辨率。
 
@@ -799,8 +729,6 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
-
-
 ```Json
 {
     "code": 0,          // 状态码, 0:成功，500：失败，int类型
@@ -811,26 +739,19 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 字段名称 | 字段类型   | 描述               |
-| ---- | ------ | ---------------- |
-| code | int    | 状态码, 0：成功，500：失败 |
-| msg  | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 修改浏览器窗口
 
 <b style="font-size: 18px">POST /browser/mdf</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                                       // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirId": "dc1e73d4dd954a3a8ca087d53d2e18ce",            // 浏览器窗口id, str类型，必传
     "windowName": "Roxytest",                               // 窗口名称, str类型，非必传
@@ -846,8 +767,8 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
         "platformUrl": "https://www.tiktok.com/",           // 平台账号URL，str类型，非必传
         "platformUserName": "Roxytest",                     // 平台账号，str类型，非必传
         "platformPassword": "123456",                       // 平台密码，str类型，非必传
-        "platformEfa": "2F3CD67B6D",                        // efa，str类型，非必传                                 
-        "platformRemarks": "Roxytest"                       // 平台备注，str类型，非必传      
+        "platformEfa": "2F3CD67B6D",                        // efa，str类型，非必传
+        "platformRemarks": "Roxytest"                       // 平台备注，str类型，非必传
     }],
     "defaultOpenUrl": ["https://www.facebook.com"],         // 存储浏览器标签页，List类型，非必传
     "windowRemark": "Roxytest",                             // 窗口备注, str类型，非必传
@@ -950,136 +871,134 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 参数名称               | 必需项<div style="min-width: 50px"></div>   | 参数类型<div style="min-width: 65px"></div> | 默认值     | 描述                                                                                                                                                                                                                               |
-| ------------------ | ---------------------------------------- | --------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dirId              | <span class="parameter-require">是</span> | string                                  | --      | 浏览器窗口id                                                                                                                                                                                                                          |
-| workspaceId        | <span class="parameter-require">是</span> | int                                     | --      | 团队id                                                                                                                                                                                                                           |
-| windowName         | 否                                        | string                                  | --      | 窗口名称                                                                                                                                                                                                                             |
-| coreVersion        | 否                                        | string                                  | 最新     | 内核版本，枚举值：135，133，130，125，117，109，默认最新                                                                                                                                                                                                           |
-| os                 | 否                                        | string                                  | Windows | 操作系统, 枚举值：Windows、macOS、Linux、IOS、Android,                                                                                                                                                                                       |
-| osVersion          | 否                                        | string                                  | 11      | 操作系统版本, <br/>Windows的枚举值：11、10、8、7;<br/>Linux的枚举值：ALL；<br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7，<br/>Android的枚举值：14,13,12,11,10,9；<br/>IOS的枚举值：18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
-| userAgent                 | 否                                        | string                                  | Mozilla/5.0 (Windows NT 10.0; Win64; x64)                                | userAgent
-| cookie             | 否                                        | boolean                                 | --      | cookie                                                                                                                                                                                                                           |
-| searchEngine             | 否                                        | string                                 | Google                                     | 搜索引擎                                                                                                                                                                                                                           |
-| labelIds           | 否                                        | List                                    | --      | 标签列表id    
-| defaultOpenUrl     | 否                                        | List                                    | --      | 存储浏览器标签页                                                                                                                                                                                                                         |
-| windowRemark       | 否                                        | string                                  | --      | 窗口备注                                                                                                                                                                                                                             |
-| projectId          | 否                                        | number                                  | --      | 项目ID                                                                                                                                                                                                                             |
-| windowPlatformList | 否                                        | List                                    | --      | 见 [windowPlatformList](#window-platform-list)                                                                                                                                                                                    |
-| proxyInfo          | 否                                        | object                                  | --      | 见 [proxyInfo](#proxy-info)                                                                                                                                                                                                       |
-| fingerInfo         | 否                                        | object                                  | --      | 见 [fingerInfo](#finger-info)                                                                                                                                                                                                     |
+| 参数名称           | 必需项<div style="min-width: 50px"></div> | 参数类型<div style="min-width: 65px"></div> | 默认值                                    | 描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------ | ----------------------------------------- | ------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dirId              | <span class="parameter-require">是</span> | string                                      | --                                        | 浏览器窗口id                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| workspaceId        | <span class="parameter-require">是</span> | int                                         | --                                        | 团队id                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowName         | 否                                        | string                                      | --                                        | 窗口名称                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| coreVersion        | 否                                        | string                                      | 最新                                      | 内核版本，枚举值：135，133，130，125，117，109，默认最新                                                                                                                                                                                                                                                                                                                                                                                                             |
+| os                 | 否                                        | string                                      | Windows                                   | 操作系统, 枚举值：Windows、macOS、Linux、IOS、Android,                                                                                                                                                                                                                                                                                                                                                                                                               |
+| osVersion          | 否                                        | string                                      | 11                                        | 操作系统版本, <br/>Windows的枚举值：11、10、8、7;<br/>Linux的枚举值：ALL；<br/>macOS的枚举值: 15.3.2,15.3.1,15.3,15.2,15.1,15.0.1,15.0,14.7.4,14.7.3,14.7.2,14.7.1,14.7,14.6.1,14.6,14.5,14.4.1,14.4,14.3.1,14.3,14.2.1,14.2,14.1,13.7.4,13.7.3,13.7.2,13.7.1,13.7，<br/>Android的枚举值：14,13,12,11,10,9；<br/>IOS的枚举值：18.2,18.1,18.0,17.0,16.6,16.5,16.4,16.3,16.2,16.1,16.0,15.7,15.6,15.5,15.4,15.3,15.2,15.1,15.0,14.7,14.6,14.5,14.4,14.3,14.2,14.1,14.0 |
+| userAgent          | 否                                        | string                                      | Mozilla/5.0 (Windows NT 10.0; Win64; x64) | userAgent                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| cookie             | 否                                        | boolean                                     | --                                        | cookie                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| searchEngine       | 否                                        | string                                      | Google                                    | 搜索引擎                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| labelIds           | 否                                        | List                                        | --                                        | 标签列表id                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| defaultOpenUrl     | 否                                        | List                                        | --                                        | 存储浏览器标签页                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| windowRemark       | 否                                        | string                                      | --                                        | 窗口备注                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| projectId          | 否                                        | number                                      | --                                        | 项目ID                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| windowPlatformList | 否                                        | List                                        | --                                        | 见 [windowPlatformList](#window-platform-list)                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| proxyInfo          | 否                                        | object                                      | --                                        | 见 [proxyInfo](#proxy-info)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| fingerInfo         | 否                                        | object                                      | --                                        | 见 [fingerInfo](#finger-info)                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 <a id="window-platform-list">windowPlatformList:</a>
 
-| 参数名称             | 必需项 | 参数类型   | 默认值 | 描述      |
-| ---------------- | --- | ------ | --- | ------- |
-| platformUrl      | 否   | string | --  | 平台账号URL |
-| platformUserName | 否   | string | --  | 平台账号    |
-| platformPassword | 否   | string | --  | 平台密码    |
-| platformEfa      | 否   | string | --  | efa     |
-| platformRemarks  | 否   | string | --  | 平台备注    |
+| 参数名称         | 必需项 | 参数类型 | 默认值 | 描述        |
+| ---------------- | ------ | -------- | ------ | ----------- |
+| platformUrl      | 否     | string   | --     | 平台账号URL |
+| platformUserName | 否     | string   | --     | 平台账号    |
+| platformPassword | 否     | string   | --     | 平台密码    |
+| platformEfa      | 否     | string   | --     | efa         |
+| platformRemarks  | 否     | string   | --     | 平台备注    |
 
 <a id="proxy-info">proxyInfo:</a>
 
-| 参数名称          | 必需项 | 参数类型   | 默认值     | 描述                                    |
-| ------------- | --- | ------ | ------- | ------------------------------------- |
-| proxyMethod   | 否   | string | custom  | 代理方式，枚举值：自定义：custom                   |
-| proxyCategory | 否   | string | noproxy | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5 |
-| ipType        | 否   | string | IPV4    | 网络协议, 枚举值：IPV4, IPV6                  |
-| host          | 否   | string | --      | 代理主机                                  |
-| port          | 否   | string | --      | 代理端口                                  |
-| proxyUserName | 否   | string | --      | 代理账号                                  |
-| proxyPassword | 否   | string | --      | 代理密码                                  |
-| refreshUrl    | 否   | string | --      | 刷新URL                                  |
-| checkChannel  | 否   | string | --      | IP查询渠道                                  |
+| 参数名称      | 必需项 | 参数类型 | 默认值  | 描述                                           |
+| ------------- | ------ | -------- | ------- | ---------------------------------------------- |
+| proxyMethod   | 否     | string   | custom  | 代理方式，枚举值：自定义：custom               |
+| proxyCategory | 否     | string   | noproxy | 代理类型，枚举值：noproxy, HTTP, HTTPS, SOCKS5 |
+| ipType        | 否     | string   | IPV4    | 网络协议, 枚举值：IPV4, IPV6                   |
+| host          | 否     | string   | --      | 代理主机                                       |
+| port          | 否     | string   | --      | 代理端口                                       |
+| proxyUserName | 否     | string   | --      | 代理账号                                       |
+| proxyPassword | 否     | string   | --      | 代理密码                                       |
+| refreshUrl    | 否     | string   | --      | 刷新URL                                        |
+| checkChannel  | 否     | string   | --      | IP查询渠道                                     |
 
 <a id="finger-info">fingerInfo:</a>
 
-| 参数名称                    | 必需项<div style="min-width: 50px"></div> | 参数类型<div style="min-width: 65px"></div> | 默认值<div style="min-width: 50px"></div> | 描述                                                             |
-| ----------------------- | -------------------------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------------------------------- |
-| isLanguageBaseIp        | 否                                      | boolean                                 | true                                   | 浏览器语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                 |
-| language                | 否                                      | string                                  | --                                     | 浏览器语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-语言列表](#api_language)         |
-| isDisplayLanguageBaseIp | 否                                      | boolean                                 | true                                   | 界面语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                  |
-| displayLanguage         | 否                                      | string                                  | --                                     | 界面语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-界面语言列表](#api_dispalylanguage) |
-| isTimeZone              | 否                                      | boolean                                 | true                                   | 时区类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                    |
-| timeZone                | 否                                      | string                                  | --                                     | 时区类型为自定义时指定的时区值, str类型，非必传，见 [附录-时区列表](#api_timezone)           |
-| position                | 否                                      | int                                     | 1                                      | 地理位置提示类型，询问: 0，允许：1，禁用：2                                       |
-| isPositionBaseIp        | 否                                      | boolean                                 | true                                   | 地理位置类型，跟随IP匹配：true，自定义：false                                   |
-| longitude               | 否                                      | string                                  | --                                     | 经度值，isPositionBaseIp为false时设置                                  |
-| latitude                | 否                                      | string                                  | --                                     | 纬度值， isPositionBaseIp为false时设置                                 |
-| precisionPos            | 否                                      | string                                  | --                                     | 精度值(米)， isPositionBaseIp为false时设置                              |
-| forbidAudio             | 否                                      | boolean                                 | true                                   | 网页是否打开声音，开启：true，关闭：false                                      |
-| forbidImage             | 否                                      | boolean                                 | true                                   | 网页是否加载图片，开启：true，关闭：false                                      |
-| forbiddenPictureSize    | 否                                       | number                                 |   0                                   | 当 forbidImage 为 false 时，设置 forbiddenPictureSize = 0 将禁用所有图片加载。|
-| forbidMedia             | 否                                      | boolean                                 | true                                   | 网页是否播放视频，开启：true，关闭：false                                      |
-| openWidth               | 否                                      | string                                  | 1000                                   | 窗口尺寸，宽度                                                        |
-| openHeight              | 否                                      | string                                  | 1000                                   | 窗口尺寸，高度                                                        |
-| openBookmarks           | 否                                      | boolean                                 | false                                  | 是否开启书签，true：开启，false：关闭                                  |
-| positionSwitch          | 否                                      | boolean                                 | true                                   | 窗口位置开关，true：自定义，false：全屏                                  |
-| windowRatioPosition     | 否                                      | string                                  | 0,0                                   | 见 [windowRatioPosition](#windowRatioPosition)| 
-| isDisplayName           | 否                                      | boolean                                 | false                                  | 窗口名是否在标题栏显示，显示：true，不显示：false                                  |
-| syncBookmark            | 否                                      | boolean                                 | false                                  | 是否同步书签，true：是，false：否                                          |
-| syncHistory             | 否                                      | boolean                                 | false                                  | 是否同步历史记录，true：是，false：否                                        |
-| syncTab                 | 否                                      | boolean                                 | true                                   | 是否同步标签页，true：是，false：否                                         |
-| syncCookie              | 否                                      | boolean                                 | true                                   | 是否同步Cookie，true：是，false：否                                      |
-| syncExtensions          | 否                                      | boolean                                 | false                                  | 是否同步扩展应用数据，true：是，false：否                                      |
-| syncPassword            | 否                                      | boolean                                 | true                                   | 是否同步已保存的用户名密码，true：是，false：否                                   |
-| syncIndexedDb           | 否                                      | boolean                                 | false                                  | 是否同步IndexedDB，true：是，false：否                                   |
-| syncLocalStorage        | 否                                      | boolean                                 | false                                  | 是否同步Local Storage，true：是，false：否                               |
-| clearCacheFile          | 否                                      | boolean                                 | false                                  | 启动浏览器前是否删除缓存文件，true：是，false：否                                  |
-| clearCookie             | 否                                      | boolean                                 | false                                  | 启动浏览器前是否删除Cookie，true：是，false：否                                |
-| clearLocalStorage       | 否                                      | boolean                                 | false                                  | 启动浏览器前删除Local Storage，true：是，false：否                           |
-| randomFingerprint       | 否                                      | boolean                                 | false                                  | 启动浏览时是否随机生成指纹，true：是，false：否                                   |
-| forbidSavePassword      | 否                                      | boolean                                 | false                                  | 网页是否弹出保存密码提示，true：是，false：否                                    |
-| stopOpenNet             | 否                                      | boolean                                 | false                                  | 网络不通是否停止打开窗口，true：是，false：否                                    |
-| stopOpenIP              | 否                                      | boolean                                 | false                                  | 出口IP发生变化是否停止打开窗口，true：是，false：否                                |
-| stopOpenPosition        | 否                                      | boolean                                 | false                                  | 出口IP对应国家/地区发生变化是否停止打开窗口，true：是，false：否                         |
-| openWorkbench           | 否                                      | int                                     | 1                                      | 是否打开工作台, 1: 开启，关闭: 0，跟随软件设置: 2                                          |
-| resolutionType          | 否                                      | boolean                                 | false                                  | 分辨率，true: 自定义, false: 跟随系统                                       |
-| resolutionX             | 否                                      | string                                  | --                                     | 自定义分辨率时，分辨率宽度值, str类型，见 [附录-分辨率列表](#api_relution)               |
-| resolutionY             | 否                                      | string                                  | --                                     | 自定义分辨率时，分辨率高度值, str类型，见 [附录-分辨率列表](#api_relution)               |
-| fontType                | 否                                      | boolean                                 | false                                  | 字体指纹，随机：true，跟随系统：false                                        |
-| webRTC                  | 否                                      | int                                     | 2                                      | webrtc 替换: 0，真实：1，禁止：2                                         |
-| webGL                   | 否                                      | boolean                                 | true                                   | webGL图像， 随机：true，真实：false                                      |
-| webGLInfo               | 否                                      | boolean                                 | true                                   | webGLInfo开关，自定义：true，真实：false                                  |
-| webGLManufacturer       | 否                                      | string                                  | --                                     | webGLInfo为自定义时指定的webGL厂商值                                      |
-| webGLRender             | 否                                      | string                                  | --                                     | webGLInfo为自定义时指定的webGL渲染值                                      |
-| webGpu                  | 否                                      | string                                  | webgl                                  | webGpu，基于webgl匹配：webgl，真实：real，禁用：block                        |
-| canvas                  | 否                                      | boolean                                 | true                                   | canvas，随机：true，真实：false                                        |
-| audioContext            | 否                                      | boolean                                 | true                                   | audioContext值，随机：true，真实：false                                 |
-| speechVoices            | 否                                      | boolean                                 | true                                   | Speech Voices，随机：true，真实：false                                 |
-| doNotTrack              | 否                                      | boolean                                 | true                                   | doNotTrack，true：开启，false：关闭                                    |
-| clientRects             | 否                                      | boolean                                 | true                                   | ClientRects，随机：true，真实：false                                   |
-| deviceInfo              | 否                                      | boolean                                 | true                                   | 媒体设备，随机：true，真实：false                                          |
-| deviceNameSwitch        | 否                                      | boolean                                 | true                                   | 设备名称，随机：true，真实：false                                          |
-| macInfo                 | 否                                      | boolean                                 | true                                   | MAC地址，自定义：true，真实：false                                        |
-| hardwareConcurrent      | 否                                      | string                                  | --                                     | 硬件并发数                                                          |
-| deviceMemory            | 否                                      | string                                  | --                                     | 设备内存                                                           |
-| disableSsl              | 否                                      | boolean                                 | false                                  | ssl指纹设置, true: 开启, false: 关闭                                   |
-| disableSslList          | 否                                      | List                                    | --                                     | ssl特性值列表，List格式类型                                              |
-| portScanProtect         | 否                                      | boolean                                 | true                                   | 端口扫描保护, false: 关闭, true: 开启                                    |
-| portScanList            | 否                                      | string                                  | --                                     | 端口扫描保护开启时的白名单，英文逗号分隔                                           |
-| useGpu                  | 否                                      | boolean                                 | true                                   | 使用硬件加速模式，true：是，false：否                                        |
-| sandboxPermission       | 否                                      | boolean                                 | false                                  | 禁用沙盒，true：是，false：否                                            |
-| startupParam            | 否                                      | string                                  | --                                     | 浏览器启动参数                                                        |
-| openBattery             | 否                                      | boolean                                 | false                                  | 电池 API 模拟总开关 |
-| openCharging            | 否                                      | boolean                                 | false                                  | 开启电池模拟时的充电状态 |
-| chargingTime            | 否                                      | string                                  | --                                     | 距离充满的秒数（纯数字字符串，不带单位后缀） |
-| dischargingTime         | 否                                      | string                                  | --                                     | 距离耗尽的秒数（纯数字字符串，不带单位后缀） |
-| level                   | 否                                      | string                                  | --                                     | 电量，0–1 |
-| openNetwork             | 否                                      | boolean                                 | false                                  | Network Information API 模拟总开关 |
-| networkType             | 否                                      | string                                  | --                                     | 连接类型：wifi、cellular、ethernet、bluetooth、wimax、other、unknown |
-| networkSpeed            | 否                                      | string                                  | --                                     | 有效类型：slow-2G、2g、3g、4g；当 `networkType` 为 cellular 时，`slow-2G` 会规范为 `2G` 作为底层 nettype |
-| downloadSpeed           | 否                                      | string                                  | --                                     | 下行速率（Mbps） |
-| maxDownloadSpeed        | 否                                      | string                                  | --                                     | 最大下行速率（Mbps） |
-| latency                 | 否                                      | string / number                         | --                                     | 往返时延（ms） |
-| saveFlowMode            | 否                                      | boolean                                 | false                                  | 省流 / Save-Data 模式 |
-| openBluetooth           | 否                                      | boolean                                 | false                                  | 蓝牙模拟总开关 |
-| bluetoothAdapter        | 否                                      | boolean                                 | false                                  | 是否模拟存在蓝牙适配器 |
-| blockDomainList         | 否                                      | string                                  | --                                     | 网址访问黑名单，多个域名使用 \n 分割                                           |
-| allowDomainList         | 否                                      | string                                  | --                                     | 网址访问白名单，多个域名使用 \n 分割                                           | 
+| 参数名称                | 必需项<div style="min-width: 50px"></div> | 参数类型<div style="min-width: 65px"></div> | 默认值<div style="min-width: 50px"></div> | 描述                                                                                                     |
+| ----------------------- | ----------------------------------------- | ------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| isLanguageBaseIp        | 否                                        | boolean                                     | true                                      | 浏览器语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                              |
+| language                | 否                                        | string                                      | --                                        | 浏览器语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-语言列表](#api_language)                 |
+| isDisplayLanguageBaseIp | 否                                        | boolean                                     | true                                      | 界面语言类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                                |
+| displayLanguage         | 否                                        | string                                      | --                                        | 界面语言类型为自定义时指定的语言值，str类型，非必传，见 [附录-界面语言列表](#api_dispalylanguage)        |
+| isTimeZone              | 否                                        | boolean                                     | true                                      | 时区类型，跟随IP匹配：true，自定义：false，布尔类型，非必传, 默认true                                    |
+| timeZone                | 否                                        | string                                      | --                                        | 时区类型为自定义时指定的时区值, str类型，非必传，见 [附录-时区列表](#api_timezone)                       |
+| position                | 否                                        | int                                         | 1                                         | 地理位置提示类型，询问: 0，允许：1，禁用：2                                                              |
+| isPositionBaseIp        | 否                                        | boolean                                     | true                                      | 地理位置类型，跟随IP匹配：true，自定义：false                                                            |
+| longitude               | 否                                        | string                                      | --                                        | 经度值，isPositionBaseIp为false时设置                                                                    |
+| latitude                | 否                                        | string                                      | --                                        | 纬度值， isPositionBaseIp为false时设置                                                                   |
+| precisionPos            | 否                                        | string                                      | --                                        | 精度值(米)， isPositionBaseIp为false时设置                                                               |
+| forbidAudio             | 否                                        | boolean                                     | true                                      | 网页是否打开声音，开启：true，关闭：false                                                                |
+| forbidImage             | 否                                        | boolean                                     | true                                      | 网页是否加载图片，开启：true，关闭：false                                                                |
+| forbiddenPictureSize    | 否                                        | number                                      | 0                                         | 当 forbidImage 为 false 时，设置 forbiddenPictureSize = 0 将禁用所有图片加载。                           |
+| forbidMedia             | 否                                        | boolean                                     | true                                      | 网页是否播放视频，开启：true，关闭：false                                                                |
+| openWidth               | 否                                        | string                                      | 1000                                      | 窗口尺寸，宽度                                                                                           |
+| openHeight              | 否                                        | string                                      | 1000                                      | 窗口尺寸，高度                                                                                           |
+| openBookmarks           | 否                                        | boolean                                     | false                                     | 是否开启书签，true：开启，false：关闭                                                                    |
+| positionSwitch          | 否                                        | boolean                                     | true                                      | 窗口位置开关，true：自定义，false：全屏                                                                  |
+| windowRatioPosition     | 否                                        | string                                      | 0,0                                       | 见 [windowRatioPosition](#windowRatioPosition)                                                           |
+| isDisplayName           | 否                                        | boolean                                     | false                                     | 窗口名是否在标题栏显示，显示：true，不显示：false                                                        |
+| syncBookmark            | 否                                        | boolean                                     | false                                     | 是否同步书签，true：是，false：否                                                                        |
+| syncHistory             | 否                                        | boolean                                     | false                                     | 是否同步历史记录，true：是，false：否                                                                    |
+| syncTab                 | 否                                        | boolean                                     | true                                      | 是否同步标签页，true：是，false：否                                                                      |
+| syncCookie              | 否                                        | boolean                                     | true                                      | 是否同步Cookie，true：是，false：否                                                                      |
+| syncExtensions          | 否                                        | boolean                                     | false                                     | 是否同步扩展应用数据，true：是，false：否                                                                |
+| syncPassword            | 否                                        | boolean                                     | true                                      | 是否同步已保存的用户名密码，true：是，false：否                                                          |
+| syncIndexedDb           | 否                                        | boolean                                     | false                                     | 是否同步IndexedDB，true：是，false：否                                                                   |
+| syncLocalStorage        | 否                                        | boolean                                     | false                                     | 是否同步Local Storage，true：是，false：否                                                               |
+| clearCacheFile          | 否                                        | boolean                                     | false                                     | 启动浏览器前是否删除缓存文件，true：是，false：否                                                        |
+| clearCookie             | 否                                        | boolean                                     | false                                     | 启动浏览器前是否删除Cookie，true：是，false：否                                                          |
+| clearLocalStorage       | 否                                        | boolean                                     | false                                     | 启动浏览器前删除Local Storage，true：是，false：否                                                       |
+| randomFingerprint       | 否                                        | boolean                                     | false                                     | 启动浏览时是否随机生成指纹，true：是，false：否                                                          |
+| forbidSavePassword      | 否                                        | boolean                                     | false                                     | 网页是否弹出保存密码提示，true：是，false：否                                                            |
+| stopOpenNet             | 否                                        | boolean                                     | false                                     | 网络不通是否停止打开窗口，true：是，false：否                                                            |
+| stopOpenIP              | 否                                        | boolean                                     | false                                     | 出口IP发生变化是否停止打开窗口，true：是，false：否                                                      |
+| stopOpenPosition        | 否                                        | boolean                                     | false                                     | 出口IP对应国家/地区发生变化是否停止打开窗口，true：是，false：否                                         |
+| openWorkbench           | 否                                        | int                                         | 1                                         | 是否打开工作台, 1: 开启，关闭: 0，跟随软件设置: 2                                                        |
+| resolutionType          | 否                                        | boolean                                     | false                                     | 分辨率，true: 自定义, false: 跟随系统                                                                    |
+| resolutionX             | 否                                        | string                                      | --                                        | 自定义分辨率时，分辨率宽度值, str类型，见 [附录-分辨率列表](#api_relution)                               |
+| resolutionY             | 否                                        | string                                      | --                                        | 自定义分辨率时，分辨率高度值, str类型，见 [附录-分辨率列表](#api_relution)                               |
+| fontType                | 否                                        | boolean                                     | false                                     | 字体指纹，随机：true，跟随系统：false                                                                    |
+| webRTC                  | 否                                        | int                                         | 2                                         | webrtc 替换: 0，真实：1，禁止：2                                                                         |
+| webGL                   | 否                                        | boolean                                     | true                                      | webGL图像， 随机：true，真实：false                                                                      |
+| webGLInfo               | 否                                        | boolean                                     | true                                      | webGLInfo开关，自定义：true，真实：false                                                                 |
+| webGLManufacturer       | 否                                        | string                                      | --                                        | webGLInfo为自定义时指定的webGL厂商值                                                                     |
+| webGLRender             | 否                                        | string                                      | --                                        | webGLInfo为自定义时指定的webGL渲染值                                                                     |
+| webGpu                  | 否                                        | string                                      | webgl                                     | webGpu，基于webgl匹配：webgl，真实：real，禁用：block                                                    |
+| canvas                  | 否                                        | boolean                                     | true                                      | canvas，随机：true，真实：false                                                                          |
+| audioContext            | 否                                        | boolean                                     | true                                      | audioContext值，随机：true，真实：false                                                                  |
+| speechVoices            | 否                                        | boolean                                     | true                                      | Speech Voices，随机：true，真实：false                                                                   |
+| doNotTrack              | 否                                        | boolean                                     | true                                      | doNotTrack，true：开启，false：关闭                                                                      |
+| clientRects             | 否                                        | boolean                                     | true                                      | ClientRects，随机：true，真实：false                                                                     |
+| deviceInfo              | 否                                        | boolean                                     | true                                      | 媒体设备，随机：true，真实：false                                                                        |
+| deviceNameSwitch        | 否                                        | boolean                                     | true                                      | 设备名称，随机：true，真实：false                                                                        |
+| macInfo                 | 否                                        | boolean                                     | true                                      | MAC地址，自定义：true，真实：false                                                                       |
+| hardwareConcurrent      | 否                                        | string                                      | --                                        | 硬件并发数                                                                                               |
+| deviceMemory            | 否                                        | string                                      | --                                        | 设备内存                                                                                                 |
+| disableSsl              | 否                                        | boolean                                     | false                                     | ssl指纹设置, true: 开启, false: 关闭                                                                     |
+| disableSslList          | 否                                        | List                                        | --                                        | ssl特性值列表，List格式类型                                                                              |
+| portScanProtect         | 否                                        | boolean                                     | true                                      | 端口扫描保护, false: 关闭, true: 开启                                                                    |
+| portScanList            | 否                                        | string                                      | --                                        | 端口扫描保护开启时的白名单，英文逗号分隔                                                                 |
+| useGpu                  | 否                                        | boolean                                     | true                                      | 使用硬件加速模式，true：是，false：否                                                                    |
+| sandboxPermission       | 否                                        | boolean                                     | false                                     | 禁用沙盒，true：是，false：否                                                                            |
+| startupParam            | 否                                        | string                                      | --                                        | 浏览器启动参数                                                                                           |
+| openBattery             | 否                                        | boolean                                     | false                                     | 电池 API 模拟总开关                                                                                      |
+| openCharging            | 否                                        | boolean                                     | false                                     | 开启电池模拟时的充电状态                                                                                 |
+| chargingTime            | 否                                        | string                                      | --                                        | 距离充满的秒数（纯数字字符串，不带单位后缀）                                                             |
+| dischargingTime         | 否                                        | string                                      | --                                        | 距离耗尽的秒数（纯数字字符串，不带单位后缀）                                                             |
+| level                   | 否                                        | string                                      | --                                        | 电量，0–1                                                                                                |
+| openNetwork             | 否                                        | boolean                                     | false                                     | Network Information API 模拟总开关                                                                       |
+| networkType             | 否                                        | string                                      | --                                        | 连接类型：wifi、cellular、ethernet、bluetooth、wimax、other、unknown                                     |
+| networkSpeed            | 否                                        | string                                      | --                                        | 有效类型：slow-2G、2g、3g、4g；当 `networkType` 为 cellular 时，`slow-2G` 会规范为 `2G` 作为底层 nettype |
+| downloadSpeed           | 否                                        | string                                      | --                                        | 下行速率（Mbps）                                                                                         |
+| maxDownloadSpeed        | 否                                        | string                                      | --                                        | 最大下行速率（Mbps）                                                                                     |
+| latency                 | 否                                        | string / number                             | --                                        | 往返时延（ms）                                                                                           |
+| saveFlowMode            | 否                                        | boolean                                     | false                                     | 省流 / Save-Data 模式                                                                                    |
+| openBluetooth           | 否                                        | boolean                                     | false                                     | 蓝牙模拟总开关                                                                                           |
+| bluetoothAdapter        | 否                                        | boolean                                     | false                                     | 是否模拟存在蓝牙适配器                                                                                   |
+| blockDomainList         | 否                                        | string                                      | --                                        | 网址访问黑名单，多个域名使用 \n 分割                                                                     |
+| allowDomainList         | 否                                        | string                                      | --                                        | 网址访问白名单，多个域名使用 \n 分割                                                                     |
 
 <a id="windowRatioPosition">windowRatioPosition:</a> 用于指定窗口在单/多显示器环境中的精确位置。该参数采用比例坐标系统，使您能够轻松定位窗口，无需考虑实际屏幕分辨率。
 
@@ -1123,8 +1042,6 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
-
-
 ```Json
 {
     "code": 0,          // 状态码, 0:成功，500：失败，int类型
@@ -1135,70 +1052,52 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 字段名称 | 字段类型   | 描述               |
-| ---- | ------ | ---------------- |
-| code | int    | 状态码, 0：成功，500：失败 |
-| msg  | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 删除浏览器窗口(支持批量)
 
 <b style="font-size: 18px">POST /browser/delete</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                              // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirIds": ["dc1ed4d","2e18ce","yy67yegk"],      // 浏览器窗口id，List类型，必传
     "isSoftDelete": false  // 软删除，回收站
 }
 ```
 
-
-
-| 参数名称        | 必需项                                           | 参数类型 | 默认值 | 描述     |
-| ----------- | --------------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| dirIds | <span class="parameter-require">是</span> | List | --  | 浏览器窗口id |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述         |
+| ----------- | ----------------------------------------- | -------- | ------ | ------------ |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id       |
+| dirIds      | <span class="parameter-require">是</span> | List     | --     | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
     "code": 0,      // 状态码, 0:成功，500：失败，int类型
     "msg": "成功"   // 返回结果, str类型
-}   
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0：成功，500：失败 |
-| msg              | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 打开浏览器窗口{#open-browser}
 
 <b style="font-size: 18px">POST /browser/open</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                                                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirId": "dc1e73d4dd954a3a8ca087d53d2e18ce",                        // 浏览器窗口id, str类型，必传
     "args": ["--remote-allow-origins=*", "--disable-audio-output"],      // 浏览器启动参数，List类型，非必传
@@ -1207,37 +1106,33 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 
 注意：如下启动参数为系统内置参数，在修改时不会生效：
---disable-background-mode           
---disable-popup-blocking          
---no-first-run                      
---no-default-browser-check          
---remote-debugging-port=0           
---use-mock-keychain                 
---user-data-dir                     
---window-position=0,0               
---window-size=1000,1000             
---no-sandbox                        
---disable-setuid-sandbox  
-          
+--disable-background-mode
+--disable-popup-blocking
+--no-first-run
+--no-default-browser-check
+--remote-debugging-port=0
+--use-mock-keychain
+--user-data-dir
+--window-position=0,0
+--window-size=1000,1000
+--no-sandbox
+--disable-setuid-sandbox
+
 详细参数说明可打开如下地址查看：https://peter.sh/experiments/chromium-command-line-switches/
 ```
 
-
-
-| 参数名称  | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----- | ---------------------------------------- | ------ | --- | ------- |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| dirId | <span class="parameter-require">是</span> | string | --  | 浏览器窗口id |
-| args  | 否                                        | List   | --  | 浏览器启动参数 |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述           |
+| ----------- | ----------------------------------------- | -------- | ------ | -------------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id         |
+| dirId       | <span class="parameter-require">是</span> | string   | --     | 浏览器窗口id   |
+| args        | 否                                        | List     | --     | 浏览器启动参数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
  {
     "code": 0,                                                                              // 状态码, 0:成功，500：失败，int类型
-    "data": {       
+    "data": {
         "ws": "ws://127.0.0.1:52314/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb", // 用于自动化工具的ws接口
         "http": "127.0.0.1:52314",                                                          // 用于自动化工具的http接口
         "coreVersion": "112",                                                               // 内核版本
@@ -1248,34 +1143,27 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
         "pid":1111                                                                          // 进程id
     },
     "msg": "成功"                                                                           // 返回结果, str类型
-}  
+}
 ```
 
-
-
-| 字段名称         | 字段类型   | 描述                |
-| ------------ | ------ | ----------------- |
-| code         | int    | 状态码, 0:成功，500：失败  |
-| ws           | string | 用于自动化工具的ws接口      |
-| http         | string | 用于自动化工具的http接口    |
-| coreVersion  | string | 内核版本              |
-| driver       | string | 用于自动化工具的webdriver |
-| sortNum      | int    | 窗口排序号             |
-| windowName   | string | 窗口名称              |
-| windowRemark | string | 窗口备注              |
-| pid          | int    | 进程id              |
-| msg          | string | 返回结果              |
-
+| 字段名称     | 字段类型 | 描述                      |
+| ------------ | -------- | ------------------------- |
+| code         | int      | 状态码, 0:成功，500：失败 |
+| ws           | string   | 用于自动化工具的ws接口    |
+| http         | string   | 用于自动化工具的http接口  |
+| coreVersion  | string   | 内核版本                  |
+| driver       | string   | 用于自动化工具的webdriver |
+| sortNum      | int      | 窗口排序号                |
+| windowName   | string   | 窗口名称                  |
+| windowRemark | string   | 窗口备注                  |
+| pid          | int      | 进程id                    |
+| msg          | string   | 返回结果                  |
 
 ### 关闭浏览器窗口
 
 <b style="font-size: 18px">POST /browser/close</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
-
-
 
 ```Json
 {
@@ -1283,15 +1171,11 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 参数名称  | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----- | ---------------------------------------- | ------ | --- | ------- |
-| dirId | <span class="parameter-require">是</span> | string | --  | 浏览器窗口id |
+| 参数名称 | 必需项                                    | 参数类型 | 默认值 | 描述         |
+| -------- | ----------------------------------------- | -------- | ------ | ------------ |
+| dirId    | <span class="parameter-require">是</span> | string   | --     | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -1300,23 +1184,16 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 字段名称 | 字段类型   | 描述               |
-| ---- | ------ | ---------------- |
-| code | int    | 状态码, 0：成功，500：失败 |
-| msg  | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 窗口随机指纹
 
 <b style="font-size: 18px">POST /browser/random_env</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
-
-
 
 ```Json
 {   "workspaceId": 1,                                      // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
@@ -1324,41 +1201,30 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 参数名称        | 必需项                                           | 参数类型 | 默认值 | 描述     |
-| ----------- | --------------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| dirId | <span class="parameter-require">是</span> | string  | --  | 浏览器窗口id |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述         |
+| ----------- | ----------------------------------------- | -------- | ------ | ------------ |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id       |
+| dirId       | <span class="parameter-require">是</span> | string   | --     | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
     "code": 0,      // 状态码, 0:成功，500：失败，int类型
     "msg": "成功"   // 返回结果, str类型
-}   
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0：成功，500：失败 |
-| msg              | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 清空窗口本地缓存
 
 <b style="font-size: 18px">POST /browser/clear_local_cache</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
-
-
 
 ```Json
 {
@@ -1368,17 +1234,13 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| dirIds      | <span class="parameter-require">是</span> | List   | --  | 浏览器窗口id |
-| type        | 否                                        | string | all | 清除类型，枚举值：partial（清除扩展数据以外的所有本地缓存文件，登录状态不会失效，窗口指纹信息、IP 不会被清理）、all（清除所有本地缓存文件，登录状态不会失效，窗口指纹信息、IP 不会被清理）、cloud（清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效） |
-| workspaceId | type 为 cloud 时必传                         | int    | --  | 团队id  |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述                                                                                                                                                                                                                                                                                |
+| ----------- | ----------------------------------------- | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dirIds      | <span class="parameter-require">是</span> | List     | --     | 浏览器窗口id                                                                                                                                                                                                                                                                        |
+| type        | 否                                        | string   | all    | 清除类型，枚举值：partial（清除扩展数据以外的所有本地缓存文件，登录状态不会失效，窗口指纹信息、IP 不会被清理）、all（清除所有本地缓存文件，登录状态不会失效，窗口指纹信息、IP 不会被清理）、cloud（清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效） |
+| workspaceId | type 为 cloud 时必传                      | int      | --     | 团队id                                                                                                                                                                                                                                                                              |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
@@ -1387,88 +1249,66 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-
-
-| 字段名称 | 字段类型   | 描述               |
-| ---- | ------ | ---------------- |
-| code | int    | 状态码, 0：成功，500：失败 |
-| msg  | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 清空窗口服务器缓存
 
 <b style="font-size: 18px">POST /browser/clear_server_cache</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,                              // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "dirIds": ["dc1ed4d","2e18ce","yy67yegk"]      // 浏览器窗口id，List类型，必传
 }
 ```
 
-
-
-| 参数名称        | 必需项                                           | 参数类型 | 默认值 | 描述     |
-| ----------- | --------------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| dirIds | <span class="parameter-require">是</span> | List | --  | 浏览器窗口id |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述         |
+| ----------- | ----------------------------------------- | -------- | ------ | ------------ |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id       |
+| dirIds      | <span class="parameter-require">是</span> | List     | --     | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
     "code": 0,      // 状态码, 0:成功，500：失败，int类型
     "msg": "成功"   // 返回结果, str类型
-}   
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0：成功，500：失败 |
-| msg              | string | 返回结果             |
-
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| msg      | string   | 返回结果                   |
 
 ### 已打开窗口进程信息
 
 <b style="font-size: 18px">GET /browser/connection_info</b>
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "dirIds": "dc1e73d4dd954a,157d4e73ae4f1ac8"                       // 浏览器窗口id列表, str类型, 多个以英文逗号分隔，非必传
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型   | 默认值 | 描述      |
-| ----------- | ---------------------------------------- | ------ | --- | ------- |
-| dirIds      | 否                                        | string | --  | 浏览器窗口id列表 |
+| 参数名称 | 必需项 | 参数类型 | 默认值 | 描述             |
+| -------- | ------ | -------- | ------ | ---------------- |
+| dirIds   | 否     | string   | --     | 浏览器窗口id列表 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
-
 
 ```Json
 {
     "code": 0,                                                                                  // 状态码, 0:成功，500：失败，int类型
     "data": [
-        {       
+        {
             "ws": "ws://127.0.0.1:52314/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb", // 用于自动化工具的ws接口
             "http": "127.0.0.1:52314",                                                          // 用于自动化工具的http接口
             "coreVersion": "112",                                                               // 内核版本
@@ -1479,44 +1319,40 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
             "pid":1111,                                                                         // 进程id
             "dirId": "doc64hdyy7e"                                                              // 窗口Id
         },
-        {       
+        {
             "ws": "ws://127.0.0.1:53325/devtools/browser/857b2d0d-aae6-4852-ab3c-0784f0b2c1fb",
             "http": "127.0.0.1:53325",
-            "coreVersion": "112", 
+            "coreVersion": "112",
             "driver": "C:\\Users\\lumibrowser\\AppData\\Roaming\\lumibrowser\\chrome-bin\\125\\chromedriver.exe",
-            "sortNum": 3474, 
-            "windowName": "", 
-            "windowRemark": "",  
-            "pid":2222, 
+            "sortNum": 3474,
+            "windowName": "",
+            "windowRemark": "",
+            "pid":2222,
             "dirId": "doc64hdyy7e"
         }
     ],
     "msg": "成功"
-}    
+}
 ```
 
-
-
-| 字段名称         | 字段类型   | 描述                |
-| ------------ | ------ | ----------------- |
-| code         | int    | 状态码, 0:成功，500：失败  |
-| ws           | string | 用于自动化工具的ws接口      |
-| http         | string | 用于自动化工具的http接口    |
-| coreVersion  | string | 内核版本              |
-| driver       | string | 用于自动化工具的webdriver |
-| sortNum      | int    | 窗口排序号             |
-| windowName   | string | 窗口名称              |
-| windowRemark | string | 窗口备注              |
-| pid          | int    | 进程id              |
-| dirId        | string | 窗口Id              |
-
+| 字段名称     | 字段类型 | 描述                      |
+| ------------ | -------- | ------------------------- |
+| code         | int      | 状态码, 0:成功，500：失败 |
+| ws           | string   | 用于自动化工具的ws接口    |
+| http         | string   | 用于自动化工具的http接口  |
+| coreVersion  | string   | 内核版本                  |
+| driver       | string   | 用于自动化工具的webdriver |
+| sortNum      | int      | 窗口排序号                |
+| windowName   | string   | 窗口名称                  |
+| windowRemark | string   | 窗口备注                  |
+| pid          | int      | 进程id                    |
+| dirId        | string   | 窗口Id                    |
 
 ## 代理 IP 接口
+
 ### 获取检测渠道
 
- <b style="font-size: 18px">GET /proxy/detect_channel</b>
-
-
+<b style="font-size: 18px">GET /proxy/detect_channel</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
@@ -1525,7 +1361,6 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 ```
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
-
 
 ```Json
 {
@@ -1538,18 +1373,16 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
         }
     ],
     "msg": "成功"   // 返回结果, str类型
-}   
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0：成功，500：失败 |
-| label              | string |  渠道标签           |
-| type              | string |   渠道类型           |
-| value              | string |  渠道值           |
-| msg              | string | 返回结果             |
+| 字段名称 | 字段类型 | 描述                       |
+| -------- | -------- | -------------------------- |
+| code     | int      | 状态码, 0：成功，500：失败 |
+| label    | string   | 渠道标签                   |
+| type     | string   | 渠道类型                   |
+| value    | string   | 渠道值                     |
+| msg      | string   | 返回结果                   |
 
 ### 获取代理 IP 列表（即将废弃）
 
@@ -1559,23 +1392,21 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 该接口即将废弃，并会在未来版本中移除。请改用 [`GET /proxy/list_merged`](#获取合并代理-ip-列表)。合并列表会在同一个响应中返回用户添加的代理和代理商店购买的代理。
 :::
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,    // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "page_index": 1,     // 分页索引, int类型, 非必传, 默认1
     "page_size": 15      // 分页条数, int类型, 非必传, 默认15
 }
 ```
 
-| 参数名称        | 必需项                                      | 参数类型 | 默认值 | 描述     |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| page_index  | 否                                        | int  | 1   | 分页索引   |
-| page_size   | 否                                        | int  | 15  | 分页条数   |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ----------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id   |
+| page_index  | 否                                        | int      | 1      | 分页索引 |
+| page_size   | 否                                        | int      | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1606,36 +1437,36 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
                 "createTime": "",             // 创建时间，str
                 "updateTime": "",             // 更新时间，str
             }
-        ] 
+        ]
     },
     "msg": "成功"                                                               // 返回结果, str类型
-} 
+}
 ```
 
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
-| total            | int    | 总条数              |
-| id               | int    | 代理库id            |
-| checkStatus      | int | 检测状态          |
-| checkChannel | string | 检测渠道地址           |
-| checkChannelValue | string | 检测渠道值            |
-| lastIp      | string | 最后 IP          |
-| lastCountry  | string | 最后国家       |
-| lastState     | string | 最后州             |
-| lastCity  | string | 最后城市             |
-| ipType       | string | IP 类型            |
-| protocol       | string | 协议            |
-| host               | int    | 主机           |
-| port      | string | 端口         |
-| proxyPassword | string | 代理密码          |
-| proxyUserName | string | 代理用户名           |
-| refreshUrl      | string | 刷新 URL          |
-| remark  | string | 备注      |
-| checkTime     | string | 检测时间            |
-| createTime  | string | 创建时间            |
-| updateTime       | string | 更新时间            |
+| 字段名称          | 字段类型 | 描述                      |
+| ----------------- | -------- | ------------------------- |
+| code              | int      | 状态码, 0:成功，500：失败 |
+| msg               | string   | 返回结果                  |
+| total             | int      | 总条数                    |
+| id                | int      | 代理库id                  |
+| checkStatus       | int      | 检测状态                  |
+| checkChannel      | string   | 检测渠道地址              |
+| checkChannelValue | string   | 检测渠道值                |
+| lastIp            | string   | 最后 IP                   |
+| lastCountry       | string   | 最后国家                  |
+| lastState         | string   | 最后州                    |
+| lastCity          | string   | 最后城市                  |
+| ipType            | string   | IP 类型                   |
+| protocol          | string   | 协议                      |
+| host              | int      | 主机                      |
+| port              | string   | 端口                      |
+| proxyPassword     | string   | 代理密码                  |
+| proxyUserName     | string   | 代理用户名                |
+| refreshUrl        | string   | 刷新 URL                  |
+| remark            | string   | 备注                      |
+| checkTime         | string   | 检测时间                  |
+| createTime        | string   | 创建时间                  |
+| updateTime        | string   | 更新时间                  |
 
 ### 获取合并代理 IP 列表
 
@@ -1657,22 +1488,22 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-| 参数名称 | 必需项 | 参数类型 | 默认值 | 描述 |
-| -------- | ------ | -------- | ------ | ---- |
-| workspaceId | <span class="parameter-require">是</span> | int | -- | 团队 id |
-| type | 否 | string | -- | 查询类型，例如：available_list |
-| page_index | 否 | int/string | 1 | 分页索引 |
-| page_size | 否 | int/string | 15 | 分页条数 |
-| orderName | 否 | string | -- | 排序字段，例如：lastCountry |
-| orderType | 否 | string | -- | 排序方向，asc 或 desc |
-| proxyType | 否 | string | -- | 代理来源，0：用户添加代理，1：代理商店代理 |
-| proxyBindStatus | 否 | string | -- | 绑定状态。不传或传空值表示查询全部 |
-| proxyAutoRenew | 否 | string | -- | 自动续费状态。不传或传空值表示查询全部 |
-| country | 否 | string | -- | 按国家筛选 |
-| check_status | 否 | int | -- | 按最近检测状态筛选 |
-| start_date | 否 | string | -- | 检测开始日期，格式 YYYY-MM-DD |
-| end_date | 否 | string | -- | 检测结束日期，格式 YYYY-MM-DD |
-| checker | 否 | string | -- | 按检测渠道筛选 |
+| 参数名称        | 必需项                                    | 参数类型   | 默认值 | 描述                                       |
+| --------------- | ----------------------------------------- | ---------- | ------ | ------------------------------------------ |
+| workspaceId     | <span class="parameter-require">是</span> | int        | --     | 团队 id                                    |
+| type            | 否                                        | string     | --     | 查询类型，例如：available_list             |
+| page_index      | 否                                        | int/string | 1      | 分页索引                                   |
+| page_size       | 否                                        | int/string | 15     | 分页条数                                   |
+| orderName       | 否                                        | string     | --     | 排序字段，例如：lastCountry                |
+| orderType       | 否                                        | string     | --     | 排序方向，asc 或 desc                      |
+| proxyType       | 否                                        | string     | --     | 代理来源，0：用户添加代理，1：代理商店代理 |
+| proxyBindStatus | 否                                        | string     | --     | 绑定状态。不传或传空值表示查询全部         |
+| proxyAutoRenew  | 否                                        | string     | --     | 自动续费状态。不传或传空值表示查询全部     |
+| country         | 否                                        | string     | --     | 按国家筛选                                 |
+| check_status    | 否                                        | int        | --     | 按最近检测状态筛选                         |
+| start_date      | 否                                        | string     | --     | 检测开始日期，格式 YYYY-MM-DD              |
+| end_date        | 否                                        | string     | --     | 检测结束日期，格式 YYYY-MM-DD              |
+| checker         | 否                                        | string     | --     | 按检测渠道筛选                             |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1738,73 +1569,71 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-| 字段名称 | 字段类型 | 描述 |
-| -------- | -------- | ---- |
-| code | int | 状态码，0：成功，500：失败 |
-| msg | string | 返回结果 |
-| total | int | 总条数 |
-| id | int | 代理 ID |
-| userId | int | 用户 ID |
-| workspaceId | int | 团队 ID |
-| canBandwidthUpgrade | boolean | 是否可升级带宽 |
-| proxyProviderId | int | 代理提供商 ID |
-| orderNo | string | 订单号 |
-| orderStatus | int | 订单状态 |
-| ipType | string | IP 类型 |
-| host | string | 代理主机 |
-| protocol | string | 代理协议 |
-| country | string | 国家筛选/来源值 |
-| lastIp | string | 最近 IP |
-| port | string | 代理端口 |
-| proxyUserName | string | 代理用户名 |
-| proxyPassword | string | 代理密码 |
-| proxyCheckChannel | string | 代理检测渠道 |
-| remark | string | 备注 |
-| lastCountry | string | 最近检测国家 |
-| lastState | string | 最近检测州/省 |
-| lastCity | string | 最近检测城市 |
-| checkStatus | int | 最近检测状态 |
-| proxyExpireStatus | int | 过期状态 |
-| checkTime | string | 最近检测时间 |
-| renewalTime | string | 续费时间 |
-| createTime | string | 创建时间 |
-| proxyMonths | int | 代理月数 |
-| updateTime | string | 更新时间 |
-| expireDate | string | 过期时间 |
-| replaceStatus | int | 更换状态 |
-| proxyProviderName | string | 代理提供商名称 |
-| proxyType | int | 代理来源类型 |
-| providerType | string | 提供商类型 |
-| opName | string | 操作人名称 |
-| giftDays | int | 赠送天数 |
-| autoRenew | int | 自动续费状态 |
-| canRenew | boolean | 是否可续费 |
-| modelParam | string | 模型参数 |
-| refreshUrl | string | 刷新 URL |
-| isDirect | boolean | 是否直连 |
-| badgeTypeDesc | string | 标识类型描述 |
-| dataType | string | 数据来源，proxyModule：用户添加，buyProxy：代理商店 |
-| checkChannel | string | 检测渠道地址 |
-| checkChannelValue | string | 检测渠道标签 |
-| isBind | boolean | 是否绑定窗口 |
-| bindCount | int | 绑定窗口数量 |
-| bindList | List | 绑定窗口列表 |
-| canRefund | boolean | 是否可退款 |
-| bandwidthSpeed | int | 带宽速度 |
+| 字段名称            | 字段类型 | 描述                                                |
+| ------------------- | -------- | --------------------------------------------------- |
+| code                | int      | 状态码，0：成功，500：失败                          |
+| msg                 | string   | 返回结果                                            |
+| total               | int      | 总条数                                              |
+| id                  | int      | 代理 ID                                             |
+| userId              | int      | 用户 ID                                             |
+| workspaceId         | int      | 团队 ID                                             |
+| canBandwidthUpgrade | boolean  | 是否可升级带宽                                      |
+| proxyProviderId     | int      | 代理提供商 ID                                       |
+| orderNo             | string   | 订单号                                              |
+| orderStatus         | int      | 订单状态                                            |
+| ipType              | string   | IP 类型                                             |
+| host                | string   | 代理主机                                            |
+| protocol            | string   | 代理协议                                            |
+| country             | string   | 国家筛选/来源值                                     |
+| lastIp              | string   | 最近 IP                                             |
+| port                | string   | 代理端口                                            |
+| proxyUserName       | string   | 代理用户名                                          |
+| proxyPassword       | string   | 代理密码                                            |
+| proxyCheckChannel   | string   | 代理检测渠道                                        |
+| remark              | string   | 备注                                                |
+| lastCountry         | string   | 最近检测国家                                        |
+| lastState           | string   | 最近检测州/省                                       |
+| lastCity            | string   | 最近检测城市                                        |
+| checkStatus         | int      | 最近检测状态                                        |
+| proxyExpireStatus   | int      | 过期状态                                            |
+| checkTime           | string   | 最近检测时间                                        |
+| renewalTime         | string   | 续费时间                                            |
+| createTime          | string   | 创建时间                                            |
+| proxyMonths         | int      | 代理月数                                            |
+| updateTime          | string   | 更新时间                                            |
+| expireDate          | string   | 过期时间                                            |
+| replaceStatus       | int      | 更换状态                                            |
+| proxyProviderName   | string   | 代理提供商名称                                      |
+| proxyType           | int      | 代理来源类型                                        |
+| providerType        | string   | 提供商类型                                          |
+| opName              | string   | 操作人名称                                          |
+| giftDays            | int      | 赠送天数                                            |
+| autoRenew           | int      | 自动续费状态                                        |
+| canRenew            | boolean  | 是否可续费                                          |
+| modelParam          | string   | 模型参数                                            |
+| refreshUrl          | string   | 刷新 URL                                            |
+| isDirect            | boolean  | 是否直连                                            |
+| badgeTypeDesc       | string   | 标识类型描述                                        |
+| dataType            | string   | 数据来源，proxyModule：用户添加，buyProxy：代理商店 |
+| checkChannel        | string   | 检测渠道地址                                        |
+| checkChannelValue   | string   | 检测渠道标签                                        |
+| isBind              | boolean  | 是否绑定窗口                                        |
+| bindCount           | int      | 绑定窗口数量                                        |
+| bindList            | List     | 绑定窗口列表                                        |
+| canRefund           | boolean  | 是否可退款                                          |
+| bandwidthSpeed      | int      | 带宽速度                                            |
 
 ### 创建代理 IP
 
- <b style="font-size: 18px">POST /proxy/create</b>
-
-
+<b style="font-size: 18px">POST /proxy/create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
 	"checkChannel": "",             // 查询渠道，必传，通过团队项目接口【/proxy/detect_channel】获取
-    "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传   
+    "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传
     "protocol": "SOCKS5",           // 代理协议，HTTP, HTTPS, SOCKS5，必传
     "host": "",                     // 代理主机 str, 必传
     "port": "",                     // 代理端口 str, 必传
@@ -1814,18 +1643,19 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     "remark":"",                    // 备注
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队id |
-| checkChannel | <span class="parameter-require">是</span> | string | -- |  查询渠道 |
-| ipType | <span class="parameter-require">是</span>| string  | -- | 网络协议 |
-| protocol | <span class="parameter-require">是</span> | string | -- | 代理协议 |
-| host | <span class="parameter-require">是</span> | string | -- | 代理主机 |
-| port | <span class="parameter-require">是</span> | string | -- | 代理端口 |
-| proxyUserName | 否 | string | -- | 代理账号 |
-| proxyPassword | 否 | string | -- | 代理密码 |
-| refreshUrl | 否 | string | -- | 刷新URL |
-| remark | 否 | string | -- | 备注 |
+
+| 参数名称      | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ------------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId   | <span class="parameter-require">是</span> | int      | --     | 团队id   |
+| checkChannel  | <span class="parameter-require">是</span> | string   | --     | 查询渠道 |
+| ipType        | <span class="parameter-require">是</span> | string   | --     | 网络协议 |
+| protocol      | <span class="parameter-require">是</span> | string   | --     | 代理协议 |
+| host          | <span class="parameter-require">是</span> | string   | --     | 代理主机 |
+| port          | <span class="parameter-require">是</span> | string   | --     | 代理端口 |
+| proxyUserName | 否                                        | string   | --     | 代理账号 |
+| proxyPassword | 否                                        | string   | --     | 代理密码 |
+| refreshUrl    | 否                                        | string   | --     | 刷新URL  |
+| remark        | 否                                        | string   | --     | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1833,19 +1663,17 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, int
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 批量创建代理 IP
 
- <b style="font-size: 18px">POST /proxy/batch_create</b>
-
-
+<b style="font-size: 18px">POST /proxy/batch_create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
@@ -1854,9 +1682,9 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "checkChannel": "",                 // 查询渠道，必传，通过团队项目接口【/proxy/detect_channel】获取
     "proxyList":[
-        {   
+        {
             "checkChannel": "",             // 查询渠道，不传使用外层查询渠道
-            "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传   
+            "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传
             "protocol": "SOCKS5",           // 代理协议，HTTP, HTTPS, SOCKS5，必传
             "host": "",                     // 代理主机 str, 必传
             "port": "",                     // 代理端口 str, 必传
@@ -1868,25 +1696,26 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     ]
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队id |
-| checkChannel | <span class="parameter-require">是</span> | string | -- |  查询渠道 |
-| proxyList | <span class="parameter-require">是</span> | List | -- | 见 [proxyList](#proxy-list) |
+
+| 参数名称     | 必需项                                    | 参数类型 | 默认值 | 描述                        |
+| ------------ | ----------------------------------------- | -------- | ------ | --------------------------- |
+| workspaceId  | <span class="parameter-require">是</span> | int      | --     | 团队id                      |
+| checkChannel | <span class="parameter-require">是</span> | string   | --     | 查询渠道                    |
+| proxyList    | <span class="parameter-require">是</span> | List     | --     | 见 [proxyList](#proxy-list) |
 
 <a id="proxy-list">proxyList:</a>
 
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| checkChannel | <span class="parameter-require">是</span> | string | -- |  查询渠道 |
-| ipType | <span class="parameter-require">是</span>| string  | -- | 网络协议 |
-| protocol | <span class="parameter-require">是</span> | string | -- | 代理协议 |
-| host | <span class="parameter-require">是</span> | string | -- | 代理主机 |
-| port | <span class="parameter-require">是</span> | string | -- | 代理端口 |
-| proxyUserName | 否 | string | -- | 代理账号 |
-| proxyPassword | 否 | string | -- | 代理密码 |
-| refreshUrl | 否 | string | -- | 刷新URL |
-| remark | 否 | string | -- | 备注 |
+| 参数名称      | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ------------- | ----------------------------------------- | -------- | ------ | -------- |
+| checkChannel  | <span class="parameter-require">是</span> | string   | --     | 查询渠道 |
+| ipType        | <span class="parameter-require">是</span> | string   | --     | 网络协议 |
+| protocol      | <span class="parameter-require">是</span> | string   | --     | 代理协议 |
+| host          | <span class="parameter-require">是</span> | string   | --     | 代理主机 |
+| port          | <span class="parameter-require">是</span> | string   | --     | 代理端口 |
+| proxyUserName | 否                                        | string   | --     | 代理账号 |
+| proxyPassword | 否                                        | string   | --     | 代理密码 |
+| refreshUrl    | 否                                        | string   | --     | 刷新URL  |
+| remark        | 否                                        | string   | --     | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1894,32 +1723,31 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, int
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 检测代理 IP
 
- <b style="font-size: 18px">POST /proxy/detect</b>
-
-
+<b style="font-size: 18px">POST /proxy/detect</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "id": 1,                        // 代理 id，int类型，必传
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队 id |
-| id | <span class="parameter-require">是</span> | int  | -- | 代理 id |
+
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述    |
+| ----------- | ----------------------------------------- | -------- | ------ | ------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队 id |
+| id          | <span class="parameter-require">是</span> | int      | --     | 代理 id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1927,29 +1755,26 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, int
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
-
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 修改代理 IP
 
- <b style="font-size: 18px">POST /proxy/modify</b>
-
-
+<b style="font-size: 18px">POST /proxy/modify</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,               // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "id": 1,                        // 代理 id，int类型，必传
     "checkChannel": "",             // 查询渠道，必传，通过团队项目接口【/proxy/detect_channel】获取
-    "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传   
+    "ipType": "IPV4",               // 网络协议，IPV4, IPV6，必传
     "protocol": "SOCKS5",           // 代理协议，HTTP, HTTPS, SOCKS5，必传
     "host": "",                     // 代理主机 str, 必传
     "port": "",                     // 代理端口 str, 必传
@@ -1959,19 +1784,20 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     "remark":"",                    // 备注
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队 id |
-| id | <span class="parameter-require">是</span> | int  | -- | 代理 id |
-| checkChannel | <span class="parameter-require">是</span> | string | -- |  查询渠道 |
-| ipType | <span class="parameter-require">是</span>| string  | -- | 网络协议 |
-| protocol | <span class="parameter-require">是</span> | string | -- | 代理协议 |
-| host | <span class="parameter-require">是</span> | string | -- | 代理主机 |
-| port | <span class="parameter-require">是</span> | string | -- | 代理端口 |
-| proxyUserName | 否 | string | -- | 代理账号 |
-| proxyPassword | 否 | string | -- | 代理密码 |
-| refreshUrl | 否 | string | -- | 刷新URL |
-| remark | 否 | string | -- | 备注 |
+
+| 参数名称      | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ------------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId   | <span class="parameter-require">是</span> | int      | --     | 团队 id  |
+| id            | <span class="parameter-require">是</span> | int      | --     | 代理 id  |
+| checkChannel  | <span class="parameter-require">是</span> | string   | --     | 查询渠道 |
+| ipType        | <span class="parameter-require">是</span> | string   | --     | 网络协议 |
+| protocol      | <span class="parameter-require">是</span> | string   | --     | 代理协议 |
+| host          | <span class="parameter-require">是</span> | string   | --     | 代理主机 |
+| port          | <span class="parameter-require">是</span> | string   | --     | 代理端口 |
+| proxyUserName | 否                                        | string   | --     | 代理账号 |
+| proxyPassword | 否                                        | string   | --     | 代理密码 |
+| refreshUrl    | 否                                        | string   | --     | 刷新URL  |
+| remark        | 否                                        | string   | --     | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1979,32 +1805,31 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, int
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 删除代理 IP(支持批量)
 
- <b style="font-size: 18px">POST /proxy/delete</b>
-
-
+<b style="font-size: 18px">POST /proxy/delete</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "ids": [],                          // 平台账号 id，List类型，必传
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队 id |
-| id | <span class="parameter-require">是</span> | List  | -- | 代理 id |
+
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述    |
+| ----------- | ----------------------------------------- | -------- | ------ | ------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队 id |
+| id          | <span class="parameter-require">是</span> | List     | --     | 代理 id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2012,12 +1837,13 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, intd
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
+
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 获取已购代理 IP 列表（即将废弃）
 
@@ -2027,12 +1853,10 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 该接口即将废弃，并会在未来版本中移除。请改用 [`GET /proxy/list_merged`](#获取合并代理-ip-列表)。合并列表会在同一个响应中返回代理商店购买的代理和用户添加的代理。
 :::
 
-
-
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,    // 团队 id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "page_index": 1,     // 分页索引，int类型，非必传，默认1
     "page_size": 15,     // 分页条数，int类型，非必传，默认15
@@ -2040,12 +1864,12 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 }
 ```
 
-| 参数名称        | 必需项                                      | 参数类型 | 默认值 | 描述     |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id，通过团队项目接口【/browser/workspace】获取 |
-| page_index  | 否                                        | int  | 1   | 分页索引   |
-| page_size   | 否                                        | int  | 15  | 分页条数   |
-| type        | 否                                        | int  | 0   | 查询类型，0:查询所有，1:查询可用 |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述                                               |
+| ----------- | ----------------------------------------- | -------- | ------ | -------------------------------------------------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id，通过团队项目接口【/browser/workspace】获取 |
+| page_index  | 否                                        | int      | 1      | 分页索引                                           |
+| page_size   | 否                                        | int      | 15     | 分页条数                                           |
+| type        | 否                                        | int      | 0      | 查询类型，0:查询所有，1:查询可用                   |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2079,66 +1903,61 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
                 "updateTime": "",             // 更新时间
                 "expireDate": "",             // 过期时间
             }
-        ] 
+        ]
     },
     "msg": "成功"                                                               // 返回结果, str类型
-} 
+}
 ```
 
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
-| total            | int    | 总条数              |
-| id               | int    | 已购代理 IP id       |
-| orderNo          | string | 订单号              |
-| checkStatus      | int    | 检测状态             |
-| proxyCheckChannel | string | 检测渠道地址           |
-| checkChannelValue | string | 检测渠道值            |
-| lastIp           | string | 最后 IP            |
-| lastCountry      | string | 最后国家             |
-| lastState        | string | 最后州              |
-| lastCity         | string | 最后城市             |
-| proxyProviderName | string | 代理提供商名称          |
-| providerType     | string | 代理提供商类型          |
-| ipType           | string | IP 类型            |
-| protocol         | string | 协议               |
-| host             | string | 主机               |
-| port             | string | 端口               |
-| proxyUserName    | string | 代理用户名            |
-| proxyPassword    | string | 代理密码             |
-| remark           | string | 备注               |
-| checkTime        | string | 检测时间             |
-| createTime       | string | 创建时间             |
-| updateTime       | string | 更新时间             |
-| expireDate       | string | 过期时间             |
+| 字段名称          | 字段类型 | 描述                      |
+| ----------------- | -------- | ------------------------- |
+| code              | int      | 状态码, 0:成功，500：失败 |
+| msg               | string   | 返回结果                  |
+| total             | int      | 总条数                    |
+| id                | int      | 已购代理 IP id            |
+| orderNo           | string   | 订单号                    |
+| checkStatus       | int      | 检测状态                  |
+| proxyCheckChannel | string   | 检测渠道地址              |
+| checkChannelValue | string   | 检测渠道值                |
+| lastIp            | string   | 最后 IP                   |
+| lastCountry       | string   | 最后国家                  |
+| lastState         | string   | 最后州                    |
+| lastCity          | string   | 最后城市                  |
+| proxyProviderName | string   | 代理提供商名称            |
+| providerType      | string   | 代理提供商类型            |
+| ipType            | string   | IP 类型                   |
+| protocol          | string   | 协议                      |
+| host              | string   | 主机                      |
+| port              | string   | 端口                      |
+| proxyUserName     | string   | 代理用户名                |
+| proxyPassword     | string   | 代理密码                  |
+| remark            | string   | 备注                      |
+| checkTime         | string   | 检测时间                  |
+| createTime        | string   | 创建时间                  |
+| updateTime        | string   | 更新时间                  |
+| expireDate        | string   | 过期时间                  |
 
 ## 平台账号接口
+
 ### 获取平台账号列表
 
- <b style="font-size: 18px">GET /account/list</b>
-
-
+<b style="font-size: 18px">GET /account/list</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
-
-
 ```Json
-{   
+{
     "workspaceId": 1,       // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "page_index": 1,        // 分页索引, int类型, 非必传, 默认1
     "page_size": 15        // 分页条数, int类型, 非必传, 默认15
 }
 ```
 
-
-
-| 参数名称        | 必需项                                      | 参数类型 | 默认值 | 描述     |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | --  | 团队id |
-| page_index  | 否                                        | int  | 1   | 分页索引   |
-| page_size   | 否                                        | int  | 15  | 分页条数   |
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ----------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id   |
+| page_index  | 否                                        | int      | 1      | 分页索引 |
+| page_size   | 否                                        | int      | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2159,39 +1978,35 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
                 "createTime": "2024-10-23 15:45:46",                            // 创建时间
                 "updateTime": "2024-10-23 15:45:46"                             // 修改时间
             }
-        ] 
+        ]
     },
     "msg": "成功"                                                               // 返回结果, str类型
-} 
+}
 ```
 
-
-
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
-| total            | int    | 总条数              |
-| id               | int    | 账号库id            |
-| platformUrl      | string | 平台账号url          |
-| platformUserName | string | 账号库用户名           |
-| platformPassword | string | 账号库密码            |
-| platformEfa      | string | 账号库Efa           |
-| platformCookies  | object | 账号库Cookies       |
-| platformRemarks  | string | 平台备注             |
-| createTime       | string | 创建时间             |
-| updateTime       | string | 修改时间             |
+| 字段名称         | 字段类型 | 描述                      |
+| ---------------- | -------- | ------------------------- |
+| code             | int      | 状态码, 0:成功，500：失败 |
+| msg              | string   | 返回结果                  |
+| total            | int      | 总条数                    |
+| id               | int      | 账号库id                  |
+| platformUrl      | string   | 平台账号url               |
+| platformUserName | string   | 账号库用户名              |
+| platformPassword | string   | 账号库密码                |
+| platformEfa      | string   | 账号库Efa                 |
+| platformCookies  | object   | 账号库Cookies             |
+| platformRemarks  | string   | 平台备注                  |
+| createTime       | string   | 创建时间                  |
+| updateTime       | string   | 修改时间                  |
 
 ### 创建平台账号
 
- <b style="font-size: 18px">POST /account/create</b>
-
-
+<b style="font-size: 18px">POST /account/create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "platformUrl":"https://www.x.com/", // 平台 URL，str类型，必传
     "platformUserName":"",              // 平台账号，str类型
@@ -2200,14 +2015,15 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     "platformRemarks":""                // 备注，str类型
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队id |
-| platformUrl | <span class="parameter-require">是</span>| string  | -- | 平台 URL |
-| platformUserName | 否 | string | -- | 平台账号 |
-| platformPassword | 否 | string | -- | 平台密码 |
-| platformEfa | 否 | string | -- | 2FA |
-| platformRemarks | 否 | string | -- | 备注 |
+
+| 参数名称         | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ---------------- | ----------------------------------------- | -------- | ------ | -------- |
+| workspaceId      | <span class="parameter-require">是</span> | int      | --     | 团队id   |
+| platformUrl      | <span class="parameter-require">是</span> | string   | --     | 平台 URL |
+| platformUserName | 否                                        | string   | --     | 平台账号 |
+| platformPassword | 否                                        | string   | --     | 平台密码 |
+| platformEfa      | 否                                        | string   | --     | 2FA      |
+| platformRemarks  | 否                                        | string   | --     | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2218,20 +2034,18 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
         "platform_id":0 //平台 ID
     },
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| platform_id      | int | 平台账号 ID             |
-| msg              | string | 返回结果             |
 
+| 字段名称    | 字段类型 | 描述                      |
+| ----------- | -------- | ------------------------- |
+| code        | int      | 状态码, 0:成功，500：失败 |
+| platform_id | int      | 平台账号 ID               |
+| msg         | string   | 返回结果                  |
 
 ### 批量创建平台账号
 
- <b style="font-size: 18px">POST /account/batch_create</b>
-
-
+<b style="font-size: 18px">POST /account/batch_create</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
@@ -2239,7 +2053,7 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "accountList":[
-        {   
+        {
             "platformUrl":"https://www.x.com/", // 平台 URL，str类型，必传
             "platformUserName":"",              // 平台账号，str类型
             "platformPassword":"",              // 平台密码，str类型
@@ -2249,20 +2063,21 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     ]
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队id |
-| accountList | <span class="parameter-require">是</span> | List | -- | 见 [accountList](#account-list) |
+
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述                            |
+| ----------- | ----------------------------------------- | -------- | ------ | ------------------------------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队id                          |
+| accountList | <span class="parameter-require">是</span> | List     | --     | 见 [accountList](#account-list) |
 
 <a id="account-list">accountList:</a>
 
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| platformUrl | <span class="parameter-require">是</span>| string  | -- | 平台 URL |
-| platformUserName | 否 | string | -- | 平台账号 |
-| platformPassword | 否 | string | -- | 平台密码 |
-| platformEfa | 否 | string | -- | 2FA |
-| platformRemarks | 否 | string | -- | 备注 |
+| 参数名称         | 必需项                                    | 参数类型 | 默认值 | 描述     |
+| ---------------- | ----------------------------------------- | -------- | ------ | -------- |
+| platformUrl      | <span class="parameter-require">是</span> | string   | --     | 平台 URL |
+| platformUserName | 否                                        | string   | --     | 平台账号 |
+| platformPassword | 否                                        | string   | --     | 平台密码 |
+| platformEfa      | 否                                        | string   | --     | 2FA      |
+| platformRemarks  | 否                                        | string   | --     | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2270,24 +2085,22 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, intd
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 修改平台账号
 
- <b style="font-size: 18px">POST /account/modify</b>
-
-
+<b style="font-size: 18px">POST /account/modify</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "id": 1,                            // 平台账号 id，int类型，必传
     "platformUrl":"https://www.x.com/", // 平台 URL，str类型，必传
@@ -2297,15 +2110,16 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
     "platformRemarks":""                // 备注，str类型
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队 id |
-| id | <span class="parameter-require">是</span> | int  | -- | 平台账号 id |
-| platformUrl | <span class="parameter-require">是</span>| string  | -- | 平台 URL |
-| platformUserName | 否 | string | -- | 平台账号 |
-| platformPassword | 否 | string | -- | 平台密码 |
-| platformEfa | 否 | string | -- | 2FA |
-| platformRemarks | 否 | string | -- | 备注 |
+
+| 参数名称         | 必需项                                    | 参数类型 | 默认值 | 描述        |
+| ---------------- | ----------------------------------------- | -------- | ------ | ----------- |
+| workspaceId      | <span class="parameter-require">是</span> | int      | --     | 团队 id     |
+| id               | <span class="parameter-require">是</span> | int      | --     | 平台账号 id |
+| platformUrl      | <span class="parameter-require">是</span> | string   | --     | 平台 URL    |
+| platformUserName | 否                                        | string   | --     | 平台账号    |
+| platformPassword | 否                                        | string   | --     | 平台密码    |
+| platformEfa      | 否                                        | string   | --     | 2FA         |
+| platformRemarks  | 否                                        | string   | --     | 备注        |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2313,32 +2127,31 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, intd
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ### 删除平台账号(支持批量)
 
- <b style="font-size: 18px">POST /account/delete</b>
-
-
+<b style="font-size: 18px">POST /account/delete</b>
 
 <p style="font-weight: 600"> <span class="order">1</span> 请求参数</p>
 
 ```Json
-{   
+{
     "workspaceId": 1,                   // 团队id，int类型，必传，通过团队项目接口【/browser/workspace】获取
     "ids": [],                          // 平台账号 id，List类型，必传
 }
 ```
-| 参数名称 | 必需项                                      | 参数类型 | 默认值 | 描述 |
-| ----------- | ---------------------------------------- | ---- | --- | ------ |
-| workspaceId | <span class="parameter-require">是</span> | int  | -- | 团队 id |
-| id | <span class="parameter-require">是</span> | List  | -- | 平台账号 id |
+
+| 参数名称    | 必需项                                    | 参数类型 | 默认值 | 描述        |
+| ----------- | ----------------------------------------- | -------- | ------ | ----------- |
+| workspaceId | <span class="parameter-require">是</span> | int      | --     | 团队 id     |
+| id          | <span class="parameter-require">是</span> | List     | --     | 平台账号 id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2346,15 +2159,16 @@ y 表示垂直位置，取值范围为 0 到显示器总数<br />
 {
     "code": 0,      // 状态码, intd
     "msg": "成功"    // 返回结果, str
-} 
+}
 ```
-| 字段名称             | 字段类型   | 描述               |
-| ---------------- | ------ | ---------------- |
-| code             | int    | 状态码, 0:成功，500：失败 |
-| msg              | string | 返回结果             |
 
+| 字段名称 | 字段类型 | 描述                      |
+| -------- | -------- | ------------------------- |
+| code     | int      | 状态码, 0:成功，500：失败 |
+| msg      | string   | 返回结果                  |
 
 ## API接入代码示例
+
 ### Python-代码调用示例{#python-example}
 
 #### 1、接口调用示例
@@ -2370,17 +2184,17 @@ class RoxyClient:
     :param token: api服务的token
     '''
     def __init__(self,port:int,token:str) -> None:
-        self.port = port 
+        self.port = port
         self.host = "127.0.0.1"
         self.token = token
         self.url = f"http://{self.host}:{self.port}"
 
     def _build_headers(self):
         return {"Content-Type": "application/json","token":self.token}
-    
+
     def _post(self,path,data = None):
         return requests.post(self.url + path,json=data,headers=self._build_headers())
-    
+
     def _get(self,path,data = None):
         return requests.get(self.url + path,params=data,headers=self._build_headers())
 
@@ -2389,7 +2203,7 @@ class RoxyClient:
     '''
     def health(self):
         return self._get("/health").json()
-    
+
     '''
     获取团队项目列表,用于获取已拥有的团队和项目列表
     :param page_index,page_size 分页参数
@@ -2420,7 +2234,7 @@ class RoxyClient:
     '''
     def browser_list(self,workspaceId:int,sortNums:str = "",page_index:int = 1,page_size:int = 15):
         return self._get("/browser/list_v3",{"workspaceId":workspaceId,"sortNums":sortNums,"page_index":page_index,"page_size":page_size}).json()
-    
+
     '''
     获取浏览器窗口明细
     :param workspaceId: 团队id, 必填，指定要获取哪个团队下的窗口明细，通过workspace_project方法获取
@@ -2445,7 +2259,7 @@ class RoxyClient:
     '''
     def browser_mdf(self,data:dict):
         return self._post("/browser/mdf",data).json()
-    
+
     '''
     删除窗口
     :param workspaceId: 团队id, 必填，指定窗口所在的团队，通过workspace_project方法获取
@@ -2454,7 +2268,7 @@ class RoxyClient:
     '''
     def browser_delete(self,workspaceId:int,dirIds:list):
         return self._post("/browser/delete",{"workspaceId":workspaceId,"dirIds": dirIds}).json()
-    
+
     '''
     打开窗口
     :param dirId: 需要打开的窗口ID，必填
@@ -2463,7 +2277,7 @@ class RoxyClient:
     '''
     def browser_open(self,dirId:str,args=[]):
         return self._post("/browser/open",{"dirId":dirId,"args": args}).json()
-        
+
     '''
     关闭窗口
     :param dirId: 需要关闭的窗口ID，必填
@@ -2480,7 +2294,7 @@ class RoxyClient:
     '''
     def browser_random_env(self,workspaceId:int,dirId:str):
         return self._post("/browser/random_env",{"workspaceId": workspaceId,"dirId":dirId}).json()
-    
+
     '''
     清空窗口本地缓存
     :param dirIds: 窗口id列表, 必填，指定要清空缓存的窗口列表
@@ -2493,7 +2307,7 @@ class RoxyClient:
         if workspaceId is not None:
             data["workspaceId"] = workspaceId
         return self._post("/browser/clear_local_cache",data).json()
-    
+
     '''
     清空窗口服务器缓存
     :param workspaceId: 团队id, 必填，指定窗口所在的团队，通过workspace_project方法获取
@@ -2502,7 +2316,7 @@ class RoxyClient:
     '''
     def browser_server_cache(self,workspaceId:int,dirIds:list):
         return self._post("/browser/clear_server_cache",{"workspaceId": workspaceId,"dirIds":dirIds}).json()
-    
+
     '''
     获取已打开的浏览器信息
     :param dirIds: 需要查询的窗口ID，选填
@@ -2541,7 +2355,7 @@ if __name__ == "__main__":
         }
     }
     print(client.browser_create(data))
-    
+
     data = {
         "workspaceId": 10,
         "dirId":"ac4bd731074a6ef3bbe1e8f4f6667749",
@@ -2553,7 +2367,7 @@ if __name__ == "__main__":
         }
     }
     print(client.browser_mdf(data))
-    
+
     '''
     #print(client.browser_delete(workspaceId=10,dirIds=["ac4bd731074a6ef3bbe1e8f4f6667749"]))
     print(client.browser_open(dirId="ac4bd731074a6ef3bbe1e8f4f6667749"))
@@ -2602,7 +2416,6 @@ if __name__ == "__main__":
     #client.browser_close(brwoser_id)
 ```
 
-
 ### Nodejs-代码调用示例{#node-example}
 
 #### 1、接口列表：roxy_api.js
@@ -2631,7 +2444,7 @@ class RoxyClient {
     }
 
     async _get(path,data) {
-    
+
         let parmas = ""
         if (data) {
             for (var k in data) {
@@ -2649,7 +2462,7 @@ class RoxyClient {
             headers: this._build_headers(),
             timeout:10000});
         return await response.json();
-        
+
     }
 
     /*
@@ -2658,7 +2471,7 @@ class RoxyClient {
     health() {
         return this._get("/health")
     }
-    
+
     /*
     获取团队项目列表,用于获取已拥有的团队和项目列表
     :param page_index,page_size 分页参数
@@ -2666,7 +2479,7 @@ class RoxyClient {
     workspace_project(self) {
         return this._get("/browser/workspace")
     }
-    
+
     /*
     获取账号列表,用于获取已配置的平台账号
     :param workspaceId: 团队id, 必填，指定要获取哪个团队下的平台账号，通过workspace_project方法获取
@@ -2693,7 +2506,7 @@ class RoxyClient {
     browser_list(workspaceId,sortNums = "",page_index = 1,page_size = 15) {
         return this._get("/browser/list_v3",{"workspaceId":workspaceId,"sortNums":sortNums,"page_index":page_index,"page_size":page_size})
     }
-    
+
     /*
     获取浏览器窗口明细
     :param workspaceId: 团队id, 必填，指定要获取哪个团队下的窗口明细，通过workspace_project方法获取
@@ -2765,7 +2578,7 @@ class RoxyClient {
         }
         return this._post("/browser/clear_local_cache", data)
     }
-    
+
     /*
     清空窗口服务器缓存
     :param workspaceId: 团队id, 必填，指定窗口所在的团队，通过workspace_project方法获取
@@ -2785,7 +2598,7 @@ class RoxyClient {
     browser_random_env(workspaceId,dirid) {
         return this._post("/browser/random_env",{"workspaceId": workspaceId,"dirId":dirid})
     }
-    
+
     /*
     获取已打开的浏览器信息
     :param dirIds: 需要查询的窗口ID，选填
@@ -2806,7 +2619,7 @@ module.exports = {
 
 ```JavaScript
 const {RoxyClient} = require("./roxy_api");
-const puppeteer = require("puppeteer-core"); 
+const puppeteer = require("puppeteer-core");
 const api_token = "9976uu37d2df8bdde7bcbd872396142";
 const roxy_client = new RoxyClient(50000, api_token);
 
@@ -2819,12 +2632,12 @@ const operate_window = async() => {
     // 创建窗口
     let create_rsp = await roxy_client.browser_create();
     console.log(`browser_create----rsp:${JSON.stringify(create_rsp)}}`);
-    
+
     // 获取窗口列表
     let browser_id = create_rsp["data"]["dirId"];
     let browsers_rsp = await roxy_client.browser_list(browser_id);
     console.log(`browser_list----rsp:${JSON.stringify(browsers_rsp)}}`);
-    
+
     // 修改窗口
     let proxyInfo = {
         "proxyMethod":"custom",
@@ -2848,7 +2661,7 @@ const operate_window = async() => {
     });
 
     console.log(`${browser_id} browser_mdf----rsp:${JSON.stringify(mdf_rsp)}`);
-    
+
     try {
         // 打开窗口
         const rsp = await roxy_client.browser_open(browser_id);
@@ -2864,7 +2677,7 @@ const operate_window = async() => {
             browserWSEndpoint:rsp["data"]["ws"],
             defaultViewport: null,
         });
-        
+
         // 开始做业务
         let newPage = await browser.newPage();
         try {
@@ -2876,7 +2689,7 @@ const operate_window = async() => {
         // 已打开窗口进程信息
         let conn_info_rsp = await roxy_client.browser_connection_info();
         console.log(`browser_connection_info----rsp:${JSON.stringify(conn_info_rsp)}}`);
-        
+
         // 关闭窗口
         // let close_rsp = await roxy_client.browser_close(browser_id);
         // console.log(`${browser_id} browser_close----rsp:${JSON.stringify(close_rsp)}`);
@@ -2907,11 +2720,11 @@ const operate_window = async() => {
 })();
 ```
 
-
 ## 附录
+
 ### 附录-分辨率列表 {#api_relution}
 
-####  格式：宽x高
+#### 格式：宽x高
 
 <br>
 
@@ -3811,5 +3624,5 @@ GMT+13:00 Pacific/Tongatapu
 GMT+13:45 Pacific/Chatham
 GMT+14:00 Etc/GMT-14
 GMT+14:00 Pacific/Apia
-GMT+14:00 Pacific/Kiritimati   
+GMT+14:00 Pacific/Kiritimati
 ```

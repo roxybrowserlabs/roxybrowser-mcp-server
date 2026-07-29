@@ -2,73 +2,98 @@
   "name": "@roxybrowser/openapi",
   "version": "3.0.0",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
+  "keywords": [
+    "browser-automation",
+    "cdp",
+    "chrome-devtools-protocol",
+    "mcp",
+    "model-context-protocol",
+    "roxybrowser"
+  ],
+  "license": "MIT",
+  "author": "RoxyBrowser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roxybrowserlabs/roxybrowser-mcp-server.git"
+  },
+  "bin": {
+    "roxybrowser-mcp": "lib/cli/browser.js",
+    "roxybrowser-openapi-mcp": "lib/cli/browser.js",
+    "roxycommerce-mcp": "lib/cli/commerce.js"
+  },
+  "files": [
+    "lib",
+    "skills",
+    "package.json"
+  ],
   "type": "module",
+  "sideEffects": false,
   "main": "lib/index.cjs",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.js",
-      "require": "./lib/index.cjs",
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      },
+      "require": {
+        "types": "./lib/index.d.cts",
+        "default": "./lib/index.cjs"
+      },
       "default": "./lib/index.cjs"
     }
-  },
-  "bin": {
-    "roxybrowser-openapi-mcp": "lib/cli/browser.js",
-    "roxybrowser-mcp": "lib/cli/browser.js",
-    "roxycommerce-mcp": "lib/cli/commerce.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/roxybrowserlabs/roxybrowser-mcp-server.git"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "vp pack",
     "start": "node lib/cli/browser.js",
-    "dev": "tsup --watch",
-    "test": "npm run build && node --test $(find src/api src/sdk src/domains src/mcp -name '*.test.mjs' -print)",
-    "coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include=lib/api/** --test-coverage-include=lib/sdk/** --test-coverage-include=lib/domains/** --test-coverage-include=lib/mcp/** --test-coverage-lines=90 --test-coverage-functions=90 --test-coverage-branches=90 $(find src/api src/sdk src/domains src/mcp -name '*.test.mjs' -print)",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli/browser.js",
-    "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli/browser.js",
-    "clean": "npx rimraf lib",
+    "dev": "vp pack --watch",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "test": "vp test run",
+    "coverage": "vp test run --coverage",
+    "inspect": "pnpm build && pnpm dlx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli/browser.js",
+    "inspect:cli": "pnpm build && pnpm dlx @modelcontextprotocol/inspector --cli node lib/cli/browser.js",
+    "clean": "node -e \"require('node:fs').rmSync('lib', { recursive: true, force: true })\"",
     "skills:apply": "node support/sync-skills-metadata.mjs apply",
     "skills:check": "node support/sync-skills-metadata.mjs check",
     "skills:pull": "node support/sync-skills-metadata.mjs pull",
-    "publish:release": "npm run clean && npm version patch --no-git-tag-version && npm run build && npm publish",
-    "publish:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm run build && npm publish --tag beta"
+    "publish:release": "pnpm clean && pnpm version patch --no-git-tag-version && pnpm build && pnpm publish",
+    "publish:beta": "pnpm version prerelease --preid=beta --no-git-tag-version && pnpm build && pnpm publish --tag beta"
   },
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "roxybrowser",
-    "browser-automation",
-    "cdp",
-    "chrome-devtools-protocol"
-  ],
-  "files": [
-    "lib",
-    "skills",
-    "package.json"
-  ],
-  "author": "RoxyBrowser",
-  "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.18.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "commander": "^14.0.3",
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@types/node": "^22.0.0",
-    "rimraf": "^6.0.1",
-    "tsup": "^8.3.5",
-    "typescript": "^5.9.2"
+    "@vitest/coverage-v8": "4.1.10",
+    "@voidzero-dev/vite-plus-core": "^0.2.6",
+    "publint": "^0.3.22",
+    "typescript": "^7.0.2",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.18.0",
+      "onFail": "error"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "24.15.0",
+      "onFail": "download"
+    }
   },
   "engines": {
-    "node": ">=18"
-  }
+    "node": "^20.19.0 || ^22.18.0 || >=24.11.0"
+  },
+  "packageManager": "pnpm@11.18.0"
 }
