@@ -33,18 +33,17 @@ function projectLabel(profile: BrowserProfile): string | undefined {
   return undefined;
 }
 
-function projectValue(profile: BrowserProfile): string {
-  if (profile.projectName && profile.projectId !== undefined) {
-    return `${profile.projectName} (${profile.projectId})`;
-  }
-  return profile.projectName || (profile.projectId !== undefined ? String(profile.projectId) : "");
+function profileSerial(profile: BrowserProfile): string | undefined {
+  if (!profile.workspaceName || profile.windowSortNum === undefined) return undefined;
+  return `${profile.workspaceName.slice(0, 3).toLocaleUpperCase()}-${profile.windowSortNum}`;
 }
 
 function profileLine(profile: BrowserProfile, detailed = false): string {
+  const serial = profileSerial(profile);
   return joinParts([
     `- ${profile.windowName || "Unnamed"}`,
     `dirId: ${profile.dirId}`,
-    profile.windowSortNum !== undefined ? `serial: ${profile.windowSortNum}` : undefined,
+    serial ? `serial: ${serial}` : undefined,
     versioned("core", profile.coreType, profile.coreVersion),
     versioned("os", profile.os, profile.osVersion),
     projectLabel(profile),
@@ -60,15 +59,14 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
   return pagedTable(
     "Profiles",
     page,
-    ["Name", "dirId", "Serial", "Core", "OS", "Project", "Status"],
+    ["Name", "DirId", "Serial", "Core", "OS", "Remark"],
     page.rows.map((profile) => [
       profile.windowName || "Unnamed",
       profile.dirId,
-      profile.windowSortNum,
+      profileSerial(profile),
       combined(profile.coreType, profile.coreVersion),
       combined(profile.os, profile.osVersion),
-      projectValue(profile),
-      typeof profile.openStatus === "boolean" ? (profile.openStatus ? "open" : "closed") : "",
+      profile.windowRemark,
     ]),
     "No profiles found.",
   );

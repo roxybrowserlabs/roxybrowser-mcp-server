@@ -189,7 +189,7 @@ describe("MCP tool handlers", () => {
     });
     assert.equal(
       profile,
-      "Profile\n- Alpha | dirId: profile-1 | serial: 11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: VIP",
+      "Profile\n- Alpha | dirId: profile-1 | serial: MAI-11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: VIP",
     );
     assert.doesNotMatch(profile, /coreType|coreVersion|osVersion|N\/A|Unknown/);
 
@@ -198,15 +198,20 @@ describe("MCP tool handlers", () => {
       page: 1,
       pageSize: 2,
       rows: [
-        { dirId: "p1", projectName: "Named", openStatus: false },
-        { dirId: "p2", projectId: 2, coreVersion: "140" },
+        {
+          dirId: "p1",
+          workspaceName: "Workspace",
+          windowSortNum: 12,
+          windowRemark: "Primary",
+        },
+        { dirId: "p2", workspaceName: "Roxy", windowSortNum: 13, coreVersion: "140" },
         { dirId: "p3" },
       ],
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
-    assert.match(profiles, /\| Name \| dirId \| Serial \| Core \| OS \| Project \| Status \|/);
-    assert.match(profiles, /\| Unnamed \| p1 \|  \|  \|  \| Named \| closed \|/);
-    assert.match(profiles, /\| Unnamed \| p2 \|  \| 140 \|  \| 2 \|  \|/);
+    assert.match(profiles, /\| Name \| DirId \| Serial \| Core \| OS \| Remark \|/);
+    assert.match(profiles, /\| Unnamed \| p1 \| WOR-12 \|  \|  \| Primary \|/);
+    assert.match(profiles, /\| Unnamed \| p2 \| ROX-13 \| 140 \|  \|  \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
     const platformAccounts = formatPlatformAccounts({
@@ -371,7 +376,14 @@ describe("MCP tool handlers", () => {
             calls.push(["profiles.list", args]);
             return {
               total: 1,
-              rows: [{ dirId: "profile-1", windowName: "Alpha", windowSortNum: 11 }],
+              rows: [
+                {
+                  dirId: "profile-1",
+                  windowName: "Alpha",
+                  workspaceName: "Default workspace",
+                  windowSortNum: 11,
+                },
+              ],
             };
           },
           get: async (dirId) => {
@@ -504,7 +516,7 @@ describe("MCP tool handlers", () => {
       context,
     );
     assert.match(profileList, /Alpha/);
-    assert.match(profileList, /\| Alpha \| profile-1 \| 11 \|/);
+    assert.match(profileList, /\| Alpha \| profile-1 \| DEF-11 \|/);
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
         { dirId: "profile-1" },
@@ -687,14 +699,17 @@ describe("MCP tool handlers", () => {
           {
             dirId: "profile-rich",
             windowName: "Rich Profile",
+            workspaceName: "Main workspace",
+            windowSortNum: 7,
             coreType: "Chrome",
             coreVersion: "140",
             os: "Windows",
             osVersion: "11",
+            windowRemark: "VIP",
           },
         ],
       }),
-      /\| Rich Profile \| profile-rich \|  \| Chrome 140 \| Windows 11 \|/,
+      /\| Rich Profile \| profile-rich \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
     );
     assert.match(
       formatProfile({
