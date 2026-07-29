@@ -1,6 +1,6 @@
 import type { CommerceAccount } from "../../../domains/commerce/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
-import { pagedTable } from "../formatting.js";
+import { pagedTable, truncateText } from "../formatting.js";
 
 function projectValue(account: CommerceAccount): string {
   if (account.projectName && account.projectId !== undefined) {
@@ -23,7 +23,7 @@ function accountLine(account: CommerceAccount, detailed = false): string {
     typeof account.openStatus === "boolean"
       ? `status: ${account.openStatus ? "open" : "closed"}`
       : undefined,
-    detailed && account.windowRemark ? `note: ${account.windowRemark}` : undefined,
+    detailed && account.windowRemark ? `note: ${truncateText(account.windowRemark)}` : undefined,
   ];
   return parts.filter(Boolean).join(" | ");
 }

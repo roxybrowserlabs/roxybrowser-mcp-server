@@ -7,7 +7,7 @@ import type {
   Workspace,
 } from "../../../domains/browser/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
-import { markdownTable, pagedTable } from "../formatting.js";
+import { markdownTable, pagedTable, truncateText } from "../formatting.js";
 
 type DetectChannel = { label?: string; type?: string; value?: string };
 
@@ -51,7 +51,7 @@ function profileLine(profile: BrowserProfile, detailed = false): string {
       ? `status: ${profile.openStatus ? "open" : "closed"}`
       : undefined,
     detailed && profile.workspaceName ? `workspace: ${profile.workspaceName}` : undefined,
-    detailed && profile.windowRemark ? `note: ${profile.windowRemark}` : undefined,
+    detailed && profile.windowRemark ? `note: ${truncateText(profile.windowRemark)}` : undefined,
   ]);
 }
 
@@ -66,7 +66,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
       profileSerial(profile),
       combined(profile.coreType, profile.coreVersion),
       combined(profile.os, profile.osVersion),
-      profile.windowRemark,
+      truncateText(profile.windowRemark),
     ]),
     "No profiles found.",
   );
@@ -90,7 +90,7 @@ export function formatPlatformAccounts(
       account.platformUserName,
       account.platformName,
       account.platformUrl,
-      account.platformRemarks,
+      truncateText(account.platformRemarks),
     ]),
     `No ${label.toLowerCase()} found.`,
   );
@@ -169,7 +169,7 @@ function proxyLine(proxy: BrowserProxy, detailed = false): string {
     detailed && proxy.proxyUserName ? `username: ${proxy.proxyUserName}` : undefined,
     detailed && proxy.checkChannelValue ? `check: ${proxy.checkChannelValue}` : undefined,
     detailed && proxy.lastCountry ? `location: ${proxy.lastCountry}` : undefined,
-    proxy.remark ? `note: ${proxy.remark}` : undefined,
+    proxy.remark ? `note: ${truncateText(proxy.remark)}` : undefined,
   ]);
 }
 
@@ -188,7 +188,7 @@ export function formatProxies(page: Page<BrowserProxy>): string {
         proxySource(proxy.dataType),
         proxyStatus(proxy.checkStatus),
         proxy.bindCount,
-        proxy.remark,
+        truncateText(proxy.remark),
       ];
     }),
     "No proxies found.",

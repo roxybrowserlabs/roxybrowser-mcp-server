@@ -39,6 +39,9 @@ function toolByName(tools, name) {
 }
 
 describe("MCP tool handlers", () => {
+  const longRemark = "12345678901234567890overflow";
+  const unicodeRemark = "1234567890123456789😀overflow";
+
   test("MCP input adapters convert friendly fields to API fields", () => {
     assert.deepEqual(
       normalizeProfileListArgs({
@@ -185,11 +188,11 @@ describe("MCP tool handlers", () => {
       projectName: "Ops",
       openStatus: true,
       workspaceName: "Main",
-      windowRemark: "VIP",
+      windowRemark: longRemark,
     });
     assert.equal(
       profile,
-      "Profile\n- Alpha | dirId: profile-1 | serial: MAI-11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: VIP",
+      "Profile\n- Alpha | dirId: profile-1 | serial: MAI-11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: 12345678901234567890...",
     );
     assert.doesNotMatch(profile, /coreType|coreVersion|osVersion|N\/A|Unknown/);
 
@@ -202,7 +205,7 @@ describe("MCP tool handlers", () => {
           dirId: "p1",
           workspaceName: "Workspace",
           windowSortNum: 12,
-          windowRemark: "Primary",
+          windowRemark: longRemark,
         },
         { dirId: "p2", workspaceName: "Roxy", windowSortNum: 13, coreVersion: "140" },
         { dirId: "p3" },
@@ -210,7 +213,7 @@ describe("MCP tool handlers", () => {
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
     assert.match(profiles, /\| Name \| DirId \| Serial \| Core \| OS \| Remark \|/);
-    assert.match(profiles, /\| - \| p1 \| WOR-12 \| - \| - \| Primary \|/);
+    assert.match(profiles, /\| - \| p1 \| WOR-12 \| - \| - \| 12345678901234567890\.\.\. \|/);
     assert.match(profiles, /\| - \| p2 \| ROX-13 \| 140 \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
@@ -222,7 +225,7 @@ describe("MCP tool handlers", () => {
           platformUserName: "seller",
           platformName: "Amazon",
           platformUrl: "https://amazon.example",
-          platformRemarks: "main",
+          platformRemarks: longRemark,
         },
         { id: 2, platformName: "eBay" },
         { id: 3, platformUrl: "https://etsy.example" },
@@ -231,7 +234,7 @@ describe("MCP tool handlers", () => {
     });
     assert.match(
       platformAccounts,
-      /\| 1 \| seller \| Amazon \| https:\/\/amazon\.example \| main \|/,
+      /\| 1 \| seller \| Amazon \| https:\/\/amazon\.example \| 12345678901234567890\.\.\. \|/,
     );
     assert.match(platformAccounts, /\| 2 \| - \| eBay \| - \| - \|/);
     assert.match(platformAccounts, /\| 3 \| - \| - \| https:\/\/etsy\.example \| - \|/);
@@ -284,14 +287,17 @@ describe("MCP tool handlers", () => {
           port: "1080",
           checkStatus: 1,
           bindCount: 2,
-          remark: "main",
+          remark: longRemark,
         },
         { id: 2, dataType: "proxyModule", host: "127.0.0.1", checkStatus: 2 },
         { id: 3, dataType: "custom", protocol: "HTTP", checkStatus: 0 },
         { id: 4, checkStatus: "passed" },
       ],
     });
-    assert.match(proxies, /\| 1 \| SOCKS5 proxy\.example:1080 \| store \| passed \| 2 \| main \|/);
+    assert.match(
+      proxies,
+      /\| 1 \| SOCKS5 proxy\.example:1080 \| store \| passed \| 2 \| 12345678901234567890\.\.\. \|/,
+    );
     assert.match(proxies, /\| 2 \| 127\.0\.0\.1 \| user \| failed \| - \| - \|/);
     assert.match(proxies, /\| 3 \| HTTP \| custom \| unknown \| - \| - \|/);
 
@@ -304,8 +310,10 @@ describe("MCP tool handlers", () => {
       proxyUserName: "user",
       checkChannelValue: "IPRust",
       lastCountry: "US",
+      remark: longRemark,
     });
     assert.match(proxy, /username: user \| check: IPRust \| location: US/);
+    assert.match(proxy, /note: 12345678901234567890\.\.\./);
     assert.doesNotMatch(formatProxy({ id: 6, checkStatus: "invalid" }), /status:/);
 
     assert.equal(formatConnections([]), "No connection info found.");
@@ -346,7 +354,10 @@ describe("MCP tool handlers", () => {
     assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
     assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
     assert.match(accounts, /\| - \| a3 \| 4 \| - \|/);
-    assert.match(formatCommerceAccount({ dirId: "a5", windowRemark: "memo" }), /note: memo/);
+    assert.match(
+      formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark }),
+      /note: 1234567890123456789😀\.\.\./,
+    );
   });
 
   test("browser preset handlers use SDK operations and stable debug metadata", async () => {

@@ -1,6 +1,13 @@
 import type { Page } from "../../sdk/shared/pagination.js";
 
 type MarkdownCell = string | number | boolean | null | undefined;
+const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+export function truncateText(value: string | undefined, maxLength = 20): string | undefined {
+  if (!value) return value;
+  const characters = Array.from(graphemeSegmenter.segment(value), ({ segment }) => segment);
+  return characters.length > maxLength ? `${characters.slice(0, maxLength).join("")}...` : value;
+}
 
 function cell(value: MarkdownCell): string {
   if (value === undefined || value === null || value === "") return "-";

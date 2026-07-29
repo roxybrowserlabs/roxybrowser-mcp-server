@@ -201,6 +201,7 @@ renamed models, nested view models, or `raw` wrappers. MCP is the only semantic 
   page, total pages, `pageSize`, and `nextPage` when another page exists;
 - Markdown table formatters render missing cells as `-` instead of ambiguous empty cells or labels
   such as `Unnamed`, `Unknown`, and `N/A`;
+- remark and note fields show at most 20 characters and append `...` when truncated;
 - detail formatters use compact natural language and omit missing optional fields, while missing
   names render as `-`.
 
