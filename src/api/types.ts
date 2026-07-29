@@ -89,6 +89,9 @@ export interface RawProxy {
   bindCount?: number;
   bindList?: number[];
   bandwidthSpeed?: number;
+  lastCountry?: string;
+  lastState?: string;
+  lastCity?: string;
   [key: string]: unknown;
 }
 

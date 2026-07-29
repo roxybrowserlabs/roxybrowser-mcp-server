@@ -190,9 +190,12 @@ Each MCP tool definition includes:
 - `inputSchema`: public JSON schema,
 - `handler`: domain SDK handler.
 
-MCP input adapters may use LLM-friendly fields, but they must convert them in preset `inputs.ts`
-files before calling the SDK. SDK/domain requests and responses keep the API documentation's field
-names and must not introduce renamed models, nested view models, or `raw` wrappers.
+SDK/domain requests and responses keep the API documentation's field names and must not introduce
+renamed models, nested view models, or `raw` wrappers. MCP is the only semantic adaptation boundary:
+
+- preset `inputs.ts` files convert LLM-friendly inputs to API fields before calling the SDK;
+- preset `formatters.ts` files select, combine, and explain returned fields in compact natural
+  language for LLM context efficiency, without changing SDK/domain data.
 
 ## Testing Guidance
 

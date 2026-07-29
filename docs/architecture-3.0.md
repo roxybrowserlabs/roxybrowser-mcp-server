@@ -271,8 +271,10 @@ SDK and domain data keep the field names documented by the RoxyBrowser API. They
 rename fields, introduce nested view models, or wrap endpoint data in `raw`. Product language is
 expressed by operation names such as `profiles` and `accounts`, while their data remains API-shaped.
 
-Only MCP tool inputs use LLM-friendly names. MCP input adapters convert those values once before
-calling the SDK.
+MCP is the semantic adaptation boundary. Input adapters convert LLM-friendly values once before
+calling the SDK. Output formatters select and combine related API fields into compact natural
+language, omit empty values, and translate historical enums for LLM context efficiency. The
+underlying SDK/domain data remains API-shaped.
 
 ```ts
 type Pagination = {

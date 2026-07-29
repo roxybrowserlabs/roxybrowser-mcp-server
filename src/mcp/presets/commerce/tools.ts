@@ -1,5 +1,11 @@
 import type { McpTool } from "../../runtime/index.js";
-import { formatPlatformAccounts } from "../browser/formatters.js";
+import {
+  formatConnections,
+  formatDetectChannels,
+  formatPlatformAccounts,
+  formatProxies,
+  formatProxy,
+} from "../browser/formatters.js";
 import {
   normalizePlatformAccountInput,
   normalizeProfileDeleteOptions,
@@ -157,7 +163,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
         args.dirId,
         normalizeProfileOpenOptions(args),
       );
-      return `Opened account ${args.dirId}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
+      return formatConnections(opened ? [{ dirId: args.dirId, ...(opened as any) }] : []);
     },
   },
   {
@@ -198,18 +204,8 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
       sortBy: { type: "string" },
       sortOrder: { type: "string", enum: ["asc", "desc"] },
     }),
-    handler: async (args, context) => {
-      const page = await context.commerce!.proxies.list(normalizeProxyListArgs(args));
-      return page.rows.length === 0
-        ? "No proxies found."
-        : [
-            `Found ${page.total} proxy/proxies.`,
-            ...page.rows.map(
-              (proxy) =>
-                `- ${proxy.id}: ${proxy.dataType ?? "N/A"} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
-            ),
-          ].join("\n");
-    },
+    handler: async (args, context) =>
+      formatProxies(await context.commerce!.proxies.list(normalizeProxyListArgs(args))),
   },
   {
     name: "roxy_proxy_get",
@@ -217,8 +213,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /proxy/detail",
     description: "Get one proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) =>
-      JSON.stringify(await context.commerce!.proxies.get(args.id), null, 2),
+    handler: async (args, context) => formatProxy(await context.commerce!.proxies.get(args.id)),
   },
   {
     name: "roxy_proxy_create",
@@ -268,8 +263,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) =>
-      JSON.stringify(await context.commerce!.proxies.detect(args.id), null, 2),
+    handler: async (args, context) => formatProxy(await context.commerce!.proxies.detect(args.id)),
   },
   {
     name: "roxy_proxy_detect_channels",
@@ -278,7 +272,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "List proxy detect channels.",
     inputSchema: objectSchema({}),
     handler: async (_args, context) =>
-      JSON.stringify(await context.commerce!.proxies.detectChannels(), null, 2),
+      formatDetectChannels(await context.commerce!.proxies.detectChannels()),
   },
   {
     name: "roxy_platform_credential_list",
@@ -287,7 +281,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "List platform credentials.",
     inputSchema: objectSchema(paginationSchema),
     handler: async (args, context) =>
-      formatPlatformAccounts(await context.commerce!.platformCredentials.list(args)),
+      formatPlatformAccounts(await context.commerce!.platformCredentials.list(args), "credentials"),
   },
   {
     name: "roxy_platform_credential_create",

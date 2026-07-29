@@ -1,9 +1,16 @@
 import assert from "node:assert/strict";
 import { describe, test } from "vite-plus/test";
 import {
+  formatConnections,
+  formatDetectChannels,
+  formatLabels,
   formatPlatformAccounts,
   formatProfile,
   formatProfiles,
+  formatProjects,
+  formatProxies,
+  formatProxy,
+  formatWorkspaces,
 } from "../../../lib/mcp/presets/browser/formatters.js";
 import {
   normalizePlatformAccountInput,
@@ -163,6 +170,168 @@ describe("MCP tool handlers", () => {
     assert.deepEqual(normalizeCommerceAccountInput({ name: "Store" }), {
       windowName: "Store",
     });
+  });
+
+  test("MCP output formatters keep natural language compact and semantic", () => {
+    const profile = formatProfile({
+      dirId: "profile-1",
+      windowName: "Alpha",
+      windowSortNum: 11,
+      coreType: "Chrome",
+      coreVersion: "140",
+      os: "Windows",
+      osVersion: "11",
+      projectId: 3,
+      projectName: "Ops",
+      openStatus: true,
+      workspaceName: "Main",
+      windowRemark: "VIP",
+    });
+    assert.equal(
+      profile,
+      "Profile\n- Alpha | dirId: profile-1 | serial: 11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: VIP",
+    );
+    assert.doesNotMatch(profile, /coreType|coreVersion|osVersion|N\/A|Unknown/);
+
+    const profiles = formatProfiles({
+      total: 3,
+      rows: [
+        { dirId: "p1", projectName: "Named", openStatus: false },
+        { dirId: "p2", projectId: 2, coreVersion: "140" },
+        { dirId: "p3" },
+      ],
+    });
+    assert.match(profiles, /project: Named \| status: closed/);
+    assert.match(profiles, /projectId: 2/);
+    assert.doesNotMatch(profiles, /N\/A|Unknown/);
+
+    const platformAccounts = formatPlatformAccounts({
+      total: 4,
+      rows: [
+        {
+          id: 1,
+          platformUserName: "seller",
+          platformName: "Amazon",
+          platformUrl: "https://amazon.example",
+          platformRemarks: "main",
+        },
+        { id: 2, platformName: "eBay" },
+        { id: 3, platformUrl: "https://etsy.example" },
+        { id: 4 },
+      ],
+    });
+    assert.match(platformAccounts, /seller \| id: 1 \| platform: Amazon/);
+    assert.match(platformAccounts, /- eBay \| id: 2/);
+    assert.match(platformAccounts, /- https:\/\/etsy\.example \| id: 3/);
+
+    assert.match(
+      formatWorkspaces({
+        total: 2,
+        rows: [
+          {
+            id: 77,
+            workspaceName: "Main",
+            project_details: [
+              { projectId: 3, projectName: "Ops" },
+              { name: "Name only" },
+              { id: 4 },
+              {},
+            ],
+          },
+          { id: 88, workspaceName: "Empty", project_details: [] },
+        ],
+      }),
+      /projects: Ops \(3\), Name only, 4/,
+    );
+    const projects = formatProjects({
+      total: 4,
+      rows: [
+        { projectId: 1, projectName: "One" },
+        { id: 2, name: "Two" },
+        { project_name: "Legacy" },
+        {},
+      ],
+    });
+    assert.match(projects, /- One \| id: 1/);
+    assert.match(projects, /- Legacy/);
+    assert.match(projects, /- Unnamed/);
+    assert.equal(formatLabels([]), "No labels found.");
+    assert.match(formatLabels([{ id: 1, name: "VIP", color: "#fff" }]), /VIP \| id: 1 \| #fff/);
+
+    const proxies = formatProxies({
+      total: 4,
+      rows: [
+        {
+          id: 1,
+          dataType: "buyProxy",
+          protocol: "SOCKS5",
+          host: "proxy.example",
+          port: "1080",
+          checkStatus: 1,
+          bindCount: 2,
+          remark: "main",
+        },
+        { id: 2, dataType: "proxyModule", host: "127.0.0.1", checkStatus: 2 },
+        { id: 3, dataType: "custom", protocol: "HTTP", checkStatus: 0 },
+        { id: 4, checkStatus: "passed" },
+      ],
+    });
+    assert.match(proxies, /SOCKS5 proxy\.example:1080 \| source: store \| status: passed/);
+    assert.match(proxies, /source: user \| status: failed/);
+    assert.match(proxies, /source: custom \| status: unknown/);
+
+    const proxy = formatProxy({
+      id: 5,
+      protocol: "HTTP",
+      host: "detail.example",
+      port: "80",
+      checkStatus: "failed",
+      proxyUserName: "user",
+      checkChannelValue: "IPRust",
+      lastCountry: "US",
+    });
+    assert.match(proxy, /username: user \| check: IPRust \| location: US/);
+    assert.doesNotMatch(formatProxy({ id: 6, checkStatus: "invalid" }), /status:/);
+
+    assert.equal(formatConnections([]), "No connection info found.");
+    assert.equal(formatConnections([{}]), "No connection info found.");
+    assert.match(
+      formatConnections([
+        { dirId: "p1", windowName: "Alpha", ws: "ws://p1", http: "http://p1", pid: 10 },
+        { ws: "ws://anonymous", http: "" },
+      ]),
+      /Alpha \| dirId: p1 \| ws: ws:\/\/p1 \| http: http:\/\/p1 \| pid: 10/,
+    );
+
+    assert.equal(formatDetectChannels([]), "No detect channels found.");
+    const channels = formatDetectChannels([
+      { label: "IPRust", value: "https://iprust.example", type: "url" },
+      { value: "direct" },
+      { label: "same", value: "same" },
+      {},
+    ]);
+    assert.match(channels, /IPRust \| https:\/\/iprust\.example \| type: url/);
+    assert.match(channels, /- direct/);
+
+    const accounts = formatCommerceAccounts({
+      total: 4,
+      rows: [
+        {
+          dirId: "a1",
+          windowName: "Store",
+          projectName: "Ops",
+          projectId: 3,
+          openStatus: true,
+        },
+        { dirId: "a2", projectName: "Named", openStatus: false },
+        { dirId: "a3", projectId: 4 },
+        { dirId: "a4" },
+      ],
+    });
+    assert.match(accounts, /project: Ops \(3\) \| status: open/);
+    assert.match(accounts, /project: Named \| status: closed/);
+    assert.match(accounts, /projectId: 4/);
+    assert.match(formatCommerceAccount({ dirId: "a5", windowRemark: "memo" }), /note: memo/);
   });
 
   test("browser preset handlers use SDK operations and stable debug metadata", async () => {
@@ -515,7 +684,7 @@ describe("MCP tool handlers", () => {
           },
         ],
       }),
-      /coreVersion: 140/,
+      /core: Chrome 140/,
     );
     assert.match(
       formatProfile({
@@ -526,7 +695,7 @@ describe("MCP tool handlers", () => {
         os: "Windows",
         osVersion: "11",
       }),
-      /osVersion: 11/,
+      /os: Windows 11/,
     );
     assert.match(
       formatCommerceAccount({ dirId: "account-rich", windowName: "Store A", projectId: 9 }),
@@ -565,7 +734,7 @@ describe("MCP tool handlers", () => {
         { dirId: "profile-empty" },
         browserContext,
       ),
-      /N\/A/,
+      /dirId: profile-empty/,
     );
     assert.equal(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_connection_info").handler(
@@ -576,7 +745,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_list").handler({}, browserContext),
-      /N\/A:N\/A/,
+      /Proxies: 1/,
     );
 
     const commerceContext = {
@@ -590,11 +759,11 @@ describe("MCP tool handlers", () => {
         { dirId: "account-empty" },
         commerceContext,
       ),
-      /N\/A/,
+      /dirId: account-empty/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_list").handler({}, commerceContext),
-      /N\/A:N\/A/,
+      /Proxies: 1/,
     );
   });
 
@@ -851,11 +1020,17 @@ describe("MCP tool handlers", () => {
 
   test("formatters use empty and fallback labels consistently", () => {
     assert.equal(formatProfiles({ total: 0, rows: [] }), "No profiles found.");
-    assert.match(formatProfile({ dirId: "profile-1" }), /windowName: Unnamed/);
-    assert.match(formatProfiles({ total: 1, rows: [{ dirId: "profile-1" }] }), /coreType: Unknown/);
+    assert.match(formatProfile({ dirId: "profile-1" }), /- Unnamed \| dirId: profile-1/);
+    assert.doesNotMatch(
+      formatProfiles({ total: 1, rows: [{ dirId: "profile-1" }] }),
+      /Unknown|N\/A/,
+    );
     assert.equal(formatPlatformAccounts({ total: 0, rows: [] }), "No platform accounts found.");
-    assert.match(formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }), /Unknown platform/);
+    assert.equal(
+      formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }),
+      "Platform accounts: 1\n- 1 | id: 1",
+    );
     assert.equal(formatCommerceAccounts({ total: 0, rows: [] }), "No ecommerce accounts found.");
-    assert.match(formatCommerceAccount({ dirId: "account-1" }), /windowName: Unnamed/);
+    assert.match(formatCommerceAccount({ dirId: "account-1" }), /- Unnamed \| dirId: account-1/);
   });
 });

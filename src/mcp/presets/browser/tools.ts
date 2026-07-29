@@ -1,6 +1,17 @@
 import type { McpTool } from "../../runtime/index.js";
 import { removeUndefined } from "../../../sdk/shared/normalize.js";
-import { formatPlatformAccounts, formatProfile, formatProfiles } from "./formatters.js";
+import {
+  formatConnections,
+  formatDetectChannels,
+  formatLabels,
+  formatPlatformAccounts,
+  formatProfile,
+  formatProfiles,
+  formatProjects,
+  formatProxies,
+  formatProxy,
+  formatWorkspaces,
+} from "./formatters.js";
 import {
   normalizePlatformAccountInput,
   normalizeProfileDeleteOptions,
@@ -91,15 +102,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/workspace",
     description: "List RoxyBrowser workspaces.",
     inputSchema: objectSchema(paginationSchema),
-    handler: async (args, context) => {
-      const page = await context.browser!.workspaces.list(args);
-      return page.rows.length === 0
-        ? "No workspaces found."
-        : [
-            `Found ${page.total} workspace(s).`,
-            ...page.rows.map((workspace) => `- ${workspace.id}: ${workspace.workspaceName}`),
-          ].join("\n");
-    },
+    handler: async (args, context) =>
+      formatWorkspaces(await context.browser!.workspaces.list(args)),
   },
   {
     name: "roxy_project_list",
@@ -107,17 +111,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /project/list",
     description: "List projects in the configured workspace.",
     inputSchema: objectSchema(paginationSchema),
-    handler: async (args, context) => {
-      const page = await context.browser!.projects.list(args);
-      return page.rows.length === 0
-        ? "No projects found."
-        : [
-            `Found ${page.total} project(s).`,
-            ...page.rows.map(
-              (project) => `- ${project.projectId ?? "N/A"}: ${project.projectName ?? "Unnamed"}`,
-            ),
-          ].join("\n");
-    },
+    handler: async (args, context) => formatProjects(await context.browser!.projects.list(args)),
   },
   {
     name: "roxy_label_list",
@@ -125,15 +119,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/label",
     description: "List browser labels.",
     inputSchema: objectSchema({}),
-    handler: async (_args, context) => {
-      const labels = await context.browser!.labels.list();
-      return labels.length === 0
-        ? "No labels found."
-        : [
-            `Found ${labels.length} label(s).`,
-            ...labels.map((label) => `- ${label.id}: ${label.name} ${label.color ?? ""}`.trimEnd()),
-          ].join("\n");
-    },
+    handler: async (_args, context) => formatLabels(await context.browser!.labels.list()),
   },
   {
     name: "roxy_profile_list",
@@ -206,7 +192,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
         args.dirId,
         normalizeProfileOpenOptions(args),
       );
-      return `Opened profile ${args.dirId}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
+      return formatConnections(opened ? [{ dirId: args.dirId, ...(opened as any) }] : []);
     },
   },
   {
@@ -244,8 +230,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Get CDP connection information for opened browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }),
     handler: async (args, context) => {
-      const info = await context.browser!.profiles.connectionInfo(args.dirIds?.join(","));
-      return info.length === 0 ? "No connection info found." : JSON.stringify(info, null, 2);
+      return formatConnections(
+        await context.browser!.profiles.connectionInfo(args.dirIds?.join(",")),
+      );
     },
   },
   {
@@ -300,18 +287,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       sortBy: { type: "string" },
       sortOrder: { type: "string", enum: ["asc", "desc"] },
     }),
-    handler: async (args, context) => {
-      const page = await context.browser!.proxies.list(normalizeProxyListArgs(args));
-      return page.rows.length === 0
-        ? "No proxies found."
-        : [
-            `Found ${page.total} proxy/proxies.`,
-            ...page.rows.map(
-              (proxy) =>
-                `- ${proxy.id}: ${proxy.dataType ?? "N/A"} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
-            ),
-          ].join("\n");
-    },
+    handler: async (args, context) =>
+      formatProxies(await context.browser!.proxies.list(normalizeProxyListArgs(args))),
   },
   {
     name: "roxy_proxy_get",
@@ -319,8 +296,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /proxy/detail",
     description: "Get one proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) =>
-      JSON.stringify(await context.browser!.proxies.get(args.id), null, 2),
+    handler: async (args, context) => formatProxy(await context.browser!.proxies.get(args.id)),
   },
   {
     name: "roxy_proxy_create",
@@ -370,8 +346,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) =>
-      JSON.stringify(await context.browser!.proxies.detect(args.id), null, 2),
+    handler: async (args, context) => formatProxy(await context.browser!.proxies.detect(args.id)),
   },
   {
     name: "roxy_proxy_detect_channels",
@@ -380,7 +355,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "List proxy detect channels.",
     inputSchema: objectSchema({}),
     handler: async (_args, context) =>
-      JSON.stringify(await context.browser!.proxies.detectChannels(), null, 2),
+      formatDetectChannels(await context.browser!.proxies.detectChannels()),
   },
   {
     name: "roxy_platform_account_list",
