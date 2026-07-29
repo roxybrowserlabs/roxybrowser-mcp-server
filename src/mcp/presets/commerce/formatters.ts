@@ -1,5 +1,13 @@
 import type { CommerceAccount } from "../../../domains/commerce/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
+import { pagedTable } from "../formatting.js";
+
+function projectValue(account: CommerceAccount): string {
+  if (account.projectName && account.projectId !== undefined) {
+    return `${account.projectName} (${account.projectId})`;
+  }
+  return account.projectName || (account.projectId !== undefined ? String(account.projectId) : "");
+}
 
 function accountLine(account: CommerceAccount, detailed = false): string {
   const parts = [
@@ -21,9 +29,17 @@ function accountLine(account: CommerceAccount, detailed = false): string {
 }
 
 export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
-  if (page.rows.length === 0) return "No ecommerce accounts found.";
-  return [`Accounts: ${page.total}`, ...page.rows.map((account) => accountLine(account))].join(
-    "\n",
+  return pagedTable(
+    "Accounts",
+    page,
+    ["Name", "dirId", "Project", "Status"],
+    page.rows.map((account) => [
+      account.windowName || "Unnamed",
+      account.dirId,
+      projectValue(account),
+      typeof account.openStatus === "boolean" ? (account.openStatus ? "open" : "closed") : "",
+    ]),
+    "No ecommerce accounts found.",
   );
 }
 

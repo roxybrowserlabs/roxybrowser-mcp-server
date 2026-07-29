@@ -94,6 +94,7 @@ src/
       index.ts
       types.ts
     presets/
+      formatting.ts
       browser/
         create-browser-mcp-server.ts
         formatters.ts
@@ -194,8 +195,12 @@ SDK/domain requests and responses keep the API documentation's field names and m
 renamed models, nested view models, or `raw` wrappers. MCP is the only semantic adaptation boundary:
 
 - preset `inputs.ts` files convert LLM-friendly inputs to API fields before calling the SDK;
-- preset `formatters.ts` files select, combine, and explain returned fields in compact natural
-  language for LLM context efficiency, without changing SDK/domain data.
+- preset formatters select, combine, and explain returned fields for LLM context efficiency,
+  without changing SDK/domain data;
+- list formatters use Markdown tables to avoid repeating field labels and include `total`, current
+  page, total pages, `pageSize`, and `nextPage` when another page exists;
+- detail formatters use compact natural language, and missing values stay empty instead of using
+  placeholders such as `Unknown` or `N/A`.
 
 ## Testing Guidance
 
