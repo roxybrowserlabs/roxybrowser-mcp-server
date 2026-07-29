@@ -84,11 +84,10 @@ export function formatPlatformAccounts(
   return pagedTable(
     label,
     page,
-    ["ID", "Username", "Platform", "URL", "Note"],
+    ["ID", "Username", "Platform URL", "Note"],
     page.rows.map((account) => [
       account.id,
       account.platformUserName,
-      account.platformName,
       account.platformUrl,
       truncateText(account.platformRemarks),
     ]),

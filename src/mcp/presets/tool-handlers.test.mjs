@@ -234,10 +234,11 @@ describe("MCP tool handlers", () => {
     });
     assert.match(
       platformAccounts,
-      /\| 1 \| seller \| Amazon \| https:\/\/amazon\.example \| 12345678901234567890\.\.\. \|/,
+      /\| 1 \| seller \| https:\/\/amazon\.example \| 12345678901234567890\.\.\. \|/,
     );
-    assert.match(platformAccounts, /\| 2 \| - \| eBay \| - \| - \|/);
-    assert.match(platformAccounts, /\| 3 \| - \| - \| https:\/\/etsy\.example \| - \|/);
+    assert.match(platformAccounts, /\| 2 \| - \| - \| - \|/);
+    assert.match(platformAccounts, /\| 3 \| - \| https:\/\/etsy\.example \| - \|/);
+    assert.doesNotMatch(platformAccounts, /eBay/);
 
     assert.match(
       formatWorkspaces({
@@ -1070,7 +1071,7 @@ describe("MCP tool handlers", () => {
     );
     assert.equal(
       formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }),
-      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform | URL | Note |\n| --- | --- | --- | --- | --- |\n| 1 | - | - | - | - |",
+      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform URL | Note |\n| --- | --- | --- | --- |\n| 1 | - | - | - |",
     );
     assert.equal(
       formatCommerceAccounts({ total: 0, rows: [] }),
