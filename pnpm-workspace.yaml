@@ -13,4 +13,5 @@ peerDependencyRules:
     vite: "*"
 
 allowBuilds:
+  "@modelcontextprotocol/inspector": true
   esbuild: false

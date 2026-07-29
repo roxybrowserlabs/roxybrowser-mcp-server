@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "roxybrowser": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["lib/cli/browser.js"],
+      "cwd": "."
+    },
+    "roxycommerce": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["lib/cli/commerce.js"],
+      "cwd": "."
+    }
+  }
+}

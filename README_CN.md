@@ -31,7 +31,53 @@ roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 - `-w, --workspace-id <id>`：默认 workspace ID，会注入到需要 workspace 的请求
 - `-t, --timeout <ms>`：请求超时时间，默认 `30000`
 
-也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`。
+也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`、`ROXY_WORKSPACE_ID`。
+
+## MCP Inspector 2.0
+
+仓库已经提供 Inspector 2.0 的双服务配置。启动前复制本地环境变量模板，并填写 RoxyBrowser 凭据：
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+ROXY_API_KEY=your_api_key_from_roxybrowser
+ROXY_API_HOST=http://127.0.0.1:50000
+ROXY_TIMEOUT=30000
+ROXY_WORKSPACE_ID=19744
+```
+
+`.env` 已被 Git 忽略。提交到仓库的 `mcp.inspector.json` 不包含凭据，会通过构建后的 `lib` 入口启动 `roxybrowser` 和 `roxycommerce` 两个 stdio 服务。
+
+启动 Web Inspector，然后在 Servers 页面选择需要测试的服务：
+
+```bash
+pnpm inspect
+```
+
+使用终端交互界面：
+
+```bash
+pnpm inspect:tui
+```
+
+运行非交互式工具列表冒烟测试：
+
+```bash
+pnpm inspect:cli:browser
+pnpm inspect:cli:commerce
+```
+
+如需直接调用工具，先构建，再从同一份配置中选择服务：
+
+```bash
+pnpm build
+pnpm exec mcp-inspector --cli --config mcp.inspector.json --server roxybrowser \
+  --method tools/call --tool-name roxy_workspace_list --tool-args-json '{}'
+```
+
+Inspector 2.0 要求 Node.js 22.19.0 或更高版本。本项目开发环境由仓库统一管理为 Node.js 24.15.0。
 
 ## SDK 使用
 

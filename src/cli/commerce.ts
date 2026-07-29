@@ -29,15 +29,20 @@ export async function runCommerceCli(argv = process.argv): Promise<void> {
 
   program.parse(argv);
   const options = program.opts();
+  const workspaceId =
+    options.workspaceId ??
+    (process.env.ROXY_WORKSPACE_ID
+      ? Number.parseInt(process.env.ROXY_WORKSPACE_ID, 10)
+      : undefined);
   await createRoxyCommerceMcpServer({
     roxy: {
       apiHost: options.apiHost,
       apiKey: options.apiKey,
       timeout: options.timeout,
-      workspaceId: options.workspaceId,
+      workspaceId,
     },
     context: {
-      workspaceId: options.workspaceId,
+      workspaceId,
     },
   }).run();
 }

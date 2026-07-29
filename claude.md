@@ -33,6 +33,7 @@ Environment variables:
 ROXY_API_KEY="your_api_key_from_roxybrowser"
 ROXY_API_HOST="http://127.0.0.1:50000"
 ROXY_TIMEOUT="30000"
+ROXY_WORKSPACE_ID="19744"
 ```
 
 CLI options can override these values:
@@ -40,6 +41,15 @@ CLI options can override these values:
 ```bash
 roxybrowser-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+Inspector 2.0 uses the checked-in `mcp.inspector.json` configuration and local `.env` values:
+
+```bash
+pnpm inspect
+pnpm inspect:tui
+pnpm inspect:cli:browser
+pnpm inspect:cli:commerce
 ```
 
 ## Source Layout

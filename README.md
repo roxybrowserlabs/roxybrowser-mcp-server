@@ -31,7 +31,53 @@ Options:
 - `-w, --workspace-id <id>`: default workspace ID injected into workspace-scoped requests.
 - `-t, --timeout <ms>`: request timeout. Default: `30000`
 
-Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`.
+Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`, and `ROXY_WORKSPACE_ID`.
+
+## MCP Inspector 2.0
+
+The repository includes an Inspector 2.0 server configuration for both stdio presets. Copy the local environment template and provide your RoxyBrowser credentials before starting the Inspector:
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+ROXY_API_KEY=your_api_key_from_roxybrowser
+ROXY_API_HOST=http://127.0.0.1:50000
+ROXY_TIMEOUT=30000
+ROXY_WORKSPACE_ID=19744
+```
+
+`.env` is ignored by Git. The checked-in `mcp.inspector.json` contains no credentials and starts both `roxybrowser` and `roxycommerce` from the built `lib` entries.
+
+Start the Web Inspector and select either server from the Servers screen:
+
+```bash
+pnpm inspect
+```
+
+Use the terminal UI instead:
+
+```bash
+pnpm inspect:tui
+```
+
+Run non-interactive tool-list smoke tests:
+
+```bash
+pnpm inspect:cli:browser
+pnpm inspect:cli:commerce
+```
+
+For a direct CLI call, build first and select a server from the shared configuration:
+
+```bash
+pnpm build
+pnpm exec mcp-inspector --cli --config mcp.inspector.json --server roxybrowser \
+  --method tools/call --tool-name roxy_workspace_list --tool-args-json '{}'
+```
+
+Inspector 2.0 requires Node.js 22.19.0 or newer. The development runtime managed by this repository is Node.js 24.15.0.
 
 ## SDK Usage
 
