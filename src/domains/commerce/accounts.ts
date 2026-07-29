@@ -1,4 +1,4 @@
-import { ProfileDomain, type BrowserProfile } from "../browser/index.js";
+import { ProfileDomain } from "../browser/index.js";
 import type {
   CommerceAccount,
   CommerceAccountDeleteOptions,
@@ -11,72 +11,30 @@ export class CommerceAccountDomain {
   constructor(private readonly profiles: ProfileDomain) {}
 
   async list(params: CommerceAccountListParams = {}) {
-    const page = await this.profiles.list({
-      page: params.page,
-      pageSize: params.pageSize,
-      name: params.keyword,
-      projectIds: params.projectIds,
-    });
-    return {
-      ...page,
-      rows: page.rows.map(toCommerceAccount),
-    };
+    return this.profiles.list(params);
   }
 
-  async get(id: string): Promise<CommerceAccount> {
-    return toCommerceAccount(await this.profiles.get(id));
+  async get(dirId: string): Promise<CommerceAccount> {
+    return this.profiles.get(dirId);
   }
 
   async create(input: CommerceAccountInput): Promise<CommerceAccount> {
-    const profile = await this.profiles.create({
-      name: input.name,
-      projectId: input.projectId,
-      proxyId: input.proxyId,
-      urls: input.urls ?? (input.platform?.url ? [input.platform.url] : undefined),
-      platformAccounts: input.platform
-        ? [
-            {
-              platformUrl: input.platform.url,
-              username: input.platform.username,
-              password: input.platform.password,
-              twoFactorKey: input.platform.twoFactorKey,
-              remarks: input.platform.remarks,
-            },
-          ]
-        : undefined,
-      raw: input.raw,
-    });
-    return toCommerceAccount(profile);
+    return this.profiles.create(input);
   }
 
-  async update(id: string, patch: Partial<CommerceAccountInput>): Promise<void> {
-    await this.profiles.update(id, {
-      name: patch.name,
-      projectId: patch.projectId,
-      proxyId: patch.proxyId,
-      urls: patch.urls,
-      raw: patch.raw,
-    });
+  async update(dirId: string, patch: Partial<CommerceAccountInput>): Promise<void> {
+    await this.profiles.update(dirId, patch);
   }
 
-  open(id: string, options: CommerceAccountOpenOptions = {}) {
-    return this.profiles.open(id, options);
+  open(dirId: string, options: CommerceAccountOpenOptions = {}) {
+    return this.profiles.open(dirId, options);
   }
 
-  close(id: string): Promise<void> {
-    return this.profiles.close(id);
+  close(dirId: string): Promise<void> {
+    return this.profiles.close(dirId);
   }
 
-  delete(ids: string[], options: CommerceAccountDeleteOptions = {}): Promise<void> {
-    return this.profiles.delete(ids, options);
+  delete(dirIds: string[], options: CommerceAccountDeleteOptions = {}): Promise<void> {
+    return this.profiles.delete(dirIds, options);
   }
-}
-
-function toCommerceAccount(profile: BrowserProfile): CommerceAccount {
-  return {
-    id: profile.dirId,
-    name: profile.name,
-    projectId: profile.raw.projectId as number | undefined,
-    raw: profile.raw,
-  };
 }

@@ -83,11 +83,13 @@ src/
       browser/
         create-browser-mcp-server.ts
         formatters.ts
+        inputs.ts
         index.ts
         tools.ts
       commerce/
         create-commerce-mcp-server.ts
         formatters.ts
+        inputs.ts
         index.ts
         tools.ts
 
@@ -163,26 +165,28 @@ const roxy = new RoxyBrowserClient({
 const profiles = await roxy.profiles.list({
   page: 1,
   pageSize: 20,
-  projectIds: [1, 2],
-  name: "test",
+  projectIds: "1,2",
+  windowName: "test",
 });
 
 const profile = await roxy.profiles.create({
-  name: "TikTok Account A",
+  windowName: "TikTok Account A",
   projectId: 1,
-  core: { type: "Chrome", version: "140" },
-  os: { name: "Windows", version: "11" },
-  proxyId: 395935,
-  urls: ["https://www.tiktok.com"],
+  coreType: "Chrome",
+  coreVersion: "140",
+  os: "Windows",
+  osVersion: "11",
+  proxyInfo: { moduleId: 395935, proxyMethod: "choose" },
+  defaultOpenUrl: ["https://www.tiktok.com"],
 });
 
 const opened = await roxy.profiles.open(profile.dirId, {
-  force: true,
+  forceOpen: true,
   args: ["--disable-audio-output"],
 });
 
 await roxy.profiles.close(profile.dirId);
-await roxy.profiles.delete([profile.dirId], { soft: true });
+await roxy.profiles.delete([profile.dirId], { isSoftDelete: true });
 ```
 
 ### Browser SDK Surface
@@ -237,30 +241,38 @@ const commerce = new RoxyCommerceClient({
 const accounts = await commerce.accounts.list({
   page: 1,
   pageSize: 20,
-  keyword: "shop-a",
+  windowName: "shop-a",
 });
 
 const account = await commerce.accounts.create({
-  name: "Amazon Store A",
+  windowName: "Amazon Store A",
   projectId: 1,
-  platform: {
-    url: "https://sellercentral.amazon.com",
-    username: "seller@example.com",
-    password: "xxxx",
-  },
-  proxyId: 395935,
+  defaultOpenUrl: ["https://sellercentral.amazon.com"],
+  windowPlatformList: [
+    {
+      platformUrl: "https://sellercentral.amazon.com",
+      platformUserName: "seller@example.com",
+      platformPassword: "xxxx",
+    },
+  ],
+  proxyInfo: { moduleId: 395935, proxyMethod: "choose" },
 });
 
-const session = await commerce.accounts.open(account.id, {
-  force: true,
+const session = await commerce.accounts.open(account.dirId, {
+  forceOpen: true,
 });
 
-await commerce.accounts.close(account.id);
+await commerce.accounts.close(account.dirId);
 ```
 
 ## Parameter Style
 
-The SDK must use business naming and hide backend snake_case.
+SDK and domain data keep the field names documented by the RoxyBrowser API. They do not
+rename fields, introduce nested view models, or wrap endpoint data in `raw`. Product language is
+expressed by operation names such as `profiles` and `accounts`, while their data remains API-shaped.
+
+Only MCP tool inputs use LLM-friendly names. MCP input adapters convert those values once before
+calling the SDK.
 
 ```ts
 type Pagination = {
@@ -268,23 +280,19 @@ type Pagination = {
   pageSize?: number;
 };
 
-type Sort = {
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+type ProxyListParams = Pagination & {
+  proxyType?: string;
+  type?: string;
+  proxyBindStatus?: string;
+  proxyAutoRenew?: string;
+  country?: string;
+  check_status?: number;
+  orderName?: string;
+  orderType?: "asc" | "desc";
 };
-
-type ProxyListParams = Pagination &
-  Sort & {
-    source?: "user" | "store" | "all";
-    type?: "available" | "all";
-    bindStatus?: "bound" | "unbound" | "all";
-    autoRenew?: boolean;
-    country?: string;
-    checkStatus?: "passed" | "failed" | "unknown";
-  };
 ```
 
-Mappings to raw API parameters:
+MCP input mappings to SDK/API parameters:
 
 ```txt
 page -> page_index

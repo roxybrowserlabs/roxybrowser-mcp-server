@@ -97,11 +97,13 @@ src/
       browser/
         create-browser-mcp-server.ts
         formatters.ts
+        inputs.ts
         index.ts
         tools.ts
       commerce/
         create-commerce-mcp-server.ts
         formatters.ts
+        inputs.ts
         index.ts
         tools.ts
 
@@ -151,7 +153,7 @@ const roxy = new RoxyBrowserClient({ apiKey, workspaceId });
 
 await roxy.profiles.list();
 await roxy.profiles.open("profile-1");
-await roxy.proxies.list({ source: "all" });
+await roxy.proxies.list({ proxyType: "0" });
 await roxy.platformAccounts.list();
 ```
 
@@ -162,7 +164,7 @@ Use `RoxyCommerceClient` for ecommerce-product workflows. Ecommerce accounts are
 ```ts
 const commerce = new RoxyCommerceClient({ apiKey, workspaceId });
 
-await commerce.accounts.list({ keyword: "Amazon" });
+await commerce.accounts.list({ windowName: "Amazon" });
 await commerce.accounts.open("account-1");
 ```
 
@@ -187,6 +189,10 @@ Each MCP tool definition includes:
 - `endpoint`: underlying RoxyBrowser endpoint for debugging,
 - `inputSchema`: public JSON schema,
 - `handler`: domain SDK handler.
+
+MCP input adapters may use LLM-friendly fields, but they must convert them in preset `inputs.ts`
+files before calling the SDK. SDK/domain requests and responses keep the API documentation's field
+names and must not introduce renamed models, nested view models, or `raw` wrappers.
 
 ## Testing Guidance
 

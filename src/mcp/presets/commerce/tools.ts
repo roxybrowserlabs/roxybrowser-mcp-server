@@ -1,7 +1,14 @@
 import type { McpTool } from "../../runtime/index.js";
-import { removeUndefined } from "../../../sdk/shared/normalize.js";
-import { formatPlatformAccounts, normalizeProxyListArgs } from "../browser/formatters.js";
+import { formatPlatformAccounts } from "../browser/formatters.js";
+import {
+  normalizePlatformAccountInput,
+  normalizeProfileDeleteOptions,
+  normalizeProfileOpenOptions,
+  normalizeProxyInput,
+  normalizeProxyListArgs,
+} from "../browser/inputs.js";
 import { formatCommerceAccount, formatCommerceAccounts } from "./formatters.js";
+import { normalizeCommerceAccountInput, normalizeCommerceAccountListArgs } from "./inputs.js";
 
 const objectSchema = (properties: Record<string, unknown>, required: string[] = []) => ({
   type: "object",
@@ -77,16 +84,18 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
       projectIds: numberArray,
     }),
     handler: async (args, context) =>
-      formatCommerceAccounts(await context.commerce!.accounts.list(args)),
+      formatCommerceAccounts(
+        await context.commerce!.accounts.list(normalizeCommerceAccountListArgs(args)),
+      ),
   },
   {
     name: "roxy_account_get",
     operationId: "commerce.account.get",
     endpoint: "GET /browser/detail",
     description: "Get one ecommerce account.",
-    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
+    inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     handler: async (args, context) =>
-      formatCommerceAccount(await context.commerce!.accounts.get(args.id)),
+      formatCommerceAccount(await context.commerce!.accounts.get(args.dirId)),
   },
   {
     name: "roxy_account_create",
@@ -104,7 +113,9 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
       ["name"],
     ),
     handler: async (args, context) =>
-      formatCommerceAccount(await context.commerce!.accounts.create(args as any)),
+      formatCommerceAccount(
+        await context.commerce!.accounts.create(normalizeCommerceAccountInput(args)),
+      ),
   },
   {
     name: "roxy_account_update",
@@ -113,18 +124,18 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "Update an ecommerce account.",
     inputSchema: objectSchema(
       {
-        id: { type: "string" },
+        dirId: { type: "string" },
         name: { type: "string" },
         projectId: { type: "number" },
         proxyId: { type: "number" },
         urls: stringArray,
       },
-      ["id"],
+      ["dirId"],
     ),
     handler: async (args, context) => {
-      const { id, ...patch } = args;
-      await context.commerce!.accounts.update(id, patch);
-      return `Updated account ${id}.`;
+      const { dirId, ...patch } = args;
+      await context.commerce!.accounts.update(dirId, normalizeCommerceAccountInput(patch));
+      return `Updated account ${dirId}.`;
     },
   },
   {
@@ -134,19 +145,19 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "Open an ecommerce account session.",
     inputSchema: objectSchema(
       {
-        id: { type: "string" },
+        dirId: { type: "string" },
         force: { type: "boolean" },
         args: stringArray,
         headless: { type: "boolean" },
       },
-      ["id"],
+      ["dirId"],
     ),
     handler: async (args, context) => {
       const opened = await context.commerce!.accounts.open(
-        args.id,
-        removeUndefined({ force: args.force, args: args.args, headless: args.headless }),
+        args.dirId,
+        normalizeProfileOpenOptions(args),
       );
-      return `Opened account ${args.id}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
+      return `Opened account ${args.dirId}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
     },
   },
   {
@@ -154,10 +165,10 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     operationId: "commerce.account.close",
     endpoint: "POST /browser/close",
     description: "Close an ecommerce account session.",
-    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
+    inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     handler: async (args, context) => {
-      await context.commerce!.accounts.close(args.id);
-      return `Closed account ${args.id}.`;
+      await context.commerce!.accounts.close(args.dirId);
+      return `Closed account ${args.dirId}.`;
     },
   },
   {
@@ -165,10 +176,10 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     operationId: "commerce.account.delete",
     endpoint: "POST /browser/delete",
     description: "Delete ecommerce accounts.",
-    inputSchema: objectSchema({ ids: stringArray, soft: { type: "boolean" } }, ["ids"]),
+    inputSchema: objectSchema({ dirIds: stringArray, soft: { type: "boolean" } }, ["dirIds"]),
     handler: async (args, context) => {
-      await context.commerce!.accounts.delete(args.ids, removeUndefined({ soft: args.soft }));
-      return `Deleted ${args.ids.length} ecommerce account(s).`;
+      await context.commerce!.accounts.delete(args.dirIds, normalizeProfileDeleteOptions(args));
+      return `Deleted ${args.dirIds.length} ecommerce account(s).`;
     },
   },
   {
@@ -195,7 +206,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
             `Found ${page.total} proxy/proxies.`,
             ...page.rows.map(
               (proxy) =>
-                `- ${proxy.id}: ${proxy.source} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
+                `- ${proxy.id}: ${proxy.dataType ?? "N/A"} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
             ),
           ].join("\n");
     },
@@ -221,10 +232,10 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     ),
     handler: async (args, context) => {
       if (Array.isArray(args.proxies)) {
-        await context.commerce!.proxies.createMany(args.proxies);
+        await context.commerce!.proxies.createMany(args.proxies.map(normalizeProxyInput));
         return `Created ${args.proxies.length} proxy/proxies.`;
       }
-      await context.commerce!.proxies.create(args as any);
+      await context.commerce!.proxies.create(normalizeProxyInput(args));
       return "Created proxy.";
     },
   },
@@ -236,7 +247,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, ["id"]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
-      await context.commerce!.proxies.update(id, patch);
+      await context.commerce!.proxies.update(id, normalizeProxyInput(patch));
       return `Updated proxy ${id}.`;
     },
   },
@@ -287,10 +298,14 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     inputSchema: singleOrBatchCreateSchema(credentialInputSchema, ["platformUrl"], "credentials"),
     handler: async (args, context) => {
       if (Array.isArray(args.credentials)) {
-        await context.commerce!.platformCredentials.createMany(args.credentials);
+        await context.commerce!.platformCredentials.createMany(
+          args.credentials.map(normalizePlatformAccountInput),
+        );
         return `Created ${args.credentials.length} platform credential(s).`;
       }
-      const id = await context.commerce!.platformCredentials.create(args as any);
+      const id = await context.commerce!.platformCredentials.create(
+        normalizePlatformAccountInput(args),
+      );
       return `Created platform credential ${id}.`;
     },
   },
@@ -302,7 +317,7 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema({ id: { type: "number" }, ...credentialInputSchema }, ["id"]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
-      await context.commerce!.platformCredentials.update(id, patch);
+      await context.commerce!.platformCredentials.update(id, normalizePlatformAccountInput(patch));
       return `Updated platform credential ${id}.`;
     },
   },

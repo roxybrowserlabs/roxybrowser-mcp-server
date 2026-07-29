@@ -4,7 +4,7 @@ import { RoxyCommerceClient } from "../../lib/index.js";
 import { createJsonResponse, installFetchMock } from "../../support/helpers.mjs";
 
 describe("RoxyCommerceClient", () => {
-  test("presents browser profiles as ecommerce accounts", async () => {
+  test("preserves browser profile API fields for ecommerce accounts", async () => {
     const calls = [];
     const restoreFetch = installFetchMock(async (url, options) => {
       calls.push({
@@ -28,21 +28,24 @@ describe("RoxyCommerceClient", () => {
     try {
       const commerce = new RoxyCommerceClient({ apiKey: "secret-token", workspaceId: 77 });
       const account = await commerce.accounts.create({
-        name: "Amazon Store A",
+        windowName: "Amazon Store A",
         projectId: 3,
-        platform: {
-          url: "https://sellercentral.amazon.com",
-          username: "seller@example.com",
-          password: "secret",
-        },
+        defaultOpenUrl: ["https://sellercentral.amazon.com"],
+        windowPlatformList: [
+          {
+            platformUrl: "https://sellercentral.amazon.com",
+            platformUserName: "seller@example.com",
+            platformPassword: "secret",
+          },
+        ],
       });
 
       assert.equal(calls[0].url.pathname, "/browser/create");
       assert.equal(calls[0].body.windowName, "Amazon Store A");
       assert.deepEqual(calls[0].body.defaultOpenUrl, ["https://sellercentral.amazon.com"]);
       assert.equal(calls[0].body.windowPlatformList[0].platformUserName, "seller@example.com");
-      assert.equal(account.id, "account-1");
-      assert.equal(account.name, "Amazon Store A");
+      assert.equal(account.dirId, "account-1");
+      assert.equal(account.windowName, "Amazon Store A");
     } finally {
       restoreFetch();
     }

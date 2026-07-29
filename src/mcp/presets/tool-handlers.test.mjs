@@ -6,9 +6,22 @@ import {
   formatProfiles,
 } from "../../../lib/mcp/presets/browser/formatters.js";
 import {
+  normalizePlatformAccountInput,
+  normalizeProfileDeleteOptions,
+  normalizeProfileInput,
+  normalizeProfileListArgs,
+  normalizeProfileOpenOptions,
+  normalizeProxyInput,
+  normalizeProxyListArgs,
+} from "../../../lib/mcp/presets/browser/inputs.js";
+import {
   formatCommerceAccount,
   formatCommerceAccounts,
 } from "../../../lib/mcp/presets/commerce/formatters.js";
+import {
+  normalizeCommerceAccountInput,
+  normalizeCommerceAccountListArgs,
+} from "../../../lib/mcp/presets/commerce/inputs.js";
 import { BROWSER_MCP_TOOLS } from "../../../lib/mcp/presets/browser/tools.js";
 import { COMMERCE_MCP_TOOLS } from "../../../lib/mcp/presets/commerce/tools.js";
 
@@ -19,6 +32,139 @@ function toolByName(tools, name) {
 }
 
 describe("MCP tool handlers", () => {
+  test("MCP input adapters convert friendly fields to API fields", () => {
+    assert.deepEqual(
+      normalizeProfileListArgs({
+        page: 2,
+        pageSize: 10,
+        dirIds: ["profile-1", "profile-2"],
+        projectIds: [3, 4],
+        name: "Alpha",
+        serialNumber: "11",
+        os: "Windows",
+      }),
+      {
+        page: 2,
+        pageSize: 10,
+        dirIds: "profile-1,profile-2",
+        projectIds: "3,4",
+        windowName: "Alpha",
+        windowSortNum: "11",
+        os: "Windows",
+      },
+    );
+    assert.deepEqual(normalizeProfileListArgs({}), {});
+
+    assert.deepEqual(
+      normalizeProfileInput({
+        name: "Alpha",
+        projectId: 3,
+        core: { type: "Chrome", version: "140" },
+        os: { name: "Windows", version: "11" },
+        proxyId: 9,
+        urls: ["https://example.com"],
+        remark: "memo",
+        platformAccounts: [{ platformUrl: "https://example.com", username: "seller" }],
+      }),
+      {
+        windowName: "Alpha",
+        projectId: 3,
+        coreType: "Chrome",
+        coreVersion: "140",
+        os: "Windows",
+        osVersion: "11",
+        proxyInfo: { moduleId: 9, proxyMethod: "choose" },
+        defaultOpenUrl: ["https://example.com"],
+        windowRemark: "memo",
+        windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
+      },
+    );
+    assert.deepEqual(normalizeProfileInput({}), {});
+    assert.deepEqual(normalizeProfileOpenOptions({ force: false, headless: true }), {
+      forceOpen: false,
+      headless: true,
+    });
+    assert.deepEqual(normalizeProfileDeleteOptions({ soft: false }), { isSoftDelete: false });
+
+    assert.deepEqual(normalizeProxyListArgs({ source: "user", checkStatus: "passed" }), {
+      proxyType: "0",
+      check_status: 1,
+    });
+    assert.deepEqual(
+      normalizeProxyListArgs({
+        source: "store",
+        type: "available",
+        bindStatus: "bound",
+        autoRenew: true,
+        checkStatus: "failed",
+      }),
+      {
+        proxyType: "1",
+        type: "available_list",
+        proxyBindStatus: "1",
+        proxyAutoRenew: "1",
+        check_status: 2,
+      },
+    );
+    assert.deepEqual(
+      normalizeProxyListArgs({ bindStatus: "unbound", autoRenew: false, checkStatus: "unknown" }),
+      { proxyBindStatus: "0", proxyAutoRenew: "0", check_status: 0 },
+    );
+    assert.deepEqual(normalizeProxyListArgs({ source: "all", bindStatus: "all" }), {});
+
+    assert.deepEqual(
+      normalizeProxyInput({
+        protocol: "HTTP",
+        host: "127.0.0.1",
+        port: "8080",
+        username: "user",
+        password: "pass",
+      }),
+      {
+        protocol: "HTTP",
+        host: "127.0.0.1",
+        port: "8080",
+        ipType: "IPV4",
+        proxyUserName: "user",
+        proxyPassword: "pass",
+      },
+    );
+    assert.equal(normalizeProxyInput({ ipType: "IPV6" }).ipType, "IPV6");
+    assert.deepEqual(
+      normalizePlatformAccountInput({
+        platformUrl: "https://example.com",
+        username: "seller",
+        password: "secret",
+        twoFactorKey: "otp",
+        remarks: "memo",
+      }),
+      {
+        platformUrl: "https://example.com",
+        platformUserName: "seller",
+        platformPassword: "secret",
+        platformEfa: "otp",
+        platformRemarks: "memo",
+      },
+    );
+
+    assert.deepEqual(normalizeCommerceAccountListArgs({ keyword: "Amazon" }), {
+      windowName: "Amazon",
+    });
+    assert.deepEqual(
+      normalizeCommerceAccountInput({
+        name: "Store",
+        platform: { url: "https://example.com", username: "seller" },
+      }),
+      {
+        windowName: "Store",
+        windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
+      },
+    );
+    assert.deepEqual(normalizeCommerceAccountInput({ name: "Store" }), {
+      windowName: "Store",
+    });
+  });
+
   test("browser preset handlers use SDK operations and stable debug metadata", async () => {
     const calls = [];
     const context = {
@@ -26,13 +172,13 @@ describe("MCP tool handlers", () => {
         workspaces: {
           list: async (args) => {
             calls.push(["workspaces.list", args]);
-            return { total: 1, rows: [{ id: 77, name: "Default workspace" }] };
+            return { total: 1, rows: [{ id: 77, workspaceName: "Default workspace" }] };
           },
         },
         projects: {
           list: async (args) => {
             calls.push(["projects.list", args]);
-            return { total: 1, rows: [{ id: 3, name: "Project A" }] };
+            return { total: 1, rows: [{ projectId: 3, projectName: "Project A" }] };
           },
         },
         labels: {
@@ -46,16 +192,16 @@ describe("MCP tool handlers", () => {
             calls.push(["profiles.list", args]);
             return {
               total: 1,
-              rows: [{ dirId: "profile-1", name: "Alpha", serialNumber: 11, raw: {} }],
+              rows: [{ dirId: "profile-1", windowName: "Alpha", windowSortNum: 11 }],
             };
           },
           get: async (dirId) => {
             calls.push(["profiles.get", dirId]);
-            return { dirId, name: "Alpha", raw: {} };
+            return { dirId, windowName: "Alpha" };
           },
           create: async (args) => {
             calls.push(["profiles.create", args]);
-            return { dirId: "created-profile", name: args.name, raw: {} };
+            return { dirId: "created-profile", windowName: args.windowName };
           },
           update: async (id, patch) => {
             calls.push(["profiles.update", id, patch]);
@@ -70,9 +216,9 @@ describe("MCP tool handlers", () => {
           delete: async (ids, options) => {
             calls.push(["profiles.delete", ids, options]);
           },
-          connectionInfo: async (ids) => {
-            calls.push(["profiles.connectionInfo", ids]);
-            return [{ id: ids[0], ws: `ws://${ids[0]}` }];
+          connectionInfo: async (dirIds) => {
+            calls.push(["profiles.connectionInfo", dirIds]);
+            return [{ dirId: dirIds, ws: `ws://${dirIds}` }];
           },
           randomizeFingerprint: async (id) => {
             calls.push(["profiles.randomizeFingerprint", id]);
@@ -90,7 +236,13 @@ describe("MCP tool handlers", () => {
             return {
               total: 1,
               rows: [
-                { id: 1, source: "user", protocol: "SOCKS5", host: "127.0.0.1", port: "1080" },
+                {
+                  id: 1,
+                  dataType: "proxyModule",
+                  protocol: "SOCKS5",
+                  host: "127.0.0.1",
+                  port: "1080",
+                },
               ],
             };
           },
@@ -124,7 +276,13 @@ describe("MCP tool handlers", () => {
             calls.push(["platformAccounts.list", args]);
             return {
               total: 1,
-              rows: [{ id: 5, platformUrl: "https://example.com", username: "seller", raw: {} }],
+              rows: [
+                {
+                  id: 5,
+                  platformUrl: "https://example.com",
+                  platformUserName: "seller",
+                },
+              ],
             };
           },
           create: async (args) => {
@@ -315,11 +473,17 @@ describe("MCP tool handlers", () => {
       /Deleted 1/,
     );
 
-    assert.equal(calls.find((call) => call[0] === "proxies.list")[1].source, "all");
+    assert.equal(calls.find((call) => call[0] === "proxies.list")[1].proxyType, undefined);
     assert.deepEqual(calls.find((call) => call[0] === "profiles.open")[2], {
-      force: true,
+      forceOpen: true,
       args: ["--flag"],
     });
+    assert.equal(calls.find((call) => call[0] === "profiles.create")[1].windowName, "Created");
+    assert.equal(calls.find((call) => call[0] === "profiles.update")[2].windowName, "Updated");
+    assert.equal(
+      calls.find((call) => call[0] === "platformAccounts.update")[2].platformUserName,
+      "seller2",
+    );
   });
 
   test("browser proxy list formatter handles empty results", async () => {
@@ -343,27 +507,29 @@ describe("MCP tool handlers", () => {
         rows: [
           {
             dirId: "profile-rich",
-            name: "Rich Profile",
-            core: { type: "Chrome", version: "140" },
-            os: { name: "Windows", version: "11" },
-            raw: {},
+            windowName: "Rich Profile",
+            coreType: "Chrome",
+            coreVersion: "140",
+            os: "Windows",
+            osVersion: "11",
           },
         ],
       }),
-      /Chrome 140/,
+      /coreVersion: 140/,
     );
     assert.match(
       formatProfile({
         dirId: "profile-rich",
-        name: "Rich Profile",
-        core: { type: "Chrome", version: "140" },
-        os: { name: "Windows", version: "11" },
-        raw: {},
+        windowName: "Rich Profile",
+        coreType: "Chrome",
+        coreVersion: "140",
+        os: "Windows",
+        osVersion: "11",
       }),
-      /Windows 11/,
+      /osVersion: 11/,
     );
     assert.match(
-      formatCommerceAccount({ id: "account-rich", name: "Store A", projectId: 9, raw: {} }),
+      formatCommerceAccount({ dirId: "account-rich", windowName: "Store A", projectId: 9 }),
       /projectId: 9/,
     );
 
@@ -421,7 +587,7 @@ describe("MCP tool handlers", () => {
     };
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_open").handler(
-        { id: "account-empty" },
+        { dirId: "account-empty" },
         commerceContext,
       ),
       /N\/A/,
@@ -441,16 +607,16 @@ describe("MCP tool handlers", () => {
             calls.push(["accounts.list", args]);
             return {
               total: 1,
-              rows: [{ id: "account-1", name: "Amazon Store A", projectId: 3, raw: {} }],
+              rows: [{ dirId: "account-1", windowName: "Amazon Store A", projectId: 3 }],
             };
           },
           get: async (id) => {
             calls.push(["accounts.get", id]);
-            return { id, name: "Amazon Store A", raw: {} };
+            return { dirId: id, windowName: "Amazon Store A" };
           },
           create: async (args) => {
             calls.push(["accounts.create", args]);
-            return { id: "created-account", name: args.name, raw: {} };
+            return { dirId: "created-account", windowName: args.windowName };
           },
           update: async (id, patch) => {
             calls.push(["accounts.update", id, patch]);
@@ -474,7 +640,7 @@ describe("MCP tool handlers", () => {
               rows: [
                 {
                   id: 1,
-                  source: "store",
+                  dataType: "buyProxy",
                   protocol: "HTTP",
                   host: "proxy.example.com",
                   port: "8080",
@@ -516,8 +682,7 @@ describe("MCP tool handlers", () => {
                 {
                   id: 9,
                   platformUrl: "https://sellercentral.amazon.com",
-                  username: "seller",
-                  raw: {},
+                  platformUserName: "seller",
                 },
               ],
             };
@@ -557,7 +722,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_get").handler(
-        { id: "account-1" },
+        { dirId: "account-1" },
         context,
       ),
       /account-1/,
@@ -571,28 +736,28 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_update").handler(
-        { id: "account-1", name: "Amazon Store C" },
+        { dirId: "account-1", name: "Amazon Store C" },
         context,
       ),
       /Updated account/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_open").handler(
-        { id: "account-1", force: true },
+        { dirId: "account-1", force: true },
         context,
       ),
       /ws:\/\/account-1/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_close").handler(
-        { id: "account-1" },
+        { dirId: "account-1" },
         context,
       ),
       /Closed account/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_account_delete").handler(
-        { ids: ["account-1"], soft: false },
+        { dirIds: ["account-1"], soft: false },
         context,
       ),
       /Deleted 1/,
@@ -673,23 +838,24 @@ describe("MCP tool handlers", () => {
       ),
       /Deleted 1/,
     );
-    assert.deepEqual(calls.find((call) => call[0] === "accounts.open")[2], { force: true });
-    assert.equal(calls.find((call) => call[0] === "commerce.proxies.list")[1].source, "store");
+    assert.deepEqual(calls.find((call) => call[0] === "accounts.open")[2], {
+      forceOpen: true,
+    });
+    assert.equal(calls.find((call) => call[0] === "commerce.proxies.list")[1].proxyType, "1");
+    assert.equal(calls.find((call) => call[0] === "accounts.list")[1].windowName, "Amazon");
+    assert.equal(
+      calls.find((call) => call[0] === "accounts.create")[1].windowName,
+      "Amazon Store B",
+    );
   });
 
   test("formatters use empty and fallback labels consistently", () => {
     assert.equal(formatProfiles({ total: 0, rows: [] }), "No profiles found.");
-    assert.match(formatProfile({ dirId: "profile-1", raw: {} }), /Profile: Unnamed/);
-    assert.match(
-      formatProfiles({ total: 1, rows: [{ dirId: "profile-1", raw: {} }] }),
-      /core: Unknown/,
-    );
+    assert.match(formatProfile({ dirId: "profile-1" }), /windowName: Unnamed/);
+    assert.match(formatProfiles({ total: 1, rows: [{ dirId: "profile-1" }] }), /coreType: Unknown/);
     assert.equal(formatPlatformAccounts({ total: 0, rows: [] }), "No platform accounts found.");
-    assert.match(
-      formatPlatformAccounts({ total: 1, rows: [{ id: 1, raw: {} }] }),
-      /Unknown platform/,
-    );
+    assert.match(formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }), /Unknown platform/);
     assert.equal(formatCommerceAccounts({ total: 0, rows: [] }), "No ecommerce accounts found.");
-    assert.match(formatCommerceAccount({ id: "account-1", raw: {} }), /Account: Unnamed/);
+    assert.match(formatCommerceAccount({ dirId: "account-1" }), /windowName: Unnamed/);
   });
 });

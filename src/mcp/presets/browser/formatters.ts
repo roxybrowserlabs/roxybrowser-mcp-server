@@ -1,8 +1,4 @@
-import type {
-  BrowserProfile,
-  PlatformAccount,
-  ProxyListParams,
-} from "../../../domains/browser/index.js";
+import type { BrowserProfile, PlatformAccount } from "../../../domains/browser/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
 
 export function formatProfiles(page: Page<BrowserProfile>): string {
@@ -13,10 +9,12 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
     "",
     ...page.rows.map((profile) =>
       [
-        `Profile Name: ${profile.name ?? "Unnamed"}`,
+        `windowName: ${profile.windowName ?? "Unnamed"}`,
         `  - dirId: ${profile.dirId}`,
-        `  - core: ${profile.core?.type ?? "Unknown"} ${profile.core?.version ?? ""}`.trimEnd(),
-        `  - os: ${profile.os?.name ?? "Unknown"} ${profile.os?.version ?? ""}`.trimEnd(),
+        `  - coreType: ${profile.coreType ?? "Unknown"}`,
+        `  - coreVersion: ${profile.coreVersion ?? "N/A"}`,
+        `  - os: ${profile.os ?? "Unknown"}`,
+        `  - osVersion: ${profile.osVersion ?? "N/A"}`,
       ].join("\n"),
     ),
   ].join("\n");
@@ -24,10 +22,12 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
 
 export function formatProfile(profile: BrowserProfile): string {
   return [
-    `Profile: ${profile.name ?? "Unnamed"}`,
+    `windowName: ${profile.windowName ?? "Unnamed"}`,
     `dirId: ${profile.dirId}`,
-    `core: ${profile.core?.type ?? "Unknown"} ${profile.core?.version ?? ""}`.trimEnd(),
-    `os: ${profile.os?.name ?? "Unknown"} ${profile.os?.version ?? ""}`.trimEnd(),
+    `coreType: ${profile.coreType ?? "Unknown"}`,
+    `coreVersion: ${profile.coreVersion ?? "N/A"}`,
+    `os: ${profile.os ?? "Unknown"}`,
+    `osVersion: ${profile.osVersion ?? "N/A"}`,
   ].join("\n");
 }
 
@@ -41,24 +41,9 @@ export function formatPlatformAccounts(page: Page<PlatformAccount>): string {
       [
         `Platform account: ${account.platformUrl ?? "Unknown platform"}`,
         `  - id: ${account.id}`,
-        `  - username: ${account.username ?? "N/A"}`,
-        `  - remarks: ${account.remarks ?? "N/A"}`,
+        `  - platformUserName: ${account.platformUserName ?? "N/A"}`,
+        `  - platformRemarks: ${account.platformRemarks ?? "N/A"}`,
       ].join("\n"),
     ),
   ].join("\n");
-}
-
-export function normalizeProxyListArgs(args: Record<string, any>): ProxyListParams {
-  return {
-    page: args.page,
-    pageSize: args.pageSize,
-    source: args.source,
-    type: args.type,
-    bindStatus: args.bindStatus,
-    autoRenew: args.autoRenew,
-    country: args.country,
-    checkStatus: args.checkStatus,
-    sortBy: args.sortBy,
-    sortOrder: args.sortOrder,
-  };
 }

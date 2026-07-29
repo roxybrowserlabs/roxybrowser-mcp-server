@@ -1,79 +1,63 @@
+import type {
+  RawBrowserProfile,
+  RawPlatformAccount,
+  RawProject,
+  RawProxy,
+  RawWorkspace,
+} from "../../api/index.js";
 import type { PaginationParams } from "../../sdk/shared/pagination.js";
 
-export interface Workspace {
-  id: number;
-  name: string;
-  projects: Project[];
-}
-
-export interface Project {
-  id: number;
-  name: string;
-}
-
-export interface BrowserProfile {
-  dirId: string;
-  serialNumber?: number;
-  name?: string;
-  core?: {
-    type?: string;
-    version?: string;
-  };
-  os?: {
-    name?: string;
-    version?: string;
-  };
-  remark?: string;
-  raw: Record<string, unknown>;
-}
+export type Workspace = RawWorkspace;
+export type Project = RawProject;
+export type BrowserProfile = RawBrowserProfile;
+export type BrowserProxy = RawProxy;
+export type PlatformAccount = RawPlatformAccount;
 
 export interface ProfileListParams extends PaginationParams {
-  dirIds?: string[];
-  projectIds?: number[];
-  name?: string;
-  serialNumber?: string;
+  dirIds?: string;
+  projectIds?: string;
+  windowName?: string;
+  windowSortNum?: string;
   os?: string;
+  [key: string]: unknown;
 }
 
 export interface ProfileCreateInput {
-  name?: string;
+  windowName?: string;
   projectId?: number;
-  core?: {
-    type?: string;
-    version?: string;
-  };
-  os?: {
-    name?: string;
-    version?: string;
-  };
-  proxyId?: number;
-  urls?: string[];
-  remark?: string;
-  platformAccounts?: PlatformAccountInput[];
-  raw?: Record<string, unknown>;
+  coreType?: string;
+  coreVersion?: string;
+  os?: string;
+  osVersion?: string;
+  proxyInfo?: Record<string, unknown>;
+  defaultOpenUrl?: string[];
+  windowRemark?: string;
+  windowPlatformList?: PlatformAccountInput[];
+  [key: string]: unknown;
 }
 
 export interface ProfileUpdateInput extends Partial<ProfileCreateInput> {}
 
 export interface ProfileOpenOptions {
-  force?: boolean;
+  forceOpen?: boolean;
   args?: string[];
   headless?: boolean;
 }
 
 export interface ProfileDeleteOptions {
-  soft?: boolean;
+  isSoftDelete?: boolean;
 }
 
 export interface ProxyListParams extends PaginationParams {
-  source?: "user" | "store" | "all";
-  type?: "available" | "all";
-  bindStatus?: "bound" | "unbound" | "all";
-  autoRenew?: boolean;
+  type?: string;
+  proxyType?: string;
+  proxyBindStatus?: string;
+  proxyAutoRenew?: string;
   country?: string;
-  checkStatus?: "passed" | "failed" | "unknown";
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  check_status?: number;
+  orderName?: string;
+  orderType?: "asc" | "desc";
+  [key: string]: unknown;
 }
 
 export interface ProxyInput {
@@ -82,25 +66,18 @@ export interface ProxyInput {
   port: string;
   ipType?: string;
   checkChannel?: string;
-  username?: string;
-  password?: string;
+  proxyUserName?: string;
+  proxyPassword?: string;
   refreshUrl?: string;
   remark?: string;
+  [key: string]: unknown;
 }
 
 export interface PlatformAccountInput {
   platformUrl: string;
-  username?: string;
-  password?: string;
-  twoFactorKey?: string;
-  remarks?: string;
-  raw?: Record<string, unknown>;
-}
-
-export interface PlatformAccount {
-  id: number;
-  platformUrl?: string;
-  username?: string;
-  remarks?: string;
-  raw: Record<string, unknown>;
+  platformUserName?: string;
+  platformPassword?: string;
+  platformEfa?: string;
+  platformRemarks?: string;
+  [key: string]: unknown;
 }

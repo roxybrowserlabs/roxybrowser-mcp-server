@@ -9,8 +9,8 @@ export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
     "",
     ...page.rows.map((account) =>
       [
-        `Account: ${account.name ?? "Unnamed"}`,
-        `  - id: ${account.id}`,
+        `windowName: ${account.windowName ?? "Unnamed"}`,
+        `  - dirId: ${account.dirId}`,
         `  - projectId: ${account.projectId ?? "N/A"}`,
       ].join("\n"),
     ),
@@ -19,8 +19,8 @@ export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
 
 export function formatCommerceAccount(account: CommerceAccount): string {
   return [
-    `Account: ${account.name ?? "Unnamed"}`,
-    `id: ${account.id}`,
+    `windowName: ${account.windowName ?? "Unnamed"}`,
+    `dirId: ${account.dirId}`,
     `projectId: ${account.projectId ?? "N/A"}`,
   ].join("\n");
 }

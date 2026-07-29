@@ -92,8 +92,12 @@ const roxy = new RoxyBrowserClient({
   workspaceId: 19744,
 });
 
-const profiles = await roxy.profiles.list({ page: 1, pageSize: 20 });
-const opened = await roxy.profiles.open(profiles.rows[0].dirId, { force: true });
+const profiles = await roxy.profiles.list({
+  page: 1,
+  pageSize: 20,
+  windowName: "Amazon",
+});
+const opened = await roxy.profiles.open(profiles.rows[0].dirId, { forceOpen: true });
 ```
 
 电商产品 SDK：
@@ -106,8 +110,8 @@ const commerce = new RoxyCommerceClient({
   workspaceId: 19744,
 });
 
-const accounts = await commerce.accounts.list({ keyword: "Amazon" });
-await commerce.accounts.open(accounts.rows[0].id);
+const accounts = await commerce.accounts.list({ windowName: "Amazon" });
+await commerce.accounts.open(accounts.rows[0].dirId);
 ```
 
 如果需要直接调用接近后端接口形态的能力，可以使用低层 `RoxyApiClient`：

@@ -200,18 +200,15 @@ function createApiRecorder() {
 }
 
 describe("browser domains", () => {
-  test("maps workspaces and projects into SDK names", async () => {
+  test("preserves workspace and project API fields", async () => {
     const { api, calls } = createApiRecorder();
     const workspaces = await new WorkspaceDomain(api).list({ page: 2, pageSize: 10 });
     const projects = await new ProjectDomain(api).list({ page: 1 });
 
     assert.equal(calls[0][1].page_index, 2);
-    assert.equal(workspaces.rows[0].name, "Main Workspace");
-    assert.deepEqual(workspaces.rows[0].projects, [{ id: 3, name: "Ops" }]);
-    assert.deepEqual(workspaces.rows[1].projects, [
-      { id: 4, name: "Fallback Ops" },
-      { id: 0, name: "" },
-    ]);
+    assert.equal(workspaces.rows[0].workspaceName, "Main Workspace");
+    assert.deepEqual(workspaces.rows[0].project_details, [{ projectId: 3, projectName: "Ops" }]);
+    assert.deepEqual(workspaces.rows[1].project_details, [{ id: 4, name: "Fallback Ops" }, {}]);
     assert.deepEqual(projects.rows, [{ id: 4, name: "Fallback Project" }]);
   });
 
@@ -222,32 +219,34 @@ describe("browser domains", () => {
     const page = await profiles.list({
       page: 1,
       pageSize: 20,
-      dirIds: ["profile-1", "profile-2"],
-      projectIds: [3, 4],
-      name: "Alpha",
-      serialNumber: "11",
+      dirIds: "profile-1,profile-2",
+      projectIds: "3,4",
+      windowName: "Alpha",
+      windowSortNum: "11",
       os: "Windows",
     });
     const created = await profiles.create({
-      name: "Created",
+      windowName: "Created",
       projectId: 3,
-      core: { type: "Chrome", version: "140" },
-      os: { name: "Windows", version: "11" },
-      proxyId: 9,
-      urls: ["https://example.com"],
-      platformAccounts: [{ platformUrl: "https://example.com", username: "seller" }],
-      raw: { custom: true },
+      coreType: "Chrome",
+      coreVersion: "140",
+      os: "Windows",
+      osVersion: "11",
+      proxyInfo: { moduleId: 9, proxyMethod: "choose" },
+      defaultOpenUrl: ["https://example.com"],
+      windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
+      custom: true,
     });
-    await profiles.update("profile-1", { name: "Renamed" });
-    await profiles.delete("profile-1", { soft: false });
+    await profiles.update("profile-1", { windowName: "Renamed" });
+    await profiles.delete("profile-1", { isSoftDelete: false });
     const openedOne = await profiles.open("profile-1", {
-      force: true,
+      forceOpen: true,
       args: ["--mute-audio"],
       headless: true,
     });
     const openedMany = await profiles.open(["profile-1", "profile-2"]);
     await profiles.close(["profile-1", "profile-2"]);
-    const info = await profiles.connectionInfo(["profile-1"]);
+    const info = await profiles.connectionInfo("profile-1");
     await profiles.randomizeFingerprint("profile-1");
     await profiles.clearLocalCache("profile-1", { type: "cookie" });
     await profiles.clearServerCache(["profile-1"]);
@@ -288,14 +287,13 @@ describe("browser domains", () => {
 
     const page = await proxies.list({
       page: 1,
-      source: "store",
-      type: "all",
-      bindStatus: "unbound",
-      autoRenew: false,
+      proxyType: "1",
+      proxyBindStatus: "0",
+      proxyAutoRenew: "0",
       country: "US",
-      checkStatus: "failed",
-      sortBy: "checkTime",
-      sortOrder: "desc",
+      check_status: 2,
+      orderName: "checkTime",
+      orderType: "desc",
     });
     const proxy = await proxies.get(12);
     const directProxy = await proxies.get(99);
@@ -303,8 +301,8 @@ describe("browser domains", () => {
       protocol: "SOCKS5",
       host: "127.0.0.1",
       port: "1080",
-      username: "u",
-      password: "p",
+      proxyUserName: "u",
+      proxyPassword: "p",
       remark: "memo",
     });
     await proxies.createMany([{ protocol: "HTTP", host: "127.0.0.2", port: "8080" }]);
@@ -314,23 +312,23 @@ describe("browser domains", () => {
     const channels = await proxies.detectChannels();
     const emptyChannels = await proxies.detectChannels();
     await proxies.list({
-      source: "user",
-      type: "available",
-      bindStatus: "bound",
-      autoRenew: true,
-      checkStatus: "passed",
+      proxyType: "0",
+      type: "available_list",
+      proxyBindStatus: "1",
+      proxyAutoRenew: "1",
+      check_status: 1,
     });
-    await proxies.list({ source: "all", bindStatus: "all", checkStatus: "unknown" });
+    await proxies.list({ check_status: 0 });
 
-    assert.equal(page.rows[0].source, "store");
-    assert.equal(proxy.source, "user");
-    assert.equal(directProxy.source, "store");
+    assert.equal(page.rows[0].dataType, "buyProxy");
+    assert.equal(proxy.dataType, "proxyModule");
+    assert.equal(directProxy.dataType, "buyProxy");
     assert.equal(detected.id, 12);
     assert.equal(channels[0].label, "IPRust.io");
     assert.deepEqual(emptyChannels, []);
     assert.equal(calls.find((call) => call[0] === "proxy.listMerged")[1].proxyType, "1");
     assert.equal(calls.find((call) => call[0] === "proxy.listMerged")[1].proxyBindStatus, "0");
-    assert.equal(calls.find((call) => call[0] === "proxy.modify")[1].proxyCategory, "HTTPS");
+    assert.equal(calls.find((call) => call[0] === "proxy.modify")[1].protocol, "HTTPS");
     await assert.rejects(proxies.get(0), /Proxy not found/);
   });
 
@@ -341,16 +339,16 @@ describe("browser domains", () => {
     const page = await accounts.list({ page: 1, pageSize: 10 });
     const createdId = await accounts.create({
       platformUrl: "https://example.com",
-      username: "seller",
-      password: "secret",
-      twoFactorKey: "otp",
-      remarks: "memo",
+      platformUserName: "seller",
+      platformPassword: "secret",
+      platformEfa: "otp",
+      platformRemarks: "memo",
     });
-    await accounts.createMany([{ platformUrl: "https://example.com", username: "seller" }]);
-    await accounts.update(5, { remarks: "new" });
+    await accounts.createMany([{ platformUrl: "https://example.com", platformUserName: "seller" }]);
+    await accounts.update(5, { platformRemarks: "new" });
     await accounts.delete([5]);
 
-    assert.equal(page.rows[0].username, "seller");
+    assert.equal(page.rows[0].platformUserName, "seller");
     assert.equal(createdId, 5);
     assert.equal(calls.find((call) => call[0] === "account.create")[1].platformEfa, "otp");
     assert.equal(

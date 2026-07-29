@@ -58,16 +58,16 @@ function createClient(calls) {
 }
 
 describe("RoxyBrowserClient", () => {
-  test("maps profile list params to backend browser list params", async () => {
+  test("passes API profile fields through the browser SDK", async () => {
     const calls = [];
     const client = createClient(calls);
 
     const page = await client.profiles.list({
       page: 2,
       pageSize: 10,
-      dirIds: ["profile-1"],
-      projectIds: [1, 2],
-      name: "Alpha",
+      dirIds: "profile-1",
+      projectIds: "1,2",
+      windowName: "Alpha",
     });
 
     assert.equal(calls[0].url.pathname, "/browser/list_v3");
@@ -77,20 +77,22 @@ describe("RoxyBrowserClient", () => {
     assert.equal(calls[0].url.searchParams.get("projectIds"), "1,2");
     assert.equal(calls[0].url.searchParams.get("windowName"), "Alpha");
     assert.equal(page.rows[0].dirId, "profile-1");
-    assert.equal(page.rows[0].name, "Alpha");
+    assert.equal(page.rows[0].windowName, "Alpha");
   });
 
-  test("creates profiles with business-shaped input", async () => {
+  test("creates profiles with API-shaped input", async () => {
     const calls = [];
     const client = createClient(calls);
 
     const profile = await client.profiles.create({
-      name: "Alpha",
+      windowName: "Alpha",
       projectId: 3,
-      core: { type: "Chrome", version: "140" },
-      os: { name: "Windows", version: "11" },
-      proxyId: 9,
-      urls: ["https://example.com"],
+      coreType: "Chrome",
+      coreVersion: "140",
+      os: "Windows",
+      osVersion: "11",
+      proxyInfo: { moduleId: 9, proxyMethod: "choose" },
+      defaultOpenUrl: ["https://example.com"],
     });
 
     assert.equal(calls[0].url.pathname, "/browser/create");
@@ -101,7 +103,7 @@ describe("RoxyBrowserClient", () => {
     assert.equal(profile.dirId, "profile-1");
   });
 
-  test("maps proxy filters to merged proxy list params", async () => {
+  test("passes API proxy filters to list_merged", async () => {
     const calls = [];
     const restoreFetch = installFetchMock(async (url, options) => {
       calls.push({ url: new URL(url), options });
@@ -110,12 +112,12 @@ describe("RoxyBrowserClient", () => {
     try {
       const client = new RoxyBrowserClient({ apiKey: "secret-token", workspaceId: 77 });
       await client.proxies.list({
-        source: "user",
-        type: "available",
-        bindStatus: "bound",
-        autoRenew: true,
-        sortBy: "lastCountry",
-        sortOrder: "asc",
+        proxyType: "0",
+        type: "available_list",
+        proxyBindStatus: "1",
+        proxyAutoRenew: "1",
+        orderName: "lastCountry",
+        orderType: "asc",
       });
 
       assert.equal(calls[0].url.pathname, "/proxy/list_merged");

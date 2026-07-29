@@ -1,4 +1,4 @@
-import type { RoxyApiClient, RawBrowserProfile } from "../../api/index.js";
+import type { RoxyApiClient } from "../../api/index.js";
 import { asArray, type OneOrMany } from "../../sdk/shared/ids.js";
 import { removeUndefined } from "../../sdk/shared/normalize.js";
 import { toPage, toPageRequest } from "../../sdk/shared/pagination.js";
@@ -16,40 +16,31 @@ export class ProfileDomain {
   constructor(private readonly api: RoxyApiClient) {}
 
   async list(params: ProfileListParams = {}) {
+    const { page: _page, pageSize: _pageSize, ...apiParams } = params;
     const rawParams = removeUndefined({
       ...toPageRequest(params),
-      dirIds: params.dirIds?.join(","),
-      projectIds: params.projectIds?.join(","),
-      windowName: params.name,
-      windowSortNum: params.serialNumber,
-      os: params.os,
+      ...apiParams,
     });
     const data = unwrapData(await this.api.browser.list(rawParams as any));
-    return toPage(
-      {
-        total: data.total,
-        rows: data.rows.map(toProfile),
-      },
-      params,
-    );
+    return toPage(data, params);
   }
 
   async get(dirId: string): Promise<BrowserProfile> {
     const data = unwrapData(await this.api.browser.detail({ dirId }));
     const profile = data.rows[0];
     if (!profile) throw new Error(`Profile not found: ${dirId}`);
-    return toProfile(profile);
+    return profile;
   }
 
   async create(input: ProfileCreateInput): Promise<BrowserProfile> {
-    const data = unwrapData(await this.api.browser.create(toProfileCreateRequest(input)));
+    const data = unwrapData(await this.api.browser.create(removeUndefined(input)));
     return this.get(data.dirId);
   }
 
   async update(dirId: string, patch: ProfileUpdateInput): Promise<void> {
     ensureSuccess(
       await this.api.browser.modify({
-        ...toProfileCreateRequest(patch),
+        ...removeUndefined(patch),
         dirId,
       }),
     );
@@ -59,7 +50,7 @@ export class ProfileDomain {
     ensureSuccess(
       await this.api.browser.delete({
         dirIds: asArray(dirIds),
-        isSoftDelete: options.soft ?? true,
+        isSoftDelete: options.isSoftDelete ?? true,
       }),
     );
   }
@@ -72,9 +63,7 @@ export class ProfileDomain {
           await this.api.browser.open(
             removeUndefined({
               dirId,
-              forceOpen: options.force,
-              args: options.args,
-              headless: options.headless,
+              ...options,
             }),
           ),
         ),
@@ -89,14 +78,8 @@ export class ProfileDomain {
     }
   }
 
-  async connectionInfo(dirIds?: string[]) {
-    return (
-      unwrapData(
-        await this.api.browser.connectionInfo({
-          dirIds: dirIds?.join(","),
-        }),
-      ) ?? []
-    );
+  async connectionInfo(dirIds?: string) {
+    return unwrapData(await this.api.browser.connectionInfo({ dirIds })) ?? [];
   }
 
   async randomizeFingerprint(dirId: string): Promise<void> {
@@ -121,48 +104,4 @@ export class ProfileDomain {
       }),
     );
   }
-}
-
-export function toProfile(raw: RawBrowserProfile): BrowserProfile {
-  return {
-    dirId: raw.dirId,
-    serialNumber: raw.windowSortNum,
-    name: raw.windowName,
-    core: {
-      type: raw.coreType,
-      version: raw.coreVersion,
-    },
-    os: {
-      name: raw.os,
-      version: raw.osVersion,
-    },
-    remark: raw.windowRemark,
-    raw,
-  };
-}
-
-export function toProfileCreateRequest(
-  input: ProfileCreateInput | ProfileUpdateInput,
-): Record<string, unknown> {
-  return removeUndefined({
-    ...input.raw,
-    windowName: input.name,
-    projectId: input.projectId,
-    coreType: input.core?.type,
-    coreVersion: input.core?.version,
-    os: input.os?.name,
-    osVersion: input.os?.version,
-    defaultOpenUrl: input.urls,
-    windowRemark: input.remark,
-    proxyInfo:
-      input.proxyId !== undefined ? { moduleId: input.proxyId, proxyMethod: "choose" } : undefined,
-    windowPlatformList: input.platformAccounts?.map((account) => ({
-      ...account.raw,
-      platformUrl: account.platformUrl,
-      platformUserName: account.username,
-      platformPassword: account.password,
-      platformEfa: account.twoFactorKey,
-      platformRemarks: account.remarks,
-    })),
-  });
 }

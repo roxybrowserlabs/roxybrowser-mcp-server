@@ -1,11 +1,15 @@
 import type { McpTool } from "../../runtime/index.js";
 import { removeUndefined } from "../../../sdk/shared/normalize.js";
+import { formatPlatformAccounts, formatProfile, formatProfiles } from "./formatters.js";
 import {
-  formatPlatformAccounts,
-  formatProfile,
-  formatProfiles,
+  normalizePlatformAccountInput,
+  normalizeProfileDeleteOptions,
+  normalizeProfileInput,
+  normalizeProfileListArgs,
+  normalizeProfileOpenOptions,
+  normalizeProxyInput,
   normalizeProxyListArgs,
-} from "./formatters.js";
+} from "./inputs.js";
 
 const objectSchema = (properties: Record<string, unknown>, required: string[] = []) => ({
   type: "object",
@@ -93,7 +97,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
         ? "No workspaces found."
         : [
             `Found ${page.total} workspace(s).`,
-            ...page.rows.map((workspace) => `- ${workspace.id}: ${workspace.name}`),
+            ...page.rows.map((workspace) => `- ${workspace.id}: ${workspace.workspaceName}`),
           ].join("\n");
     },
   },
@@ -109,7 +113,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
         ? "No projects found."
         : [
             `Found ${page.total} project(s).`,
-            ...page.rows.map((project) => `- ${project.id}: ${project.name}`),
+            ...page.rows.map(
+              (project) => `- ${project.projectId ?? "N/A"}: ${project.projectName ?? "Unnamed"}`,
+            ),
           ].join("\n");
     },
   },
@@ -142,7 +148,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       serialNumber: { type: "string" },
       os: { type: "string" },
     }),
-    handler: async (args, context) => formatProfiles(await context.browser!.profiles.list(args)),
+    handler: async (args, context) =>
+      formatProfiles(await context.browser!.profiles.list(normalizeProfileListArgs(args))),
   },
   {
     name: "roxy_profile_get",
@@ -159,7 +166,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /browser/create",
     description: "Create a browser profile.",
     inputSchema: objectSchema(profilePatchSchema),
-    handler: async (args, context) => formatProfile(await context.browser!.profiles.create(args)),
+    handler: async (args, context) =>
+      formatProfile(await context.browser!.profiles.create(normalizeProfileInput(args))),
   },
   {
     name: "roxy_profile_update",
@@ -175,7 +183,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     ),
     handler: async (args, context) => {
       const { dirId, ...patch } = args;
-      await context.browser!.profiles.update(dirId, patch);
+      await context.browser!.profiles.update(dirId, normalizeProfileInput(patch));
       return `Updated profile ${dirId}.`;
     },
   },
@@ -196,7 +204,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     handler: async (args, context) => {
       const opened = await context.browser!.profiles.open(
         args.dirId,
-        removeUndefined({ force: args.force, args: args.args, headless: args.headless }),
+        normalizeProfileOpenOptions(args),
       );
       return `Opened profile ${args.dirId}\nCDP WebSocket: ${(opened as any)?.ws ?? "N/A"}`;
     },
@@ -225,7 +233,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       ["dirIds"],
     ),
     handler: async (args, context) => {
-      await context.browser!.profiles.delete(args.dirIds, removeUndefined({ soft: args.soft }));
+      await context.browser!.profiles.delete(args.dirIds, normalizeProfileDeleteOptions(args));
       return `Deleted ${args.dirIds.length} profile(s).`;
     },
   },
@@ -236,7 +244,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Get CDP connection information for opened browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }),
     handler: async (args, context) => {
-      const info = await context.browser!.profiles.connectionInfo(args.dirIds);
+      const info = await context.browser!.profiles.connectionInfo(args.dirIds?.join(","));
       return info.length === 0 ? "No connection info found." : JSON.stringify(info, null, 2);
     },
   },
@@ -300,7 +308,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
             `Found ${page.total} proxy/proxies.`,
             ...page.rows.map(
               (proxy) =>
-                `- ${proxy.id}: ${proxy.source} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
+                `- ${proxy.id}: ${proxy.dataType ?? "N/A"} ${proxy.protocol ?? "N/A"} ${proxy.host ?? "N/A"}:${proxy.port ?? "N/A"}`,
             ),
           ].join("\n");
     },
@@ -326,10 +334,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     ),
     handler: async (args, context) => {
       if (Array.isArray(args.proxies)) {
-        await context.browser!.proxies.createMany(args.proxies);
+        await context.browser!.proxies.createMany(args.proxies.map(normalizeProxyInput));
         return `Created ${args.proxies.length} proxy/proxies.`;
       }
-      await context.browser!.proxies.create(args as any);
+      await context.browser!.proxies.create(normalizeProxyInput(args));
       return "Created proxy.";
     },
   },
@@ -341,7 +349,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, ["id"]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
-      await context.browser!.proxies.update(id, patch);
+      await context.browser!.proxies.update(id, normalizeProxyInput(patch));
       return `Updated proxy ${id}.`;
     },
   },
@@ -392,10 +400,14 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: singleOrBatchCreateSchema(platformAccountInputSchema, ["platformUrl"], "accounts"),
     handler: async (args, context) => {
       if (Array.isArray(args.accounts)) {
-        await context.browser!.platformAccounts.createMany(args.accounts);
+        await context.browser!.platformAccounts.createMany(
+          args.accounts.map(normalizePlatformAccountInput),
+        );
         return `Created ${args.accounts.length} platform account(s).`;
       }
-      const id = await context.browser!.platformAccounts.create(args as any);
+      const id = await context.browser!.platformAccounts.create(
+        normalizePlatformAccountInput(args),
+      );
       return `Created platform account ${id}.`;
     },
   },
@@ -407,7 +419,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema({ id: { type: "number" }, ...platformAccountInputSchema }, ["id"]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
-      await context.browser!.platformAccounts.update(id, patch);
+      await context.browser!.platformAccounts.update(id, normalizePlatformAccountInput(patch));
       return `Updated platform account ${id}.`;
     },
   },
