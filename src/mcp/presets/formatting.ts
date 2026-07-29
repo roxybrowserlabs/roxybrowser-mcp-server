@@ -3,7 +3,7 @@ import type { Page } from "../../sdk/shared/pagination.js";
 type MarkdownCell = string | number | boolean | null | undefined;
 
 function cell(value: MarkdownCell): string {
-  if (value === undefined || value === null || value === "") return "";
+  if (value === undefined || value === null || value === "") return "-";
   return String(value).replaceAll("|", "\\|").replaceAll(/\r?\n/g, " ");
 }
 

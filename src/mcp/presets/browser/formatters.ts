@@ -41,7 +41,7 @@ function profileSerial(profile: BrowserProfile): string | undefined {
 function profileLine(profile: BrowserProfile, detailed = false): string {
   const serial = profileSerial(profile);
   return joinParts([
-    `- ${profile.windowName || "Unnamed"}`,
+    `- ${profile.windowName || "-"}`,
     `dirId: ${profile.dirId}`,
     serial ? `serial: ${serial}` : undefined,
     versioned("core", profile.coreType, profile.coreVersion),
@@ -61,7 +61,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
     page,
     ["Name", "DirId", "Serial", "Core", "OS", "Remark"],
     page.rows.map((profile) => [
-      profile.windowName || "Unnamed",
+      profile.windowName,
       profile.dirId,
       profileSerial(profile),
       combined(profile.coreType, profile.coreVersion),
@@ -123,7 +123,7 @@ export function formatProjects(page: Page<Project>): string {
     ["ID", "Project"],
     page.rows.map((project) => {
       const id = project.projectId ?? project.id;
-      const name = project.projectName ?? project.name ?? project.project_name ?? "Unnamed";
+      const name = project.projectName ?? project.name ?? project.project_name;
       return [id, name];
     }),
     "No projects found.",
@@ -207,7 +207,7 @@ export function formatConnections(connections: RawBrowserConnection[]): string {
   return `Connections: ${available.length}\n${markdownTable(
     ["Name", "dirId", "WebSocket", "HTTP", "PID"],
     available.map((connection) => [
-      connection.windowName || connection.dirId || "Browser",
+      connection.windowName,
       connection.dirId,
       connection.ws,
       connection.http,
@@ -221,8 +221,8 @@ export function formatDetectChannels(channels: DetectChannel[]): string {
   return `Detect channels: ${channels.length}\n${markdownTable(
     ["Label", "Value", "Type"],
     channels.map((channel) => [
-      channel.label || channel.value || "Unnamed",
-      channel.value && channel.value !== channel.label ? channel.value : "",
+      channel.label,
+      channel.value && channel.value !== channel.label ? channel.value : undefined,
       channel.type,
     ]),
   )}`;

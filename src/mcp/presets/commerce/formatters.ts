@@ -11,7 +11,7 @@ function projectValue(account: CommerceAccount): string {
 
 function accountLine(account: CommerceAccount, detailed = false): string {
   const parts = [
-    `- ${account.windowName || "Unnamed"}`,
+    `- ${account.windowName || "-"}`,
     `dirId: ${account.dirId}`,
     account.projectName && account.projectId !== undefined
       ? `project: ${account.projectName} (${account.projectId})`
@@ -34,7 +34,7 @@ export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
     page,
     ["Name", "dirId", "Project", "Status"],
     page.rows.map((account) => [
-      account.windowName || "Unnamed",
+      account.windowName,
       account.dirId,
       projectValue(account),
       typeof account.openStatus === "boolean" ? (account.openStatus ? "open" : "closed") : "",

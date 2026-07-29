@@ -199,8 +199,10 @@ renamed models, nested view models, or `raw` wrappers. MCP is the only semantic 
   without changing SDK/domain data;
 - list formatters use Markdown tables to avoid repeating field labels and include `total`, current
   page, total pages, `pageSize`, and `nextPage` when another page exists;
-- detail formatters use compact natural language, and missing values stay empty instead of using
-  placeholders such as `Unknown` or `N/A`.
+- Markdown table formatters render missing cells as `-` instead of ambiguous empty cells or labels
+  such as `Unnamed`, `Unknown`, and `N/A`;
+- detail formatters use compact natural language and omit missing optional fields, while missing
+  names render as `-`.
 
 ## Testing Guidance
 

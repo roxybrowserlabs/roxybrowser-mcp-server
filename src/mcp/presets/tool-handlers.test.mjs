@@ -210,8 +210,8 @@ describe("MCP tool handlers", () => {
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
     assert.match(profiles, /\| Name \| DirId \| Serial \| Core \| OS \| Remark \|/);
-    assert.match(profiles, /\| Unnamed \| p1 \| WOR-12 \|  \|  \| Primary \|/);
-    assert.match(profiles, /\| Unnamed \| p2 \| ROX-13 \| 140 \|  \|  \|/);
+    assert.match(profiles, /\| - \| p1 \| WOR-12 \| - \| - \| Primary \|/);
+    assert.match(profiles, /\| - \| p2 \| ROX-13 \| 140 \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
     const platformAccounts = formatPlatformAccounts({
@@ -233,8 +233,8 @@ describe("MCP tool handlers", () => {
       platformAccounts,
       /\| 1 \| seller \| Amazon \| https:\/\/amazon\.example \| main \|/,
     );
-    assert.match(platformAccounts, /\| 2 \|  \| eBay \|  \|  \|/);
-    assert.match(platformAccounts, /\| 3 \|  \|  \| https:\/\/etsy\.example \|  \|/);
+    assert.match(platformAccounts, /\| 2 \| - \| eBay \| - \| - \|/);
+    assert.match(platformAccounts, /\| 3 \| - \| - \| https:\/\/etsy\.example \| - \|/);
 
     assert.match(
       formatWorkspaces({
@@ -265,8 +265,8 @@ describe("MCP tool handlers", () => {
       ],
     });
     assert.match(projects, /\| 1 \| One \|/);
-    assert.match(projects, /\|  \| Legacy \|/);
-    assert.match(projects, /\|  \| Unnamed \|/);
+    assert.match(projects, /\| - \| Legacy \|/);
+    assert.match(projects, /\| - \| - \|/);
     assert.equal(formatLabels([]), "No labels found.");
     assert.match(
       formatLabels([{ id: 1, name: "VIP | Main\nLine", color: "#fff" }]),
@@ -292,8 +292,8 @@ describe("MCP tool handlers", () => {
       ],
     });
     assert.match(proxies, /\| 1 \| SOCKS5 proxy\.example:1080 \| store \| passed \| 2 \| main \|/);
-    assert.match(proxies, /\| 2 \| 127\.0\.0\.1 \| user \| failed \|  \|  \|/);
-    assert.match(proxies, /\| 3 \| HTTP \| custom \| unknown \|  \|  \|/);
+    assert.match(proxies, /\| 2 \| 127\.0\.0\.1 \| user \| failed \| - \| - \|/);
+    assert.match(proxies, /\| 3 \| HTTP \| custom \| unknown \| - \| - \|/);
 
     const proxy = formatProxy({
       id: 5,
@@ -326,7 +326,7 @@ describe("MCP tool handlers", () => {
       {},
     ]);
     assert.match(channels, /\| IPRust \| https:\/\/iprust\.example \| url \|/);
-    assert.match(channels, /\| direct \| direct \|  \|/);
+    assert.match(channels, /\| - \| direct \| - \|/);
 
     const accounts = formatCommerceAccounts({
       total: 4,
@@ -344,8 +344,8 @@ describe("MCP tool handlers", () => {
       ],
     });
     assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
-    assert.match(accounts, /\| Unnamed \| a2 \| Named \| closed \|/);
-    assert.match(accounts, /\| Unnamed \| a3 \| 4 \|  \|/);
+    assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
+    assert.match(accounts, /\| - \| a3 \| 4 \| - \|/);
     assert.match(formatCommerceAccount({ dirId: "a5", windowRemark: "memo" }), /note: memo/);
   });
 
@@ -759,7 +759,7 @@ describe("MCP tool handlers", () => {
         { dirId: "profile-empty" },
         browserContext,
       ),
-      /\| profile-empty \| profile-empty \|/,
+      /\| - \| profile-empty \|/,
     );
     assert.equal(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_connection_info").handler(
@@ -784,7 +784,7 @@ describe("MCP tool handlers", () => {
         { dirId: "account-empty" },
         commerceContext,
       ),
-      /\| account-empty \| account-empty \|/,
+      /\| - \| account-empty \|/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_list").handler({}, commerceContext),
@@ -1048,7 +1048,7 @@ describe("MCP tool handlers", () => {
       formatProfiles({ total: 0, rows: [] }),
       "Profiles: 0 total | page 1/1 | pageSize 15\nNo profiles found.",
     );
-    assert.match(formatProfile({ dirId: "profile-1" }), /- Unnamed \| dirId: profile-1/);
+    assert.match(formatProfile({ dirId: "profile-1" }), /- - \| dirId: profile-1/);
     assert.doesNotMatch(
       formatProfiles({ total: 1, rows: [{ dirId: "profile-1" }] }),
       /Unknown|N\/A/,
@@ -1059,12 +1059,12 @@ describe("MCP tool handlers", () => {
     );
     assert.equal(
       formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }),
-      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform | URL | Note |\n| --- | --- | --- | --- | --- |\n| 1 |  |  |  |  |",
+      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform | URL | Note |\n| --- | --- | --- | --- | --- |\n| 1 | - | - | - | - |",
     );
     assert.equal(
       formatCommerceAccounts({ total: 0, rows: [] }),
       "Accounts: 0 total | page 1/1 | pageSize 15\nNo ecommerce accounts found.",
     );
-    assert.match(formatCommerceAccount({ dirId: "account-1" }), /- Unnamed \| dirId: account-1/);
+    assert.match(formatCommerceAccount({ dirId: "account-1" }), /- - \| dirId: account-1/);
   });
 });

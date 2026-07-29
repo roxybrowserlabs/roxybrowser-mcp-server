@@ -273,10 +273,11 @@ rename fields, introduce nested view models, or wrap endpoint data in `raw`. Pro
 expressed by operation names such as `profiles` and `accounts`, while their data remains API-shaped.
 
 MCP is the semantic adaptation boundary. Input adapters convert LLM-friendly values once before
-calling the SDK. Output formatters select and combine related API fields, omit empty values, and
-translate historical enums for LLM context efficiency. Paginated list results use Markdown tables
-with `total`, current and total pages, `pageSize`, and `nextPage` when available; detail results use
-compact natural language. The underlying SDK/domain data remains API-shaped.
+calling the SDK. Output formatters select and combine related API fields and translate historical
+enums for LLM context efficiency. Paginated list results use Markdown tables with `total`, current
+and total pages, `pageSize`, and `nextPage` when available. Missing table cells render as `-`;
+detail results use compact natural language and omit missing optional fields. The underlying
+SDK/domain data remains API-shaped.
 
 ```ts
 type Pagination = {
