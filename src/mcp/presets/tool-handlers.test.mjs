@@ -249,7 +249,7 @@ describe("MCP tool handlers", () => {
       /Created proxy/,
     );
     assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create_many").handler(
+      await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
         { proxies: [{ protocol: "SOCKS5", host: "127.0.0.1", port: "1080" }] },
         context,
       ),
@@ -289,7 +289,7 @@ describe("MCP tool handlers", () => {
       /6/,
     );
     assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_create_many").handler(
+      await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_create").handler(
         { accounts: [{ platformUrl: "https://example.com" }] },
         context,
       ),
@@ -608,7 +608,7 @@ describe("MCP tool handlers", () => {
       /Created proxy/,
     );
     assert.match(
-      await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_create_many").handler(
+      await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_create").handler(
         { proxies: [{ protocol: "HTTP", host: "proxy.example.com", port: "8080" }] },
         context,
       ),
@@ -648,7 +648,7 @@ describe("MCP tool handlers", () => {
       /10/,
     );
     assert.match(
-      await toolByName(COMMERCE_MCP_TOOLS, "roxy_platform_credential_create_many").handler(
+      await toolByName(COMMERCE_MCP_TOOLS, "roxy_platform_credential_create").handler(
         { credentials: [{ platformUrl: "https://sellercentral.amazon.com" }] },
         context,
       ),

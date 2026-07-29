@@ -13,7 +13,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
     "",
     ...page.rows.map((profile) =>
       [
-        `Profile: ${profile.name ?? "Unnamed"}`,
+        `Profile Name: ${profile.name ?? "Unnamed"}`,
         `  - id: ${profile.id}`,
         `  - core: ${profile.core?.type ?? "Unknown"} ${profile.core?.version ?? ""}`.trimEnd(),
         `  - os: ${profile.os?.name ?? "Unknown"} ${profile.os?.version ?? ""}`.trimEnd(),

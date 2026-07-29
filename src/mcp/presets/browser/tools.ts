@@ -13,6 +13,23 @@ const objectSchema = (properties: Record<string, unknown>, required: string[] = 
   ...(required.length > 0 ? { required } : {}),
 });
 
+const singleOrBatchCreateSchema = (
+  properties: Record<string, unknown>,
+  required: string[],
+  batchProperty: string,
+) => ({
+  type: "object",
+  properties: {
+    ...properties,
+    [batchProperty]: {
+      type: "array",
+      minItems: 1,
+      items: objectSchema(properties, required),
+    },
+  },
+  oneOf: [{ required }, { required: [batchProperty] }],
+});
+
 const stringArray = { type: "array", items: { type: "string" } };
 const numberArray = { type: "array", items: { type: "number" } };
 
@@ -298,31 +315,20 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
   {
     name: "roxy_proxy_create",
     operationId: "browser.proxy.create",
-    endpoint: "POST /proxy/create",
-    description: "Create one proxy.",
-    inputSchema: objectSchema(proxyInputSchema, ["protocol", "host", "port"]),
-    handler: async (args, context) => {
-      await context.browser!.proxies.create(args as any);
-      return "Created proxy.";
-    },
-  },
-  {
-    name: "roxy_proxy_create_many",
-    operationId: "browser.proxy.createMany",
-    endpoint: "POST /proxy/batch_create",
-    description: "Create many proxies.",
-    inputSchema: objectSchema(
-      {
-        proxies: {
-          type: "array",
-          items: objectSchema(proxyInputSchema, ["protocol", "host", "port"]),
-        },
-      },
-      ["proxies"],
+    endpoint: "POST /proxy/create | POST /proxy/batch_create",
+    description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
+    inputSchema: singleOrBatchCreateSchema(
+      proxyInputSchema,
+      ["protocol", "host", "port"],
+      "proxies",
     ),
     handler: async (args, context) => {
-      await context.browser!.proxies.createMany(args.proxies);
-      return `Created ${args.proxies.length} proxy/proxies.`;
+      if (Array.isArray(args.proxies)) {
+        await context.browser!.proxies.createMany(args.proxies);
+        return `Created ${args.proxies.length} proxy/proxies.`;
+      }
+      await context.browser!.proxies.create(args as any);
+      return "Created proxy.";
     },
   },
   {
@@ -378,31 +384,17 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
   {
     name: "roxy_platform_account_create",
     operationId: "browser.platformAccount.create",
-    endpoint: "POST /account/create",
-    description: "Create a platform account.",
-    inputSchema: objectSchema(platformAccountInputSchema, ["platformUrl"]),
+    endpoint: "POST /account/create | POST /account/batch_create",
+    description:
+      "Create one or more platform accounts. Use direct fields for one or accounts for a batch.",
+    inputSchema: singleOrBatchCreateSchema(platformAccountInputSchema, ["platformUrl"], "accounts"),
     handler: async (args, context) => {
+      if (Array.isArray(args.accounts)) {
+        await context.browser!.platformAccounts.createMany(args.accounts);
+        return `Created ${args.accounts.length} platform account(s).`;
+      }
       const id = await context.browser!.platformAccounts.create(args as any);
       return `Created platform account ${id}.`;
-    },
-  },
-  {
-    name: "roxy_platform_account_create_many",
-    operationId: "browser.platformAccount.createMany",
-    endpoint: "POST /account/batch_create",
-    description: "Create many platform accounts.",
-    inputSchema: objectSchema(
-      {
-        accounts: {
-          type: "array",
-          items: objectSchema(platformAccountInputSchema, ["platformUrl"]),
-        },
-      },
-      ["accounts"],
-    ),
-    handler: async (args, context) => {
-      await context.browser!.platformAccounts.createMany(args.accounts);
-      return `Created ${args.accounts.length} platform account(s).`;
     },
   },
   {

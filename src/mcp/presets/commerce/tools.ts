@@ -9,6 +9,23 @@ const objectSchema = (properties: Record<string, unknown>, required: string[] = 
   ...(required.length > 0 ? { required } : {}),
 });
 
+const singleOrBatchCreateSchema = (
+  properties: Record<string, unknown>,
+  required: string[],
+  batchProperty: string,
+) => ({
+  type: "object",
+  properties: {
+    ...properties,
+    [batchProperty]: {
+      type: "array",
+      minItems: 1,
+      items: objectSchema(properties, required),
+    },
+  },
+  oneOf: [{ required }, { required: [batchProperty] }],
+});
+
 const stringArray = { type: "array", items: { type: "string" } };
 const numberArray = { type: "array", items: { type: "number" } };
 
@@ -195,31 +212,20 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
   {
     name: "roxy_proxy_create",
     operationId: "commerce.proxy.create",
-    endpoint: "POST /proxy/create",
-    description: "Create one proxy.",
-    inputSchema: objectSchema(proxyInputSchema, ["protocol", "host", "port"]),
-    handler: async (args, context) => {
-      await context.commerce!.proxies.create(args as any);
-      return "Created proxy.";
-    },
-  },
-  {
-    name: "roxy_proxy_create_many",
-    operationId: "commerce.proxy.createMany",
-    endpoint: "POST /proxy/batch_create",
-    description: "Create many proxies.",
-    inputSchema: objectSchema(
-      {
-        proxies: {
-          type: "array",
-          items: objectSchema(proxyInputSchema, ["protocol", "host", "port"]),
-        },
-      },
-      ["proxies"],
+    endpoint: "POST /proxy/create | POST /proxy/batch_create",
+    description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
+    inputSchema: singleOrBatchCreateSchema(
+      proxyInputSchema,
+      ["protocol", "host", "port"],
+      "proxies",
     ),
     handler: async (args, context) => {
-      await context.commerce!.proxies.createMany(args.proxies);
-      return `Created ${args.proxies.length} proxy/proxies.`;
+      if (Array.isArray(args.proxies)) {
+        await context.commerce!.proxies.createMany(args.proxies);
+        return `Created ${args.proxies.length} proxy/proxies.`;
+      }
+      await context.commerce!.proxies.create(args as any);
+      return "Created proxy.";
     },
   },
   {
@@ -275,28 +281,17 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
   {
     name: "roxy_platform_credential_create",
     operationId: "commerce.platformCredential.create",
-    endpoint: "POST /account/create",
-    description: "Create a platform credential.",
-    inputSchema: objectSchema(credentialInputSchema, ["platformUrl"]),
+    endpoint: "POST /account/create | POST /account/batch_create",
+    description:
+      "Create one or more platform credentials. Use direct fields for one or credentials for a batch.",
+    inputSchema: singleOrBatchCreateSchema(credentialInputSchema, ["platformUrl"], "credentials"),
     handler: async (args, context) => {
+      if (Array.isArray(args.credentials)) {
+        await context.commerce!.platformCredentials.createMany(args.credentials);
+        return `Created ${args.credentials.length} platform credential(s).`;
+      }
       const id = await context.commerce!.platformCredentials.create(args as any);
       return `Created platform credential ${id}.`;
-    },
-  },
-  {
-    name: "roxy_platform_credential_create_many",
-    operationId: "commerce.platformCredential.createMany",
-    endpoint: "POST /account/batch_create",
-    description: "Create many platform credentials.",
-    inputSchema: objectSchema(
-      {
-        credentials: { type: "array", items: objectSchema(credentialInputSchema, ["platformUrl"]) },
-      },
-      ["credentials"],
-    ),
-    handler: async (args, context) => {
-      await context.commerce!.platformCredentials.createMany(args.credentials);
-      return `Created ${args.credentials.length} platform credential(s).`;
     },
   },
   {

@@ -32,7 +32,7 @@ describe("3.0 MCP presets", () => {
       const result = await session.client.listTools();
       const names = result.tools.map((tool) => tool.name);
 
-      assert.equal(names.length, 27);
+      assert.equal(names.length, 25);
       assert.ok(names.includes("roxy_workspace_list"));
       assert.ok(names.includes("roxy_project_list"));
       assert.ok(names.includes("roxy_label_list"));
@@ -41,8 +41,10 @@ describe("3.0 MCP presets", () => {
       assert.ok(names.includes("roxy_profile_update"));
       assert.ok(names.includes("roxy_profile_connection_info"));
       assert.ok(names.includes("roxy_proxy_create"));
+      assert.equal(names.includes("roxy_proxy_create_many"), false);
       assert.ok(names.includes("roxy_proxy_detect_channels"));
       assert.ok(names.includes("roxy_platform_account_delete"));
+      assert.equal(names.includes("roxy_platform_account_create_many"), false);
       assert.equal(names.includes("roxy_browser_list"), false);
       assert.equal(names.includes("roxy_list_browsers"), false);
     } finally {
@@ -69,10 +71,12 @@ describe("3.0 MCP presets", () => {
     try {
       const tools = await session.client.listTools();
       const names = tools.tools.map((tool) => tool.name);
-      assert.equal(names.length, 20);
+      assert.equal(names.length, 18);
       assert.ok(names.includes("roxy_account_list"));
       assert.ok(names.includes("roxy_account_update"));
-      assert.ok(names.includes("roxy_proxy_create_many"));
+      assert.ok(names.includes("roxy_proxy_create"));
+      assert.equal(names.includes("roxy_proxy_create_many"), false);
+      assert.equal(names.includes("roxy_platform_credential_create_many"), false);
       assert.ok(names.includes("roxy_platform_credential_list"));
       assert.ok(names.includes("roxy_platform_credential_delete"));
       assert.equal(names.includes("roxy_profile_list"), false);

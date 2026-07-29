@@ -135,7 +135,7 @@ const commerceServer = createRoxyCommerceMcpServer({
 
 ## Public MCP Tool Names
 
-Browser mode exposes 27 tools in profile language:
+Browser mode exposes 25 tools in profile language:
 
 - `roxy_workspace_list`
 - `roxy_project_list`
@@ -154,18 +154,16 @@ Browser mode exposes 27 tools in profile language:
 - `roxy_proxy_list`
 - `roxy_proxy_get`
 - `roxy_proxy_create`
-- `roxy_proxy_create_many`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`
 - `roxy_proxy_detect`
 - `roxy_proxy_detect_channels`
 - `roxy_platform_account_list`
 - `roxy_platform_account_create`
-- `roxy_platform_account_create_many`
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-Ecommerce mode exposes 20 tools in account language over the same browser-profile backend endpoints:
+Ecommerce mode exposes 18 tools in account language over the same browser-profile backend endpoints:
 
 - `roxy_account_list`
 - `roxy_account_get`
@@ -177,18 +175,18 @@ Ecommerce mode exposes 20 tools in account language over the same browser-profil
 - `roxy_proxy_list`
 - `roxy_proxy_get`
 - `roxy_proxy_create`
-- `roxy_proxy_create_many`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`
 - `roxy_proxy_detect`
 - `roxy_proxy_detect_channels`
 - `roxy_platform_credential_list`
 - `roxy_platform_credential_create`
-- `roxy_platform_credential_create_many`
 - `roxy_platform_credential_update`
 - `roxy_platform_credential_delete`
 
 Each MCP tool keeps debug metadata with a stable `operationId` and the underlying RoxyBrowser endpoint.
+
+Create tools use one public name for both modes: pass the direct fields for a single item, or pass the resource array (`proxies`, `accounts`, or `credentials`) for a batch.
 
 ## Architecture
 

@@ -29,6 +29,6 @@ unless the statement is based on a fresh `roxy_proxy_detect` result.
 
 ## After Create Or Modify
 
-Use one `roxy_proxy_create` call with all requested proxies in `proxyList`; the array form also handles a single proxy.
+Use one `roxy_proxy_create` call with all requested proxies in `proxies`; the array form also handles a single proxy.
 
 After `roxy_proxy_create` or `roxy_proxy_modify`, call `roxy_proxy_detect` before deciding whether the proxy works. Configuration success is not an availability check.

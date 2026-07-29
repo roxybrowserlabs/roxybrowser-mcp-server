@@ -298,7 +298,7 @@ sortOrder -> orderType
 
 ## MCP Tool Names
 
-Browser mode exposes 27 tools:
+Browser mode exposes 25 tools:
 
 ```txt
 roxy_workspace_list
@@ -318,19 +318,17 @@ roxy_profile_clear_server_cache
 roxy_proxy_list
 roxy_proxy_get
 roxy_proxy_create
-roxy_proxy_create_many
 roxy_proxy_update
 roxy_proxy_delete
 roxy_proxy_detect
 roxy_proxy_detect_channels
 roxy_platform_account_list
 roxy_platform_account_create
-roxy_platform_account_create_many
 roxy_platform_account_update
 roxy_platform_account_delete
 ```
 
-Ecommerce mode exposes 20 tools:
+Ecommerce mode exposes 18 tools:
 
 ```txt
 roxy_account_list
@@ -343,14 +341,12 @@ roxy_account_delete
 roxy_proxy_list
 roxy_proxy_get
 roxy_proxy_create
-roxy_proxy_create_many
 roxy_proxy_update
 roxy_proxy_delete
 roxy_proxy_detect
 roxy_proxy_detect_channels
 roxy_platform_credential_list
 roxy_platform_credential_create
-roxy_platform_credential_create_many
 roxy_platform_credential_update
 roxy_platform_credential_delete
 ```

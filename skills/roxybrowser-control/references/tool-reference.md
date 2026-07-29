@@ -24,7 +24,7 @@
 
 - `roxy_proxy_list`
 - `roxy_proxy_detail`
-- `roxy_proxy_create`: create one or more proxies using the `proxyList` array. Use this array form even for a single proxy.
+- `roxy_proxy_create`: create one proxy with direct fields, or create many using the `proxies` array.
 - `roxy_proxy_detect`
 - `roxy_proxy_modify`
 - `roxy_proxy_delete`

@@ -135,7 +135,7 @@ const commerceServer = createRoxyCommerceMcpServer({
 
 ## 对外 MCP 工具名
 
-浏览器模式暴露 27 个 profile 语言工具：
+浏览器模式暴露 25 个 profile 语言工具：
 
 - `roxy_workspace_list`
 - `roxy_project_list`
@@ -154,18 +154,16 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_proxy_list`
 - `roxy_proxy_get`
 - `roxy_proxy_create`
-- `roxy_proxy_create_many`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`
 - `roxy_proxy_detect`
 - `roxy_proxy_detect_channels`
 - `roxy_platform_account_list`
 - `roxy_platform_account_create`
-- `roxy_platform_account_create_many`
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-电商模式暴露 20 个 account 语言工具，底层仍然复用浏览器 profile 接口：
+电商模式暴露 18 个 account 语言工具，底层仍然复用浏览器 profile 接口：
 
 - `roxy_account_list`
 - `roxy_account_get`
@@ -177,18 +175,18 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_proxy_list`
 - `roxy_proxy_get`
 - `roxy_proxy_create`
-- `roxy_proxy_create_many`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`
 - `roxy_proxy_detect`
 - `roxy_proxy_detect_channels`
 - `roxy_platform_credential_list`
 - `roxy_platform_credential_create`
-- `roxy_platform_credential_create_many`
 - `roxy_platform_credential_update`
 - `roxy_platform_credential_delete`
 
 每个 MCP 工具都会保留稳定的 `operationId` 和底层 RoxyBrowser `endpoint` 作为排查 metadata。
+
+创建类 MCP 工具使用同一个公开名称：单个创建直接传字段，批量创建传对应资源数组（`proxies`、`accounts` 或 `credentials`）。
 
 ## 架构
 
