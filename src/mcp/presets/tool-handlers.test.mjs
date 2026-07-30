@@ -38,6 +38,12 @@ function toolByName(tools, name) {
   return tool;
 }
 
+function parseJsonBlock(value) {
+  const match = /^```json\n([\s\S]+)\n```$/.exec(value);
+  assert.ok(match, "expected a JSON code block");
+  return JSON.parse(match[1]);
+}
+
 describe("MCP tool handlers", () => {
   const longRemark = "12345678901234567890overflow";
   const unicodeRemark = "1234567890123456789😀overflow";
@@ -175,7 +181,7 @@ describe("MCP tool handlers", () => {
     });
   });
 
-  test("MCP output formatters keep natural language compact and semantic", () => {
+  test("MCP output formatters keep lists compact and details complete", () => {
     const profile = formatProfile({
       dirId: "profile-1",
       windowName: "Alpha",
@@ -189,12 +195,26 @@ describe("MCP tool handlers", () => {
       openStatus: true,
       workspaceName: "Main",
       windowRemark: longRemark,
+      cookie: [{ name: "session", value: "secret" }],
+      proxyInfo: { host: "proxy.example", proxyPassword: "secret" },
+      windowPlatformList: [
+        {
+          platformUserName: "seller",
+          platformPassword: "secret",
+          platformEfa: "otp",
+          platformCookies: [{ name: "session", value: "secret" }],
+        },
+      ],
     });
-    assert.equal(
-      profile,
-      "Profile\n- Alpha | dirId: profile-1 | serial: MAI-11 | core: Chrome 140 | os: Windows 11 | project: Ops (3) | status: open | workspace: Main | note: 12345678901234567890...",
-    );
-    assert.doesNotMatch(profile, /coreType|coreVersion|osVersion|N\/A|Unknown/);
+    const profileDetail = parseJsonBlock(profile);
+    assert.equal(profileDetail.dirId, "profile-1");
+    assert.equal(profileDetail.coreType, "Chrome");
+    assert.equal(profileDetail.coreVersion, "140");
+    assert.equal(profileDetail.osVersion, "11");
+    assert.equal(profileDetail.windowRemark, longRemark);
+    assert.deepEqual(profileDetail.proxyInfo, { host: "proxy.example" });
+    assert.deepEqual(profileDetail.windowPlatformList, [{ platformUserName: "seller" }]);
+    assert.doesNotMatch(profile, /cookie|password|platformEfa|secret|otp/i);
 
     const profiles = formatProfiles({
       total: 3,
@@ -312,10 +332,23 @@ describe("MCP tool handlers", () => {
       checkChannelValue: "IPRust",
       lastCountry: "US",
       remark: longRemark,
+      proxyPassword: "secret",
     });
-    assert.match(proxy, /username: user \| check: IPRust \| location: US/);
-    assert.match(proxy, /note: 12345678901234567890\.\.\./);
-    assert.doesNotMatch(formatProxy({ id: 6, checkStatus: "invalid" }), /status:/);
+    assert.deepEqual(parseJsonBlock(proxy), {
+      id: 5,
+      protocol: "HTTP",
+      host: "detail.example",
+      port: "80",
+      checkStatus: "failed",
+      proxyUserName: "user",
+      checkChannelValue: "IPRust",
+      lastCountry: "US",
+      remark: longRemark,
+    });
+    assert.deepEqual(parseJsonBlock(formatProxy({ id: 6, checkStatus: "invalid" })), {
+      id: 6,
+      checkStatus: "invalid",
+    });
 
     assert.equal(formatConnections([]), "No connection info found.");
     assert.equal(formatConnections([{}]), "No connection info found.");
@@ -355,9 +388,9 @@ describe("MCP tool handlers", () => {
     assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
     assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
     assert.match(accounts, /\| - \| a3 \| 4 \| - \|/);
-    assert.match(
-      formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark }),
-      /note: 1234567890123456789😀\.\.\./,
+    assert.deepEqual(
+      parseJsonBlock(formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark })),
+      { dirId: "a5", windowRemark: unicodeRemark },
     );
   });
 
@@ -723,20 +756,31 @@ describe("MCP tool handlers", () => {
       }),
       /\| Rich Profile \| profile-rich \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
     );
-    assert.match(
-      formatProfile({
+    assert.deepEqual(
+      parseJsonBlock(
+        formatProfile({
+          dirId: "profile-rich",
+          windowName: "Rich Profile",
+          coreType: "Chrome",
+          coreVersion: "140",
+          os: "Windows",
+          osVersion: "11",
+        }),
+      ),
+      {
         dirId: "profile-rich",
         windowName: "Rich Profile",
         coreType: "Chrome",
         coreVersion: "140",
         os: "Windows",
         osVersion: "11",
-      }),
-      /os: Windows 11/,
+      },
     );
-    assert.match(
-      formatCommerceAccount({ dirId: "account-rich", windowName: "Store A", projectId: 9 }),
-      /projectId: 9/,
+    assert.deepEqual(
+      parseJsonBlock(
+        formatCommerceAccount({ dirId: "account-rich", windowName: "Store A", projectId: 9 }),
+      ),
+      { dirId: "account-rich", windowName: "Store A", projectId: 9 },
     );
 
     const browserContext = {
@@ -1060,7 +1104,9 @@ describe("MCP tool handlers", () => {
       formatProfiles({ total: 0, rows: [] }),
       "Profiles: 0 total | page 1/1 | pageSize 15\nNo profiles found.",
     );
-    assert.match(formatProfile({ dirId: "profile-1" }), /- - \| dirId: profile-1/);
+    assert.deepEqual(parseJsonBlock(formatProfile({ dirId: "profile-1" })), {
+      dirId: "profile-1",
+    });
     assert.doesNotMatch(
       formatProfiles({ total: 1, rows: [{ dirId: "profile-1" }] }),
       /Unknown|N\/A/,
@@ -1077,6 +1123,8 @@ describe("MCP tool handlers", () => {
       formatCommerceAccounts({ total: 0, rows: [] }),
       "Accounts: 0 total | page 1/1 | pageSize 15\nNo ecommerce accounts found.",
     );
-    assert.match(formatCommerceAccount({ dirId: "account-1" }), /- - \| dirId: account-1/);
+    assert.deepEqual(parseJsonBlock(formatCommerceAccount({ dirId: "account-1" })), {
+      dirId: "account-1",
+    });
   });
 });

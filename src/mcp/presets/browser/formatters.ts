@@ -7,52 +7,17 @@ import type {
   Workspace,
 } from "../../../domains/browser/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
-import { markdownTable, pagedTable, truncateText } from "../formatting.js";
+import { formatJsonDetail, markdownTable, pagedTable, truncateText } from "../formatting.js";
 
 type DetectChannel = { label?: string; type?: string; value?: string };
-
-function joinParts(parts: Array<string | undefined>): string {
-  return parts.filter((part): part is string => Boolean(part)).join(" | ");
-}
 
 function combined(name?: string, version?: string): string {
   return [name, version].filter(Boolean).join(" ");
 }
 
-function versioned(label: string, name?: string, version?: string): string | undefined {
-  const value = combined(name, version);
-  return value ? `${label}: ${value}` : undefined;
-}
-
-function projectLabel(profile: BrowserProfile): string | undefined {
-  if (profile.projectName && profile.projectId !== undefined) {
-    return `project: ${profile.projectName} (${profile.projectId})`;
-  }
-  if (profile.projectName) return `project: ${profile.projectName}`;
-  if (profile.projectId !== undefined) return `projectId: ${profile.projectId}`;
-  return undefined;
-}
-
 function profileSerial(profile: BrowserProfile): string | undefined {
   if (!profile.workspaceName || profile.windowSortNum === undefined) return undefined;
   return `${profile.workspaceName.slice(0, 3).toLocaleUpperCase()}-${profile.windowSortNum}`;
-}
-
-function profileLine(profile: BrowserProfile, detailed = false): string {
-  const serial = profileSerial(profile);
-  return joinParts([
-    `- ${profile.windowName || "-"}`,
-    `dirId: ${profile.dirId}`,
-    serial ? `serial: ${serial}` : undefined,
-    versioned("core", profile.coreType, profile.coreVersion),
-    versioned("os", profile.os, profile.osVersion),
-    projectLabel(profile),
-    typeof profile.openStatus === "boolean"
-      ? `status: ${profile.openStatus ? "open" : "closed"}`
-      : undefined,
-    detailed && profile.workspaceName ? `workspace: ${profile.workspaceName}` : undefined,
-    detailed && profile.windowRemark ? `note: ${truncateText(profile.windowRemark)}` : undefined,
-  ]);
 }
 
 export function formatProfiles(page: Page<BrowserProfile>): string {
@@ -73,7 +38,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
 }
 
 export function formatProfile(profile: BrowserProfile): string {
-  return `Profile\n${profileLine(profile, true)}`;
+  return formatJsonDetail(profile);
 }
 
 export function formatPlatformAccounts(
@@ -153,25 +118,6 @@ function proxyStatus(checkStatus?: number | string): string | undefined {
   return undefined;
 }
 
-function proxyLine(proxy: BrowserProxy, detailed = false): string {
-  const source = proxySource(proxy.dataType);
-  const status = proxyStatus(proxy.checkStatus);
-  const address = proxy.host
-    ? `${proxy.protocol ? `${proxy.protocol} ` : ""}${proxy.host}${proxy.port ? `:${proxy.port}` : ""}`
-    : proxy.protocol;
-  return joinParts([
-    `- ${proxy.id}`,
-    address,
-    source ? `source: ${source}` : undefined,
-    status ? `status: ${status}` : undefined,
-    proxy.bindCount !== undefined ? `binds: ${proxy.bindCount}` : undefined,
-    detailed && proxy.proxyUserName ? `username: ${proxy.proxyUserName}` : undefined,
-    detailed && proxy.checkChannelValue ? `check: ${proxy.checkChannelValue}` : undefined,
-    detailed && proxy.lastCountry ? `location: ${proxy.lastCountry}` : undefined,
-    proxy.remark ? `note: ${truncateText(proxy.remark)}` : undefined,
-  ]);
-}
-
 export function formatProxies(page: Page<BrowserProxy>): string {
   return pagedTable(
     "Proxies",
@@ -195,7 +141,7 @@ export function formatProxies(page: Page<BrowserProxy>): string {
 }
 
 export function formatProxy(proxy: BrowserProxy): string {
-  return `Proxy\n${proxyLine(proxy, true)}`;
+  return formatJsonDetail(proxy);
 }
 
 export function formatConnections(connections: RawBrowserConnection[]): string {

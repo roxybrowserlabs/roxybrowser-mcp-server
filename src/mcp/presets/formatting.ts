@@ -2,6 +2,25 @@ import type { Page } from "../../sdk/shared/pagination.js";
 
 type MarkdownCell = string | number | boolean | null | undefined;
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+const sensitiveJsonKeys = new Set([
+  "cookie",
+  "cookies",
+  "password",
+  "platformcookies",
+  "platformefa",
+  "platformpassword",
+  "proxypassword",
+  "twofactorkey",
+]);
+
+export function formatJsonDetail(value: unknown): string {
+  const json = JSON.stringify(
+    value,
+    (key, item) => (sensitiveJsonKeys.has(key.toLocaleLowerCase()) ? undefined : item),
+    2,
+  );
+  return `\`\`\`json\n${json}\n\`\`\``;
+}
 
 export function truncateText(value: string | undefined, maxLength = 20): string | undefined {
   if (!value) return value;

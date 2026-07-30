@@ -276,9 +276,9 @@ MCP is the semantic adaptation boundary. Input adapters convert LLM-friendly val
 calling the SDK. Output formatters select and combine related API fields and translate historical
 enums for LLM context efficiency. Paginated list results use Markdown tables with `total`, current
 and total pages, `pageSize`, and `nextPage` when available. Missing table cells render as `-`;
-remark fields are limited to 20 characters with `...` appended when truncated. Detail results use
-compact natural language and omit missing optional fields. The underlying SDK/domain data remains
-API-shaped.
+list remark fields are limited to 20 characters with `...` appended when truncated. Single-resource
+detail results use formatted JSON with the API's original fields and nesting, recursively omitting
+passwords, cookies, and 2FA secrets. The underlying SDK/domain data remains API-shaped.
 
 ```ts
 type Pagination = {
