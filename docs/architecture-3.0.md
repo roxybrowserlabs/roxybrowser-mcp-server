@@ -278,7 +278,8 @@ enums for LLM context efficiency. Paginated list results use Markdown tables wit
 and total pages, `pageSize`, and `nextPage` when available. Missing table cells render as `-`;
 list remark fields are limited to 20 characters with `...` appended when truncated. Single-resource
 detail results use formatted JSON with the API's original fields and nesting, recursively omitting
-passwords, cookies, and 2FA secrets. The underlying SDK/domain data remains API-shaped.
+passwords and cookies while returning 2FA keys unchanged. The underlying SDK/domain data remains
+API-shaped.
 
 ```ts
 type Pagination = {

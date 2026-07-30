@@ -7,10 +7,8 @@ const sensitiveJsonKeys = new Set([
   "cookies",
   "password",
   "platformcookies",
-  "platformefa",
   "platformpassword",
   "proxypassword",
-  "twofactorkey",
 ]);
 
 export function formatJsonDetail(value: unknown): string {

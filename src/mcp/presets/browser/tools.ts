@@ -141,7 +141,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_profile_get",
     operationId: "browser.profile.get",
     endpoint: "GET /browser/detail",
-    description: "Get one browser profile.",
+    description: "Get one browser profile details.",
     inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     handler: async (args, context) =>
       formatProfile(await context.browser!.profiles.get(args.dirId)),

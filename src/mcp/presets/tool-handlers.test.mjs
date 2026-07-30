@@ -195,6 +195,7 @@ describe("MCP tool handlers", () => {
       openStatus: true,
       workspaceName: "Main",
       windowRemark: longRemark,
+      twoFactorKey: "otp-root",
       cookie: [{ name: "session", value: "secret" }],
       proxyInfo: { host: "proxy.example", proxyPassword: "secret" },
       windowPlatformList: [
@@ -212,9 +213,12 @@ describe("MCP tool handlers", () => {
     assert.equal(profileDetail.coreVersion, "140");
     assert.equal(profileDetail.osVersion, "11");
     assert.equal(profileDetail.windowRemark, longRemark);
+    assert.equal(profileDetail.twoFactorKey, "otp-root");
     assert.deepEqual(profileDetail.proxyInfo, { host: "proxy.example" });
-    assert.deepEqual(profileDetail.windowPlatformList, [{ platformUserName: "seller" }]);
-    assert.doesNotMatch(profile, /cookie|password|platformEfa|secret|otp/i);
+    assert.deepEqual(profileDetail.windowPlatformList, [
+      { platformUserName: "seller", platformEfa: "otp" },
+    ]);
+    assert.doesNotMatch(profile, /cookie|password|secret/i);
 
     const profiles = formatProfiles({
       total: 3,
