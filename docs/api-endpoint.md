@@ -76,18 +76,18 @@ None
 }
 ```
 
-| Field Name                                | Field Type   | Description                           |
-| ----------------------------------------- | ------------ | ------------------------------------- |
-| code                                      | int          | Status code, 0: Success, 500: Failure |
-| data                                      | object       | Paginated workspace data.             |
-| data.total                                | int          | Total count                           |
-| data.rows                                 | List<object> | Workspace rows                        |
-| data.rows[].id                            | int          | Team ID                               |
-| data.rows[].workspaceName                 | string       | Team name                             |
-| data.rows[].project_details               | List<object> | Project details                       |
-| data.rows[].project_details[].projectId   | int          | Project ID                            |
-| data.rows[].project_details[].projectName | string       | Project name                          |
-| msg                                       | string       | Response message                      |
+| Field Name                                | Field Type         | Description                           |
+| ----------------------------------------- | ------------------ | ------------------------------------- |
+| code                                      | int                | Status code, 0: Success, 500: Failure |
+| data                                      | object             | Paginated workspace data.             |
+| data.total                                | int                | Total count                           |
+| data.rows                                 | List&lt;object&gt; | Workspace rows                        |
+| data.rows[].id                            | int                | Team ID                               |
+| data.rows[].workspaceName                 | string             | Team name                             |
+| data.rows[].project_details               | List&lt;object&gt; | Project details                       |
+| data.rows[].project_details[].projectId   | int                | Project ID                            |
+| data.rows[].project_details[].projectName | string             | Project name                          |
+| msg                                       | string             | Response message                      |
 
 ### Get Account List
 
@@ -143,26 +143,26 @@ None
 }
 ```
 
-| Field Name                           | Field Type     | Description                           |
-| ------------------------------------ | -------------- | ------------------------------------- |
-| code                                 | int            | Status code, 0: Success, 500: Failure |
-| data                                 | object         | Paginated account-library data.       |
-| data.total                           | int            | Total count                           |
-| data.rows                            | List<object>   | Account rows                          |
-| data.rows[].platformName             | string \| null | Platform name                         |
-| data.rows[].id                       | int            | Account ID                            |
-| data.rows[].platformUrl              | string         | Platform URL                          |
-| data.rows[].platformUserName         | string         | Platform username                     |
-| data.rows[].platformPassword         | string         | Platform password                     |
-| data.rows[].platformEfa              | string \| null | Platform EFA                          |
-| data.rows[].platformCookies          | List<object>   | Platform cookies                      |
-| data.rows[].platformCookies[].name   | string         | Cookie name                           |
-| data.rows[].platformCookies[].value  | string         | Cookie value                          |
-| data.rows[].platformCookies[].domain | string         | Cookie domain                         |
-| data.rows[].platformRemarks          | string         | Platform remarks                      |
-| data.rows[].createTime               | string         | Creation time                         |
-| data.rows[].updateTime               | string         | Update time                           |
-| msg                                  | string         | Response message                      |
+| Field Name                           | Field Type         | Description                           |
+| ------------------------------------ | ------------------ | ------------------------------------- |
+| code                                 | int                | Status code, 0: Success, 500: Failure |
+| data                                 | object             | Paginated account-library data.       |
+| data.total                           | int                | Total count                           |
+| data.rows                            | List&lt;object&gt; | Account rows                          |
+| data.rows[].platformName             | string \| null     | Platform name                         |
+| data.rows[].id                       | int                | Account ID                            |
+| data.rows[].platformUrl              | string             | Platform URL                          |
+| data.rows[].platformUserName         | string             | Platform username                     |
+| data.rows[].platformPassword         | string             | Platform password                     |
+| data.rows[].platformEfa              | string \| null     | Platform EFA                          |
+| data.rows[].platformCookies          | List&lt;object&gt; | Platform cookies                      |
+| data.rows[].platformCookies[].name   | string             | Cookie name                           |
+| data.rows[].platformCookies[].value  | string             | Cookie value                          |
+| data.rows[].platformCookies[].domain | string             | Cookie domain                         |
+| data.rows[].platformRemarks          | string             | Platform remarks                      |
+| data.rows[].createTime               | string             | Creation time                         |
+| data.rows[].updateTime               | string             | Update time                           |
+| msg                                  | string             | Response message                      |
 
 ### Get Label List
 
@@ -196,14 +196,14 @@ None
 }
 ```
 
-| Field Name   | Field Type   | Description                           |
-| ------------ | ------------ | ------------------------------------- |
-| code         | int          | Status code, 0: Success, 500: Failure |
-| data         | List<object> | Label rows                            |
-| data[].id    | int          | Tag ID                                |
-| data[].color | string       | Tag color                             |
-| data[].name  | string       | Tag name                              |
-| msg          | string       | Response message                      |
+| Field Name   | Field Type         | Description                           |
+| ------------ | ------------------ | ------------------------------------- |
+| code         | int                | Status code, 0: Success, 500: Failure |
+| data         | List&lt;object&gt; | Label rows                            |
+| data[].id    | int                | Tag ID                                |
+| data[].color | string             | Tag color                             |
+| data[].name  | string             | Tag name                              |
+| msg          | string             | Response message                      |
 
 ## Browser Profile Interface
 
@@ -271,7 +271,7 @@ None
 | code                      | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Status code, 0: Success, 500: Failure                                     |
 | data                      | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | Paginated browser profile data.                                           |
 | data.total                | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Total count                                                               |
-| data.rows                 | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Browser profile rows                                                      |
+| data.rows                 | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Browser profile rows                                                      |
 | data.rows[].dirId         | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile ID                                                        |
 | data.rows[].windowSortNum | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Profile sequence number                                                   |
 | data.rows[].windowName    | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile name                                                      |
@@ -390,7 +390,7 @@ None
 | code                                              | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Status code, 0: Success, 500: Failure                                                       |
 | data                                              | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | Raw browser profile detail page.                                                            |
 | data.total                                        | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Total count                                                                                 |
-| data.rows                                         | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Browser profile detail rows                                                                 |
+| data.rows                                         | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Browser profile detail rows                                                                 |
 | data.rows[].dirId                                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile ID                                                                          |
 | data.rows[].windowSortNum                         | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Profile sequence number                                                                     |
 | data.rows[].windowName                            | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile name                                                                        |
@@ -398,24 +398,24 @@ None
 | data.rows[].os                                    | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | Browser profile operating system.                                                           |
 | data.rows[].osVersion                             | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | Operating system version. Values depend on the selected operating system.                   |
 | data.rows[].userAgent                             | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | User Agent                                                                                  |
-| data.rows[].cookie                                | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Browser cookies                                                                             |
+| data.rows[].cookie                                | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Browser cookies                                                                             |
 | data.rows[].cookie[].name                         | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie name                                                                                 |
 | data.rows[].cookie[].value                        | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie value                                                                                |
 | data.rows[].cookie[].domain                       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie domain                                                                               |
 | data.rows[].searchEngine                          | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Browser profile search engine.                                                              |
-| data.rows[].windowPlatformList                    | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Attached platform accounts                                                                  |
+| data.rows[].windowPlatformList                    | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Attached platform accounts                                                                  |
 | data.rows[].windowPlatformList[].id               | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Platform account ID                                                                         |
 | data.rows[].windowPlatformList[].platformUrl      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Platform account URL                                                                        |
 | data.rows[].windowPlatformList[].platformUserName | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Platform username                                                                           |
 | data.rows[].windowPlatformList[].platformPassword | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Platform password                                                                           |
 | data.rows[].windowPlatformList[].platformEfa      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Platform EFA key                                                                            |
 | data.rows[].windowPlatformList[].platformRemarks  | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Platform remark                                                                             |
-| data.rows[].defaultOpenUrl                        | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | Stored browser tabs                                                                         |
+| data.rows[].defaultOpenUrl                        | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Stored browser tabs                                                                         |
 | data.rows[].windowRemark                          | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile remark                                                                      |
 | data.rows[].projectId                             | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Project ID                                                                                  |
 | data.rows[].projectName                           | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Project name                                                                                |
 | data.rows[].openStatus                            | boolean \| 0 \| 1                                                                                                                                                                                                                                                                                                                                                                                                                      | Whether the browser profile is open in the team                                             |
-| data.rows[].statusInfo                            | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Open-status details                                                                         |
+| data.rows[].statusInfo                            | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Open-status details                                                                         |
 | data.rows[].statusInfo[].openUserName             | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Username of the opener                                                                      |
 | data.rows[].statusInfo[].openTime                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Open time                                                                                   |
 | data.rows[].createTime                            | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Browser profile creation time                                                               |
@@ -438,7 +438,7 @@ None
 | data.rows[].proxyInfo.lastCountry                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Last exit country                                                                           |
 | data.rows[].proxyInfo.checkChannel                | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | IP query channel                                                                            |
 | data.rows[].isOften                               | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | Whether the browser profile is bookmarked                                                   |
-| data.rows[].labelInfo                             | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | Attached labels                                                                             |
+| data.rows[].labelInfo                             | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | Attached labels                                                                             |
 | data.rows[].labelInfo[].labelId                   | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | Tag ID                                                                                      |
 | data.rows[].labelInfo[].labelName                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Tag name                                                                                    |
 | data.rows[].labelInfo[].labelColor                | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Tag color                                                                                   |
@@ -585,20 +585,20 @@ None
 | coreType                              | No       | Chrome \| Firefox                                                                                                                                                                                                                                                                                                                                                                                                                      | Chrome  | Browser core type.                                                                          |
 | os                                    | No       | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | Windows | Browser profile operating system.                                                           |
 | osVersion                             | No       | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | -       | Operating system version; defaults to the maximum supported value                           |
-| cookie                                | No       | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           |         | Browser cookies                                                                             |
+| cookie                                | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     |         | Browser cookies                                                                             |
 | cookie[].name                         | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie name                                                                                 |
 | cookie[].value                        | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie value                                                                                |
 | cookie[].domain                       | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie domain                                                                               |
 | searchEngine                          | No       | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | Browser profile search engine.                                                              |
-| labelIds                              | No       | List<int>                                                                                                                                                                                                                                                                                                                                                                                                                              | -       | Tag IDs from the label list endpoint                                                        |
-| windowPlatformList                    | No       | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | Platform accounts attached to the browser profile                                           |
+| labelIds                              | No       | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | Tag IDs from the label list endpoint                                                        |
+| windowPlatformList                    | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Platform accounts attached to the browser profile                                           |
 | windowPlatformList[].id               | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Platform account ID                                                                         |
 | windowPlatformList[].platformUrl      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform account URL                                                                        |
 | windowPlatformList[].platformUserName | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform username                                                                           |
 | windowPlatformList[].platformPassword | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform password                                                                           |
 | windowPlatformList[].platformEfa      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform EFA key                                                                            |
 | windowPlatformList[].platformRemarks  | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform remark                                                                             |
-| defaultOpenUrl                        | No       | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | Browser tabs opened by default                                                              |
+| defaultOpenUrl                        | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Browser tabs opened by default                                                              |
 | windowRemark                          | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile remark                                                                      |
 | projectId                             | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Project ID                                                                                  |
 | proxyInfo                             | No       | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Proxy configuration used while creating a browser profile.                                  |
@@ -672,7 +672,7 @@ None
 | fingerInfo.hardwareConcurrent         | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Hardware concurrency                                                                        |
 | fingerInfo.deviceMemory               | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Device memory                                                                               |
 | fingerInfo.disableSsl                 | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | false   | Enable SSL fingerprint settings                                                             |
-| fingerInfo.disableSslList             | No       | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | SSL feature values                                                                          |
+| fingerInfo.disableSslList             | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | SSL feature values                                                                          |
 | fingerInfo.portScanProtect            | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | Enable port scan protection                                                                 |
 | fingerInfo.portScanList               | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Comma-separated port scan protection whitelist                                              |
 | fingerInfo.useGpu                     | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | Use GPU acceleration                                                                        |
@@ -799,20 +799,20 @@ None
 | coreVersion                           | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | Browser core version; examples include 138, 137, 136, 135, 133, 130, 125, 117, and 109      |
 | os                                    | No       | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | Windows | Browser profile operating system.                                                           |
 | osVersion                             | No       | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | 11      | Operating system version. Values depend on the selected operating system.                   |
-| cookie                                | No       | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           |         | Browser cookies                                                                             |
+| cookie                                | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     |         | Browser cookies                                                                             |
 | cookie[].name                         | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie name                                                                                 |
 | cookie[].value                        | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie value                                                                                |
 | cookie[].domain                       | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie domain                                                                               |
 | searchEngine                          | No       | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | Browser profile search engine.                                                              |
-| labelIds                              | No       | List<int>                                                                                                                                                                                                                                                                                                                                                                                                                              | -       | Tag IDs from the label list endpoint                                                        |
-| windowPlatformList                    | No       | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | Platform accounts attached to the browser profile                                           |
+| labelIds                              | No       | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | Tag IDs from the label list endpoint                                                        |
+| windowPlatformList                    | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Platform accounts attached to the browser profile                                           |
 | windowPlatformList[].id               | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Platform account ID                                                                         |
 | windowPlatformList[].platformUrl      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform account URL                                                                        |
 | windowPlatformList[].platformUserName | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform username                                                                           |
 | windowPlatformList[].platformPassword | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform password                                                                           |
 | windowPlatformList[].platformEfa      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform EFA key                                                                            |
 | windowPlatformList[].platformRemarks  | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform remark                                                                             |
-| defaultOpenUrl                        | No       | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | Browser tabs opened by default                                                              |
+| defaultOpenUrl                        | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Browser tabs opened by default                                                              |
 | windowRemark                          | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile remark                                                                      |
 | projectId                             | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Project ID                                                                                  |
 | proxyInfo                             | No       | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Proxy configuration used while creating a browser profile.                                  |
@@ -886,7 +886,7 @@ None
 | fingerInfo.hardwareConcurrent         | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Hardware concurrency                                                                        |
 | fingerInfo.deviceMemory               | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Device memory                                                                               |
 | fingerInfo.disableSsl                 | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | false   | Enable SSL fingerprint settings                                                             |
-| fingerInfo.disableSslList             | No       | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | SSL feature values                                                                          |
+| fingerInfo.disableSslList             | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | SSL feature values                                                                          |
 | fingerInfo.portScanProtect            | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | Enable port scan protection                                                                 |
 | fingerInfo.portScanList               | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Comma-separated port scan protection whitelist                                              |
 | fingerInfo.useGpu                     | No       | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | Use GPU acceleration                                                                        |
@@ -947,11 +947,11 @@ None
 }
 ```
 
-| Parameter    | Required | Type         | Default | Description                              |
-| ------------ | -------- | ------------ | ------- | ---------------------------------------- |
-| workspaceId  | Yes      | int          | -       | Team ID                                  |
-| dirIds       | Yes      | List<string> | -       | Browser profile ID list                  |
-| isSoftDelete | No       | boolean      | true    | Move browser profiles to the recycle bin |
+| Parameter    | Required | Type               | Default | Description                              |
+| ------------ | -------- | ------------------ | ------- | ---------------------------------------- |
+| workspaceId  | Yes      | int                | -       | Team ID                                  |
+| dirIds       | Yes      | List&lt;string&gt; | -       | Browser profile ID list                  |
+| isSoftDelete | No       | boolean            | true    | Move browser profiles to the recycle bin |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -986,13 +986,13 @@ None
 }
 ```
 
-| Parameter   | Required | Type         | Default | Description                                                           |
-| ----------- | -------- | ------------ | ------- | --------------------------------------------------------------------- |
-| workspaceId | Yes      | int          | -       | Team ID, obtained from /browser/workspace                             |
-| dirId       | Yes      | string       | -       | Browser profile ID                                                    |
-| forceOpen   | No       | boolean      | -       | Force the browser profile to open                                     |
-| args        | No       | List<string> | -       | Browser startup parameters                                            |
-| headless    | No       | boolean      | -       | Request headless mode; the current browser does not support this mode |
+| Parameter   | Required | Type               | Default | Description                                                           |
+| ----------- | -------- | ------------------ | ------- | --------------------------------------------------------------------- |
+| workspaceId | Yes      | int                | -       | Team ID, obtained from /browser/workspace                             |
+| dirId       | Yes      | string             | -       | Browser profile ID                                                    |
+| forceOpen   | No       | boolean            | -       | Force the browser profile to open                                     |
+| args        | No       | List&lt;string&gt; | -       | Browser startup parameters                                            |
+| headless    | No       | boolean            | -       | Request headless mode; the current browser does not support this mode |
 
 #### Browser startup parameter restrictions
 
@@ -1131,7 +1131,7 @@ The browser currently does not support headless mode; passing `--headless` does 
 
 | Parameter   | Required                    | Type                    | Default | Description                                                                                                                                                                                                                                                                                  |
 | ----------- | --------------------------- | ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dirIds      | Yes                         | List<string>            | -       | Browser profile ID list                                                                                                                                                                                                                                                                      |
+| dirIds      | Yes                         | List&lt;string&gt;      | -       | Browser profile ID list                                                                                                                                                                                                                                                                      |
 | type        | No                          | partial \| all \| cloud | all     | Clear type: partial clears all local cache files except extension data; all clears every local cache file. Both retain login state, browser fingerprint information, and IP. cloud clears local and server cookies and all cache; synchronized tabs and browser login states become invalid. |
 | workspaceId | Required when type is cloud | int                     | -       | Team ID                                                                                                                                                                                                                                                                                      |
 
@@ -1166,10 +1166,10 @@ The browser currently does not support headless mode; passing `--headless` does 
 }
 ```
 
-| Parameter   | Required | Type         | Default | Description                               |
-| ----------- | -------- | ------------ | ------- | ----------------------------------------- |
-| workspaceId | Yes      | int          | -       | Team ID, obtained from /browser/workspace |
-| dirIds      | Yes      | List<string> | -       | Browser profile ID list                   |
+| Parameter   | Required | Type               | Default | Description                               |
+| ----------- | -------- | ------------------ | ------- | ----------------------------------------- |
+| workspaceId | Yes      | int                | -       | Team ID, obtained from /browser/workspace |
+| dirIds      | Yes      | List&lt;string&gt; | -       | Browser profile ID list                   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1234,20 +1234,20 @@ The browser currently does not support headless mode; passing `--headless` does 
 }
 ```
 
-| Field Name          | Field Type   | Description                                         |
-| ------------------- | ------------ | --------------------------------------------------- |
-| code                | int          | Status code, 0: Success, 500: Failure               |
-| data                | List<object> | Connection information for opened browser profiles. |
-| data[].ws           | string       | WebSocket interface for automation tools            |
-| data[].http         | string       | HTTP interface for automation tools                 |
-| data[].coreVersion  | string       | Browser core version                                |
-| data[].driver       | string       | WebDriver path for automation tools                 |
-| data[].sortNum      | int          | Browser profile sort number                         |
-| data[].windowName   | string       | Browser profile name                                |
-| data[].windowRemark | string       | Browser profile remark                              |
-| data[].pid          | int          | Browser process ID                                  |
-| data[].dirId        | string       | Browser profile ID                                  |
-| msg                 | string       | Response message                                    |
+| Field Name          | Field Type         | Description                                         |
+| ------------------- | ------------------ | --------------------------------------------------- |
+| code                | int                | Status code, 0: Success, 500: Failure               |
+| data                | List&lt;object&gt; | Connection information for opened browser profiles. |
+| data[].ws           | string             | WebSocket interface for automation tools            |
+| data[].http         | string             | HTTP interface for automation tools                 |
+| data[].coreVersion  | string             | Browser core version                                |
+| data[].driver       | string             | WebDriver path for automation tools                 |
+| data[].sortNum      | int                | Browser profile sort number                         |
+| data[].windowName   | string             | Browser profile name                                |
+| data[].windowRemark | string             | Browser profile remark                              |
+| data[].pid          | int                | Browser process ID                                  |
+| data[].dirId        | string             | Browser profile ID                                  |
+| msg                 | string             | Response message                                    |
 
 ## Proxy API
 
@@ -1283,14 +1283,14 @@ The browser currently does not support headless mode; passing `--headless` does 
 }
 ```
 
-| Field Name   | Field Type   | Description                           |
-| ------------ | ------------ | ------------------------------------- |
-| code         | int          | Status code, 0: Success, 500: Failure |
-| data         | List<object> | Available proxy detection channels.   |
-| data[].label | string       | Channel label                         |
-| data[].type  | string       | Channel type                          |
-| data[].value | string       | Channel value                         |
-| msg          | string       | Response message                      |
+| Field Name   | Field Type         | Description                           |
+| ------------ | ------------------ | ------------------------------------- |
+| code         | int                | Status code, 0: Success, 500: Failure |
+| data         | List&lt;object&gt; | Available proxy detection channels.   |
+| data[].label | string             | Channel label                         |
+| data[].type  | string             | Channel type                          |
+| data[].value | string             | Channel value                         |
+| msg          | string             | Response message                      |
 
 ### Get Proxy List (Deprecated)
 
@@ -1351,32 +1351,32 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Field Name                    | Field Type   | Description                                                    |
-| ----------------------------- | ------------ | -------------------------------------------------------------- |
-| code                          | int          | Status code, 0: Success, 500: Failure                          |
-| data                          | object       | Paginated data returned by the deprecated proxy list endpoint. |
-| data.total                    | int          | Total count                                                    |
-| data.rows                     | List<object> | Proxy rows                                                     |
-| data.rows[].id                | int          | Proxy ID                                                       |
-| data.rows[].checkStatus       | int          | Check status                                                   |
-| data.rows[].checkChannel      | string       | Check channel address                                          |
-| data.rows[].checkChannelValue | string       | Check channel value                                            |
-| data.rows[].lastIp            | string       | Last IP                                                        |
-| data.rows[].lastCountry       | string       | Last country                                                   |
-| data.rows[].lastState         | string       | Last state                                                     |
-| data.rows[].lastCity          | string       | Last city                                                      |
-| data.rows[].ipType            | string       | IP type                                                        |
-| data.rows[].protocol          | string       | Protocol                                                       |
-| data.rows[].host              | string       | Host                                                           |
-| data.rows[].port              | string       | Port                                                           |
-| data.rows[].proxyPassword     | string       | Proxy password                                                 |
-| data.rows[].proxyUserName     | string       | Proxy username                                                 |
-| data.rows[].refreshUrl        | string       | Refresh URL                                                    |
-| data.rows[].remark            | string       | Remark                                                         |
-| data.rows[].checkTime         | string       | Check time                                                     |
-| data.rows[].createTime        | string       | Creation time                                                  |
-| data.rows[].updateTime        | string       | Update time                                                    |
-| msg                           | string       | Response message                                               |
+| Field Name                    | Field Type         | Description                                                    |
+| ----------------------------- | ------------------ | -------------------------------------------------------------- |
+| code                          | int                | Status code, 0: Success, 500: Failure                          |
+| data                          | object             | Paginated data returned by the deprecated proxy list endpoint. |
+| data.total                    | int                | Total count                                                    |
+| data.rows                     | List&lt;object&gt; | Proxy rows                                                     |
+| data.rows[].id                | int                | Proxy ID                                                       |
+| data.rows[].checkStatus       | int                | Check status                                                   |
+| data.rows[].checkChannel      | string             | Check channel address                                          |
+| data.rows[].checkChannelValue | string             | Check channel value                                            |
+| data.rows[].lastIp            | string             | Last IP                                                        |
+| data.rows[].lastCountry       | string             | Last country                                                   |
+| data.rows[].lastState         | string             | Last state                                                     |
+| data.rows[].lastCity          | string             | Last city                                                      |
+| data.rows[].ipType            | string             | IP type                                                        |
+| data.rows[].protocol          | string             | Protocol                                                       |
+| data.rows[].host              | string             | Host                                                           |
+| data.rows[].port              | string             | Port                                                           |
+| data.rows[].proxyPassword     | string             | Proxy password                                                 |
+| data.rows[].proxyUserName     | string             | Proxy username                                                 |
+| data.rows[].refreshUrl        | string             | Refresh URL                                                    |
+| data.rows[].remark            | string             | Remark                                                         |
+| data.rows[].checkTime         | string             | Check time                                                     |
+| data.rows[].createTime        | string             | Creation time                                                  |
+| data.rows[].updateTime        | string             | Update time                                                    |
+| msg                           | string             | Response message                                               |
 
 ### Get Merged Proxy List{#proxy-list-merged}
 
@@ -1487,7 +1487,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 | code                            | int                     | Status code, 0: Success, 500: Failure         |
 | data                            | object                  | Paginated merged proxy data.                  |
 | data.total                      | int                     | Total count                                   |
-| data.rows                       | List<object>            | Proxy rows                                    |
+| data.rows                       | List&lt;object&gt;      | Proxy rows                                    |
 | data.rows[].id                  | int                     | Proxy ID                                      |
 | data.rows[].userId              | int                     | User ID                                       |
 | data.rows[].workspaceId         | int                     | Team ID                                       |
@@ -1533,7 +1533,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 | data.rows[].checkChannelValue   | string                  | Check channel label                           |
 | data.rows[].isBind              | boolean                 | Whether bound to profiles                     |
 | data.rows[].bindCount           | int                     | Bound profile count                           |
-| data.rows[].bindList            | List<int>               | Bound profile list                            |
+| data.rows[].bindList            | List&lt;int&gt;         | Bound profile list                            |
 | data.rows[].canRefund           | boolean                 | Whether it can be refunded                    |
 | data.rows[].bandwidthSpeed      | int                     | Bandwidth speed                               |
 | msg                             | string                  | Response message                              |
@@ -1616,7 +1616,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 | ------------------------- | -------- | ----------------------- | ------- | ------------------------------------------------------------------------ |
 | workspaceId               | Yes      | int                     | -       | Team ID                                                                  |
 | checkChannel              | Yes      | string                  | -       | Default check channel obtained from /proxy/detect_channel                |
-| proxyList                 | Yes      | List<object>            | -       | Proxies to create                                                        |
+| proxyList                 | Yes      | List&lt;object&gt;      | -       | Proxies to create                                                        |
 | proxyList[].checkChannel  | No       | string                  | -       | Item-specific check channel; the outer checkChannel is used when omitted |
 | proxyList[].ipType        | Yes      | IPV4 \| IPV6            | -       | Network protocol version for a proxy.                                    |
 | proxyList[].protocol      | Yes      | HTTP \| HTTPS \| SOCKS5 | -       | Protocol used to connect to a proxy.                                     |
@@ -1736,10 +1736,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type      | Default | Description |
-| ----------- | -------- | --------- | ------- | ----------- |
-| workspaceId | Yes      | int       | -       | Team ID     |
-| ids         | Yes      | List<int> | -       | Proxy IDs   |
+| Parameter   | Required | Type            | Default | Description |
+| ----------- | -------- | --------------- | ------- | ----------- |
+| workspaceId | Yes      | int             | -       | Team ID     |
+| ids         | Yes      | List&lt;int&gt; | -       | Proxy IDs   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1819,35 +1819,35 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Field Name                    | Field Type   | Description                                                              |
-| ----------------------------- | ------------ | ------------------------------------------------------------------------ |
-| code                          | int          | Status code, 0: Success, 500: Failure                                    |
-| data                          | object       | Paginated data returned by the deprecated purchased proxy list endpoint. |
-| data.total                    | int          | Total count                                                              |
-| data.rows                     | List<object> | Purchased proxy rows                                                     |
-| data.rows[].id                | int          | Purchased proxy IP ID                                                    |
-| data.rows[].orderNo           | string       | Order number                                                             |
-| data.rows[].checkStatus       | int          | Check status                                                             |
-| data.rows[].proxyCheckChannel | string       | Check channel address                                                    |
-| data.rows[].checkChannelValue | string       | Check channel value                                                      |
-| data.rows[].lastIp            | string       | Last IP                                                                  |
-| data.rows[].lastCountry       | string       | Last country                                                             |
-| data.rows[].lastState         | string       | Last state                                                               |
-| data.rows[].lastCity          | string       | Last city                                                                |
-| data.rows[].proxyProviderName | string       | Proxy provider name                                                      |
-| data.rows[].providerType      | string       | Proxy provider type                                                      |
-| data.rows[].ipType            | string       | IP type                                                                  |
-| data.rows[].protocol          | string       | Protocol                                                                 |
-| data.rows[].host              | string       | Host                                                                     |
-| data.rows[].port              | string       | Port                                                                     |
-| data.rows[].proxyUserName     | string       | Proxy username                                                           |
-| data.rows[].proxyPassword     | string       | Proxy password                                                           |
-| data.rows[].remark            | string       | Remark                                                                   |
-| data.rows[].checkTime         | string       | Check time                                                               |
-| data.rows[].createTime        | string       | Creation time                                                            |
-| data.rows[].updateTime        | string       | Update time                                                              |
-| data.rows[].expireDate        | string       | Expiration date                                                          |
-| msg                           | string       | Response message                                                         |
+| Field Name                    | Field Type         | Description                                                              |
+| ----------------------------- | ------------------ | ------------------------------------------------------------------------ |
+| code                          | int                | Status code, 0: Success, 500: Failure                                    |
+| data                          | object             | Paginated data returned by the deprecated purchased proxy list endpoint. |
+| data.total                    | int                | Total count                                                              |
+| data.rows                     | List&lt;object&gt; | Purchased proxy rows                                                     |
+| data.rows[].id                | int                | Purchased proxy IP ID                                                    |
+| data.rows[].orderNo           | string             | Order number                                                             |
+| data.rows[].checkStatus       | int                | Check status                                                             |
+| data.rows[].proxyCheckChannel | string             | Check channel address                                                    |
+| data.rows[].checkChannelValue | string             | Check channel value                                                      |
+| data.rows[].lastIp            | string             | Last IP                                                                  |
+| data.rows[].lastCountry       | string             | Last country                                                             |
+| data.rows[].lastState         | string             | Last state                                                               |
+| data.rows[].lastCity          | string             | Last city                                                                |
+| data.rows[].proxyProviderName | string             | Proxy provider name                                                      |
+| data.rows[].providerType      | string             | Proxy provider type                                                      |
+| data.rows[].ipType            | string             | IP type                                                                  |
+| data.rows[].protocol          | string             | Protocol                                                                 |
+| data.rows[].host              | string             | Host                                                                     |
+| data.rows[].port              | string             | Port                                                                     |
+| data.rows[].proxyUserName     | string             | Proxy username                                                           |
+| data.rows[].proxyPassword     | string             | Proxy password                                                           |
+| data.rows[].remark            | string             | Remark                                                                   |
+| data.rows[].checkTime         | string             | Check time                                                               |
+| data.rows[].createTime        | string             | Creation time                                                            |
+| data.rows[].updateTime        | string             | Update time                                                              |
+| data.rows[].expireDate        | string             | Expiration date                                                          |
+| msg                           | string             | Response message                                                         |
 
 ## Platform Account API
 
@@ -1902,25 +1902,25 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Field Name                           | Field Type     | Description                           |
-| ------------------------------------ | -------------- | ------------------------------------- |
-| code                                 | int            | Status code, 0: Success, 500: Failure |
-| data                                 | object         | Paginated platform account data.      |
-| data.total                           | int            | Total count                           |
-| data.rows                            | List<object>   | Platform account rows                 |
-| data.rows[].id                       | int            | Account ID                            |
-| data.rows[].platformUrl              | string         | Platform URL                          |
-| data.rows[].platformUserName         | string         | Platform username                     |
-| data.rows[].platformPassword         | string         | Platform password                     |
-| data.rows[].platformEfa              | string \| null | Platform EFA                          |
-| data.rows[].platformCookies          | List<object>   | Platform cookies                      |
-| data.rows[].platformCookies[].name   | string         | Cookie name                           |
-| data.rows[].platformCookies[].value  | string         | Cookie value                          |
-| data.rows[].platformCookies[].domain | string         | Cookie domain                         |
-| data.rows[].platformRemarks          | string         | Platform remarks                      |
-| data.rows[].createTime               | string         | Creation time                         |
-| data.rows[].updateTime               | string         | Update time                           |
-| msg                                  | string         | Response message                      |
+| Field Name                           | Field Type         | Description                           |
+| ------------------------------------ | ------------------ | ------------------------------------- |
+| code                                 | int                | Status code, 0: Success, 500: Failure |
+| data                                 | object             | Paginated platform account data.      |
+| data.total                           | int                | Total count                           |
+| data.rows                            | List&lt;object&gt; | Platform account rows                 |
+| data.rows[].id                       | int                | Account ID                            |
+| data.rows[].platformUrl              | string             | Platform URL                          |
+| data.rows[].platformUserName         | string             | Platform username                     |
+| data.rows[].platformPassword         | string             | Platform password                     |
+| data.rows[].platformEfa              | string \| null     | Platform EFA                          |
+| data.rows[].platformCookies          | List&lt;object&gt; | Platform cookies                      |
+| data.rows[].platformCookies[].name   | string             | Cookie name                           |
+| data.rows[].platformCookies[].value  | string             | Cookie value                          |
+| data.rows[].platformCookies[].domain | string             | Cookie domain                         |
+| data.rows[].platformRemarks          | string             | Platform remarks                      |
+| data.rows[].createTime               | string             | Creation time                         |
+| data.rows[].updateTime               | string             | Update time                           |
+| msg                                  | string             | Response message                      |
 
 ### Create Platform Account
 
@@ -1988,15 +1988,15 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter                      | Required | Type         | Default | Description                 |
-| ------------------------------ | -------- | ------------ | ------- | --------------------------- |
-| workspaceId                    | Yes      | int          | -       | Team ID                     |
-| accountList                    | Yes      | List<object> | -       | Platform accounts to create |
-| accountList[].platformUrl      | Yes      | string       | -       | Platform URL                |
-| accountList[].platformUserName | No       | string       | -       | Platform account            |
-| accountList[].platformPassword | No       | string       | -       | Platform password           |
-| accountList[].platformEfa      | No       | string       | -       | 2FA key                     |
-| accountList[].platformRemarks  | No       | string       | -       | Remarks                     |
+| Parameter                      | Required | Type               | Default | Description                 |
+| ------------------------------ | -------- | ------------------ | ------- | --------------------------- |
+| workspaceId                    | Yes      | int                | -       | Team ID                     |
+| accountList                    | Yes      | List&lt;object&gt; | -       | Platform accounts to create |
+| accountList[].platformUrl      | Yes      | string             | -       | Platform URL                |
+| accountList[].platformUserName | No       | string             | -       | Platform account            |
+| accountList[].platformPassword | No       | string             | -       | Platform password           |
+| accountList[].platformEfa      | No       | string             | -       | 2FA key                     |
+| accountList[].platformRemarks  | No       | string             | -       | Remarks                     |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2067,10 +2067,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type      | Default | Description          |
-| ----------- | -------- | --------- | ------- | -------------------- |
-| workspaceId | Yes      | int       | -       | Team ID              |
-| ids         | Yes      | List<int> | -       | Platform account IDs |
+| Parameter   | Required | Type            | Default | Description          |
+| ----------- | -------- | --------------- | ------- | -------------------- |
+| workspaceId | Yes      | int             | -       | Team ID              |
+| ids         | Yes      | List&lt;int&gt; | -       | Platform account IDs |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 

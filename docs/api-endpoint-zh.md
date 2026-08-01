@@ -76,18 +76,18 @@
 }
 ```
 
-| 字段名称                                  | 字段类型     | 描述                       |
-| ----------------------------------------- | ------------ | -------------------------- |
-| code                                      | int          | 状态码，0：成功，500：失败 |
-| data                                      | object       | 分页工作区数据。           |
-| data.total                                | int          | 总条数                     |
-| data.rows                                 | List<object> | 工作区列表                 |
-| data.rows[].id                            | int          | 团队ID                     |
-| data.rows[].workspaceName                 | string       | 团队名称                   |
-| data.rows[].project_details               | List<object> | 项目详细信息               |
-| data.rows[].project_details[].projectId   | int          | 项目编号                   |
-| data.rows[].project_details[].projectName | string       | 项目名称                   |
-| msg                                       | string       | 返回结果                   |
+| 字段名称                                  | 字段类型           | 描述                       |
+| ----------------------------------------- | ------------------ | -------------------------- |
+| code                                      | int                | 状态码，0：成功，500：失败 |
+| data                                      | object             | 分页工作区数据。           |
+| data.total                                | int                | 总条数                     |
+| data.rows                                 | List&lt;object&gt; | 工作区列表                 |
+| data.rows[].id                            | int                | 团队ID                     |
+| data.rows[].workspaceName                 | string             | 团队名称                   |
+| data.rows[].project_details               | List&lt;object&gt; | 项目详细信息               |
+| data.rows[].project_details[].projectId   | int                | 项目编号                   |
+| data.rows[].project_details[].projectName | string             | 项目名称                   |
+| msg                                       | string             | 返回结果                   |
 
 ### 获取账号列表
 
@@ -143,26 +143,26 @@
 }
 ```
 
-| 字段名称                             | 字段类型       | 描述                       |
-| ------------------------------------ | -------------- | -------------------------- |
-| code                                 | int            | 状态码，0：成功，500：失败 |
-| data                                 | object         | 分页账号库数据。           |
-| data.total                           | int            | 总条数                     |
-| data.rows                            | List<object>   | 账号列表                   |
-| data.rows[].platformName             | string \| null | 平台名称                   |
-| data.rows[].id                       | int            | 账号库id                   |
-| data.rows[].platformUrl              | string         | 平台账号url                |
-| data.rows[].platformUserName         | string         | 账号库用户名               |
-| data.rows[].platformPassword         | string         | 账号库密码                 |
-| data.rows[].platformEfa              | string \| null | 账号库Efa                  |
-| data.rows[].platformCookies          | List<object>   | 账号库Cookies              |
-| data.rows[].platformCookies[].name   | string         | Cookie 名称                |
-| data.rows[].platformCookies[].value  | string         | Cookie 值                  |
-| data.rows[].platformCookies[].domain | string         | Cookie 域名                |
-| data.rows[].platformRemarks          | string         | 平台备注                   |
-| data.rows[].createTime               | string         | 创建时间                   |
-| data.rows[].updateTime               | string         | 修改时间                   |
-| msg                                  | string         | 返回结果                   |
+| 字段名称                             | 字段类型           | 描述                       |
+| ------------------------------------ | ------------------ | -------------------------- |
+| code                                 | int                | 状态码，0：成功，500：失败 |
+| data                                 | object             | 分页账号库数据。           |
+| data.total                           | int                | 总条数                     |
+| data.rows                            | List&lt;object&gt; | 账号列表                   |
+| data.rows[].platformName             | string \| null     | 平台名称                   |
+| data.rows[].id                       | int                | 账号库id                   |
+| data.rows[].platformUrl              | string             | 平台账号url                |
+| data.rows[].platformUserName         | string             | 账号库用户名               |
+| data.rows[].platformPassword         | string             | 账号库密码                 |
+| data.rows[].platformEfa              | string \| null     | 账号库Efa                  |
+| data.rows[].platformCookies          | List&lt;object&gt; | 账号库Cookies              |
+| data.rows[].platformCookies[].name   | string             | Cookie 名称                |
+| data.rows[].platformCookies[].value  | string             | Cookie 值                  |
+| data.rows[].platformCookies[].domain | string             | Cookie 域名                |
+| data.rows[].platformRemarks          | string             | 平台备注                   |
+| data.rows[].createTime               | string             | 创建时间                   |
+| data.rows[].updateTime               | string             | 修改时间                   |
+| msg                                  | string             | 返回结果                   |
 
 ### 获取标签列表
 
@@ -196,14 +196,14 @@
 }
 ```
 
-| 字段名称     | 字段类型     | 描述                       |
-| ------------ | ------------ | -------------------------- |
-| code         | int          | 状态码，0：成功，500：失败 |
-| data         | List<object> | 标签列表                   |
-| data[].id    | int          | 标签id                     |
-| data[].color | string       | 标签颜色                   |
-| data[].name  | string       | 标签名称                   |
-| msg          | string       | 返回结果                   |
+| 字段名称     | 字段类型           | 描述                       |
+| ------------ | ------------------ | -------------------------- |
+| code         | int                | 状态码，0：成功，500：失败 |
+| data         | List&lt;object&gt; | 标签列表                   |
+| data[].id    | int                | 标签id                     |
+| data[].color | string             | 标签颜色                   |
+| data[].name  | string             | 标签名称                   |
+| msg          | string             | 返回结果                   |
 
 ## 浏览器窗口接口
 
@@ -271,7 +271,7 @@
 | code                      | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 状态码，0：成功，500：失败               |
 | data                      | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | 分页浏览器窗口数据。                     |
 | data.total                | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 总条数                                   |
-| data.rows                 | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 浏览器窗口列表                           |
+| data.rows                 | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 浏览器窗口列表                           |
 | data.rows[].dirId         | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 浏览器窗口id                             |
 | data.rows[].windowSortNum | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 窗口序号                                 |
 | data.rows[].windowName    | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 窗口名称                                 |
@@ -390,7 +390,7 @@
 | code                                              | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 状态码，0：成功，500：失败                                        |
 | data                                              | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | 浏览器窗口明细原始分页数据。                                      |
 | data.total                                        | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 总条数                                                            |
-| data.rows                                         | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 浏览器窗口明细列表                                                |
+| data.rows                                         | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 浏览器窗口明细列表                                                |
 | data.rows[].dirId                                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 浏览器窗口id                                                      |
 | data.rows[].windowSortNum                         | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 窗口序号                                                          |
 | data.rows[].windowName                            | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 窗口名称                                                          |
@@ -398,24 +398,24 @@
 | data.rows[].os                                    | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | 浏览器窗口操作系统。                                              |
 | data.rows[].osVersion                             | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | 操作系统版本，可用值取决于所选操作系统。                          |
 | data.rows[].userAgent                             | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | User Agent                                                        |
-| data.rows[].cookie                                | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 浏览器 cookie                                                     |
+| data.rows[].cookie                                | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 浏览器 cookie                                                     |
 | data.rows[].cookie[].name                         | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie 名称                                                       |
 | data.rows[].cookie[].value                        | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie 值                                                         |
 | data.rows[].cookie[].domain                       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Cookie 域名                                                       |
 | data.rows[].searchEngine                          | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | 浏览器窗口搜索引擎。                                              |
-| data.rows[].windowPlatformList                    | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 绑定的平台账号列表                                                |
+| data.rows[].windowPlatformList                    | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 绑定的平台账号列表                                                |
 | data.rows[].windowPlatformList[].id               | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 平台账号id                                                        |
 | data.rows[].windowPlatformList[].platformUrl      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 平台账号URL                                                       |
 | data.rows[].windowPlatformList[].platformUserName | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 平台账号                                                          |
 | data.rows[].windowPlatformList[].platformPassword | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 平台密码                                                          |
 | data.rows[].windowPlatformList[].platformEfa      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 平台 efa                                                          |
 | data.rows[].windowPlatformList[].platformRemarks  | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 平台备注                                                          |
-| data.rows[].defaultOpenUrl                        | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | 存储的浏览器标签页                                                |
+| data.rows[].defaultOpenUrl                        | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 存储的浏览器标签页                                                |
 | data.rows[].windowRemark                          | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 窗口备注                                                          |
 | data.rows[].projectId                             | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 项目ID                                                            |
 | data.rows[].projectName                           | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 项目名称                                                          |
 | data.rows[].openStatus                            | boolean \| 0 \| 1                                                                                                                                                                                                                                                                                                                                                                                                                      | 团队内是否已打开                                                  |
-| data.rows[].statusInfo                            | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 窗口打开状态明细                                                  |
+| data.rows[].statusInfo                            | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 窗口打开状态明细                                                  |
 | data.rows[].statusInfo[].openUserName             | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 打开人用户名                                                      |
 | data.rows[].statusInfo[].openTime                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 打开时间                                                          |
 | data.rows[].createTime                            | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 窗口创建时间                                                      |
@@ -438,7 +438,7 @@
 | data.rows[].proxyInfo.lastCountry                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 出口国家                                                          |
 | data.rows[].proxyInfo.checkChannel                | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | IP查询渠道                                                        |
 | data.rows[].isOften                               | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | 是否收藏                                                          |
-| data.rows[].labelInfo                             | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | 绑定的标签列表                                                    |
+| data.rows[].labelInfo                             | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | 绑定的标签列表                                                    |
 | data.rows[].labelInfo[].labelId                   | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 标签ID                                                            |
 | data.rows[].labelInfo[].labelName                 | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 标签名称                                                          |
 | data.rows[].labelInfo[].labelColor                | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | 标签颜色                                                          |
@@ -585,20 +585,20 @@
 | coreType                              | 否     | Chrome \| Firefox                                                                                                                                                                                                                                                                                                                                                                                                                      | Chrome  | 浏览器内核类型。                                                  |
 | os                                    | 否     | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | Windows | 浏览器窗口操作系统。                                              |
 | osVersion                             | 否     | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | -       | 操作系统版本，默认使用支持的最大值                                |
-| cookie                                | 否     | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           |         | 浏览器 Cookie                                                     |
+| cookie                                | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     |         | 浏览器 Cookie                                                     |
 | cookie[].name                         | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 名称                                                       |
 | cookie[].value                        | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 值                                                         |
 | cookie[].domain                       | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 域名                                                       |
 | searchEngine                          | 否     | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | 浏览器窗口搜索引擎。                                              |
-| labelIds                              | 否     | List<int>                                                                                                                                                                                                                                                                                                                                                                                                                              | -       | 标签列表接口返回的标签ID列表                                      |
-| windowPlatformList                    | 否     | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | 绑定到浏览器窗口的平台账号                                        |
+| labelIds                              | 否     | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | 标签列表接口返回的标签ID列表                                      |
+| windowPlatformList                    | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 绑定到浏览器窗口的平台账号                                        |
 | windowPlatformList[].id               | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 平台账号id                                                        |
 | windowPlatformList[].platformUrl      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号URL                                                       |
 | windowPlatformList[].platformUserName | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号                                                          |
 | windowPlatformList[].platformPassword | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台密码                                                          |
 | windowPlatformList[].platformEfa      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台 efa                                                          |
 | windowPlatformList[].platformRemarks  | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台备注                                                          |
-| defaultOpenUrl                        | 否     | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | 默认打开的浏览器标签页                                            |
+| defaultOpenUrl                        | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 默认打开的浏览器标签页                                            |
 | windowRemark                          | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口备注                                                    |
 | projectId                             | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 项目ID                                                            |
 | proxyInfo                             | 否     | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 创建浏览器窗口时使用的代理配置。                                  |
@@ -672,7 +672,7 @@
 | fingerInfo.hardwareConcurrent         | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 硬件并发数                                                        |
 | fingerInfo.deviceMemory               | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 设备内存                                                          |
 | fingerInfo.disableSsl                 | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | false   | 启用 SSL 指纹设置                                                 |
-| fingerInfo.disableSslList             | 否     | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | SSL 特性值列表                                                    |
+| fingerInfo.disableSslList             | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | SSL 特性值列表                                                    |
 | fingerInfo.portScanProtect            | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | 启用端口扫描保护                                                  |
 | fingerInfo.portScanList               | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 英文逗号分隔的端口扫描保护白名单                                  |
 | fingerInfo.useGpu                     | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | 使用 GPU 硬件加速                                                 |
@@ -799,20 +799,20 @@
 | coreVersion                           | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | 浏览器内核版本，例如 138、137、136、135、133、130、125、117、109  |
 | os                                    | 否     | Windows \| macOS \| Linux \| Android \| IOS                                                                                                                                                                                                                                                                                                                                                                                            | Windows | 浏览器窗口操作系统。                                              |
 | osVersion                             | 否     | 11 \| 10 \| 8 \| 7 \| ALL \| 15.3.2 \| 15.3.1 \| 15.3 \| 15.2 \| 15.1 \| 15.0.1 \| 15.0 \| 14.7.4 \| 14.7.3 \| 14.7.2 \| 14.7.1 \| 14.7 \| 14.6.1 \| 14.6 \| 14.5 \| 14.4.1 \| 14.4 \| 14.3.1 \| 14.3 \| 14.2.1 \| 14.2 \| 14.1 \| 13.7.4 \| 13.7.3 \| 13.7.2 \| 13.7.1 \| 13.7 \| 14 \| 13 \| 12 \| 9 \| 18.2 \| 18.1 \| 18.0 \| 17.0 \| 16.6 \| 16.5 \| 16.4 \| 16.3 \| 16.2 \| 16.1 \| 16.0 \| 15.7 \| 15.6 \| 15.5 \| 15.4 \| 14.0 | 11      | 操作系统版本，可用值取决于所选操作系统。                          |
-| cookie                                | 否     | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           |         | 浏览器 Cookie                                                     |
+| cookie                                | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     |         | 浏览器 Cookie                                                     |
 | cookie[].name                         | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 名称                                                       |
 | cookie[].value                        | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 值                                                         |
 | cookie[].domain                       | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 域名                                                       |
 | searchEngine                          | 否     | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | 浏览器窗口搜索引擎。                                              |
-| labelIds                              | 否     | List<int>                                                                                                                                                                                                                                                                                                                                                                                                                              | -       | 标签列表接口返回的标签ID列表                                      |
-| windowPlatformList                    | 否     | List<object>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | 绑定到浏览器窗口的平台账号                                        |
+| labelIds                              | 否     | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | 标签列表接口返回的标签ID列表                                      |
+| windowPlatformList                    | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 绑定到浏览器窗口的平台账号                                        |
 | windowPlatformList[].id               | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 平台账号id                                                        |
 | windowPlatformList[].platformUrl      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号URL                                                       |
 | windowPlatformList[].platformUserName | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号                                                          |
 | windowPlatformList[].platformPassword | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台密码                                                          |
 | windowPlatformList[].platformEfa      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台 efa                                                          |
 | windowPlatformList[].platformRemarks  | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台备注                                                          |
-| defaultOpenUrl                        | 否     | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | 默认打开的浏览器标签页                                            |
+| defaultOpenUrl                        | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 默认打开的浏览器标签页                                            |
 | windowRemark                          | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口备注                                                    |
 | projectId                             | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 项目ID                                                            |
 | proxyInfo                             | 否     | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 创建浏览器窗口时使用的代理配置。                                  |
@@ -886,7 +886,7 @@
 | fingerInfo.hardwareConcurrent         | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 硬件并发数                                                        |
 | fingerInfo.deviceMemory               | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 设备内存                                                          |
 | fingerInfo.disableSsl                 | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | false   | 启用 SSL 指纹设置                                                 |
-| fingerInfo.disableSslList             | 否     | List<string>                                                                                                                                                                                                                                                                                                                                                                                                                           | -       | SSL 特性值列表                                                    |
+| fingerInfo.disableSslList             | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | SSL 特性值列表                                                    |
 | fingerInfo.portScanProtect            | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | 启用端口扫描保护                                                  |
 | fingerInfo.portScanList               | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 英文逗号分隔的端口扫描保护白名单                                  |
 | fingerInfo.useGpu                     | 否     | boolean                                                                                                                                                                                                                                                                                                                                                                                                                                | true    | 使用 GPU 硬件加速                                                 |
@@ -947,11 +947,11 @@
 }
 ```
 
-| 参数名称     | 必需项 | 参数类型     | 默认值 | 描述             |
-| ------------ | ------ | ------------ | ------ | ---------------- |
-| workspaceId  | 是     | int          | -      | 团队id           |
-| dirIds       | 是     | List<string> | -      | 浏览器窗口id列表 |
-| isSoftDelete | 否     | boolean      | true   | 软删除到回收站   |
+| 参数名称     | 必需项 | 参数类型           | 默认值 | 描述             |
+| ------------ | ------ | ------------------ | ------ | ---------------- |
+| workspaceId  | 是     | int                | -      | 团队id           |
+| dirIds       | 是     | List&lt;string&gt; | -      | 浏览器窗口id列表 |
+| isSoftDelete | 否     | boolean            | true   | 软删除到回收站   |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -986,13 +986,13 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型     | 默认值 | 描述                                         |
-| ----------- | ------ | ------------ | ------ | -------------------------------------------- |
-| workspaceId | 是     | int          | -      | 团队id，通过 /browser/workspace 获取         |
-| dirId       | 是     | string       | -      | 浏览器窗口id                                 |
-| forceOpen   | 否     | boolean      | -      | 是否强制打开浏览器窗口                       |
-| args        | 否     | List<string> | -      | 浏览器启动参数                               |
-| headless    | 否     | boolean      | -      | 请求以无头模式打开；当前浏览器暂不支持该模式 |
+| 参数名称    | 必需项 | 参数类型           | 默认值 | 描述                                         |
+| ----------- | ------ | ------------------ | ------ | -------------------------------------------- |
+| workspaceId | 是     | int                | -      | 团队id，通过 /browser/workspace 获取         |
+| dirId       | 是     | string             | -      | 浏览器窗口id                                 |
+| forceOpen   | 否     | boolean            | -      | 是否强制打开浏览器窗口                       |
+| args        | 否     | List&lt;string&gt; | -      | 浏览器启动参数                               |
+| headless    | 否     | boolean            | -      | 请求以无头模式打开；当前浏览器暂不支持该模式 |
 
 #### 浏览器启动参数限制
 
@@ -1131,7 +1131,7 @@
 
 | 参数名称    | 必需项               | 参数类型                | 默认值 | 描述                                                                                                                                                                                                                          |
 | ----------- | -------------------- | ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dirIds      | 是                   | List<string>            | -      | 浏览器窗口id列表                                                                                                                                                                                                              |
+| dirIds      | 是                   | List&lt;string&gt;      | -      | 浏览器窗口id列表                                                                                                                                                                                                              |
 | type        | 否                   | partial \| all \| cloud | all    | 清除类型：partial 清除扩展数据以外的所有本地缓存文件；all 清除所有本地缓存文件。两者均不会使登录状态失效，也不会清理窗口指纹信息和 IP。cloud 清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效。 |
 | workspaceId | type 为 cloud 时必传 | int                     | -      | 团队id                                                                                                                                                                                                                        |
 
@@ -1166,10 +1166,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型     | 默认值 | 描述                                 |
-| ----------- | ------ | ------------ | ------ | ------------------------------------ |
-| workspaceId | 是     | int          | -      | 团队id，通过 /browser/workspace 获取 |
-| dirIds      | 是     | List<string> | -      | 浏览器窗口id列表                     |
+| 参数名称    | 必需项 | 参数类型           | 默认值 | 描述                                 |
+| ----------- | ------ | ------------------ | ------ | ------------------------------------ |
+| workspaceId | 是     | int                | -      | 团队id，通过 /browser/workspace 获取 |
+| dirIds      | 是     | List&lt;string&gt; | -      | 浏览器窗口id列表                     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1234,20 +1234,20 @@
 }
 ```
 
-| 字段名称            | 字段类型     | 描述                             |
-| ------------------- | ------------ | -------------------------------- |
-| code                | int          | 状态码，0：成功，500：失败       |
-| data                | List<object> | 已打开浏览器窗口的进程信息列表。 |
-| data[].ws           | string       | 用于自动化工具的ws接口           |
-| data[].http         | string       | 用于自动化工具的http接口         |
-| data[].coreVersion  | string       | 内核版本                         |
-| data[].driver       | string       | 用于自动化工具的webdriver路径    |
-| data[].sortNum      | int          | 窗口排序号                       |
-| data[].windowName   | string       | 窗口名称                         |
-| data[].windowRemark | string       | 窗口备注                         |
-| data[].pid          | int          | 进程id                           |
-| data[].dirId        | string       | 浏览器窗口id                     |
-| msg                 | string       | 返回结果                         |
+| 字段名称            | 字段类型           | 描述                             |
+| ------------------- | ------------------ | -------------------------------- |
+| code                | int                | 状态码，0：成功，500：失败       |
+| data                | List&lt;object&gt; | 已打开浏览器窗口的进程信息列表。 |
+| data[].ws           | string             | 用于自动化工具的ws接口           |
+| data[].http         | string             | 用于自动化工具的http接口         |
+| data[].coreVersion  | string             | 内核版本                         |
+| data[].driver       | string             | 用于自动化工具的webdriver路径    |
+| data[].sortNum      | int                | 窗口排序号                       |
+| data[].windowName   | string             | 窗口名称                         |
+| data[].windowRemark | string             | 窗口备注                         |
+| data[].pid          | int                | 进程id                           |
+| data[].dirId        | string             | 浏览器窗口id                     |
+| msg                 | string             | 返回结果                         |
 
 ## 代理 IP 接口
 
@@ -1283,14 +1283,14 @@
 }
 ```
 
-| 字段名称     | 字段类型     | 描述                       |
-| ------------ | ------------ | -------------------------- |
-| code         | int          | 状态码，0：成功，500：失败 |
-| data         | List<object> | 可用的代理检测渠道列表。   |
-| data[].label | string       | 渠道标签                   |
-| data[].type  | string       | 渠道类型                   |
-| data[].value | string       | 渠道值                     |
-| msg          | string       | 返回结果                   |
+| 字段名称     | 字段类型           | 描述                       |
+| ------------ | ------------------ | -------------------------- |
+| code         | int                | 状态码，0：成功，500：失败 |
+| data         | List&lt;object&gt; | 可用的代理检测渠道列表。   |
+| data[].label | string             | 渠道标签                   |
+| data[].type  | string             | 渠道类型                   |
+| data[].value | string             | 渠道值                     |
+| msg          | string             | 返回结果                   |
 
 ### 获取代理 IP 列表（即将废弃）
 
@@ -1351,32 +1351,32 @@
 }
 ```
 
-| 字段名称                      | 字段类型     | 描述                               |
-| ----------------------------- | ------------ | ---------------------------------- |
-| code                          | int          | 状态码，0：成功，500：失败         |
-| data                          | object       | 已废弃代理列表接口返回的分页数据。 |
-| data.total                    | int          | 总条数                             |
-| data.rows                     | List<object> | 代理列表                           |
-| data.rows[].id                | int          | 代理库id                           |
-| data.rows[].checkStatus       | int          | 检测状态                           |
-| data.rows[].checkChannel      | string       | 检测渠道地址                       |
-| data.rows[].checkChannelValue | string       | 检测渠道值                         |
-| data.rows[].lastIp            | string       | 最后 IP                            |
-| data.rows[].lastCountry       | string       | 最后国家                           |
-| data.rows[].lastState         | string       | 最后州                             |
-| data.rows[].lastCity          | string       | 最后城市                           |
-| data.rows[].ipType            | string       | IP 类型                            |
-| data.rows[].protocol          | string       | 协议                               |
-| data.rows[].host              | string       | 主机                               |
-| data.rows[].port              | string       | 端口                               |
-| data.rows[].proxyPassword     | string       | 代理密码                           |
-| data.rows[].proxyUserName     | string       | 代理用户名                         |
-| data.rows[].refreshUrl        | string       | 刷新 URL                           |
-| data.rows[].remark            | string       | 备注                               |
-| data.rows[].checkTime         | string       | 检测时间                           |
-| data.rows[].createTime        | string       | 创建时间                           |
-| data.rows[].updateTime        | string       | 更新时间                           |
-| msg                           | string       | 返回结果                           |
+| 字段名称                      | 字段类型           | 描述                               |
+| ----------------------------- | ------------------ | ---------------------------------- |
+| code                          | int                | 状态码，0：成功，500：失败         |
+| data                          | object             | 已废弃代理列表接口返回的分页数据。 |
+| data.total                    | int                | 总条数                             |
+| data.rows                     | List&lt;object&gt; | 代理列表                           |
+| data.rows[].id                | int                | 代理库id                           |
+| data.rows[].checkStatus       | int                | 检测状态                           |
+| data.rows[].checkChannel      | string             | 检测渠道地址                       |
+| data.rows[].checkChannelValue | string             | 检测渠道值                         |
+| data.rows[].lastIp            | string             | 最后 IP                            |
+| data.rows[].lastCountry       | string             | 最后国家                           |
+| data.rows[].lastState         | string             | 最后州                             |
+| data.rows[].lastCity          | string             | 最后城市                           |
+| data.rows[].ipType            | string             | IP 类型                            |
+| data.rows[].protocol          | string             | 协议                               |
+| data.rows[].host              | string             | 主机                               |
+| data.rows[].port              | string             | 端口                               |
+| data.rows[].proxyPassword     | string             | 代理密码                           |
+| data.rows[].proxyUserName     | string             | 代理用户名                         |
+| data.rows[].refreshUrl        | string             | 刷新 URL                           |
+| data.rows[].remark            | string             | 备注                               |
+| data.rows[].checkTime         | string             | 检测时间                           |
+| data.rows[].createTime        | string             | 创建时间                           |
+| data.rows[].updateTime        | string             | 更新时间                           |
+| msg                           | string             | 返回结果                           |
 
 ### 获取合并代理 IP 列表{#proxy-list-merged}
 
@@ -1487,7 +1487,7 @@
 | code                            | int                     | 状态码，0：成功，500：失败         |
 | data                            | object                  | 分页合并代理数据。                 |
 | data.total                      | int                     | 总条数                             |
-| data.rows                       | List<object>            | 代理列表                           |
+| data.rows                       | List&lt;object&gt;      | 代理列表                           |
 | data.rows[].id                  | int                     | 代理 ID                            |
 | data.rows[].userId              | int                     | 用户 ID                            |
 | data.rows[].workspaceId         | int                     | 团队 ID                            |
@@ -1533,7 +1533,7 @@
 | data.rows[].checkChannelValue   | string                  | 检测渠道标签                       |
 | data.rows[].isBind              | boolean                 | 是否绑定窗口                       |
 | data.rows[].bindCount           | int                     | 绑定窗口数量                       |
-| data.rows[].bindList            | List<int>               | 绑定窗口列表                       |
+| data.rows[].bindList            | List&lt;int&gt;         | 绑定窗口列表                       |
 | data.rows[].canRefund           | boolean                 | 是否可退款                         |
 | data.rows[].bandwidthSpeed      | int                     | 带宽速度                           |
 | msg                             | string                  | 返回结果                           |
@@ -1616,7 +1616,7 @@
 | ------------------------- | ------ | ----------------------- | ------ | --------------------------------------------- |
 | workspaceId               | 是     | int                     | -      | 团队id                                        |
 | checkChannel              | 是     | string                  | -      | 通过 /proxy/detect_channel 获取的默认查询渠道 |
-| proxyList                 | 是     | List<object>            | -      | 待创建的代理列表                              |
+| proxyList                 | 是     | List&lt;object&gt;      | -      | 待创建的代理列表                              |
 | proxyList[].checkChannel  | 否     | string                  | -      | 单项查询渠道；省略时使用外层 checkChannel     |
 | proxyList[].ipType        | 是     | IPV4 \| IPV6            | -      | 代理的网络协议版本。                          |
 | proxyList[].protocol      | 是     | HTTP \| HTTPS \| SOCKS5 | -      | 连接代理使用的协议。                          |
@@ -1736,10 +1736,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型  | 默认值 | 描述         |
-| ----------- | ------ | --------- | ------ | ------------ |
-| workspaceId | 是     | int       | -      | 团队id       |
-| ids         | 是     | List<int> | -      | 代理 id 列表 |
+| 参数名称    | 必需项 | 参数类型        | 默认值 | 描述         |
+| ----------- | ------ | --------------- | ------ | ------------ |
+| workspaceId | 是     | int             | -      | 团队id       |
+| ids         | 是     | List&lt;int&gt; | -      | 代理 id 列表 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1819,35 +1819,35 @@
 }
 ```
 
-| 字段名称                      | 字段类型     | 描述                                     |
-| ----------------------------- | ------------ | ---------------------------------------- |
-| code                          | int          | 状态码，0：成功，500：失败               |
-| data                          | object       | 已废弃的已购代理列表接口返回的分页数据。 |
-| data.total                    | int          | 总条数                                   |
-| data.rows                     | List<object> | 已购代理列表                             |
-| data.rows[].id                | int          | 已购代理 IP id                           |
-| data.rows[].orderNo           | string       | 订单号                                   |
-| data.rows[].checkStatus       | int          | 检测状态                                 |
-| data.rows[].proxyCheckChannel | string       | 检测渠道地址                             |
-| data.rows[].checkChannelValue | string       | 检测渠道值                               |
-| data.rows[].lastIp            | string       | 最后 IP                                  |
-| data.rows[].lastCountry       | string       | 最后国家                                 |
-| data.rows[].lastState         | string       | 最后州                                   |
-| data.rows[].lastCity          | string       | 最后城市                                 |
-| data.rows[].proxyProviderName | string       | 代理提供商名称                           |
-| data.rows[].providerType      | string       | 代理提供商类型                           |
-| data.rows[].ipType            | string       | IP 类型                                  |
-| data.rows[].protocol          | string       | 协议                                     |
-| data.rows[].host              | string       | 主机                                     |
-| data.rows[].port              | string       | 端口                                     |
-| data.rows[].proxyUserName     | string       | 代理用户名                               |
-| data.rows[].proxyPassword     | string       | 代理密码                                 |
-| data.rows[].remark            | string       | 备注                                     |
-| data.rows[].checkTime         | string       | 检测时间                                 |
-| data.rows[].createTime        | string       | 创建时间                                 |
-| data.rows[].updateTime        | string       | 更新时间                                 |
-| data.rows[].expireDate        | string       | 过期时间                                 |
-| msg                           | string       | 返回结果                                 |
+| 字段名称                      | 字段类型           | 描述                                     |
+| ----------------------------- | ------------------ | ---------------------------------------- |
+| code                          | int                | 状态码，0：成功，500：失败               |
+| data                          | object             | 已废弃的已购代理列表接口返回的分页数据。 |
+| data.total                    | int                | 总条数                                   |
+| data.rows                     | List&lt;object&gt; | 已购代理列表                             |
+| data.rows[].id                | int                | 已购代理 IP id                           |
+| data.rows[].orderNo           | string             | 订单号                                   |
+| data.rows[].checkStatus       | int                | 检测状态                                 |
+| data.rows[].proxyCheckChannel | string             | 检测渠道地址                             |
+| data.rows[].checkChannelValue | string             | 检测渠道值                               |
+| data.rows[].lastIp            | string             | 最后 IP                                  |
+| data.rows[].lastCountry       | string             | 最后国家                                 |
+| data.rows[].lastState         | string             | 最后州                                   |
+| data.rows[].lastCity          | string             | 最后城市                                 |
+| data.rows[].proxyProviderName | string             | 代理提供商名称                           |
+| data.rows[].providerType      | string             | 代理提供商类型                           |
+| data.rows[].ipType            | string             | IP 类型                                  |
+| data.rows[].protocol          | string             | 协议                                     |
+| data.rows[].host              | string             | 主机                                     |
+| data.rows[].port              | string             | 端口                                     |
+| data.rows[].proxyUserName     | string             | 代理用户名                               |
+| data.rows[].proxyPassword     | string             | 代理密码                                 |
+| data.rows[].remark            | string             | 备注                                     |
+| data.rows[].checkTime         | string             | 检测时间                                 |
+| data.rows[].createTime        | string             | 创建时间                                 |
+| data.rows[].updateTime        | string             | 更新时间                                 |
+| data.rows[].expireDate        | string             | 过期时间                                 |
+| msg                           | string             | 返回结果                                 |
 
 ## 平台账号接口
 
@@ -1902,25 +1902,25 @@
 }
 ```
 
-| 字段名称                             | 字段类型       | 描述                       |
-| ------------------------------------ | -------------- | -------------------------- |
-| code                                 | int            | 状态码，0：成功，500：失败 |
-| data                                 | object         | 分页平台账号数据。         |
-| data.total                           | int            | 总条数                     |
-| data.rows                            | List<object>   | 平台账号列表               |
-| data.rows[].id                       | int            | 账号库id                   |
-| data.rows[].platformUrl              | string         | 平台账号url                |
-| data.rows[].platformUserName         | string         | 账号库用户名               |
-| data.rows[].platformPassword         | string         | 账号库密码                 |
-| data.rows[].platformEfa              | string \| null | 账号库Efa                  |
-| data.rows[].platformCookies          | List<object>   | 账号库Cookies              |
-| data.rows[].platformCookies[].name   | string         | Cookie 名称                |
-| data.rows[].platformCookies[].value  | string         | Cookie 值                  |
-| data.rows[].platformCookies[].domain | string         | Cookie 域名                |
-| data.rows[].platformRemarks          | string         | 平台备注                   |
-| data.rows[].createTime               | string         | 创建时间                   |
-| data.rows[].updateTime               | string         | 修改时间                   |
-| msg                                  | string         | 返回结果                   |
+| 字段名称                             | 字段类型           | 描述                       |
+| ------------------------------------ | ------------------ | -------------------------- |
+| code                                 | int                | 状态码，0：成功，500：失败 |
+| data                                 | object             | 分页平台账号数据。         |
+| data.total                           | int                | 总条数                     |
+| data.rows                            | List&lt;object&gt; | 平台账号列表               |
+| data.rows[].id                       | int                | 账号库id                   |
+| data.rows[].platformUrl              | string             | 平台账号url                |
+| data.rows[].platformUserName         | string             | 账号库用户名               |
+| data.rows[].platformPassword         | string             | 账号库密码                 |
+| data.rows[].platformEfa              | string \| null     | 账号库Efa                  |
+| data.rows[].platformCookies          | List&lt;object&gt; | 账号库Cookies              |
+| data.rows[].platformCookies[].name   | string             | Cookie 名称                |
+| data.rows[].platformCookies[].value  | string             | Cookie 值                  |
+| data.rows[].platformCookies[].domain | string             | Cookie 域名                |
+| data.rows[].platformRemarks          | string             | 平台备注                   |
+| data.rows[].createTime               | string             | 创建时间                   |
+| data.rows[].updateTime               | string             | 修改时间                   |
+| msg                                  | string             | 返回结果                   |
 
 ### 创建平台账号
 
@@ -1988,15 +1988,15 @@
 }
 ```
 
-| 参数名称                       | 必需项 | 参数类型     | 默认值 | 描述                 |
-| ------------------------------ | ------ | ------------ | ------ | -------------------- |
-| workspaceId                    | 是     | int          | -      | 团队id               |
-| accountList                    | 是     | List<object> | -      | 待创建的平台账号列表 |
-| accountList[].platformUrl      | 是     | string       | -      | 平台 URL             |
-| accountList[].platformUserName | 否     | string       | -      | 平台账号             |
-| accountList[].platformPassword | 否     | string       | -      | 平台密码             |
-| accountList[].platformEfa      | 否     | string       | -      | 2FA密钥              |
-| accountList[].platformRemarks  | 否     | string       | -      | 备注                 |
+| 参数名称                       | 必需项 | 参数类型           | 默认值 | 描述                 |
+| ------------------------------ | ------ | ------------------ | ------ | -------------------- |
+| workspaceId                    | 是     | int                | -      | 团队id               |
+| accountList                    | 是     | List&lt;object&gt; | -      | 待创建的平台账号列表 |
+| accountList[].platformUrl      | 是     | string             | -      | 平台 URL             |
+| accountList[].platformUserName | 否     | string             | -      | 平台账号             |
+| accountList[].platformPassword | 否     | string             | -      | 平台密码             |
+| accountList[].platformEfa      | 否     | string             | -      | 2FA密钥              |
+| accountList[].platformRemarks  | 否     | string             | -      | 备注                 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2067,10 +2067,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型  | 默认值 | 描述             |
-| ----------- | ------ | --------- | ------ | ---------------- |
-| workspaceId | 是     | int       | -      | 团队 id          |
-| ids         | 是     | List<int> | -      | 平台账号 id 列表 |
+| 参数名称    | 必需项 | 参数类型        | 默认值 | 描述             |
+| ----------- | ------ | --------------- | ------ | ---------------- |
+| workspaceId | 是     | int             | -      | 团队 id          |
+| ids         | 是     | List&lt;int&gt; | -      | 平台账号 id 列表 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 

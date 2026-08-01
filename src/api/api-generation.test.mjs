@@ -74,6 +74,11 @@ describe("API artifact generation", () => {
     const generatedTypes = readFileSync("src/generated/api-types.ts", "utf8");
     const generatedClient = readFileSync("src/generated/roxy-browser-client.ts", "utf8");
 
+    for (const markdown of [generatedEnglish, generatedChinese]) {
+      assert.doesNotMatch(markdown, /List<[^>\n]+>/);
+      assert.match(markdown, /List&lt;object&gt;/);
+    }
+
     assert.equal(spec.migration.complete, true);
     const localizedCodeExamples = (locale) =>
       spec.document.codeExamples.groups.map((group) => ({

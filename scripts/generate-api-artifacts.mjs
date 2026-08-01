@@ -645,6 +645,8 @@ function displayType(spec, node) {
 
 function tableCell(value) {
   return String(value ?? "-")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
     .replaceAll("|", "\\|")
     .replaceAll("\n", " ");
 }
