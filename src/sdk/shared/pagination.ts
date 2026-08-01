@@ -19,6 +19,16 @@ export function toPageRequest(params: PaginationParams = {}): PageRequest {
   };
 }
 
+export function toPageRequestWithFilters<T extends PaginationParams>(
+  params: T,
+): PageRequest & Omit<T, keyof PaginationParams> {
+  const { page: _page, pageSize: _pageSize, ...filters } = params;
+  return {
+    ...toPageRequest(params),
+    ...filters,
+  };
+}
+
 export function toPage<T>(data: PageData<T> | undefined, params: PaginationParams = {}): Page<T> {
   return {
     total: data?.total ?? 0,

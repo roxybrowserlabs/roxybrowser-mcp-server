@@ -108,6 +108,19 @@ function createApiRecorder() {
         calls.push(["browser.clearServerCache", params]);
         return ok();
       },
+      accounts: async (params) => {
+        calls.push(["browser.accounts", params]);
+        return ok({
+          total: 1,
+          rows: [
+            {
+              id: 6,
+              platformUrl: "https://available.example.com",
+              platformUserName: "available-seller",
+            },
+          ],
+        });
+      },
     },
     proxy: {
       listMerged: async (params) => {
@@ -154,12 +167,12 @@ function createApiRecorder() {
       },
       detect: async (params) => {
         calls.push(["proxy.detect", params]);
-        return ok({ id: params.id, host: "127.0.0.1" });
+        return ok();
       },
       detectChannels: async () => {
         calls.push(["proxy.detectChannels"]);
         return calls.filter((call) => call[0] === "proxy.detectChannels").length > 1
-          ? { code: 0, msg: "ok" }
+          ? ok([])
           : ok([{ label: "IPRust.io", value: "http://iprust.io/ip.json", type: "url" }]);
       },
     },
@@ -222,7 +235,7 @@ describe("browser domains", () => {
       dirIds: "profile-1,profile-2",
       projectIds: "3,4",
       windowName: "Alpha",
-      windowSortNum: "11",
+      sortNums: "11",
       os: "Windows",
     });
     const created = await profiles.create({
@@ -239,6 +252,7 @@ describe("browser domains", () => {
     });
     await profiles.update("profile-1", { windowName: "Renamed" });
     await profiles.delete("profile-1", { isSoftDelete: false });
+    await profiles.delete("profile-2");
     const openedOne = await profiles.open("profile-1", {
       forceOpen: true,
       args: ["--mute-audio"],
@@ -246,25 +260,56 @@ describe("browser domains", () => {
     });
     const openedMany = await profiles.open(["profile-1", "profile-2"]);
     await profiles.close(["profile-1", "profile-2"]);
-    const info = await profiles.connectionInfo("profile-1");
+    const info = await profiles.connectionInfo(["profile-1", "profile-2"]);
+    await profiles.connectionInfo();
     await profiles.randomizeFingerprint("profile-1");
-    await profiles.clearLocalCache("profile-1", { type: "cookie" });
+    await profiles.clearLocalCache("profile-1", { type: "partial" });
+    await profiles.clearLocalCache("profile-2");
     await profiles.clearServerCache(["profile-1"]);
 
     assert.equal(page.rows[0].dirId, "profile-1");
     assert.equal(created.dirId, "created-profile");
     assert.equal(openedOne.ws, "ws://profile-1");
     assert.equal(openedMany.length, 2);
+    assert.deepEqual(calls.filter((call) => call[0] === "browser.open")[0][1], {
+      dirId: "profile-1",
+      forceOpen: true,
+      args: ["--mute-audio"],
+      headless: true,
+    });
+    assert.deepEqual(calls.filter((call) => call[0] === "browser.open")[1][1], {
+      dirId: "profile-1",
+    });
+    assert.deepEqual(
+      calls.filter((call) => call[0] === "browser.close").map((call) => call[1]),
+      [{ dirId: "profile-1" }, { dirId: "profile-2" }],
+    );
+    assert.deepEqual(calls.find((call) => call[0] === "browser.randomEnv")[1], {
+      dirId: "profile-1",
+    });
     assert.equal(info[0].ws, "ws://profile-1");
     assert.equal(calls.find((call) => call[0] === "browser.list")[1].projectIds, "3,4");
     assert.equal(calls.find((call) => call[0] === "browser.list")[1].dirIds, "profile-1,profile-2");
+    assert.equal(calls.find((call) => call[0] === "browser.list")[1].sortNums, "11");
     assert.equal(
       calls.find((call) => call[0] === "browser.create")[1].windowPlatformList[0].platformUserName,
       "seller",
     );
     assert.equal(calls.find((call) => call[0] === "browser.delete")[1].isSoftDelete, false);
-    assert.deepEqual(calls.find((call) => call[0] === "browser.connectionInfo")[1], {
-      dirIds: "profile-1",
+    assert.equal(calls.filter((call) => call[0] === "browser.delete")[1][1].isSoftDelete, true);
+    assert.deepEqual(
+      calls.filter((call) => call[0] === "browser.connectionInfo").map((call) => call[1]),
+      [{ dirIds: "profile-1,profile-2" }, {}],
+    );
+    assert.deepEqual(
+      calls.filter((call) => call[0] === "browser.clearLocalCache").map((call) => call[1]),
+      [
+        { dirIds: ["profile-1"], type: "partial" },
+        { dirIds: ["profile-2"], type: "all" },
+      ],
+    );
+    assert.deepEqual(calls.find((call) => call[0] === "browser.clearServerCache")[1], {
+      dirIds: ["profile-1"],
     });
   });
 
@@ -298,6 +343,8 @@ describe("browser domains", () => {
     const proxy = await proxies.get(12);
     const directProxy = await proxies.get(99);
     await proxies.create({
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
       protocol: "SOCKS5",
       host: "127.0.0.1",
       port: "1080",
@@ -305,10 +352,26 @@ describe("browser domains", () => {
       proxyPassword: "p",
       remark: "memo",
     });
-    await proxies.createMany([{ protocol: "HTTP", host: "127.0.0.2", port: "8080" }]);
-    await proxies.update(12, { protocol: "HTTPS", host: "127.0.0.3", port: "8081" });
+    await proxies.createMany({
+      checkChannel: "http://iprust.io/ip.json",
+      proxyList: [
+        {
+          ipType: "IPV4",
+          protocol: "HTTP",
+          host: "127.0.0.2",
+          port: "8080",
+        },
+      ],
+    });
+    await proxies.update(12, {
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
+      protocol: "HTTPS",
+      host: "127.0.0.3",
+      port: "8081",
+    });
     await proxies.delete([12]);
-    const detected = await proxies.detect(12);
+    await proxies.detect(12);
     const channels = await proxies.detectChannels();
     const emptyChannels = await proxies.detectChannels();
     await proxies.list({
@@ -323,12 +386,42 @@ describe("browser domains", () => {
     assert.equal(page.rows[0].dataType, "buyProxy");
     assert.equal(proxy.dataType, "proxyModule");
     assert.equal(directProxy.dataType, "buyProxy");
-    assert.equal(detected.id, 12);
+    assert.deepEqual(calls.find((call) => call[0] === "proxy.detect")[1], { id: 12 });
     assert.equal(channels[0].label, "IPRust.io");
     assert.deepEqual(emptyChannels, []);
+    assert.equal(calls.filter((call) => call[0] === "proxy.detectChannels").length, 2);
     assert.equal(calls.find((call) => call[0] === "proxy.listMerged")[1].proxyType, "1");
     assert.equal(calls.find((call) => call[0] === "proxy.listMerged")[1].proxyBindStatus, "0");
-    assert.equal(calls.find((call) => call[0] === "proxy.modify")[1].protocol, "HTTPS");
+    assert.deepEqual(calls.find((call) => call[0] === "proxy.create")[1], {
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
+      protocol: "SOCKS5",
+      host: "127.0.0.1",
+      port: "1080",
+      proxyUserName: "u",
+      proxyPassword: "p",
+      remark: "memo",
+    });
+    assert.deepEqual(calls.find((call) => call[0] === "proxy.batchCreate")[1], {
+      checkChannel: "http://iprust.io/ip.json",
+      proxyList: [
+        {
+          ipType: "IPV4",
+          protocol: "HTTP",
+          host: "127.0.0.2",
+          port: "8080",
+        },
+      ],
+    });
+    assert.deepEqual(calls.find((call) => call[0] === "proxy.modify")[1], {
+      id: 12,
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
+      protocol: "HTTPS",
+      host: "127.0.0.3",
+      port: "8081",
+    });
+    assert.deepEqual(calls.find((call) => call[0] === "proxy.delete")[1], { ids: [12] });
     await assert.rejects(proxies.get(0), /Proxy not found/);
   });
 
@@ -336,6 +429,11 @@ describe("browser domains", () => {
     const { api, calls } = createApiRecorder();
     const accounts = new PlatformAccountDomain(api);
 
+    const availablePage = await accounts.listAvailable({
+      accountId: 6,
+      page: 2,
+      pageSize: 5,
+    });
     const page = await accounts.list({ page: 1, pageSize: 10 });
     const createdId = await accounts.create({
       platformUrl: "https://example.com",
@@ -345,15 +443,26 @@ describe("browser domains", () => {
       platformRemarks: "memo",
     });
     await accounts.createMany([{ platformUrl: "https://example.com", platformUserName: "seller" }]);
-    await accounts.update(5, { platformRemarks: "new" });
+    await accounts.update(5, {
+      platformUrl: "https://example.com",
+      platformRemarks: "new",
+    });
     await accounts.delete([5]);
 
+    assert.equal(availablePage.rows[0].platformUserName, "available-seller");
+    assert.equal(availablePage.page, 2);
     assert.equal(page.rows[0].platformUserName, "seller");
     assert.equal(createdId, 5);
     assert.equal(calls.find((call) => call[0] === "account.create")[1].platformEfa, "otp");
+    assert.deepEqual(calls.find((call) => call[0] === "browser.accounts")[1], {
+      page_index: 2,
+      page_size: 5,
+      accountId: 6,
+    });
     assert.equal(
       calls.find((call) => call[0] === "account.batchCreate")[1].accountList[0].platformUserName,
       "seller",
     );
+    assert.deepEqual(calls.find((call) => call[0] === "account.delete")[1], { ids: [5] });
   });
 });

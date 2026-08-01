@@ -1,0 +1,462 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://roxybrowser.com/schemas/roxy-api.schema.json",
+  "title": "RoxyBrowser API source schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "migration",
+    "document",
+    "sections",
+    "endpoints",
+    "schemas",
+    "catalogs"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "expectedEndpointCount", "expectedCatalogCount"],
+      "properties": {
+        "complete": { "type": "boolean" },
+        "expectedEndpointCount": { "type": "integer", "minimum": 1 },
+        "expectedCatalogCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "notice", "tipLabel", "codeExamples"],
+      "properties": {
+        "title": { "$ref": "#/$defs/localizedText" },
+        "notice": { "$ref": "#/$defs/localizedText" },
+        "tipLabel": { "$ref": "#/$defs/localizedText" },
+        "codeExamples": { "$ref": "#/$defs/codeExampleSection" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "endpointIds"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "title": { "$ref": "#/$defs/localizedText" },
+          "endpointIds": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/identifier" }
+          }
+        }
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/endpoint" }
+    },
+    "schemas": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/typeSchema" }
+    },
+    "catalogs": {
+      "type": "object",
+      "description": "Reusable appendix data such as resolutions, languages, and timezones.",
+      "additionalProperties": { "$ref": "#/$defs/catalog" }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "localizedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "zh"],
+      "properties": {
+        "en": { "type": "string" },
+        "zh": { "type": "string" }
+      }
+    },
+    "localizedExample": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["en", "zh"],
+          "properties": {
+            "en": true,
+            "zh": true
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["shared"],
+          "properties": {
+            "shared": true
+          }
+        }
+      ]
+    },
+    "codeExampleSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "groups"],
+      "properties": {
+        "title": { "$ref": "#/$defs/localizedText" },
+        "groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/codeExampleGroup" }
+        }
+      }
+    },
+    "codeExampleGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "anchor", "examples"],
+      "properties": {
+        "title": { "$ref": "#/$defs/localizedText" },
+        "anchor": { "$ref": "#/$defs/identifier" },
+        "examples": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/codeExample" }
+        }
+      }
+    },
+    "codeExample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "language", "content"],
+      "properties": {
+        "title": { "$ref": "#/$defs/localizedText" },
+        "language": { "enum": ["Python", "JavaScript"] },
+        "content": { "$ref": "#/$defs/localizedText" }
+      }
+    },
+    "typeReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$ref"],
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "pattern": "^#/schemas/[A-Za-z][A-Za-z0-9_]*$"
+        },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "requiredWhen": { "$ref": "#/$defs/localizedText" },
+        "example": true,
+        "default": true
+      }
+    },
+    "typeSchema": {
+      "oneOf": [
+        { "$ref": "#/$defs/typeReference" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "enum": [
+                "string",
+                "number",
+                "integer",
+                "boolean",
+                "null",
+                "void",
+                "object",
+                "array",
+                "unknown"
+              ]
+            },
+            "description": { "$ref": "#/$defs/localizedText" },
+            "requiredWhen": { "$ref": "#/$defs/localizedText" },
+            "extends": { "$ref": "#/$defs/typeReference" },
+            "deprecated": { "type": "boolean" },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": ["string", "number", "integer", "boolean", "null"] }
+            },
+            "catalogRef": { "$ref": "#/$defs/identifier" },
+            "properties": {
+              "type": "object",
+              "additionalProperties": { "$ref": "#/$defs/typeSchema" }
+            },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "items": { "$ref": "#/$defs/typeSchema" },
+            "additionalProperties": {
+              "oneOf": [{ "type": "boolean" }, { "$ref": "#/$defs/typeSchema" }]
+            },
+            "oneOf": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "$ref": "#/$defs/typeSchema" }
+            },
+            "example": true,
+            "default": true
+          }
+        }
+      ]
+    },
+    "sdkParameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "schema"],
+      "properties": {
+        "name": { "$ref": "#/$defs/identifier" },
+        "schema": { "$ref": "#/$defs/typeSchema" },
+        "optional": { "type": "boolean" },
+        "default": true
+      }
+    },
+    "sdkArgument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "parameter",
+            "parameterObject",
+            "spreadObject",
+            "mappedObject",
+            "pagination",
+            "paginationWithFilters"
+          ]
+        },
+        "parameter": { "$ref": "#/$defs/identifier" },
+        "omitUndefined": { "type": "boolean" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": { "$ref": "#/$defs/identifier" },
+              "parameter": { "$ref": "#/$defs/identifier" },
+              "iterationItem": { "const": true },
+              "property": { "$ref": "#/$defs/identifier" },
+              "transform": { "enum": ["asArray", "commaSeparated"] },
+              "default": true
+            },
+            "oneOf": [
+              { "required": ["parameter"], "not": { "required": ["iterationItem"] } },
+              { "required": ["iterationItem"], "not": { "required": ["parameter"] } }
+            ]
+          }
+        }
+      }
+    },
+    "browserClientOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "method", "parameters", "returnType", "implementation"],
+      "properties": {
+        "target": {
+          "enum": [
+            "root",
+            "workspaces",
+            "projects",
+            "profiles",
+            "proxies",
+            "platformAccounts",
+            "labels"
+          ]
+        },
+        "method": { "$ref": "#/$defs/identifier" },
+        "parameters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sdkParameter" }
+        },
+        "returnType": { "$ref": "#/$defs/typeSchema" },
+        "implementation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "call", "arguments", "result"],
+          "properties": {
+            "kind": { "enum": ["rawDelegate", "forEachRawDelegate"] },
+            "call": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/identifier" }
+            },
+            "arguments": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/sdkArgument" }
+            },
+            "result": {
+              "enum": ["response", "data", "dataField", "void", "page", "firstRow", "followUp"]
+            },
+            "dataField": { "$ref": "#/$defs/identifier" },
+            "iteration": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["parameter", "item"],
+              "properties": {
+                "parameter": { "$ref": "#/$defs/identifier" },
+                "item": { "$ref": "#/$defs/identifier" }
+              }
+            },
+            "notFound": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["message", "parameter"],
+              "properties": {
+                "message": { "type": "string", "minLength": 1 },
+                "parameter": { "$ref": "#/$defs/identifier" }
+              }
+            },
+            "followUp": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["method", "field"],
+              "properties": {
+                "method": { "$ref": "#/$defs/identifier" },
+                "field": { "$ref": "#/$defs/identifier" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "http", "request", "response", "clients"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "title": { "$ref": "#/$defs/localizedText" },
+        "anchor": { "$ref": "#/$defs/identifier" },
+        "deprecated": { "type": "boolean" },
+        "deprecationNotice": { "$ref": "#/$defs/localizedText" },
+        "http": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "path"],
+          "properties": {
+            "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+            "path": { "type": "string", "pattern": "^/" }
+          }
+        },
+        "request": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["schema", "examples"],
+              "properties": {
+                "schema": { "$ref": "#/$defs/typeSchema" },
+                "examples": { "$ref": "#/$defs/localizedExample" },
+                "notes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["title", "body"],
+                    "properties": {
+                      "title": { "$ref": "#/$defs/localizedText" },
+                      "body": { "$ref": "#/$defs/localizedText" },
+                      "image": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["url", "alt"],
+                        "properties": {
+                          "url": { "type": "string", "format": "uri" },
+                          "alt": { "$ref": "#/$defs/localizedText" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "examples"],
+          "properties": {
+            "schema": { "$ref": "#/$defs/typeSchema" },
+            "examples": { "$ref": "#/$defs/localizedExample" }
+          }
+        },
+        "clients": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["raw", "browser"],
+          "properties": {
+            "raw": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["target", "method"],
+              "properties": {
+                "target": { "type": "string" },
+                "method": { "$ref": "#/$defs/identifier" }
+              }
+            },
+            "browser": {
+              "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/browserClientOperation" }]
+            }
+          }
+        }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "anchor"],
+      "oneOf": [{ "required": ["entries"] }, { "required": ["entriesRef"] }],
+      "properties": {
+        "title": { "$ref": "#/$defs/localizedText" },
+        "anchor": { "$ref": "#/$defs/identifier" },
+        "entriesRef": { "$ref": "#/$defs/identifier" },
+        "format": { "$ref": "#/$defs/localizedText" },
+        "allowDuplicateValues": { "type": "boolean" },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "title"],
+            "properties": {
+              "id": { "$ref": "#/$defs/identifier" },
+              "title": { "$ref": "#/$defs/localizedText" }
+            }
+          }
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["value"],
+            "properties": {
+              "value": { "type": ["string", "number"] },
+              "label": { "$ref": "#/$defs/localizedText" },
+              "group": { "$ref": "#/$defs/identifier" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

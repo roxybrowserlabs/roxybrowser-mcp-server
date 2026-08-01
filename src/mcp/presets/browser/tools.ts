@@ -32,6 +32,8 @@ const singleOrBatchCreateSchema = (
   properties: Record<string, unknown>,
   required: string[],
   batchProperty: string,
+  batchItemRequired: string[] = required,
+  batchEnvelopeRequired: string[] = [],
 ) => ({
   type: "object",
   properties: {
@@ -39,10 +41,10 @@ const singleOrBatchCreateSchema = (
     [batchProperty]: {
       type: "array",
       minItems: 1,
-      items: objectSchema(properties, required),
+      items: objectSchema(properties, batchItemRequired),
     },
   },
-  oneOf: [{ required }, { required: [batchProperty] }],
+  oneOf: [{ required }, { required: [batchProperty, ...batchEnvelopeRequired] }],
 });
 
 const stringArray = { type: "array", items: { type: "string" } };
@@ -230,9 +232,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Get CDP connection information for opened browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }),
     handler: async (args, context) => {
-      return formatConnections(
-        await context.browser!.profiles.connectionInfo(args.dirIds?.join(",")),
-      );
+      return formatConnections(await context.browser!.profiles.connectionInfo(args.dirIds));
     },
   },
   {
@@ -251,7 +251,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.profile.clearLocalCache",
     endpoint: "POST /browser/clear_local_cache",
     description: "Clear local cache for browser profiles.",
-    inputSchema: objectSchema({ dirIds: stringArray, type: { type: "string" } }, ["dirIds"]),
+    inputSchema: objectSchema(
+      { dirIds: stringArray, type: { type: "string", enum: ["partial", "all", "cloud"] } },
+      ["dirIds"],
+    ),
     handler: async (args, context) => {
       await context.browser!.profiles.clearLocalCache(
         args.dirIds,
@@ -305,12 +308,17 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
     inputSchema: singleOrBatchCreateSchema(
       proxyInputSchema,
-      ["protocol", "host", "port"],
+      ["checkChannel", "ipType", "protocol", "host", "port"],
       "proxies",
+      ["ipType", "protocol", "host", "port"],
+      ["checkChannel"],
     ),
     handler: async (args, context) => {
       if (Array.isArray(args.proxies)) {
-        await context.browser!.proxies.createMany(args.proxies.map(normalizeProxyInput));
+        await context.browser!.proxies.createMany({
+          checkChannel: args.checkChannel,
+          proxyList: args.proxies.map(normalizeProxyInput),
+        });
         return `Created ${args.proxies.length} proxy/proxies.`;
       }
       await context.browser!.proxies.create(normalizeProxyInput(args));
@@ -322,10 +330,17 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.proxy.update",
     endpoint: "POST /proxy/modify",
     description: "Update a proxy.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, ["id"]),
+    inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, [
+      "id",
+      "checkChannel",
+      "ipType",
+      "protocol",
+      "host",
+      "port",
+    ]),
     handler: async (args, context) => {
-      const { id, ...patch } = args;
-      await context.browser!.proxies.update(id, normalizeProxyInput(patch));
+      const { id, ...input } = args;
+      await context.browser!.proxies.update(id, normalizeProxyInput(input));
       return `Updated proxy ${id}.`;
     },
   },
@@ -346,7 +361,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) => formatProxy(await context.browser!.proxies.detect(args.id)),
+    handler: async (args, context) => {
+      await context.browser!.proxies.detect(args.id);
+      return `Detected proxy ${args.id}.`;
+    },
   },
   {
     name: "roxy_proxy_detect_channels",
@@ -391,7 +409,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.platformAccount.update",
     endpoint: "POST /account/modify",
     description: "Update a platform account.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...platformAccountInputSchema }, ["id"]),
+    inputSchema: objectSchema({ id: { type: "number" }, ...platformAccountInputSchema }, [
+      "id",
+      "platformUrl",
+    ]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
       await context.browser!.platformAccounts.update(id, normalizePlatformAccountInput(patch));

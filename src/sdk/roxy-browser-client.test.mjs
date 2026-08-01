@@ -58,6 +58,24 @@ function createClient(calls) {
 }
 
 describe("RoxyBrowserClient", () => {
+  test("exposes the generated health operation", async () => {
+    const calls = [];
+    const client = new RoxyBrowserClient({
+      apiKey: "secret-token",
+      baseUrl: "http://127.0.0.1:50000",
+      fetch: async (url, options) => {
+        calls.push({ url: new URL(url), options });
+        return createJsonResponse({ code: 0, msg: "Success" });
+      },
+    });
+
+    const response = await client.health();
+
+    assert.equal(calls[0].url.pathname, "/health");
+    assert.equal(calls[0].options.method, "GET");
+    assert.deepEqual(response, { code: 0, msg: "Success" });
+  });
+
   test("passes API profile fields through the browser SDK", async () => {
     const calls = [];
     const client = createClient(calls);
@@ -116,6 +134,9 @@ describe("RoxyBrowserClient", () => {
         type: "available_list",
         proxyBindStatus: "1",
         proxyAutoRenew: "1",
+        start_date: "2026-04-01",
+        end_date: "2026-04-30",
+        checker: "iprust",
         orderName: "lastCountry",
         orderType: "asc",
       });
@@ -125,6 +146,9 @@ describe("RoxyBrowserClient", () => {
       assert.equal(calls[0].url.searchParams.get("type"), "available_list");
       assert.equal(calls[0].url.searchParams.get("proxyBindStatus"), "1");
       assert.equal(calls[0].url.searchParams.get("proxyAutoRenew"), "1");
+      assert.equal(calls[0].url.searchParams.get("start_date"), "2026-04-01");
+      assert.equal(calls[0].url.searchParams.get("end_date"), "2026-04-30");
+      assert.equal(calls[0].url.searchParams.get("checker"), "iprust");
       assert.equal(calls[0].url.searchParams.get("orderName"), "lastCountry");
     } finally {
       restoreFetch();

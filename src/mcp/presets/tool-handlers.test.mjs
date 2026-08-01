@@ -65,7 +65,7 @@ describe("MCP tool handlers", () => {
         dirIds: "profile-1,profile-2",
         projectIds: "3,4",
         windowName: "Alpha",
-        windowSortNum: "11",
+        sortNums: "11",
         os: "Windows",
       },
     );
@@ -133,6 +133,7 @@ describe("MCP tool handlers", () => {
         protocol: "HTTP",
         host: "127.0.0.1",
         port: "8080",
+        checkChannel: "http://iprust.io/ip.json",
         username: "user",
         password: "pass",
       }),
@@ -141,6 +142,7 @@ describe("MCP tool handlers", () => {
         host: "127.0.0.1",
         port: "8080",
         ipType: "IPV4",
+        checkChannel: "http://iprust.io/ip.json",
         proxyUserName: "user",
         proxyPassword: "pass",
       },
@@ -237,8 +239,8 @@ describe("MCP tool handlers", () => {
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
     assert.match(profiles, /\| Name \| DirId \| Serial \| Core \| OS \| Remark \|/);
-    assert.match(profiles, /\| - \| p1 \| WOR-12 \| - \| - \| 12345678901234567890\.\.\. \|/);
-    assert.match(profiles, /\| - \| p2 \| ROX-13 \| 140 \| - \| - \|/);
+    assert.match(profiles, /\| - \| p1 \| 12 \| - \| - \| 12345678901234567890\.\.\. \|/);
+    assert.match(profiles, /\| - \| p2 \| 13 \| 140 \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
     const platformAccounts = formatPlatformAccounts({
@@ -385,13 +387,14 @@ describe("MCP tool handlers", () => {
           openStatus: true,
         },
         { dirId: "a2", projectName: "Named", openStatus: false },
-        { dirId: "a3", projectId: 4 },
-        { dirId: "a4" },
+        { dirId: "a3", projectId: 4, openStatus: 1 },
+        { dirId: "a4", openStatus: 0 },
       ],
     });
     assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
     assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
-    assert.match(accounts, /\| - \| a3 \| 4 \| - \|/);
+    assert.match(accounts, /\| - \| a3 \| 4 \| open \|/);
+    assert.match(accounts, /\| - \| a4 \| - \| closed \|/);
     assert.deepEqual(
       parseJsonBlock(formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark })),
       { dirId: "a5", windowRemark: unicodeRemark },
@@ -565,7 +568,7 @@ describe("MCP tool handlers", () => {
       context,
     );
     assert.match(profileList, /Alpha/);
-    assert.match(profileList, /\| Alpha \| profile-1 \| DEF-11 \|/);
+    assert.match(profileList, /\| Alpha \| profile-1 \| 11 \|/);
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
         { dirId: "profile-1" },
@@ -624,7 +627,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_clear_local_cache").handler(
-        { dirIds: ["profile-1"], type: "cookie" },
+        { dirIds: ["profile-1"], type: "partial" },
         context,
       ),
       /Cleared local cache/,
@@ -646,21 +649,38 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
-        { protocol: "SOCKS5", host: "127.0.0.1", port: "1080" },
+        {
+          checkChannel: "http://iprust.io/ip.json",
+          ipType: "IPV4",
+          protocol: "SOCKS5",
+          host: "127.0.0.1",
+          port: "1080",
+        },
         context,
       ),
       /Created proxy/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
-        { proxies: [{ protocol: "SOCKS5", host: "127.0.0.1", port: "1080" }] },
+        {
+          checkChannel: "http://iprust.io/ip.json",
+          proxies: [{ ipType: "IPV4", protocol: "SOCKS5", host: "127.0.0.1", port: "1080" }],
+        },
         context,
       ),
       /Created 1/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_update").handler(
-        { id: 1, remark: "new" },
+        {
+          id: 1,
+          checkChannel: "http://iprust.io/ip.json",
+          ipType: "IPV4",
+          protocol: "HTTPS",
+          host: "127.0.0.2",
+          port: "8443",
+          remark: "new",
+        },
         context,
       ),
       /Updated proxy/,
@@ -671,7 +691,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_detect").handler({ id: 1 }, context),
-      /passed/,
+      /Detected proxy 1/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_detect_channels").handler({}, context),
@@ -700,7 +720,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_update").handler(
-        { id: 5, username: "seller2" },
+        { id: 5, platformUrl: "https://example.com", username: "seller2" },
         context,
       ),
       /Updated platform account/,
@@ -720,6 +740,28 @@ describe("MCP tool handlers", () => {
     });
     assert.equal(calls.find((call) => call[0] === "profiles.create")[1].windowName, "Created");
     assert.equal(calls.find((call) => call[0] === "profiles.update")[2].windowName, "Updated");
+    assert.deepEqual(calls.find((call) => call[0] === "proxies.createMany")[1], {
+      checkChannel: "http://iprust.io/ip.json",
+      proxyList: [
+        {
+          ipType: "IPV4",
+          protocol: "SOCKS5",
+          host: "127.0.0.1",
+          port: "1080",
+        },
+      ],
+    });
+    assert.deepEqual(calls.find((call) => call[0] === "proxies.update").slice(1), [
+      1,
+      {
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "HTTPS",
+        host: "127.0.0.2",
+        port: "8443",
+        remark: "new",
+      },
+    ]);
     assert.equal(
       calls.find((call) => call[0] === "platformAccounts.update")[2].platformUserName,
       "seller2",
@@ -758,7 +800,7 @@ describe("MCP tool handlers", () => {
           },
         ],
       }),
-      /\| Rich Profile \| profile-rich \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
+      /\| Rich Profile \| profile-rich \| 7 \| Chrome 140 \| Windows 11 \| VIP \|/,
     );
     assert.deepEqual(
       parseJsonBlock(
@@ -1026,21 +1068,38 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_create").handler(
-        { protocol: "HTTP", host: "proxy.example.com", port: "8080" },
+        {
+          checkChannel: "http://iprust.io/ip.json",
+          ipType: "IPV4",
+          protocol: "HTTP",
+          host: "proxy.example.com",
+          port: "8080",
+        },
         context,
       ),
       /Created proxy/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_create").handler(
-        { proxies: [{ protocol: "HTTP", host: "proxy.example.com", port: "8080" }] },
+        {
+          checkChannel: "http://iprust.io/ip.json",
+          proxies: [{ ipType: "IPV4", protocol: "HTTP", host: "proxy.example.com", port: "8080" }],
+        },
         context,
       ),
       /Created 1/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_update").handler(
-        { id: 1, remark: "new" },
+        {
+          id: 1,
+          checkChannel: "http://iprust.io/ip.json",
+          ipType: "IPV4",
+          protocol: "HTTPS",
+          host: "proxy.example.com",
+          port: "8443",
+          remark: "new",
+        },
         context,
       ),
       /Updated proxy/,
@@ -1051,7 +1110,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_detect").handler({ id: 1 }, context),
-      /passed/,
+      /Detected proxy 1/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_detect_channels").handler({}, context),
@@ -1080,7 +1139,7 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_platform_credential_update").handler(
-        { id: 9, username: "seller2" },
+        { id: 9, platformUrl: "https://example.com", username: "seller2" },
         context,
       ),
       /Updated platform credential/,
@@ -1096,6 +1155,28 @@ describe("MCP tool handlers", () => {
       forceOpen: true,
     });
     assert.equal(calls.find((call) => call[0] === "commerce.proxies.list")[1].proxyType, "1");
+    assert.deepEqual(calls.find((call) => call[0] === "commerce.proxies.createMany")[1], {
+      checkChannel: "http://iprust.io/ip.json",
+      proxyList: [
+        {
+          ipType: "IPV4",
+          protocol: "HTTP",
+          host: "proxy.example.com",
+          port: "8080",
+        },
+      ],
+    });
+    assert.deepEqual(calls.find((call) => call[0] === "commerce.proxies.update").slice(1), [
+      1,
+      {
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "HTTPS",
+        host: "proxy.example.com",
+        port: "8443",
+        remark: "new",
+      },
+    ]);
     assert.equal(calls.find((call) => call[0] === "accounts.list")[1].windowName, "Amazon");
     assert.equal(
       calls.find((call) => call[0] === "accounts.create")[1].windowName,

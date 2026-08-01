@@ -1,15 +1,9 @@
 import type { RoxyApiClient } from "../../api/index.js";
+import { GeneratedWorkspaceDomain } from "../../generated/roxy-browser-client.js";
 import { toPage, toPageRequest, type PaginationParams } from "../../sdk/shared/pagination.js";
 import { unwrapData } from "../../sdk/shared/result.js";
 
-export class WorkspaceDomain {
-  constructor(private readonly api: RoxyApiClient) {}
-
-  async list(params: PaginationParams = {}) {
-    const data = unwrapData(await this.api.workspace.list(toPageRequest(params)));
-    return toPage(data, params);
-  }
-}
+export class WorkspaceDomain extends GeneratedWorkspaceDomain {}
 
 export class ProjectDomain {
   constructor(private readonly api: RoxyApiClient) {}

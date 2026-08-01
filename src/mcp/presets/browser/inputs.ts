@@ -39,7 +39,7 @@ export function normalizeProfileListArgs(args: Record<string, any>): ProfileList
     dirIds: args.dirIds?.join(","),
     projectIds: args.projectIds?.join(","),
     windowName: args.name,
-    windowSortNum: args.serialNumber,
+    sortNums: args.serialNumber,
     os: args.os,
   });
 }

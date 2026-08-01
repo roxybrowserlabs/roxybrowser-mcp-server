@@ -26,6 +26,8 @@ const singleOrBatchCreateSchema = (
   properties: Record<string, unknown>,
   required: string[],
   batchProperty: string,
+  batchItemRequired: string[] = required,
+  batchEnvelopeRequired: string[] = [],
 ) => ({
   type: "object",
   properties: {
@@ -33,10 +35,10 @@ const singleOrBatchCreateSchema = (
     [batchProperty]: {
       type: "array",
       minItems: 1,
-      items: objectSchema(properties, required),
+      items: objectSchema(properties, batchItemRequired),
     },
   },
-  oneOf: [{ required }, { required: [batchProperty] }],
+  oneOf: [{ required }, { required: [batchProperty, ...batchEnvelopeRequired] }],
 });
 
 const stringArray = { type: "array", items: { type: "string" } };
@@ -222,12 +224,17 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
     inputSchema: singleOrBatchCreateSchema(
       proxyInputSchema,
-      ["protocol", "host", "port"],
+      ["checkChannel", "ipType", "protocol", "host", "port"],
       "proxies",
+      ["ipType", "protocol", "host", "port"],
+      ["checkChannel"],
     ),
     handler: async (args, context) => {
       if (Array.isArray(args.proxies)) {
-        await context.commerce!.proxies.createMany(args.proxies.map(normalizeProxyInput));
+        await context.commerce!.proxies.createMany({
+          checkChannel: args.checkChannel,
+          proxyList: args.proxies.map(normalizeProxyInput),
+        });
         return `Created ${args.proxies.length} proxy/proxies.`;
       }
       await context.commerce!.proxies.create(normalizeProxyInput(args));
@@ -239,10 +246,17 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     operationId: "commerce.proxy.update",
     endpoint: "POST /proxy/modify",
     description: "Update a proxy.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, ["id"]),
+    inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, [
+      "id",
+      "checkChannel",
+      "ipType",
+      "protocol",
+      "host",
+      "port",
+    ]),
     handler: async (args, context) => {
-      const { id, ...patch } = args;
-      await context.commerce!.proxies.update(id, normalizeProxyInput(patch));
+      const { id, ...input } = args;
+      await context.commerce!.proxies.update(id, normalizeProxyInput(input));
       return `Updated proxy ${id}.`;
     },
   },
@@ -263,7 +277,10 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) => formatProxy(await context.commerce!.proxies.detect(args.id)),
+    handler: async (args, context) => {
+      await context.commerce!.proxies.detect(args.id);
+      return `Detected proxy ${args.id}.`;
+    },
   },
   {
     name: "roxy_proxy_detect_channels",
@@ -308,7 +325,10 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     operationId: "commerce.platformCredential.update",
     endpoint: "POST /account/modify",
     description: "Update a platform credential.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...credentialInputSchema }, ["id"]),
+    inputSchema: objectSchema({ id: { type: "number" }, ...credentialInputSchema }, [
+      "id",
+      "platformUrl",
+    ]),
     handler: async (args, context) => {
       const { id, ...patch } = args;
       await context.commerce!.platformCredentials.update(id, normalizePlatformAccountInput(patch));

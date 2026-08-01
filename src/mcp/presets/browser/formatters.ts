@@ -1,4 +1,9 @@
-import type { RawBrowserConnection, RawLabel } from "../../../api/index.js";
+import type {
+  ProfileConnectionInfo,
+  ProxyDetectChannel,
+  RawLabel,
+  RawProject,
+} from "../../../api/index.js";
 import type {
   BrowserProfile,
   BrowserProxy,
@@ -9,15 +14,16 @@ import type {
 import type { Page } from "../../../sdk/shared/pagination.js";
 import { formatJsonDetail, markdownTable, pagedTable, truncateText } from "../formatting.js";
 
-type DetectChannel = { label?: string; type?: string; value?: string };
-
 function combined(name?: string, version?: string): string {
   return [name, version].filter(Boolean).join(" ");
 }
 
 function profileSerial(profile: BrowserProfile): string | undefined {
-  if (!profile.workspaceName || profile.windowSortNum === undefined) return undefined;
-  return `${profile.workspaceName.slice(0, 3).toLocaleUpperCase()}-${profile.windowSortNum}`;
+  return profile.windowSortNum === undefined ? undefined : String(profile.windowSortNum);
+}
+
+function stringField(value: Record<string, unknown>, name: string): string | undefined {
+  return typeof value[name] === "string" ? value[name] : undefined;
 }
 
 export function formatProfiles(page: Page<BrowserProfile>): string {
@@ -29,7 +35,7 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
       profile.windowName,
       profile.dirId,
       profileSerial(profile),
-      combined(profile.coreType, profile.coreVersion),
+      combined(stringField(profile, "coreType"), profile.coreVersion),
       combined(profile.os, profile.osVersion),
       truncateText(profile.windowRemark),
     ]),
@@ -68,8 +74,12 @@ export function formatWorkspaces(page: Page<Workspace>): string {
     page.rows.map((workspace) => {
       const projects = workspace.project_details
         ?.map((project) => {
-          const id = project.projectId ?? project.id;
-          const name = project.projectName ?? project.name ?? project.project_name;
+          const compatibleProject = project as RawProject;
+          const id = compatibleProject.projectId ?? compatibleProject.id;
+          const name =
+            compatibleProject.projectName ??
+            compatibleProject.name ??
+            compatibleProject.project_name;
           return name && id !== undefined ? `${name} (${id})` : name || String(id ?? "");
         })
         .filter(Boolean)
@@ -144,7 +154,7 @@ export function formatProxy(proxy: BrowserProxy): string {
   return formatJsonDetail(proxy);
 }
 
-export function formatConnections(connections: RawBrowserConnection[]): string {
+export function formatConnections(connections: ProfileConnectionInfo[]): string {
   const available = connections.filter(
     (connection) => connection.dirId || connection.windowName || connection.ws || connection.http,
   );
@@ -161,7 +171,7 @@ export function formatConnections(connections: RawBrowserConnection[]): string {
   )}`;
 }
 
-export function formatDetectChannels(channels: DetectChannel[]): string {
+export function formatDetectChannels(channels: ProxyDetectChannel[]): string {
   if (channels.length === 0) return "No detect channels found.";
   return `Detect channels: ${channels.length}\n${markdownTable(
     ["Label", "Value", "Type"],

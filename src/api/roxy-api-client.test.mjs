@@ -105,24 +105,54 @@ describe("RoxyApiClient", () => {
       await api.browser.open({ dirId: "profile-1", forceOpen: true });
       await api.browser.close({ dirId: "profile-1" });
       await api.browser.delete({ dirIds: ["profile-1"] });
-      await api.browser.clearLocalCache({ dirIds: ["profile-1"], type: "cookie" });
+      await api.browser.clearLocalCache({ dirIds: ["profile-1"], type: "cloud" });
       await api.browser.clearServerCache({ dirIds: ["profile-1"] });
       await api.browser.randomEnv({ dirId: "profile-1" });
       await api.browser.connectionInfo({ dirIds: "profile-1" });
       await api.browser.labels({});
       await api.browser.accounts({ page_index: 1 });
       await api.proxy.detectChannels();
+      await api.proxy.list({ page_index: 1 });
       await api.proxy.listMerged({ page_index: 1 });
       await api.proxy.detail({ id: 1 });
-      await api.proxy.create({ host: "127.0.0.1", port: "1080" });
-      await api.proxy.batchCreate({ proxyList: [{ host: "127.0.0.1" }] });
+      await api.proxy.create({
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "SOCKS5",
+        host: "127.0.0.1",
+        port: "1080",
+      });
+      await api.proxy.batchCreate({
+        checkChannel: "http://iprust.io/ip.json",
+        proxyList: [
+          {
+            ipType: "IPV4",
+            protocol: "HTTP",
+            host: "127.0.0.1",
+            port: "8080",
+          },
+        ],
+      });
       await api.proxy.detect({ id: 1 });
-      await api.proxy.modify({ id: 1, remark: "new" });
+      await api.proxy.modify({
+        id: 1,
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "HTTPS",
+        host: "127.0.0.2",
+        port: "8443",
+        remark: "new",
+      });
       await api.proxy.delete({ ids: [1] });
+      await api.proxy.boughtList({ page_index: 2, page_size: 15, type: 1 });
       await api.account.list({ page_index: 1 });
       await api.account.create({ platformUrl: "https://example.com" });
       await api.account.batchCreate({ accountList: [{ platformUrl: "https://example.com" }] });
-      await api.account.modify({ id: 9, platformUserName: "user" });
+      await api.account.modify({
+        id: 9,
+        platformUrl: "https://example.com",
+        platformUserName: "user",
+      });
       await api.account.delete({ ids: [9] });
 
       const byPath = calls.map((call) => call.url.pathname);
@@ -141,6 +171,7 @@ describe("RoxyApiClient", () => {
         "/browser/label",
         "/browser/account",
         "/proxy/detect_channel",
+        "/proxy/list",
         "/proxy/list_merged",
         "/proxy/detail",
         "/proxy/create",
@@ -148,15 +179,100 @@ describe("RoxyApiClient", () => {
         "/proxy/detect",
         "/proxy/modify",
         "/proxy/delete",
+        "/proxy/bought_list",
         "/account/list",
         "/account/create",
         "/account/batch_create",
         "/account/modify",
         "/account/delete",
       ]);
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/proxy/create").body, {
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "SOCKS5",
+        host: "127.0.0.1",
+        port: "1080",
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/proxy/batch_create").body, {
+        checkChannel: "http://iprust.io/ip.json",
+        proxyList: [
+          {
+            ipType: "IPV4",
+            protocol: "HTTP",
+            host: "127.0.0.1",
+            port: "8080",
+          },
+        ],
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/proxy/detect").body, {
+        id: 1,
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/proxy/modify").body, {
+        id: 1,
+        checkChannel: "http://iprust.io/ip.json",
+        ipType: "IPV4",
+        protocol: "HTTPS",
+        host: "127.0.0.2",
+        port: "8443",
+        remark: "new",
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/proxy/delete").body, {
+        ids: [1],
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/account/create").body, {
+        platformUrl: "https://example.com",
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/account/batch_create").body, {
+        accountList: [{ platformUrl: "https://example.com" }],
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/account/modify").body, {
+        id: 9,
+        platformUrl: "https://example.com",
+        platformUserName: "user",
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/account/delete").body, {
+        ids: [9],
+        workspaceId: 19744,
+      });
+      const boughtListQuery = calls.find((call) => call.url.pathname === "/proxy/bought_list").url
+        .searchParams;
+      assert.equal(boughtListQuery.get("workspaceId"), "19744");
+      assert.equal(boughtListQuery.get("page_index"), "2");
+      assert.equal(boughtListQuery.get("page_size"), "15");
+      assert.equal(boughtListQuery.get("type"), "1");
+      assert.deepEqual(
+        calls.find((call) => call.url.pathname === "/browser/clear_local_cache").body,
+        { dirIds: ["profile-1"], type: "cloud", workspaceId: 19744 },
+      );
+      assert.deepEqual(
+        calls.find((call) => call.url.pathname === "/browser/clear_server_cache").body,
+        { dirIds: ["profile-1"], workspaceId: 19744 },
+      );
       assert.equal(
-        calls.find((call) => call.url.pathname === "/proxy/create").body.workspaceId,
-        19744,
+        calls
+          .find((call) => call.url.pathname === "/proxy/list")
+          .url.searchParams.get("workspaceId"),
+        "19744",
+      );
+      assert.equal(
+        calls
+          .find((call) => call.url.pathname === "/proxy/detect_channel")
+          .url.searchParams.get("workspaceId"),
+        "19744",
+      );
+      assert.equal(
+        calls
+          .find((call) => call.url.pathname === "/browser/connection_info")
+          .url.searchParams.get("dirIds"),
+        "profile-1",
       );
       assert.equal(
         calls
@@ -165,9 +281,35 @@ describe("RoxyApiClient", () => {
         "19744",
       );
       assert.equal(
-        calls.find((call) => call.url.pathname === "/browser/close").body.workspaceId,
-        undefined,
+        calls
+          .find((call) => call.url.pathname === "/browser/account")
+          .url.searchParams.get("workspaceId"),
+        "19744",
       );
+      assert.equal(
+        calls
+          .find((call) => call.url.pathname === "/account/list")
+          .url.searchParams.get("workspaceId"),
+        "19744",
+      );
+      assert.equal(
+        calls
+          .find((call) => call.url.pathname === "/browser/label")
+          .url.searchParams.get("workspaceId"),
+        "19744",
+      );
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/browser/close").body, {
+        dirId: "profile-1",
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/browser/open").body, {
+        dirId: "profile-1",
+        forceOpen: true,
+        workspaceId: 19744,
+      });
+      assert.deepEqual(calls.find((call) => call.url.pathname === "/browser/random_env").body, {
+        dirId: "profile-1",
+        workspaceId: 19744,
+      });
     } finally {
       restoreFetch();
     }

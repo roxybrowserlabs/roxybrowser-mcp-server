@@ -9,6 +9,12 @@ function projectValue(account: CommerceAccount): string {
   return account.projectName || (account.projectId !== undefined ? String(account.projectId) : "");
 }
 
+function statusValue(status: CommerceAccount["openStatus"]): string {
+  if (status === true || status === 1) return "open";
+  if (status === false || status === 0) return "closed";
+  return "";
+}
+
 export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
   return pagedTable(
     "Accounts",
@@ -18,7 +24,7 @@ export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
       account.windowName,
       account.dirId,
       projectValue(account),
-      typeof account.openStatus === "boolean" ? (account.openStatus ? "open" : "closed") : "",
+      statusValue(account.openStatus),
     ]),
     "No ecommerce accounts found.",
   );
