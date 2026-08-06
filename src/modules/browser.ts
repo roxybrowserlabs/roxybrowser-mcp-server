@@ -160,6 +160,7 @@ const osversion_ios = [
 
 const browserCore = [
   'Firefox 146',
+  'Chrome 150',
   'Chrome 149',
   'Chrome 148',
   'Chrome 147',
@@ -174,22 +175,6 @@ const browserCore = [
 
 function osVersionString() {
   return `Windows: ${osversion_windows.map(item => item.value).join(',')}; macOS: ${osversion_macos.map(item => item.value).join(',')}; Linux: ${osversion_linux.map(item => item.value).join(',')}; Android: ${osversion_android.map(item => item.value).join(',')}; IOS: ${osversion_ios.map(item => item.value).join(',')}`
-}
-
-/** Validate cross-field constraints (e.g. Firefox on macOS only supports osVersion "ALL"). Returns an error message or null. */
-function validateBrowserConfig(params: any): string | null {
-  const os = params.os || 'Windows'
-  const browserCore = params.browserCore
-  if (!browserCore) return null
-
-  const [coreType] = browserCore.split(' ')
-  if (coreType === 'Firefox' && os === 'macOS') {
-    if (params.osVersion && params.osVersion !== 'ALL') {
-      return `Firefox on macOS only supports osVersion "ALL", but got "${params.osVersion}".`
-    }
-  }
-
-  return null
 }
 
 /**
@@ -346,15 +331,11 @@ class CreateBrowser {
 
     for (const [index, browserParams] of params.browsers.entries()) {
       try {
-        // Cross-field validation for each browser config
-        const validationError = validateBrowserConfig(browserParams)
-        if (validationError) {
-          results.push({
-            index,
-            success: false,
-            error: validationError,
-          })
-          continue
+        if (browserParams.browserCore) {
+          const [coreType, coreVersion] = browserParams.browserCore.split(' ')
+          browserParams.coreType = coreType;
+          browserParams.coreVersion = coreVersion;
+          delete browserParams.browserCore;
         }
 
         resolveCookieParam(browserParams)
@@ -426,8 +407,6 @@ class CreateBrowser {
   }
 }
 
-export const createBrowser = new CreateBrowser()
-
 class UpdateBrowser {
   name = 'roxy_update_browser'
   description = 'Update a browser with complete configuration control - for expert users needing full parameter access'
@@ -448,15 +427,6 @@ class UpdateBrowser {
   }
 
   async handle(params: any) {
-
-    // Cross-field validation
-    const validationError = validateBrowserConfig(params)
-    if (validationError) {
-      return {
-        content: [{ type: 'text', text: `❌ **Invalid configuration:**\n\n${validationError}` }],
-      }
-    }
-
     if (params.browserCore) {
       const [coreType, coreVersion] = params.browserCore.split(' ')
       params.coreType = coreType || 'Chrome';
@@ -1344,21 +1314,20 @@ class GetConnectionInfo {
     }
     else {
       const connections = result.data || []
-
       if (connections.length === 0) {
         text = '⚠️ No opened browsers found.\n\nUse `roxy_open_browsers` to open browsers first.'
       }
       else {
         text = `Found ${connections.length} opened browser(s):\n\n${
-          connections.map((conn: any) =>
-            `**${conn.windowName || 'Unnamed'}** (${conn.dirId})\n`
-            + `  - PID: ${conn.pid}\n`
-            + `  - CDP WebSocket: \`${conn.ws}\`\n`
-            + `  - HTTP Endpoint: \`${conn.http}\`\n`
-            + `  - Core Version: ${conn.coreVersion}\n`
-            + `  - Core Type: ${conn.coreType || 'Chrome'}\n`
-            + `  - Driver: ${conn.driver}`,
-          ).join('\n\n')}`
+          connections.map((conn: any) => {
+            const coreType = conn.marionette_port ? 'Firefox' : 'Chrome'
+            return [
+              `**${conn.windowName || 'Unnamed'}** (${conn.dirId})`,
+              coreType === 'Firefox' ? `  - bidi WebSocket: \`${conn.ws}\`` : `  - CDP WebSocket: \`${conn.ws}\``,
+              coreType === 'Firefox' ? "" : `  - HTTP Endpoint: \`${conn.http}\``,
+              `  - Core Type: ${conn.marionette_port ? 'Firefox' : 'Chrome'}`,
+            ].filter(Boolean).join('\n')
+          }).join('\n\n')}`
       }
     }
 
@@ -1373,6 +1342,7 @@ class GetConnectionInfo {
   }
 }
 
+export const createBrowser = new CreateBrowser()
 export const openBrowser = new OpenBrowser()
 export const updateBrowser = new UpdateBrowser()
 export const listBrowsers = new ListBrowsers()
