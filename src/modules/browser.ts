@@ -1,6 +1,13 @@
 import { request } from '../utils/index.js'
 import { normalizeCookies, parseImportCookies } from '../utils/cookie.js'
 import { proxyList } from './proxy.js'
+import {
+  buildPaginationInfo,
+  buildPaginatedToolResult,
+  formatPaginationText,
+  normalizeSerialNumber,
+  paginatedToolResponse,
+} from '../utils/pagination.js'
 
 /**
  * 将传入的 cookie 归一化为标准 Cookie 数组。
@@ -614,7 +621,7 @@ class OpenBrowser {
 
 class ListBrowsers {
   name = 'roxy_list_browsers'
-  description = 'Get list of browsers in specified workspace/project'
+  description = 'Get list of browsers in specified workspace/project. This is a paginated partial result unless pagination.isCompleteResult is true. Never conclude a browser or serial number does not exist from one page; use exact filters like windowSortNum when verifying existence.'
   inputSchema = {
     type: 'object',
     properties: {
@@ -628,7 +635,7 @@ class ListBrowsers {
       },
       windowSortNum: {
         type: 'string',
-        description: 'Filter by window `Serial No` (e.g. 1, 102)',
+        description: 'Exact filter by browser serial number. This field is a serial-number filter, not the current browser total count. Use the specific serial number from the user or profile, with or without the workspace prefix, instead of deriving it from pagination totals.',
       },
       windowName: {
         type: 'string',
@@ -636,12 +643,12 @@ class ListBrowsers {
       },
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination (default: 1)',
+        description: '1-based page index for pagination (default: 1). This list is commonly sorted by serial number descending, so larger serial numbers may appear on smaller pageIndex values.',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of items per page (default: 15)',
+        description: 'Number of items per page (default: 15). A single page is only a partial result unless pagination.isCompleteResult is true.',
         default: 15,
       },
     },
@@ -668,12 +675,9 @@ class ListBrowsers {
     if (params.pageSize)
       searchParams.append('page_size', params.pageSize.toString())
     if (params.windowSortNum) {
-      if (params.windowSortNum.includes('-')) {
-        const [_, serialNo] = params.windowSortNum.split('-').map((s: string) => s.trim())
-        searchParams.append('windowSortNum', serialNo)
-      } else {
-        searchParams.append('windowSortNum', params.windowSortNum)
-      }
+      const normalizedSerialNo = normalizeSerialNumber(params.windowSortNum)
+      if (normalizedSerialNo)
+        searchParams.append('windowSortNum', normalizedSerialNo)
     }
 
     const result = await request(`/browser/list_v3?${searchParams}`, {
@@ -689,14 +693,17 @@ class ListBrowsers {
     else {
       const currentPage = params.pageIndex ?? 1
       const pageSize = params.pageSize ?? 15
-      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
-      const hasNextPage = currentPage < totalPages
-      
-      const readable = []
-      
-      if (data.total > 0) {
-        readable.push(`Found ${data.total} browsers in workspace ${params.workspaceId}:`);
-        const browserList = data.rows.map((browser: any) => {
+      const rows = Array.isArray(data.rows) ? data.rows : []
+      const totalItems = typeof data.total === 'number' ? data.total : rows.length
+      const pagination = buildPaginationInfo({
+        pageIndex: currentPage,
+        pageSize,
+        totalItems,
+      })
+      const exactWindowSortNum = normalizeSerialNumber(params.windowSortNum)
+
+      const browserList = rows.length > 0
+        ? rows.map((browser: any) => {
           const serialNo = `${browser.workspaceName?.slice(0, 3).toLocaleUpperCase()}-${browser.windowSortNum}`
           const info = [
             `Profile Name: **${browser.windowName || 'Unnamed'}** (SN: ${serialNo})`,
@@ -709,15 +716,70 @@ class ListBrowsers {
           }
           return info.join('\n')
         }).join('\n\n')
-        readable.push(browserList);
-        if (totalPages > 1) {
-          readable.push(`Pagination: page=${currentPage}, totalPages=${totalPages}, hasNext=${hasNextPage}`)
-        }
-      } else {
-        readable.push(`No browsers found in workspace ${params.workspaceId}.`)
-      }
+        : totalItems === 0
+          ? exactWindowSortNum
+            ? `No browser matched windowSortNum=${exactWindowSortNum}.`
+            : `No browsers found in workspace ${params.workspaceId}.`
+          : exactWindowSortNum
+            ? `No browser matched windowSortNum=${exactWindowSortNum} on page ${currentPage}, but this is not a global absence.`
+            : `No browsers found on page ${currentPage}, but this is not an empty workspace.`
+      const browserHeading = rows.length > 0
+        ? `Found ${totalItems} browsers in workspace ${params.workspaceId}:`
+        : browserList
 
-      text = readable.join('\n\n')
+      const paginationText = formatPaginationText({
+        toolName: 'roxy_browser_list',
+        pagination,
+        itemCount: rows.length,
+        sort: {
+          field: 'windowSortNum',
+          direction: 'desc',
+          humanMeaning: 'Larger serial numbers appear on earlier pages.',
+        },
+        exactLookupHint: exactWindowSortNum
+          ? `windowSortNum is a browser serial-number filter, not the current browser total count. Current exact filter: windowSortNum=${exactWindowSortNum}.`
+          : 'windowSortNum is a browser serial-number filter, not the current browser total count. To verify a specific serial number, use the exact SN value provided by the user/profile; do not calculate it from totalItems or pagination.',
+        recoveryHint: totalItems > 0 && rows.length === 0
+          ? `Call roxy_browser_list with pageIndex=${pagination.totalPages}, or use exact filters such as windowSortNum.`
+          : undefined,
+      })
+
+      text = rows.length > 0
+        ? `${browserHeading}\n\n${browserList}\n\n${paginationText}`
+        : `${browserHeading}\n\n${paginationText}`
+
+      return paginatedToolResponse(
+        text,
+        buildPaginatedToolResult({
+          entity: 'browser',
+          query: {
+            workspaceId: params.workspaceId,
+            projectIds: params.projectIds,
+            windowName: params.windowName,
+            windowSortNum: exactWindowSortNum,
+            pageIndex: currentPage,
+            pageSize,
+          },
+          items: rows,
+          pagination,
+          sort: {
+            field: 'windowSortNum',
+            direction: 'desc',
+            humanMeaning: 'Larger serial numbers appear on earlier pages.',
+          },
+          filtersApplied: {
+            workspaceId: params.workspaceId,
+            projectIds: params.projectIds,
+            windowName: params.windowName,
+            windowSortNum: exactWindowSortNum,
+          },
+          existenceGuidance: {
+            canCheckExactly: true,
+            preferredFilterFields: ['windowSortNum', 'dirId', 'windowName'],
+            warning: 'Do not conclude a browser does not exist from one page; use windowSortNum or scan all pages.',
+          },
+        }),
+      )
     }
 
     return {

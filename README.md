@@ -24,6 +24,8 @@ Options:
 
 Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`.
 
+For inspector testing with a fixed workspace, set `ROXY_WORKSPACE_ID` or use `npm run inspect:workspace`.
+
 ## Embedded MCP Usage
 
 ```ts
@@ -47,6 +49,8 @@ await server.connect(serverTransport)
 When `context.workspaceId` is provided, workspace-scoped tools no longer expose `workspaceId` in their public MCP schema. The runtime injects it into tool calls automatically and rejects conflicting caller-provided values.
 
 In fixed workspace mode, `roxy_workspace_list` is hidden and `roxy_project_list` is exposed instead. `roxy_project_list` returns projects under the bound workspace.
+
+If you embed the server and need the context-shaped tool list directly, use `createTools(context)` instead of the static `TOOLS` export.
 
 ## SDK Client
 

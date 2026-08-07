@@ -48,6 +48,8 @@ await server.connect(serverTransport)
 
 固定 workspace 模式下，`workspace.list` 会被隐藏，并改为暴露 `project.list`。`project.list` 返回当前绑定 workspace 下的项目。
 
+如果你在嵌入式场景里需要带上下文的工具列表，请使用 `createTools(context)`，不要直接依赖静态 `TOOLS`。
+
 ## SDK Client
 
 ```ts

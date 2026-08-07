@@ -1,8 +1,14 @@
 import { request } from '../utils/index.js'
+import {
+  buildPaginationInfo,
+  buildPaginatedToolResult,
+  formatPaginationText,
+  paginatedToolResponse,
+} from '../utils/pagination.js'
 
 class ListAccounts {
   name = 'roxy_list_accounts'
-  description = 'Get list of accounts (platform credentials) in specified workspace'
+  description = 'Get list of accounts (platform credentials) in specified workspace. This is a paginated partial result unless pagination.isCompleteResult is true. Do not conclude an account does not exist from one page; use exact filters when available.'
   inputSchema = {
     type: 'object',
     properties: {
@@ -16,12 +22,12 @@ class ListAccounts {
       },
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination (default: 1)',
+        description: '1-based page index for pagination (default: 1). A single page is only partial evidence unless pagination.isCompleteResult is true.',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of items per page (default: 15)',
+        description: 'Number of items per page (default: 15). Larger totals require paging or an exact filter to verify absence.',
         default: 15,
       },
     },
@@ -59,26 +65,56 @@ class ListAccounts {
     else {
       const currentPage = params.pageIndex ?? 1
       const pageSize = params.pageSize ?? 15
-      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
-      const hasNextPage = currentPage < totalPages
+      const rows = Array.isArray(data.rows) ? data.rows : []
+      const totalItems = typeof data.total === 'number' ? data.total : rows.length
+      const pagination = buildPaginationInfo({
+        pageIndex: currentPage,
+        pageSize,
+        totalItems,
+      })
 
-      text = `Found ${data.total} accounts in workspace ${params.workspaceId}:
+      const accountLines = rows.length > 0
+        ? rows.map((account: any) =>
+            `**${account.platformName}** (ID: ${account.id})\n`
+            + `  - Username: ${account.platformUserName}\n`
+            + `  - Platform URL: ${account.platformUrl}\n`
+            + `  - Remarks: ${account.platformRemarks || 'N/A'}\n`
+            + `  - Created: ${account.createTime}`,
+          ).join('\n\n')
+        : totalItems === 0
+          ? 'No accounts found in this workspace.'
+          : `No accounts found on page ${currentPage}, but this is not an empty workspace.`
 
-${
-        data.rows.map((account: any) =>
-          `**${account.platformName}** (ID: ${account.id})\n`
-          + `  - Username: ${account.platformUserName}\n`
-          + `  - Platform URL: ${account.platformUrl}\n`
-          + `  - Remarks: ${account.platformRemarks || 'N/A'}\n`
-          + `  - Created: ${account.createTime}`,
-        ).join('\n\n')}
+      const paginationText = formatPaginationText({
+        toolName: 'roxy_account_list',
+        pagination,
+        itemCount: rows.length,
+      })
 
-Pagination:
-- currentPage: ${currentPage}
-- pageSize: ${pageSize}
-- totalPages: ${totalPages}
-- hasNextPage: ${hasNextPage}
-${hasNextPage ? `- nextPageHint: Call roxy_list_accounts again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
+      text = `Found ${totalItems} accounts in workspace ${params.workspaceId}:
+
+${accountLines}
+
+${paginationText}`
+
+      return paginatedToolResponse(
+        text,
+        buildPaginatedToolResult({
+          entity: 'account',
+          query: {
+            workspaceId: params.workspaceId,
+            accountId: params.accountId,
+            pageIndex: currentPage,
+            pageSize,
+          },
+          items: rows,
+          pagination,
+          filtersApplied: {
+            workspaceId: params.workspaceId,
+            accountId: params.accountId,
+          },
+        }),
+      )
     }
 
     return {

@@ -959,8 +959,8 @@ export const ROXY_ERROR_MAP: Record<number, ErrorInfo> = {
     category: 'resource',
     severity: 'medium',
     troubleshooting: [
-      'Verify workspace ID exists using roxy_list_workspaces',
-      'Check browser directory IDs using roxy_list_browsers',
+      'Verify workspace ID exists using roxy_workspace_list',
+      'Check browser directory IDs using roxy_browser_list',
       'Ensure browser profiles have not been deleted',
       'Confirm project IDs are valid',
     ],
