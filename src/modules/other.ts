@@ -1,19 +1,25 @@
-import { request } from '../utils/index.js'
+﻿import { request } from '../utils/index.js'
+import {
+  buildPaginationInfo,
+  buildPaginatedToolResult,
+  formatPaginationText,
+  paginatedToolResponse,
+} from '../utils/pagination.js'
 
 class ListWorkspaces {
   name = 'roxy_list_workspaces'
-  description = 'Get list of all workspaces/team and projects'
+  description = 'Get list of all workspaces/team and projects. This is a paginated partial result unless pagination.isCompleteResult is true. Do not conclude a workspace does not exist from one page alone.'
   inputSchema = {
     type: 'object',
     properties: {
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination',
+        description: '1-based page index for pagination. Larger pages may be needed to prove absence.',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of items per page',
+        description: 'Number of items per page. A single page is only partial evidence unless pagination.isCompleteResult is true.',
         default: 15,
       },
     },
@@ -44,22 +50,55 @@ class ListWorkspaces {
     }
     else {
       const data = result.data
-      const currentPage = pageIndex
-      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
-      const hasNextPage = currentPage < totalPages
-
-      const blocks = data.rows.map((ws: any) => {
-        const projects = (ws.project_details || []).map((proj: any) =>
-          `    • ${proj.projectName} → projectId: **${proj.projectId}**`,
-        ).join('\n')
-        return `  - **Workspace:** ${ws.workspaceName} → workspaceId: **${ws.id}**\n    Projects under this workspace:\n${projects || '    (no projects)'}`
+      const rows = Array.isArray(data.rows) ? data.rows : []
+      const totalItems = typeof data.total === 'number' ? data.total : rows.length
+      const pagination = buildPaginationInfo({
+        pageIndex,
+        pageSize,
+        totalItems,
       })
-      text = `Found ${data.total} workspace(s). Each workspace contains its own projects:\n\n` +
-        blocks.join('\n\n') +
-        `\n\n> 💡 **Tip:** Browser operations (create/open/list) require a **projectId** taken from a workspace above. Proxy/account operations only require a **workspaceId**. Pick the relevant ID before calling those tools.`
-      if (totalPages > 1) {
-        text += `\n\nPagination: page=${currentPage}, totalPages=${totalPages}, hasNext=${hasNextPage}`
-      }
+
+      const blocks = rows.map((ws: any) => {
+        const projects = (ws.project_details || []).map((proj: any) =>
+          `    - ${proj.projectName} -> projectId: **${proj.projectId}**`,
+        ).join('\n')
+        return `  - **Workspace:** ${ws.workspaceName} -> workspaceId: **${ws.id}**\n    Projects under this workspace:\n${projects || '    (no projects)'}`
+      })
+      const workspaceText = blocks.length > 0
+        ? blocks.join('\n\n')
+        : totalItems === 0
+          ? 'No workspaces found.'
+          : `No workspaces found on page ${pageIndex}, but this is not an empty result set.`
+
+      const paginationText = formatPaginationText({
+        toolName: 'roxy_workspace_list',
+        pagination,
+        itemCount: rows.length,
+        recoveryHint: totalItems > 0 && rows.length === 0
+          ? `Call roxy_workspace_list with pageIndex=${pagination.totalPages}, or use a more specific identifier if available.`
+          : undefined,
+      })
+
+      text = `Found ${totalItems} workspace(s). Each workspace contains its own projects:\n\n` +
+        workspaceText +
+        `\n\n> 💡 **Tip:** Browser operations (create/open/list) require a **projectId** from a workspace above. Proxy/account operations only require a **workspaceId**. Pick the relevant ID before calling those tools.\n\n` +
+        paginationText
+
+      return paginatedToolResponse(
+        text,
+        buildPaginatedToolResult({
+          entity: 'workspace',
+          query: { pageIndex, pageSize },
+          items: rows,
+          pagination,
+          filtersApplied: {},
+          existenceGuidance: {
+            canCheckExactly: false,
+            preferredFilterFields: [],
+            warning: 'No exact lookup filter is available. To prove absence, scan all pages or ask the user for a more specific identifier.',
+          },
+        }),
+      )
     }
 
     return {
@@ -75,7 +114,7 @@ class ListWorkspaces {
 
 class ListProjects {
   name = 'roxy_list_projects'
-  description = 'Get project list for the current fixed workspace'
+  description = 'Get project list for the current fixed workspace. Falls back to workspace/list when project/list is unavailable. This is a paginated partial result unless pagination.isCompleteResult is true. Do not conclude a project does not exist from one page alone.'
   inputSchema = {
     type: 'object',
     properties: {
@@ -85,12 +124,12 @@ class ListProjects {
       },
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination',
+        description: '1-based page index for pagination. Larger pages may be needed to prove absence.',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of projects per page',
+        description: 'Number of projects per page. A single page is only partial evidence unless pagination.isCompleteResult is true.',
         default: 15,
       },
     },
@@ -118,14 +157,30 @@ class ListProjects {
     }
 
     const { workspaceId, pageIndex = 1, pageSize = 15 } = params
-    const searchParams = new URLSearchParams()
-    searchParams.append('workspaceId', workspaceId.toString())
-    searchParams.append('page_index', pageIndex.toString())
-    searchParams.append('page_size', pageSize.toString())
+    const projectSearchParams = new URLSearchParams()
+    projectSearchParams.append('workspaceId', workspaceId.toString())
+    projectSearchParams.append('page_index', pageIndex.toString())
+    projectSearchParams.append('page_size', pageSize.toString())
 
-    const result = await request(`/project/list?${searchParams}`, {
-      method: 'GET',
-    })
+    let result
+    let source = '/project/list'
+
+    try {
+      result = await request(`/project/list?${projectSearchParams}`, {
+        method: 'GET',
+      })
+    }
+    catch (error: any) {
+      const fallbackSearchParams = new URLSearchParams()
+      fallbackSearchParams.append('workspaceId', workspaceId.toString())
+      fallbackSearchParams.append('page_index', '1')
+      fallbackSearchParams.append('page_size', '9999')
+
+      result = await request(`/browser/workspace?${fallbackSearchParams}`, {
+        method: 'GET',
+      })
+      source = '/browser/workspace'
+    }
 
     let text = ''
     if (result.code !== 0) {
@@ -133,24 +188,76 @@ class ListProjects {
     }
     else {
       const data = result.data || {}
-      const rows = Array.isArray(data.rows)
-        ? data.rows
-        : Array.isArray(data)
-          ? data
-          : []
-      const total = typeof data.total === 'number' ? data.total : rows.length
-      const totalPages = Math.max(1, Math.ceil(total / pageSize))
-      const hasNextPage = pageIndex < totalPages
+      let total = 0
+      let pageProjects: any[] = []
+      let projectLines = '  (no projects in this workspace)'
 
-      const projectLines = rows.length > 0
-        ? rows.map((proj: any) => {
-            const projectId = proj.projectId ?? proj.id
-            const projectName = proj.projectName ?? proj.name ?? proj.project_name ?? 'Unnamed'
-            return `  - ${projectName} → projectId: **${projectId}**`
-          }).join('\n')
-        : '  (no projects)'
+      const formatProject = (project: any) => {
+        const projectId = project.projectId ?? project.project_id ?? project.id
+        const projectName = project.projectName ?? project.project_name ?? project.name ?? 'Unnamed'
+        return `  - ${projectName} -> projectId: **${projectId}**`
+      }
 
-      text = `Found ${total} project(s) in workspaceId ${workspaceId}:\n\n${projectLines}\n\nPagination: page=${pageIndex}, pageSize=${pageSize}, totalPages=${totalPages}, hasNext=${hasNextPage}`
+      if (source === '/project/list') {
+        const rows = Array.isArray(data.rows)
+          ? data.rows
+          : Array.isArray(data)
+            ? data
+            : []
+
+        total = typeof data.total === 'number' ? data.total : rows.length
+        pageProjects = rows
+        projectLines = pageProjects.length > 0
+          ? pageProjects.map(formatProject).join('\n')
+          : total === 0
+            ? '  (no projects in this workspace)'
+            : `  (no projects on page ${pageIndex}; this page is out of range)`
+      }
+      else {
+        const rows = Array.isArray(data.rows) ? data.rows : []
+        const workspace = rows.find((item: any) => Number(item.id ?? item.workspaceId) === Number(workspaceId))
+        const projects = Array.isArray(workspace?.project_details) ? workspace.project_details : []
+        total = projects.length
+        pageProjects = projects.slice((pageIndex - 1) * pageSize, pageIndex * pageSize)
+        projectLines = pageProjects.length > 0
+          ? pageProjects.map(formatProject).join('\n')
+          : total === 0
+            ? '  (no projects in this workspace)'
+            : `  (no projects on page ${pageIndex}; this page is out of range)`
+      }
+
+      const pagination = buildPaginationInfo({
+        pageIndex,
+        pageSize,
+        totalItems: total,
+      })
+
+      const paginationText = formatPaginationText({
+        toolName: 'roxy_project_list',
+        pagination,
+        itemCount: pageProjects.length,
+        recoveryHint: total > 0 && pageProjects.length === 0
+          ? `Call roxy_project_list with pageIndex=${pagination.totalPages}, or use exact project id/name details if available.`
+          : undefined,
+      })
+
+      text = `Found ${total} project(s) in workspaceId ${workspaceId} via ${source}:\n\n${projectLines}\n\n${paginationText}`
+
+      return paginatedToolResponse(
+        text,
+        buildPaginatedToolResult({
+          entity: 'project',
+          query: { workspaceId, pageIndex, pageSize },
+          items: pageProjects,
+          pagination,
+          filtersApplied: { workspaceId },
+          existenceGuidance: {
+            canCheckExactly: false,
+            preferredFilterFields: [],
+            warning: 'No exact lookup filter is available. To prove absence, scan all pages or ask the user for a more specific identifier.',
+          },
+        }),
+      )
     }
 
     return {
@@ -189,11 +296,11 @@ class HealthCheck {
       })
 
       text = result.code === 0
-        ? '✅ **Server is healthy**\n\nThe RoxyBrowser server is running and reachable.'
+        ? '✅ **Server is healthy**\n\nThe RoxyBrowser API is running and reachable.'
         : `❌ **Server health check failed**\n\n${result.msg || 'Unknown server response'}`
     }
     catch (error: any) {
-      text = `❌ **Server is unavailable**\n\n${error?.message || 'Failed to connect to the server'}`
+      text = `❌ **Server is unavailable**\n\n${error?.message || 'Failed to connect to the server'}\n\n> If the server is actually running, double-check ROXY_API_HOST and whether a reverse proxy or path prefix is rewriting /health.`
     }
 
     return {
@@ -210,3 +317,4 @@ class HealthCheck {
 export const listWorkspaces = new ListWorkspaces()
 export const listProjects = new ListProjects()
 export const healthCheck = new HealthCheck()
+

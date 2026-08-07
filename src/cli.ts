@@ -35,6 +35,14 @@ program
     (v: string) => (v != null && v !== '' ? Number.parseInt(v, 10) : 30_000),
     process.env.ROXY_TIMEOUT != null ? Number(process.env.ROXY_TIMEOUT) : 30_000,
   )
+  .option(
+    '--workspace-id <id>',
+    'Fixed workspace ID for context-aware MCP tools',
+    (v: string) => (v != null && v !== '' ? Number.parseInt(v, 10) : undefined),
+    process.env.ROXY_WORKSPACE_ID != null && process.env.ROXY_WORKSPACE_ID !== ''
+      ? Number(process.env.ROXY_WORKSPACE_ID)
+      : undefined,
+  )
   .addHelpText(
     'after',
     `
@@ -42,10 +50,12 @@ Environment (used when option not passed):
   ROXY_API_HOST   API base URL (default: http://127.0.0.1:50000)
   ROXY_API_KEY    API key (required)
   ROXY_TIMEOUT    Timeout in ms (default: 30000)
+  ROXY_WORKSPACE_ID  Fixed workspace ID for context-aware tools
 
 Examples:
   roxy-browser-mcp --api-key "your-key"
   roxy-browser-mcp -k "your-key" -H http://127.0.0.1:50000
+  ROXY_WORKSPACE_ID=123 roxy-browser-mcp
   ROXY_API_KEY=your-key roxy-browser-mcp
 `,
   )
@@ -53,15 +63,20 @@ Examples:
 async function main(): Promise<void> {
   program.parse()
 
-  const opts = program.opts<{ apiHost: string; apiKey: string; timeout: number }>()
+  const opts = program.opts<{ apiHost: string; apiKey: string; timeout: number; workspaceId?: number }>()
 
   // Apply CLI args to env so request() sees them (env is the only config source)
   if (opts.apiHost != null && opts.apiHost !== '') process.env.ROXY_API_HOST = opts.apiHost
   if (opts.apiKey != null && opts.apiKey !== '') process.env.ROXY_API_KEY = opts.apiKey
   if (opts.timeout != null) process.env.ROXY_TIMEOUT = String(opts.timeout)
+  if (opts.workspaceId != null && !Number.isNaN(opts.workspaceId)) process.env.ROXY_WORKSPACE_ID = String(opts.workspaceId)
 
   try {
-    await runServer()
+    await runServer(
+      opts.workspaceId != null && !Number.isNaN(opts.workspaceId)
+        ? { context: { workspaceId: opts.workspaceId } }
+        : {},
+    )
   }
   catch (error) {
     if (error instanceof ConfigError) {

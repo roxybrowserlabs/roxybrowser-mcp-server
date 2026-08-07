@@ -1,4 +1,10 @@
 import { request } from '../utils/index.js'
+import {
+  buildPaginationInfo,
+  buildPaginatedToolResult,
+  formatPaginationText,
+  paginatedToolResponse,
+} from '../utils/pagination.js'
 
 const channelList = [
   {
@@ -64,7 +70,7 @@ function formatLocation(proxy: any) {
 /** 代理列表 */
 export class ProxyList {
   name = 'roxy_list_proxies'
-  description = 'Get list of proxy IP List.'
+  description = 'Get list of proxy IP List. This is a paginated partial result unless pagination.isCompleteResult is true. Do not conclude a proxy does not exist from a single page. Use exact filters such as country, checkStatus, proxyType, or proxy host/ID via detail when verifying existence.'
   inputSchema = {
     type: 'object',
     properties: {
@@ -100,12 +106,12 @@ export class ProxyList {
       },
       pageIndex: {
         type: 'number',
-        description: 'Page index for pagination (default: 1)',
+        description: '1-based page index for pagination (default: 1). A single page is not enough to prove absence; scan previous/next pages according to pagination hints.',
         default: 1,
       },
       pageSize: {
         type: 'number',
-        description: 'Number of items per page (default: 15)',
+        description: 'Number of items per page (default: 15). If totalItems exceeds pageSize, the response is only a partial page.',
         default: 15,
       },
     },
@@ -150,11 +156,16 @@ export class ProxyList {
       const data = result.data
       const currentPage = params.pageIndex ?? 1
       const pageSize = params.pageSize ?? 15
-      const totalPages = Math.max(1, Math.ceil((data.total || 0) / pageSize))
-      const hasNextPage = currentPage < totalPages
+      const rows = Array.isArray(data.rows) ? data.rows : []
+      const totalItems = typeof data.total === 'number' ? data.total : rows.length
+      const pagination = buildPaginationInfo({
+        pageIndex: currentPage,
+        pageSize,
+        totalItems,
+      })
 
-      const proxyListText = data.rows.length > 0
-        ? data.rows.map((proxy: any, index: number) => {
+      const proxyListText = rows.length > 0
+        ? rows.map((proxy: any, index: number) => {
             const statusText = formatCheckStatus(proxy.checkStatus)
             const sourceType = proxy.dataType === 'proxyModule' ? 'user-added' : 'proxy store'
             const canDelete = proxy.dataType === 'proxyModule' ? 'yes' : 'no'
@@ -179,15 +190,53 @@ export class ProxyList {
             }
             return baseInfo
           }).join('\n\n')
-        : ''
-      text = `📵 **proxy list** (total: ${data.total})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\nProxy check status is historical. If a proxy shows a failed or unknown last check, call \`roxy_proxy_detect\` before judging current availability.\n\n${proxyListText}
+        : totalItems === 0
+          ? 'No proxies found in this workspace for the applied filters.'
+          : `No proxies found on page ${currentPage}, but this is not an empty proxy set.`
 
-Pagination:
-- currentPage: ${currentPage}
-- pageSize: ${pageSize}
-- totalPages: ${totalPages}
-- hasNextPage: ${hasNextPage}
-${hasNextPage ? `- nextPageHint: Call roxy_list_proxies again with pageIndex=${currentPage + 1}` : '- nextPageHint: No more pages'}`
+      const filtersApplied = {
+        workspaceId: params.workspaceId,
+        country: params.country,
+        checkStatus: params.checkStatus,
+        startDate: params.startDate,
+        endDate: params.endDate,
+        checker: params.checker,
+        proxyType: params.proxyType,
+      }
+
+      const paginationText = formatPaginationText({
+        toolName: 'roxy_proxy_list',
+        pagination,
+        itemCount: rows.length,
+        exactLookupHint: 'To verify a specific proxy, use exact filters if available or call roxy_proxy_detail with the proxy id.',
+        recoveryHint: totalItems > 0 && rows.length === 0
+          ? `Call roxy_proxy_list with pageIndex=${pagination.totalPages}, or use exact filters such as proxy id via roxy_proxy_detail.`
+          : undefined,
+      })
+
+      text = `📵 **proxy list** (total: ${totalItems})\n\nOnly proxies with \`source: user-added\` can be deleted.\n\nProxy check status is historical. If a proxy shows a failed or unknown last check, call \`roxy_proxy_detect\` before judging current availability.\n\n${proxyListText}
+
+${paginationText}`
+
+      return paginatedToolResponse(
+        text,
+        buildPaginatedToolResult({
+          entity: 'proxy',
+          query: {
+            ...filtersApplied,
+            pageIndex: currentPage,
+            pageSize,
+          },
+          items: rows,
+          pagination,
+          filtersApplied,
+          existenceGuidance: {
+            canCheckExactly: true,
+            preferredFilterFields: ['id', 'country', 'checkStatus', 'proxyType'],
+            warning: 'Do not conclude a proxy does not exist from one page; use exact filters/detail or scan all pages.',
+          },
+        }),
+      )
     }
     else {
       text = `❌ **get proxy list failed**\n\n${result.msg}`

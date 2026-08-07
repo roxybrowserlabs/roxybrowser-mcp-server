@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "type": "module",
   "main": "lib/index.cjs",
@@ -30,7 +30,8 @@
     "start": "node lib/index.js",
     "dev": "tsup --watch",
     "test": "npm run build && node --test",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e ROXY_API_KEY=your_api_key_here -e ROXY_API_HOST=http://127.0.0.1:50000 node lib/cli.js",
+    "inspect": "node scripts/inspect.mjs",
+    "inspect:workspace": "node scripts/inspect.mjs --workspace-id 80123",
     "inspect:cli": "npm run build && npx @modelcontextprotocol/inspector --cli node lib/cli.js",
     "clean": "npx rimraf lib",
     "publish:release": "npm run clean && npm version patch --no-git-tag-version && npm run build && npm publish",
@@ -57,6 +58,7 @@
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "0.22.0",
     "@types/node": "^22.0.0",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.5",

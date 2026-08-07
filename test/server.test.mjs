@@ -5,6 +5,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import {
   RoxyBrowserMCPServer,
   TOOLS,
+  createTools,
 } from '../lib/index.js'
 import {
   captureEnv,
@@ -22,6 +23,17 @@ afterEach(() => {
 })
 
 describe('RoxyBrowserMCPServer', () => {
+  test('creates context-shaped tool lists from a fixed workspace', () => {
+    const tools = createTools({ workspaceId: 88 })
+
+    assert.equal(tools.some(tool => tool.name === 'roxy_workspace_list'), false)
+    assert.ok(tools.some(tool => tool.name === 'roxy_project_list'))
+    assert.equal(
+      tools.find(tool => tool.name === 'roxy_browser_create').inputSchema.properties.browsers.items.properties.workspaceId,
+      undefined,
+    )
+  })
+
   test('lists the exported tools through MCP', async () => {
     const session = await withConnectedClient({
       Client,

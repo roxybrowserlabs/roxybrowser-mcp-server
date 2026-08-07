@@ -4,6 +4,7 @@ import {
   createProxies,
   detectProxy,
   healthCheck,
+  listBrowsers,
   listWorkspaces,
   modifyProxy,
   proxyDetail,
@@ -66,16 +67,26 @@ describe('tool handlers', () => {
     process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
     process.env.ROXY_API_KEY = 'secret-token'
 
-    const restoreFetch = installFetchMock(async () =>
-      createJsonResponse({ code: 0, msg: 'ok' }),
-    )
+    let calledUrl
+    const restoreFetch = installFetchMock(async (url) => {
+      calledUrl = url
+      return createJsonResponse({
+        code: 0,
+        msg: 'ok',
+        data: {
+          total: 0,
+          rows: [],
+        },
+      })
+    })
 
     try {
       const result = await healthCheck.handle()
       const text = getTextContent(result)
 
+      assert.match(calledUrl, /\/browser\/workspace\?page_index=1&page_size=1/)
       assert.match(text, /Server is healthy/)
-      assert.match(text, /running and reachable/)
+      assert.match(text, /API is running and reachable/)
     }
     finally {
       restoreFetch()
@@ -161,6 +172,145 @@ describe('tool handlers', () => {
       assert.match(text, /roxy_proxy_detect/)
       assert.doesNotMatch(text, /❌ unavailable/)
       assert.doesNotMatch(text, /unusable proxy/i)
+    }
+    finally {
+      restoreFetch()
+    }
+  })
+
+  test('listBrowsers exposes partial pagination semantics with public hints', async () => {
+    process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
+    process.env.ROXY_API_KEY = 'secret-token'
+
+    const restoreFetch = installFetchMock(async () =>
+      createJsonResponse({
+        code: 0,
+        msg: 'ok',
+        data: {
+          total: 1018,
+          rows: [
+            {
+              workspaceName: 'Roxy',
+              windowSortNum: 2549,
+              windowName: '6.25 box account',
+              dirId: 'dir-2549',
+              coreType: 'Chrome',
+              coreVersion: '140',
+              os: 'Windows',
+              osVersion: '11',
+            },
+          ],
+        },
+      }),
+    )
+
+    try {
+      const result = await listBrowsers.handle({ workspaceId: 5052, pageIndex: 36, pageSize: 15 })
+      const text = getTextContent(result)
+
+      assert.match(text, /Pagination:/)
+      assert.match(text, /currentPage: 36/)
+      assert.match(text, /totalItems: 1018/)
+      assert.match(text, /hasPreviousPage: true/)
+      assert.match(text, /previousPageHint: Call roxy_browser_list with pageIndex=35/)
+      assert.match(text, /hasNextPage: true/)
+      assert.match(text, /nextPageHint: Call roxy_browser_list with pageIndex=37/)
+      assert.match(text, /PARTIAL_PAGE_ONLY/)
+      assert.match(text, /sort: windowSortNum desc/)
+      assert.match(text, /exactLookupHint: windowSortNum is a browser serial-number filter/)
+      assert.match(text, /not the current browser total count/)
+      assert.doesNotMatch(text, /windowSortNum="2550"/)
+      assert.doesNotMatch(text, /roxy_list_browsers/)
+      assert.equal(result.structuredContent, undefined)
+      assert.equal(result._meta, undefined)
+    }
+    finally {
+      restoreFetch()
+    }
+  })
+
+  test('healthCheck reports connection failures from the real API probe', async () => {
+    process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
+    process.env.ROXY_API_KEY = 'secret-token'
+
+    const restoreFetch = installFetchMock(async () => {
+      throw new Error('fetch failed')
+    })
+
+    try {
+      const result = await healthCheck.handle()
+      const text = getTextContent(result)
+
+      assert.match(text, /Server is unavailable/)
+      assert.match(text, /fetch failed/)
+    }
+    finally {
+      restoreFetch()
+    }
+  })
+
+  test('listBrowsers normalizes prefixed serial numbers for exact lookup', async () => {
+    process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
+    process.env.ROXY_API_KEY = 'secret-token'
+
+    let calledUrl
+    const restoreFetch = installFetchMock(async (url) => {
+      calledUrl = url
+      return createJsonResponse({
+        code: 0,
+        msg: 'ok',
+        data: {
+          total: 0,
+          rows: [],
+        },
+      })
+    })
+
+    try {
+      const result = await listBrowsers.handle({
+        workspaceId: 5052,
+        windowSortNum: 'ROX-2550',
+        pageIndex: 1,
+        pageSize: 15,
+      })
+      const text = getTextContent(result)
+
+      assert.match(calledUrl, /windowSortNum=2550/)
+      assert.match(text, /No browser matched windowSortNum=2550/)
+      assert.doesNotMatch(text, /No browsers found in workspace/)
+      assert.equal(result.structuredContent, undefined)
+      assert.equal(result._meta, undefined)
+    }
+    finally {
+      restoreFetch()
+    }
+  })
+
+  test('listBrowsers distinguishes page out of range from empty workspace', async () => {
+    process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
+    process.env.ROXY_API_KEY = 'secret-token'
+
+    const restoreFetch = installFetchMock(async () =>
+      createJsonResponse({
+        code: 0,
+        msg: 'ok',
+        data: {
+          total: 1018,
+          rows: [],
+        },
+      }),
+    )
+
+    try {
+      const result = await listBrowsers.handle({ workspaceId: 5052, pageIndex: 9999, pageSize: 15 })
+      const text = getTextContent(result)
+
+      assert.match(text, /No browsers found on page 9999/)
+      assert.match(text, /PAGE_OUT_OF_RANGE/)
+      assert.match(text, /recoveryHint: Call roxy_browser_list with pageIndex=68/)
+      assert.doesNotMatch(text, /No browsers found in workspace 5052/)
+      assert.equal(result.structuredContent, undefined)
+      assert.equal(result._meta, undefined)
     }
     finally {
       restoreFetch()

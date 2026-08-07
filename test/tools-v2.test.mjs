@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict'
+﻿import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
@@ -123,6 +123,7 @@ describe('ROXY_TOOLS_V2', () => {
 
       assert.equal(names.includes('roxy_workspace_list'), false)
       assert.equal(names.includes('roxy_project_list'), true)
+      assert.equal(names.includes('roxy_list_projects'), false)
       assert.equal(browserList.inputSchema.properties.workspaceId, undefined)
       assert.equal(browserCreate.inputSchema.properties.browsers.items.properties.workspaceId, undefined)
       assert.deepEqual(browserCreate.inputSchema.properties.browsers.items.required, ['browserCore'])
@@ -168,20 +169,29 @@ describe('ROXY_TOOLS_V2', () => {
     }
   })
 
-  test('project.list returns projects for the fixed workspace only', async () => {
+  test('project.list falls back to workspace.list when project.list is unavailable', async () => {
     const restoreFetch = installFetchMock(async (url) => {
-      assert.match(url, /\/project\/list\?/)
+      if (url.includes('/project/list')) {
+        throw new Error('HTTP 404: Not Found Not Found')
+      }
+
+      assert.match(url, /\/workspace\/list\?/)
       assert.match(url, /workspaceId=77/)
-      assert.match(url, /page_index=2/)
-      assert.match(url, /page_size=5/)
+      assert.match(url, /page_index=1/)
+      assert.match(url, /page_size=9999/)
       return createJsonResponse({
         code: 0,
         msg: 'ok',
         data: {
-          total: 2,
           rows: [
-            { projectId: 11, projectName: 'Alpha' },
-            { id: 12, name: 'Beta' },
+            {
+              id: 77,
+              workspaceName: 'Worker',
+              project_details: [
+                { projectId: 11, projectName: 'Alpha' },
+                { projectId: 12, projectName: 'Beta' },
+              ],
+            },
           ],
         },
       })
@@ -204,17 +214,16 @@ describe('ROXY_TOOLS_V2', () => {
       })
       const text = getTextContent(result)
 
-      assert.match(text, /Found 2 project\(s\) in workspaceId 77/)
-      assert.match(text, /Alpha → projectId: \*\*11\*\*/)
-      assert.match(text, /Beta → projectId: \*\*12\*\*/)
-      assert.match(text, /Pagination: page=2/)
+      assert.match(text, /Found 2 project\(s\) in workspaceId 77 via \/workspace\/list/)
+      assert.match(text, /Beta -> projectId: \*\*12\*\*/)
+      assert.match(text, /Pagination:/)
+      assert.match(text, /currentPage: 2/)
     }
     finally {
       restoreFetch()
       await session.close()
     }
   })
-
   test('injects workspaceId and uses server client config for adapted handlers', async () => {
     let calledUrl
     let calledOptions
@@ -409,3 +418,6 @@ describe('ROXY_TOOLS_V2', () => {
     }
   })
 })
+
+
+
