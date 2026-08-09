@@ -129,6 +129,8 @@ const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
 
 const browserServer = createRoxyBrowserMcpServer({
+  timeout: 45_000,
+  includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
 

@@ -129,6 +129,8 @@ const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
 
 const browserServer = createRoxyBrowserMcpServer({
+  timeout: 45_000,
+  includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
 
@@ -139,7 +141,8 @@ const commerceServer = createRoxyCommerceMcpServer({
 
 ## Public MCP Tool Names
 
-Browser mode exposes 25 tools in profile language:
+Browser mode exposes 24 tools in profile language when a workspace is configured, or 25 tools
+when it is not (the additional tool is `roxy_workspace_list`):
 
 - `roxy_workspace_list`
 - `roxy_project_list`
@@ -190,7 +193,9 @@ Ecommerce mode exposes 18 tools in account language over the same browser-profil
 
 Each MCP tool keeps debug metadata with a stable `operationId` and the underlying RoxyBrowser endpoint.
 
-Create tools use one public name for both modes: pass the direct fields for a single item, or pass the resource array (`proxies`, `accounts`, or `credentials`) for a batch.
+Create tools accept a resource array. Pass one item to create a single resource, or multiple items to
+create a batch. Browser profile, proxy, and platform-account tools use `profiles`, `proxies`, and
+`accounts`; ecommerce tools use `accounts`, `proxies`, and `credentials`.
 
 ## Architecture
 

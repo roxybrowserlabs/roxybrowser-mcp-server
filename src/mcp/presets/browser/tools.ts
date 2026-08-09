@@ -1,5 +1,6 @@
 import type { McpTool } from "../../runtime/index.js";
 import { removeUndefined } from "../../../sdk/shared/normalize.js";
+import { markdownTable } from "../formatting.js";
 import {
   formatConnections,
   formatDetectChannels,
@@ -15,12 +16,15 @@ import {
 import {
   normalizePlatformAccountInput,
   normalizeProfileDeleteOptions,
-  normalizeProfileInput,
+  normalizeProfileInputWithWarnings,
   normalizeProfileListArgs,
   normalizeProfileOpenOptions,
+  normalizeProfileUpdateInputWithWarnings,
   normalizeProxyInput,
   normalizeProxyListArgs,
 } from "./inputs.js";
+
+const MAX_CREATE_ITEMS = 30;
 
 const objectSchema = (properties: Record<string, unknown>, required: string[] = []) => ({
   type: "object",
@@ -28,54 +32,201 @@ const objectSchema = (properties: Record<string, unknown>, required: string[] = 
   ...(required.length > 0 ? { required } : {}),
 });
 
-const singleOrBatchCreateSchema = (
+const arrayCreateSchema = (
   properties: Record<string, unknown>,
-  required: string[],
-  batchProperty: string,
-  batchItemRequired: string[] = required,
-  batchEnvelopeRequired: string[] = [],
+  arrayProperty: string,
+  itemRequired: string[] = [],
+  envelopeProperties: Record<string, unknown> = {},
+  envelopeRequired: string[] = [],
 ) => ({
   type: "object",
   properties: {
-    ...properties,
-    [batchProperty]: {
+    ...envelopeProperties,
+    [arrayProperty]: {
       type: "array",
       minItems: 1,
-      items: objectSchema(properties, batchItemRequired),
+      maxItems: MAX_CREATE_ITEMS,
+      items: objectSchema(properties, itemRequired),
     },
   },
-  oneOf: [{ required }, { required: [batchProperty, ...batchEnvelopeRequired] }],
+  required: [arrayProperty, ...envelopeRequired],
 });
 
 const stringArray = { type: "array", items: { type: "string" } };
 const numberArray = { type: "array", items: { type: "number" } };
+const browserCores = [
+  "Chrome Latest",
+  "Chrome 150",
+  "Chrome 149",
+  "Chrome 148",
+  "Chrome 147",
+  "Chrome 146",
+  "Chrome 145",
+  "Chrome 144",
+  "Chrome 135",
+  "Chrome 133",
+  "Chrome 130",
+  "Chrome 125",
+  "Chrome 117",
+  "Chrome 109",
+  "Firefox Latest",
+  "Firefox 146",
+];
+const browserCoreVersions = [
+  "Latest",
+  "150",
+  "149",
+  "148",
+  "147",
+  "146",
+  "145",
+  "144",
+  "135",
+  "133",
+  "130",
+  "125",
+  "117",
+  "109",
+];
+const browserOperatingSystems = [
+  "Windows 11",
+  "Windows 10",
+  "Windows 8",
+  "Windows 7",
+  "macOS 26",
+  "macOS 15",
+  "macOS 14",
+  "macOS 13",
+  "Linux ALL",
+  "Android 14",
+  "Android 13",
+  "Android 12",
+  "Android 9",
+  "IOS 18",
+  "IOS 17",
+  "IOS 16",
+  "IOS 15",
+  "IOS 14",
+];
+
+interface CreateItemResult {
+  index: number;
+  item: string;
+  status: "success" | "failed";
+  id?: string | number;
+  message: string;
+  warnings?: string[];
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function assertCreateLimit(items: unknown[], label: string): void {
+  if (items.length > MAX_CREATE_ITEMS) {
+    throw new Error(
+      `Cannot create ${items.length} ${label} in one request. The maximum is ${MAX_CREATE_ITEMS}; no items were created.`,
+    );
+  }
+}
+
+function formatCreateResults(
+  label: string,
+  results: CreateItemResult[],
+  identifierLabel = "ID",
+): string {
+  const succeeded = results.filter((result) => result.status === "success").length;
+  const failed = results.length - succeeded;
+  return [
+    `${label} creation: ${results.length} requested | ${succeeded} succeeded | ${failed} failed`,
+    markdownTable(
+      ["#", "Item", "Status", identifierLabel, "Message", "Warnings"],
+      results.map((result) => [
+        result.index,
+        result.item,
+        result.status,
+        result.id,
+        result.message,
+        result.warnings?.join("; "),
+      ]),
+    ),
+  ].join("\n");
+}
 
 const paginationSchema = {
   page: { type: "number" },
   pageSize: { type: "number" },
 };
 
-const profilePatchSchema = {
+const profileCreateSchema = {
   name: { type: "string" },
   projectId: { type: "number" },
-  proxyId: { type: "number" },
+  cookie: {
+    description:
+      "Cookies as JSON, Netscape, Name=Value text, one Cookie object, or an array of Cookie objects.",
+    oneOf: [
+      { type: "string" },
+      {
+        type: "object",
+        additionalProperties: true,
+      },
+      {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: true,
+        },
+      },
+    ],
+  },
+  searchEngine: {
+    type: "string",
+    enum: ["Google", "Microsoft Bing", "Yahoo", "Yandex", "DuckDuckGo"],
+  },
+  labelIds: numberArray,
+  platformAccounts: {
+    type: "array",
+    description: 'Bind existing platform accounts, for example [{"id": 123}].',
+    items: {
+      type: "object",
+      properties: { id: { type: "number" } },
+      additionalProperties: true,
+    },
+  },
+  proxyInfo: {
+    type: "object",
+    properties: { id: { type: "number" } },
+    additionalProperties: true,
+    description: 'Bind an existing proxy, for example {"id": 123}.',
+  },
+  fingerInfo: {
+    type: "object",
+    additionalProperties: true,
+    description: "Browser fingerprint settings.",
+  },
   urls: stringArray,
   remark: { type: "string" },
-  core: {
-    type: "object",
-    properties: {
-      type: { type: "string" },
-      version: { type: "string" },
-    },
+  browserCore: {
+    type: "string",
+    enum: browserCores,
+    description: "Browser core and version, for example Chrome 150 or Firefox Latest.",
   },
   os: {
-    type: "object",
-    properties: {
-      name: { type: "string" },
-      version: { type: "string" },
-    },
+    type: "string",
+    enum: browserOperatingSystems,
+    description: "Operating system and version, for example Windows 10.",
   },
 };
+
+const { browserCore: _browserCore, ...profileUpdateSchema } = profileCreateSchema;
+Object.assign(profileUpdateSchema, {
+  coreVersion: {
+    type: "string",
+    enum: browserCoreVersions,
+    description:
+      "Version for the profile's existing browser core, or Latest to keep it up to date.",
+  },
+});
 
 const proxyInputSchema = {
   protocol: { type: "string" },
@@ -133,7 +284,11 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       dirIds: stringArray,
       projectIds: numberArray,
       name: { type: "string" },
-      serialNumber: { type: "string" },
+      serialNumber: {
+        type: "string",
+        description:
+          "Profile serial number, with or without its workspace prefix (for example ROX-11 or 11).",
+      },
       os: { type: "string" },
     }),
     handler: async (args, context) =>
@@ -152,10 +307,46 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_profile_create",
     operationId: "browser.profile.create",
     endpoint: "POST /browser/create",
-    description: "Create a browser profile.",
-    inputSchema: objectSchema(profilePatchSchema),
-    handler: async (args, context) =>
-      formatProfile(await context.browser!.profiles.create(normalizeProfileInput(args))),
+    description: "Create one or more browser profiles.",
+    inputSchema: arrayCreateSchema(profileCreateSchema, "profiles"),
+    handler: async (args, context) => {
+      assertCreateLimit(args.profiles, "browser profiles");
+      const results: CreateItemResult[] = [];
+      for (const [offset, profile] of args.profiles.entries()) {
+        const index = offset + 1;
+        const normalized = normalizeProfileInputWithWarnings(profile);
+        const originalOsVersion = normalized.input.osVersion;
+        const adjustedFirefoxMacOs =
+          normalized.input.coreType === "Firefox" &&
+          normalized.input.os === "macOS" &&
+          originalOsVersion !== undefined &&
+          originalOsVersion !== "ALL";
+        if (adjustedFirefoxMacOs) normalized.input.osVersion = "ALL";
+        try {
+          const created = await context.browser!.profiles.createWithResult(normalized.input);
+          const message = created.message || "Created successfully.";
+          results.push({
+            index,
+            item: profile.name || `profile ${index}`,
+            status: "success",
+            id: created.id,
+            message: adjustedFirefoxMacOs
+              ? `${message} OS was adjusted from macOS ${originalOsVersion} to macOS ALL because Firefox profiles only support macOS ALL.`
+              : message,
+            warnings: normalized.warnings,
+          });
+        } catch (error) {
+          results.push({
+            index,
+            item: profile.name || `profile ${index}`,
+            status: "failed",
+            message: errorMessage(error),
+            warnings: normalized.warnings,
+          });
+        }
+      }
+      return formatCreateResults("Browser profile", results, "DirId");
+    },
   },
   {
     name: "roxy_profile_update",
@@ -165,14 +356,18 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema(
       {
         dirId: { type: "string" },
-        ...profilePatchSchema,
+        ...profileUpdateSchema,
       },
       ["dirId"],
     ),
     handler: async (args, context) => {
       const { dirId, ...patch } = args;
-      await context.browser!.profiles.update(dirId, normalizeProfileInput(patch));
-      return `Updated profile ${dirId}.`;
+      const normalized = normalizeProfileUpdateInputWithWarnings(patch);
+      await context.browser!.profiles.update(dirId, normalized.input);
+      return [
+        `Updated profile ${dirId}.`,
+        ...normalized.warnings.map((warning) => `Warning: ${warning}`),
+      ].join("\n");
     },
   },
   {
@@ -229,7 +424,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_profile_connection_info",
     operationId: "browser.profile.connectionInfo",
     endpoint: "GET /browser/connection_info",
-    description: "Get CDP connection information for opened browser profiles.",
+    description: "Get CDP or BiDi connection information for opened browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }),
     handler: async (args, context) => {
       return formatConnections(await context.browser!.profiles.connectionInfo(args.dirIds));
@@ -305,24 +500,41 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_proxy_create",
     operationId: "browser.proxy.create",
     endpoint: "POST /proxy/create | POST /proxy/batch_create",
-    description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
-    inputSchema: singleOrBatchCreateSchema(
+    description: "Create one or more proxies.",
+    inputSchema: arrayCreateSchema(
       proxyInputSchema,
-      ["checkChannel", "ipType", "protocol", "host", "port"],
       "proxies",
       ["ipType", "protocol", "host", "port"],
+      { checkChannel: { type: "string" } },
       ["checkChannel"],
     ),
     handler: async (args, context) => {
-      if (Array.isArray(args.proxies)) {
-        await context.browser!.proxies.createMany({
-          checkChannel: args.checkChannel,
-          proxyList: args.proxies.map(normalizeProxyInput),
-        });
-        return `Created ${args.proxies.length} proxy/proxies.`;
+      assertCreateLimit(args.proxies, "proxies");
+      const results: CreateItemResult[] = [];
+      for (const [offset, proxy] of args.proxies.entries()) {
+        const index = offset + 1;
+        try {
+          const normalized = normalizeProxyInput({
+            ...proxy,
+            checkChannel: proxy.checkChannel ?? args.checkChannel,
+          });
+          const created = await context.browser!.proxies.createWithResult(normalized);
+          results.push({
+            index,
+            item: `${proxy.protocol || "proxy"} ${proxy.host || "-"}:${proxy.port || "-"}`,
+            status: "success",
+            message: created.message || "Created successfully.",
+          });
+        } catch (error) {
+          results.push({
+            index,
+            item: `${proxy.protocol || "proxy"} ${proxy.host || "-"}:${proxy.port || "-"}`,
+            status: "failed",
+            message: errorMessage(error),
+          });
+        }
       }
-      await context.browser!.proxies.create(normalizeProxyInput(args));
-      return "Created proxy.";
+      return formatCreateResults("Proxy", results);
     },
   },
   {
@@ -388,20 +600,33 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_platform_account_create",
     operationId: "browser.platformAccount.create",
     endpoint: "POST /account/create | POST /account/batch_create",
-    description:
-      "Create one or more platform accounts. Use direct fields for one or accounts for a batch.",
-    inputSchema: singleOrBatchCreateSchema(platformAccountInputSchema, ["platformUrl"], "accounts"),
+    description: "Create one or more platform accounts.",
+    inputSchema: arrayCreateSchema(platformAccountInputSchema, "accounts", ["platformUrl"]),
     handler: async (args, context) => {
-      if (Array.isArray(args.accounts)) {
-        await context.browser!.platformAccounts.createMany(
-          args.accounts.map(normalizePlatformAccountInput),
-        );
-        return `Created ${args.accounts.length} platform account(s).`;
+      assertCreateLimit(args.accounts, "platform accounts");
+      const results: CreateItemResult[] = [];
+      for (const [offset, account] of args.accounts.entries()) {
+        const index = offset + 1;
+        try {
+          const normalized = normalizePlatformAccountInput(account);
+          const created = await context.browser!.platformAccounts.createWithResult(normalized);
+          results.push({
+            index,
+            item: account.username || account.platformUrl || `account ${index}`,
+            status: "success",
+            id: created.id,
+            message: created.message || "Created successfully.",
+          });
+        } catch (error) {
+          results.push({
+            index,
+            item: account.username || account.platformUrl || `account ${index}`,
+            status: "failed",
+            message: errorMessage(error),
+          });
+        }
       }
-      const id = await context.browser!.platformAccounts.create(
-        normalizePlatformAccountInput(args),
-      );
-      return `Created platform account ${id}.`;
+      return formatCreateResults("Platform account", results);
     },
   },
   {

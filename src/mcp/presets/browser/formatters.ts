@@ -19,7 +19,11 @@ function combined(name?: string, version?: string): string {
 }
 
 function profileSerial(profile: BrowserProfile): string | undefined {
-  return profile.windowSortNum === undefined ? undefined : String(profile.windowSortNum);
+  if (profile.windowSortNum === undefined) return undefined;
+
+  const serialNumber = String(profile.windowSortNum);
+  const workspacePrefix = String(profile.workspaceName).slice(0, 3).toLocaleUpperCase();
+  return `${workspacePrefix}-${serialNumber}`;
 }
 
 function stringField(value: Record<string, unknown>, name: string): string | undefined {
@@ -30,10 +34,11 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
   return pagedTable(
     "Profiles",
     page,
-    ["Name", "DirId", "Serial", "Core", "OS", "Remark"],
+    ["Name", "DirId", "ProjectId", "SerialNumber", "Core", "OS", "Remark"],
     page.rows.map((profile) => [
       profile.windowName,
       profile.dirId,
+      profile.projectId,
       profileSerial(profile),
       combined(stringField(profile, "coreType"), profile.coreVersion),
       combined(profile.os, profile.osVersion),
@@ -75,7 +80,8 @@ export function formatWorkspaces(page: Page<Workspace>): string {
       const projects = workspace.project_details
         ?.map((project) => {
           const compatibleProject = project as RawProject;
-          const id = compatibleProject.projectId ?? compatibleProject.id;
+          const id =
+            compatibleProject.projectId ?? compatibleProject.project_id ?? compatibleProject.id;
           const name =
             compatibleProject.projectName ??
             compatibleProject.name ??
@@ -96,7 +102,7 @@ export function formatProjects(page: Page<Project>): string {
     page,
     ["ID", "Project"],
     page.rows.map((project) => {
-      const id = project.projectId ?? project.id;
+      const id = project.projectId ?? project.project_id ?? project.id;
       const name = project.projectName ?? project.name ?? project.project_name;
       return [id, name];
     }),
@@ -158,17 +164,26 @@ export function formatConnections(connections: ProfileConnectionInfo[]): string 
   const available = connections.filter(
     (connection) => connection.dirId || connection.windowName || connection.ws || connection.http,
   );
-  if (available.length === 0) return "No connection info found.";
-  return `Connections: ${available.length}\n${markdownTable(
-    ["Name", "dirId", "WebSocket", "HTTP", "PID"],
-    available.map((connection) => [
-      connection.windowName,
-      connection.dirId,
-      connection.ws,
-      connection.http,
-      connection.pid,
-    ]),
-  )}`;
+  if (available.length === 0) {
+    return "No opened browsers found.\n\nUse `roxy_profile_open` to open a browser profile first.";
+  }
+
+  const details = available.map((connection) => {
+    const compatibleConnection = connection as ProfileConnectionInfo & {
+      marionette_port?: string | number;
+    };
+    const isFirefox = Boolean(compatibleConnection.marionette_port);
+    return [
+      `**${connection.windowName || "Unnamed"}** (${connection.dirId})`,
+      connection.ws ? `- ${isFirefox ? "BiDi" : "CDP"} WebSocket: \`${connection.ws}\`` : undefined,
+      !isFirefox && connection.http ? `- HTTP Endpoint: \`${connection.http}\`` : undefined,
+      `- Core Type: ${isFirefox ? "Firefox" : "Chrome"}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+  });
+
+  return `Found ${available.length} opened browser(s):\n\n${details.join("\n\n")}`;
 }
 
 export function formatDetectChannels(channels: ProxyDetectChannel[]): string {

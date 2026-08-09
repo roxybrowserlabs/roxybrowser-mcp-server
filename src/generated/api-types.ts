@@ -1041,6 +1041,8 @@ export interface ProfileCreateInput {
   windowName?: string;
   /** Browser core version; examples include 138, 137, 136, 135, 133, 130, 125, 117, and 109 / 浏览器内核版本，例如 138、137、136、135、133、130、125、117、109 */
   coreVersion?: string;
+  /** Whether the browser profile should always use the latest core version / 浏览器窗口是否始终使用最新内核版本 */
+  useLatestCore?: 0 | 1;
   coreType?: BrowserCoreType;
   os?: BrowserOperatingSystem;
   /** Operating system version; defaults to the maximum supported value / 操作系统版本，默认使用支持的最大值 */
@@ -1974,6 +1976,8 @@ export interface ProfileUpdateInput {
   windowName?: string;
   /** Browser core version; examples include 138, 137, 136, 135, 133, 130, 125, 117, and 109 / 浏览器内核版本，例如 138、137、136、135、133、130、125、117、109 */
   coreVersion?: string;
+  /** Whether the browser profile should always use the latest core version / 浏览器窗口是否始终使用最新内核版本 */
+  useLatestCore?: 0 | 1;
   os?: BrowserOperatingSystem;
   osVersion?: BrowserOsVersion;
   /** Browser cookies / 浏览器 Cookie */

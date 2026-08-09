@@ -28,6 +28,7 @@ export interface PageData<T> {
 
 export interface RawProject {
   id?: number;
+  project_id?: number;
   name?: string;
   projectId?: number;
   projectName?: string;

@@ -313,7 +313,8 @@ sortOrder -> orderType
 
 ## MCP Tool Names
 
-Browser mode exposes 25 tools:
+Browser mode exposes 24 tools when a workspace is configured, or 25 tools without a configured
+workspace. `roxy_workspace_list` is omitted when the workspace ID is already known:
 
 ```txt
 roxy_workspace_list

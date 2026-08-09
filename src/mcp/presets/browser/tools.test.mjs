@@ -32,14 +32,125 @@ describe("3.0 MCP presets", () => {
       const result = await session.client.listTools();
       const names = result.tools.map((tool) => tool.name);
 
-      assert.equal(names.length, 25);
-      assert.ok(names.includes("roxy_workspace_list"));
+      assert.equal(names.length, 24);
+      assert.equal(names.includes("roxy_workspace_list"), false);
       assert.ok(names.includes("roxy_project_list"));
       assert.ok(names.includes("roxy_label_list"));
       assert.ok(names.includes("roxy_profile_list"));
       assert.ok(names.includes("roxy_profile_open"));
       assert.ok(names.includes("roxy_profile_update"));
       assert.ok(names.includes("roxy_profile_connection_info"));
+      const profileUpdate = result.tools.find((tool) => tool.name === "roxy_profile_update");
+      const profileCreate = result.tools.find((tool) => tool.name === "roxy_profile_create");
+      const proxyCreate = result.tools.find((tool) => tool.name === "roxy_proxy_create");
+      const accountCreate = result.tools.find(
+        (tool) => tool.name === "roxy_platform_account_create",
+      );
+      assert.deepEqual(profileCreate.inputSchema.required, ["profiles"]);
+      assert.deepEqual(proxyCreate.inputSchema.required, ["proxies", "checkChannel"]);
+      assert.deepEqual(accountCreate.inputSchema.required, ["accounts"]);
+      assert.equal(profileCreate.inputSchema.properties.profiles.maxItems, 30);
+      assert.equal(proxyCreate.inputSchema.properties.proxies.maxItems, 30);
+      assert.equal(accountCreate.inputSchema.properties.accounts.maxItems, 30);
+      assert.equal(profileCreate.inputSchema.properties.name, undefined);
+      const browserCoreSchema =
+        profileCreate.inputSchema.properties.profiles.items.properties.browserCore;
+      assert.equal(browserCoreSchema.type, "string");
+      assert.deepEqual(browserCoreSchema.enum, [
+        "Chrome Latest",
+        "Chrome 150",
+        "Chrome 149",
+        "Chrome 148",
+        "Chrome 147",
+        "Chrome 146",
+        "Chrome 145",
+        "Chrome 144",
+        "Chrome 135",
+        "Chrome 133",
+        "Chrome 130",
+        "Chrome 125",
+        "Chrome 117",
+        "Chrome 109",
+        "Firefox Latest",
+        "Firefox 146",
+      ]);
+      assert.equal(profileCreate.inputSchema.properties.profiles.items.properties.core, undefined);
+      const osSchema = profileCreate.inputSchema.properties.profiles.items.properties.os;
+      assert.equal(osSchema.type, "string");
+      assert.deepEqual(osSchema.enum, [
+        "Windows 11",
+        "Windows 10",
+        "Windows 8",
+        "Windows 7",
+        "macOS 26",
+        "macOS 15",
+        "macOS 14",
+        "macOS 13",
+        "Linux ALL",
+        "Android 14",
+        "Android 13",
+        "Android 12",
+        "Android 9",
+        "IOS 18",
+        "IOS 17",
+        "IOS 16",
+        "IOS 15",
+        "IOS 14",
+      ]);
+      assert.deepEqual(profileUpdate.inputSchema.required, ["dirId"]);
+      const createProperties = profileCreate.inputSchema.properties.profiles.items.properties;
+      const { dirId: _dirId, ...updateProperties } = profileUpdate.inputSchema.properties;
+      const { browserCore: _createBrowserCore, ...sharedCreateProperties } = createProperties;
+      const { coreVersion, ...sharedUpdateProperties } = updateProperties;
+      assert.deepEqual(sharedUpdateProperties, sharedCreateProperties);
+      assert.equal(profileUpdate.inputSchema.properties.core, undefined);
+      assert.equal(profileUpdate.inputSchema.properties.os.type, "string");
+      assert.deepEqual(profileUpdate.inputSchema.properties.os.enum, osSchema.enum);
+      assert.equal(profileUpdate.inputSchema.properties.browserCore, undefined);
+      assert.equal(coreVersion.type, "string");
+      assert.deepEqual(coreVersion.enum, [
+        "Latest",
+        "150",
+        "149",
+        "148",
+        "147",
+        "146",
+        "145",
+        "144",
+        "135",
+        "133",
+        "130",
+        "125",
+        "117",
+        "109",
+      ]);
+      assert.deepEqual(createProperties.platformAccounts.items.properties, {
+        id: { type: "number" },
+      });
+      assert.equal(createProperties.platformAccounts.items.additionalProperties, true);
+      assert.deepEqual(createProperties.proxyInfo.properties, { id: { type: "number" } });
+      assert.equal(createProperties.proxyInfo.additionalProperties, true);
+      assert.equal(createProperties.fingerInfo.properties, undefined);
+      assert.equal(createProperties.fingerInfo.additionalProperties, true);
+      assert.deepEqual(createProperties.searchEngine.enum, [
+        "Google",
+        "Microsoft Bing",
+        "Yahoo",
+        "Yandex",
+        "DuckDuckGo",
+      ]);
+      assert.deepEqual(createProperties.labelIds, {
+        type: "array",
+        items: { type: "number" },
+      });
+      assert.deepEqual(
+        createProperties.cookie.oneOf.map((schema) => schema.type),
+        ["string", "object", "array"],
+      );
+      assert.equal(createProperties.cookie.oneOf[1].additionalProperties, true);
+      assert.equal(createProperties.cookie.oneOf[2].items.additionalProperties, true);
+      assert.equal(proxyCreate.inputSchema.properties.protocol, undefined);
+      assert.equal(accountCreate.inputSchema.properties.platformUrl, undefined);
       const profileGet = result.tools.find((tool) => tool.name === "roxy_profile_get");
       const profileDelete = result.tools.find((tool) => tool.name === "roxy_profile_delete");
       assert.ok(profileGet.inputSchema.properties.dirId);
@@ -53,6 +164,71 @@ describe("3.0 MCP presets", () => {
       assert.equal(names.includes("roxy_platform_account_create_many"), false);
       assert.equal(names.includes("roxy_browser_list"), false);
       assert.equal(names.includes("roxy_list_browsers"), false);
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("browser preset keeps workspace listing when no workspace is configured", async () => {
+    const server = createRoxyBrowserMcpServer();
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      assert.ok(result.tools.some((tool) => tool.name === "roxy_workspace_list"));
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("browser preset supports request timeout and public tool filters", async () => {
+    const server = createRoxyBrowserMcpServer({
+      timeout: 12_345,
+      roxy: { apiKey: "secret-token", timeout: 99_999, workspaceId: 77 },
+      includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
+      excludeTools: ["roxy_profile_open"],
+    });
+    assert.equal(server.context.browser.api.transport.timeout, 12_345);
+
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      assert.deepEqual(
+        result.tools.map((tool) => tool.name),
+        ["roxy_profile_list", "roxy_profile_get"],
+      );
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("browser preset filters explicit custom tool catalogs", async () => {
+    const server = createRoxyBrowserMcpServer({
+      tools: [
+        {
+          name: "custom_one",
+          operationId: "custom.one",
+          description: "One",
+          inputSchema: { type: "object", properties: {} },
+          handler: async () => "one",
+        },
+        {
+          name: "custom_two",
+          operationId: "custom.two",
+          description: "Two",
+          inputSchema: { type: "object", properties: {} },
+          handler: async () => "two",
+        },
+      ],
+      includeTools: ["custom_one", "custom_two"],
+      excludeTools: ["custom_two"],
+    });
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      assert.deepEqual(
+        result.tools.map((tool) => tool.name),
+        ["custom_one"],
+      );
     } finally {
       await session.close();
     }

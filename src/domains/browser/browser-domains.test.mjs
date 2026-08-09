@@ -250,6 +250,7 @@ describe("browser domains", () => {
       windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
       custom: true,
     });
+    const createdWithResult = await profiles.createWithResult({ windowName: "Reported" });
     await profiles.update("profile-1", { windowName: "Renamed" });
     await profiles.delete("profile-1", { isSoftDelete: false });
     await profiles.delete("profile-2");
@@ -269,6 +270,7 @@ describe("browser domains", () => {
 
     assert.equal(page.rows[0].dirId, "profile-1");
     assert.equal(created.dirId, "created-profile");
+    assert.deepEqual(createdWithResult, { id: "created-profile", message: "ok" });
     assert.equal(openedOne.ws, "ws://profile-1");
     assert.equal(openedMany.length, 2);
     assert.deepEqual(calls.filter((call) => call[0] === "browser.open")[0][1], {
@@ -352,6 +354,13 @@ describe("browser domains", () => {
       proxyPassword: "p",
       remark: "memo",
     });
+    const createdWithResult = await proxies.createWithResult({
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
+      protocol: "HTTP",
+      host: "127.0.0.4",
+      port: "8082",
+    });
     await proxies.createMany({
       checkChannel: "http://iprust.io/ip.json",
       proxyList: [
@@ -386,6 +395,7 @@ describe("browser domains", () => {
     assert.equal(page.rows[0].dataType, "buyProxy");
     assert.equal(proxy.dataType, "proxyModule");
     assert.equal(directProxy.dataType, "buyProxy");
+    assert.deepEqual(createdWithResult, { message: "ok" });
     assert.deepEqual(calls.find((call) => call[0] === "proxy.detect")[1], { id: 12 });
     assert.equal(channels[0].label, "IPRust.io");
     assert.deepEqual(emptyChannels, []);
@@ -442,6 +452,9 @@ describe("browser domains", () => {
       platformEfa: "otp",
       platformRemarks: "memo",
     });
+    const createdWithResult = await accounts.createWithResult({
+      platformUrl: "https://reported.example.com",
+    });
     await accounts.createMany([{ platformUrl: "https://example.com", platformUserName: "seller" }]);
     await accounts.update(5, {
       platformUrl: "https://example.com",
@@ -453,6 +466,7 @@ describe("browser domains", () => {
     assert.equal(availablePage.page, 2);
     assert.equal(page.rows[0].platformUserName, "seller");
     assert.equal(createdId, 5);
+    assert.deepEqual(createdWithResult, { id: 5, message: "ok" });
     assert.equal(calls.find((call) => call[0] === "account.create")[1].platformEfa, "otp");
     assert.deepEqual(calls.find((call) => call[0] === "browser.accounts")[1], {
       page_index: 2,

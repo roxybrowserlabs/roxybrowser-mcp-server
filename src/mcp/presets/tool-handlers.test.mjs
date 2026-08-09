@@ -16,8 +16,10 @@ import {
   normalizePlatformAccountInput,
   normalizeProfileDeleteOptions,
   normalizeProfileInput,
+  normalizeProfileInputWithWarnings,
   normalizeProfileListArgs,
   normalizeProfileOpenOptions,
+  normalizeProfileUpdateInputWithWarnings,
   normalizeProxyInput,
   normalizeProxyListArgs,
 } from "../../../lib/mcp/presets/browser/inputs.js";
@@ -69,32 +71,219 @@ describe("MCP tool handlers", () => {
         os: "Windows",
       },
     );
+    assert.deepEqual(normalizeProfileListArgs({ serialNumber: "ROX-11" }), {
+      sortNums: "11",
+    });
     assert.deepEqual(normalizeProfileListArgs({}), {});
 
     assert.deepEqual(
       normalizeProfileInput({
         name: "Alpha",
         projectId: 3,
-        core: { type: "Chrome", version: "140" },
-        os: { name: "Windows", version: "11" },
-        proxyId: 9,
+        browserCore: "Chrome 150",
+        os: "Windows 10",
+        cookie: [
+          {
+            name: "sid",
+            value: "abc",
+            domain: ".example.com",
+            path: "/",
+            expires: -1,
+            httpOnly: false,
+            secure: false,
+            sameSite: "Lax",
+            session: true,
+          },
+        ],
+        searchEngine: "DuckDuckGo",
+        labelIds: [7, 8],
+        proxyInfo: { id: 9 },
         urls: ["https://example.com"],
         remark: "memo",
-        platformAccounts: [{ platformUrl: "https://example.com", username: "seller" }],
+        platformAccounts: [{ id: 12 }],
+        fingerInfo: { language: "zh-CN", forbidAudio: true },
       }),
       {
         windowName: "Alpha",
         projectId: 3,
         coreType: "Chrome",
-        coreVersion: "140",
+        coreVersion: "150",
+        useLatestCore: 0,
         os: "Windows",
-        osVersion: "11",
+        osVersion: "10",
+        cookie: [
+          {
+            name: "sid",
+            value: "abc",
+            domain: ".example.com",
+            path: "/",
+            expires: -1,
+            httpOnly: false,
+            secure: false,
+            sameSite: "Lax",
+            session: true,
+          },
+        ],
+        searchEngine: "DuckDuckGo",
+        labelIds: [7, 8],
         proxyInfo: { moduleId: 9, proxyMethod: "choose" },
         defaultOpenUrl: ["https://example.com"],
         windowRemark: "memo",
-        windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
+        windowPlatformList: [{ id: 12 }],
+        fingerInfo: { language: "zh-CN", forbidAudio: true },
       },
     );
+    assert.deepEqual(
+      normalizeProfileInput({
+        platformAccounts: [
+          {
+            platformUrl: "https://example.com",
+            platformUserName: "seller",
+            platformPassword: "secret",
+            platformEfa: "2fa",
+            platformRemarks: "memo",
+          },
+        ],
+        proxyInfo: {
+          moduleId: 4,
+          proxyMethod: "custom",
+          proxyCategory: "static",
+          ipType: "IPV4",
+          host: "proxy.example",
+          port: "8080",
+          proxyUserName: "proxy-user",
+          proxyPassword: "proxy-pass",
+          refreshUrl: "https://refresh.example",
+          checkChannel: "https://check.example",
+        },
+      }),
+      {
+        windowPlatformList: [
+          {
+            platformUrl: "https://example.com",
+            platformUserName: "seller",
+            platformPassword: "secret",
+            platformEfa: "2fa",
+            platformRemarks: "memo",
+          },
+        ],
+        proxyInfo: {
+          moduleId: 4,
+          proxyMethod: "custom",
+          proxyCategory: "static",
+          ipType: "IPV4",
+          host: "proxy.example",
+          port: "8080",
+          proxyUserName: "proxy-user",
+          proxyPassword: "proxy-pass",
+          refreshUrl: "https://refresh.example",
+          checkChannel: "https://check.example",
+        },
+      },
+    );
+    assert.deepEqual(normalizeProfileInput({ proxyId: 10 }), {
+      proxyInfo: { moduleId: 10, proxyMethod: "choose" },
+    });
+    assert.deepEqual(
+      normalizeProfileInput({
+        cookie: [{ name: "sid", value: 123, domain: ".example.com", expiry: 2_000_000_000 }],
+      }).cookie,
+      [
+        {
+          name: "sid",
+          value: "123",
+          domain: ".example.com",
+          expiry: 2_000_000_000,
+          path: "/",
+          expires: 2_000_000_000,
+          httpOnly: false,
+          secure: false,
+          sameSite: "Lax",
+          session: false,
+        },
+      ],
+    );
+    assert.deepEqual(
+      normalizeProfileInput({
+        cookie: "session=abc; theme=dark",
+        platformAccounts: [{ platformUrl: "https://shop.example.com/login" }],
+      }).cookie?.map(({ name, value, domain }) => ({ name, value, domain })),
+      [
+        { name: "session", value: "abc", domain: "shop.example.com" },
+        { name: "theme", value: "dark", domain: "shop.example.com" },
+      ],
+    );
+    assert.deepEqual(
+      normalizeProfileInput({
+        cookie: JSON.stringify({ name: "json", value: "value", domain: ".json.example" }),
+      }).cookie?.map(({ name, domain }) => ({ name, domain })),
+      [{ name: "json", domain: ".json.example" }],
+    );
+    assert.deepEqual(
+      normalizeProfileInput({
+        cookie: [
+          "# Netscape HTTP Cookie File",
+          ".example.com\tTRUE\t/\tFALSE\t2000000000\tnetscape\tvalue",
+        ].join("\n"),
+      }).cookie?.map(({ name, value, domain }) => ({ name, value, domain })),
+      [{ name: "netscape", value: "value", domain: ".example.com" }],
+    );
+    assert.deepEqual(
+      normalizeProfileInput({ cookie: "session=abc" }).cookie?.map(({ name, value, domain }) => ({
+        name,
+        value,
+        domain,
+      })),
+      [{ name: "session", value: "abc", domain: "" }],
+    );
+    assert.equal(
+      normalizeProfileInput({ cookie: { name: "single", value: "1" } }).cookie?.length,
+      1,
+    );
+    assert.deepEqual(normalizeProfileInputWithWarnings({ cookie: 123 }), {
+      input: {},
+      warnings: ["Cookie was omitted because its input type is unsupported."],
+    });
+    assert.deepEqual(normalizeProfileInput({ core: { type: "Firefox", version: "140" } }), {
+      coreType: "Firefox",
+      coreVersion: "140",
+    });
+    assert.deepEqual(normalizeProfileInput({ browserCore: "ALL" }), {});
+    assert.deepEqual(normalizeProfileInput({ browserCore: "Chrome Latest" }), {
+      coreType: "Chrome",
+      useLatestCore: 1,
+    });
+    assert.deepEqual(normalizeProfileInput({ browserCore: "Firefox Latest" }), {
+      coreType: "Firefox",
+      useLatestCore: 1,
+    });
+    assert.deepEqual(normalizeProfileUpdateInputWithWarnings({ coreVersion: "Latest" }), {
+      input: { useLatestCore: 1 },
+      warnings: [],
+    });
+    assert.deepEqual(
+      normalizeProfileUpdateInputWithWarnings({
+        coreVersion: "146",
+        browserCore: "Firefox Latest",
+        core: { type: "Chrome", version: "150" },
+      }),
+      {
+        input: { coreVersion: "146", useLatestCore: 0 },
+        warnings: [],
+      },
+    );
+    assert.deepEqual(normalizeProfileInput({ os: "macOS 26" }), {
+      os: "macOS",
+      osVersion: "26",
+    });
+    assert.deepEqual(normalizeProfileInput({ os: "Linux ALL" }), {
+      os: "Linux",
+      osVersion: "ALL",
+    });
+    assert.deepEqual(normalizeProfileInput({ os: { name: "Windows", version: "11" } }), {
+      os: "Windows",
+      osVersion: "11",
+    });
     assert.deepEqual(normalizeProfileInput({}), {});
     assert.deepEqual(normalizeProfileOpenOptions({ force: false, headless: true }), {
       forceOpen: false,
@@ -229,18 +418,23 @@ describe("MCP tool handlers", () => {
       rows: [
         {
           dirId: "p1",
+          projectId: 3,
           workspaceName: "Workspace",
           windowSortNum: 12,
           windowRemark: longRemark,
         },
-        { dirId: "p2", workspaceName: "Roxy", windowSortNum: 13, coreVersion: "140" },
-        { dirId: "p3" },
+        { dirId: "p2", projectId: 4, workspaceName: "Roxy", windowSortNum: 13, coreVersion: "140" },
+        { dirId: "p3", workspaceName: "Main" },
       ],
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
-    assert.match(profiles, /\| Name \| DirId \| Serial \| Core \| OS \| Remark \|/);
-    assert.match(profiles, /\| - \| p1 \| 12 \| - \| - \| 12345678901234567890\.\.\. \|/);
-    assert.match(profiles, /\| - \| p2 \| 13 \| 140 \| - \| - \|/);
+    assert.match(
+      profiles,
+      /\| Name \| DirId \| ProjectId \| SerialNumber \| Core \| OS \| Remark \|/,
+    );
+    assert.match(profiles, /\| - \| p1 \| 3 \| WOR-12 \| - \| - \| 12345678901234567890\.\.\. \|/);
+    assert.match(profiles, /\| - \| p2 \| 4 \| ROX-13 \| 140 \| - \| - \|/);
+    assert.match(profiles, /\| - \| p3 \| - \| - \| - \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
     const platformAccounts = formatPlatformAccounts({
@@ -290,11 +484,13 @@ describe("MCP tool handlers", () => {
       rows: [
         { projectId: 1, projectName: "One" },
         { id: 2, name: "Two" },
+        { project_id: 3, project_name: "Snake case" },
         { project_name: "Legacy" },
         {},
       ],
     });
     assert.match(projects, /\| 1 \| One \|/);
+    assert.match(projects, /\| 3 \| Snake case \|/);
     assert.match(projects, /\| - \| Legacy \|/);
     assert.match(projects, /\| - \| - \|/);
     assert.equal(formatLabels([]), "No labels found.");
@@ -356,15 +552,26 @@ describe("MCP tool handlers", () => {
       checkStatus: "invalid",
     });
 
-    assert.equal(formatConnections([]), "No connection info found.");
-    assert.equal(formatConnections([{}]), "No connection info found.");
-    assert.match(
-      formatConnections([
-        { dirId: "p1", windowName: "Alpha", ws: "ws://p1", http: "http://p1", pid: 10 },
-        { ws: "ws://anonymous", http: "" },
-      ]),
-      /\| Alpha \| p1 \| ws:\/\/p1 \| http:\/\/p1 \| 10 \|/,
-    );
+    const noConnections =
+      "No opened browsers found.\n\nUse `roxy_profile_open` to open a browser profile first.";
+    assert.equal(formatConnections([]), noConnections);
+    assert.equal(formatConnections([{}]), noConnections);
+    const connections = formatConnections([
+      { dirId: "p1", windowName: "Alpha", ws: "ws://p1", http: "http://p1", pid: 10 },
+      {
+        dirId: "p2",
+        windowName: "Firefox",
+        ws: "ws://p2",
+        http: "http://should-not-be-shown",
+        marionette_port: 2828,
+      },
+    ]);
+    assert.match(connections, /^Found 2 opened browser\(s\):/);
+    assert.match(connections, /\*\*Alpha\*\* \(p1\)\n- CDP WebSocket: `ws:\/\/p1`/);
+    assert.match(connections, /- HTTP Endpoint: `http:\/\/p1`\n- Core Type: Chrome/);
+    assert.match(connections, /\*\*Firefox\*\* \(p2\)\n- BiDi WebSocket: `ws:\/\/p2`/);
+    assert.match(connections, /- Core Type: Firefox/);
+    assert.doesNotMatch(connections, /should-not-be-shown/);
 
     assert.equal(formatDetectChannels([]), "No detect channels found.");
     const channels = formatDetectChannels([
@@ -431,6 +638,7 @@ describe("MCP tool handlers", () => {
               rows: [
                 {
                   dirId: "profile-1",
+                  projectId: 3,
                   windowName: "Alpha",
                   workspaceName: "Default workspace",
                   windowSortNum: 11,
@@ -445,6 +653,10 @@ describe("MCP tool handlers", () => {
           create: async (args) => {
             calls.push(["profiles.create", args]);
             return { dirId: "created-profile", windowName: args.windowName };
+          },
+          createWithResult: async (args) => {
+            calls.push(["profiles.create", args]);
+            return { id: "created-profile", message: "profile created" };
           },
           update: async (id, patch) => {
             calls.push(["profiles.update", id, patch]);
@@ -496,6 +708,10 @@ describe("MCP tool handlers", () => {
           create: async (args) => {
             calls.push(["proxies.create", args]);
           },
+          createWithResult: async (args) => {
+            calls.push(["proxies.create", args]);
+            return { message: "proxy created" };
+          },
           createMany: async (proxies) => {
             calls.push(["proxies.createMany", proxies]);
           },
@@ -531,6 +747,10 @@ describe("MCP tool handlers", () => {
           create: async (args) => {
             calls.push(["platformAccounts.create", args]);
             return 6;
+          },
+          createWithResult: async (args) => {
+            calls.push(["platformAccounts.create", args]);
+            return { id: 6, message: "account created" };
           },
           createMany: async (accounts) => {
             calls.push(["platformAccounts.createMany", accounts]);
@@ -568,7 +788,7 @@ describe("MCP tool handlers", () => {
       context,
     );
     assert.match(profileList, /Alpha/);
-    assert.match(profileList, /\| Alpha \| profile-1 \| 11 \|/);
+    assert.match(profileList, /\| Alpha \| profile-1 \| 3 \| DEF-11 \|/);
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
         { dirId: "profile-1" },
@@ -578,14 +798,14 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_create").handler(
-        { name: "Created" },
+        { profiles: [{ name: "Created" }] },
         context,
       ),
       /created-profile/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_update").handler(
-        { dirId: "profile-1", name: "Updated" },
+        { dirId: "profile-1", name: "Updated", coreVersion: "150", os: "Windows 10" },
         context,
       ),
       /Updated profile/,
@@ -651,14 +871,11 @@ describe("MCP tool handlers", () => {
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
         {
           checkChannel: "http://iprust.io/ip.json",
-          ipType: "IPV4",
-          protocol: "SOCKS5",
-          host: "127.0.0.1",
-          port: "1080",
+          proxies: [{ ipType: "IPV4", protocol: "SOCKS5", host: "127.0.0.1", port: "1080" }],
         },
         context,
       ),
-      /Created proxy/,
+      /Proxy creation: 1 requested \| 1 succeeded \| 0 failed/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
@@ -668,7 +885,7 @@ describe("MCP tool handlers", () => {
         },
         context,
       ),
-      /Created 1/,
+      /Proxy creation: 1 requested \| 1 succeeded \| 0 failed/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_update").handler(
@@ -706,17 +923,17 @@ describe("MCP tool handlers", () => {
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_create").handler(
-        { platformUrl: "https://example.com" },
+        { accounts: [{ platformUrl: "https://example.com" }] },
         context,
       ),
-      /6/,
+      /Platform account creation: 1 requested \| 1 succeeded \| 0 failed/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_create").handler(
         { accounts: [{ platformUrl: "https://example.com" }] },
         context,
       ),
-      /Created 1/,
+      /Platform account creation: 1 requested \| 1 succeeded \| 0 failed/,
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_update").handler(
@@ -739,17 +956,26 @@ describe("MCP tool handlers", () => {
       args: ["--flag"],
     });
     assert.equal(calls.find((call) => call[0] === "profiles.create")[1].windowName, "Created");
-    assert.equal(calls.find((call) => call[0] === "profiles.update")[2].windowName, "Updated");
-    assert.deepEqual(calls.find((call) => call[0] === "proxies.createMany")[1], {
+    assert.deepEqual(calls.find((call) => call[0] === "profiles.update").slice(1), [
+      "profile-1",
+      {
+        windowName: "Updated",
+        coreVersion: "150",
+        useLatestCore: 0,
+        os: "Windows",
+        osVersion: "10",
+      },
+    ]);
+    assert.equal(
+      calls.some((call) => call[0] === "proxies.createMany"),
+      false,
+    );
+    assert.deepEqual(calls.find((call) => call[0] === "proxies.create")[1], {
       checkChannel: "http://iprust.io/ip.json",
-      proxyList: [
-        {
-          ipType: "IPV4",
-          protocol: "SOCKS5",
-          host: "127.0.0.1",
-          port: "1080",
-        },
-      ],
+      ipType: "IPV4",
+      protocol: "SOCKS5",
+      host: "127.0.0.1",
+      port: "1080",
     });
     assert.deepEqual(calls.find((call) => call[0] === "proxies.update").slice(1), [
       1,
@@ -782,6 +1008,156 @@ describe("MCP tool handlers", () => {
     assert.equal(text, "Proxies: 0 total | page 1/1 | pageSize 15\nNo proxies found.");
   });
 
+  test("browser create tools run sequentially and report every item", async () => {
+    let active = 0;
+    let maxActive = 0;
+    const order = [];
+    const sequential = async (kind, item, result) => {
+      active += 1;
+      maxActive = Math.max(maxActive, active);
+      order.push(`${kind}:${item}:start`);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      order.push(`${kind}:${item}:end`);
+      active -= 1;
+      if (item.includes("bad")) throw new Error(`backend message for ${item}`);
+      return result;
+    };
+    const context = {
+      browser: {
+        profiles: {
+          createWithResult: (input) =>
+            sequential("profile", input.windowName, {
+              id: `id-${input.windowName}`,
+              message: `created ${input.windowName}`,
+            }),
+          update: async () => {},
+        },
+        proxies: {
+          createWithResult: (input) =>
+            sequential("proxy", input.host, { message: `created ${input.host}` }),
+        },
+        platformAccounts: {
+          createWithResult: (input) =>
+            sequential("account", input.platformUrl, {
+              id: input.platformUrl.length,
+              message: `created ${input.platformUrl}`,
+            }),
+        },
+      },
+    };
+
+    const profiles = await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_create").handler(
+      {
+        profiles: [
+          { name: "one", cookie: "invalid-cookie-text" },
+          { name: "bad-two" },
+          { name: "three" },
+        ],
+      },
+      context,
+    );
+    assert.match(profiles, /3 requested \| 2 succeeded \| 1 failed/);
+    assert.match(profiles, /\| # \| Item \| Status \| DirId \| Message \| Warnings \|/);
+    assert.match(profiles, /id-one/);
+    assert.match(profiles, /backend message for bad-two/);
+    assert.match(profiles, /Cookie was omitted because parsing failed/);
+    assert.deepEqual(order.slice(0, 6), [
+      "profile:one:start",
+      "profile:one:end",
+      "profile:bad-two:start",
+      "profile:bad-two:end",
+      "profile:three:start",
+      "profile:three:end",
+    ]);
+
+    const proxies = await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
+      {
+        checkChannel: "channel",
+        proxies: [
+          { ipType: "IPV4", protocol: "HTTP", host: "one", port: "1" },
+          { ipType: "IPV4", protocol: "HTTP", host: "bad-two", port: "2" },
+        ],
+      },
+      context,
+    );
+    assert.match(proxies, /2 requested \| 1 succeeded \| 1 failed/);
+    assert.match(proxies, /backend message for bad-two/);
+
+    const accounts = await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_create").handler(
+      {
+        accounts: [{ platformUrl: "https://one.example" }, { platformUrl: "bad-account" }],
+      },
+      context,
+    );
+    assert.match(accounts, /2 requested \| 1 succeeded \| 1 failed/);
+    assert.match(accounts, /backend message for bad-account/);
+    assert.equal(maxActive, 1);
+
+    const updated = await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_update").handler(
+      { dirId: "profile-1", cookie: "invalid-cookie-text" },
+      context,
+    );
+    assert.match(updated, /Warning: Cookie was omitted because parsing failed/);
+  });
+
+  test("browser create tools reject more than 30 items before creating", async () => {
+    let calls = 0;
+    const context = {
+      browser: {
+        profiles: {
+          createWithResult: async () => {
+            calls += 1;
+          },
+        },
+      },
+    };
+    await assert.rejects(
+      toolByName(BROWSER_MCP_TOOLS, "roxy_profile_create").handler(
+        { profiles: Array.from({ length: 31 }, (_, index) => ({ name: `profile-${index}` })) },
+        context,
+      ),
+      /maximum is 30; no items were created/,
+    );
+    assert.equal(calls, 0);
+  });
+
+  test("profile creation adjusts Firefox macOS versions to ALL", async () => {
+    const calls = [];
+    const result = await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_create").handler(
+      {
+        profiles: [
+          { name: "Firefox macOS", browserCore: "Firefox 146", os: "macOS 26" },
+          { name: "Chrome macOS", browserCore: "Chrome 150", os: "macOS 26" },
+        ],
+      },
+      {
+        browser: {
+          profiles: {
+            createWithResult: async (input) => {
+              calls.push(input);
+              return { id: `id-${calls.length}`, message: "created" };
+            },
+          },
+        },
+      },
+    );
+
+    assert.equal(result.includes("2 requested | 2 succeeded | 0 failed"), true);
+    assert.match(
+      result,
+      /created OS was adjusted from macOS 26 to macOS ALL because Firefox profiles only support macOS ALL\./,
+    );
+    assert.deepEqual(calls[0], {
+      windowName: "Firefox macOS",
+      coreType: "Firefox",
+      coreVersion: "146",
+      useLatestCore: 0,
+      os: "macOS",
+      osVersion: "ALL",
+    });
+    assert.equal(calls[1].osVersion, "26");
+  });
+
   test("MCP handlers cover empty states and optional output fallbacks", async () => {
     assert.match(
       formatProfiles({
@@ -800,7 +1176,7 @@ describe("MCP tool handlers", () => {
           },
         ],
       }),
-      /\| Rich Profile \| profile-rich \| 7 \| Chrome 140 \| Windows 11 \| VIP \|/,
+      /\| Rich Profile \| profile-rich \| - \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
     );
     assert.deepEqual(
       parseJsonBlock(
@@ -861,14 +1237,14 @@ describe("MCP tool handlers", () => {
         { dirId: "profile-empty" },
         browserContext,
       ),
-      /\| - \| profile-empty \|/,
+      /\*\*Unnamed\*\* \(profile-empty\)\n- Core Type: Chrome/,
     );
     assert.equal(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_connection_info").handler(
         {},
         browserContext,
       ),
-      "No connection info found.",
+      "No opened browsers found.\n\nUse `roxy_profile_open` to open a browser profile first.",
     );
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_list").handler({}, browserContext),
@@ -886,7 +1262,7 @@ describe("MCP tool handlers", () => {
         { dirId: "account-empty" },
         commerceContext,
       ),
-      /\| - \| account-empty \|/,
+      /\*\*Unnamed\*\* \(account-empty\)\n- Core Type: Chrome/,
     );
     assert.match(
       await toolByName(COMMERCE_MCP_TOOLS, "roxy_proxy_list").handler({}, commerceContext),

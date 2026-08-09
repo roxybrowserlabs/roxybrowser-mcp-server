@@ -5397,6 +5397,15 @@
           },
           "default": "Latest"
         },
+        "useLatestCore": {
+          "type": "integer",
+          "enum": [0, 1],
+          "description": {
+            "en": "Whether the browser profile should always use the latest core version",
+            "zh": "浏览器窗口是否始终使用最新内核版本"
+          },
+          "default": 0
+        },
         "coreType": {
           "$ref": "#/schemas/BrowserCoreType",
           "default": "Chrome"
@@ -7444,6 +7453,15 @@
             "zh": "浏览器内核版本，例如 138、137、136、135、133、130、125、117、109"
           },
           "default": "Latest"
+        },
+        "useLatestCore": {
+          "type": "integer",
+          "enum": [0, 1],
+          "description": {
+            "en": "Whether the browser profile should always use the latest core version",
+            "zh": "浏览器窗口是否始终使用最新内核版本"
+          },
+          "default": 0
         },
         "os": {
           "$ref": "#/schemas/BrowserOperatingSystem",
