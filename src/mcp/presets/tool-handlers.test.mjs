@@ -428,13 +428,10 @@ describe("MCP tool handlers", () => {
       ],
     });
     assert.match(profiles, /^Profiles: 3 total \| page 1\/2 \| pageSize 2 \| nextPage 2/m);
-    assert.match(
-      profiles,
-      /\| Name \| DirId \| ProjectId \| SerialNumber \| Core \| OS \| Remark \|/,
-    );
-    assert.match(profiles, /\| - \| p1 \| 3 \| WOR-12 \| - \| - \| 12345678901234567890\.\.\. \|/);
-    assert.match(profiles, /\| - \| p2 \| 4 \| ROX-13 \| 140 \| - \| - \|/);
-    assert.match(profiles, /\| - \| p3 \| - \| - \| - \| - \| - \|/);
+    assert.match(profiles, /\| Name \| DirId \| SerialNumber \| Core \| OS \| Remark \|/);
+    assert.match(profiles, /\| - \| p1 \| WOR-12 \| - \| - \| 12345678901234567890\.\.\. \|/);
+    assert.match(profiles, /\| - \| p2 \| ROX-13 \| 140 \| - \| - \|/);
+    assert.match(profiles, /\| - \| p3 \| - \| - \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
 
     const platformAccounts = formatPlatformAccounts({
@@ -788,7 +785,7 @@ describe("MCP tool handlers", () => {
       context,
     );
     assert.match(profileList, /Alpha/);
-    assert.match(profileList, /\| Alpha \| profile-1 \| 3 \| DEF-11 \|/);
+    assert.match(profileList, /\| Alpha \| profile-1 \| DEF-11 \|/);
     assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
         { dirId: "profile-1" },
@@ -1176,7 +1173,7 @@ describe("MCP tool handlers", () => {
           },
         ],
       }),
-      /\| Rich Profile \| profile-rich \| - \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
+      /\| Rich Profile \| profile-rich \| MAI-7 \| Chrome 140 \| Windows 11 \| VIP \|/,
     );
     assert.deepEqual(
       parseJsonBlock(

@@ -34,11 +34,10 @@ export function formatProfiles(page: Page<BrowserProfile>): string {
   return pagedTable(
     "Profiles",
     page,
-    ["Name", "DirId", "ProjectId", "SerialNumber", "Core", "OS", "Remark"],
+    ["Name", "DirId", "SerialNumber", "Core", "OS", "Remark"],
     page.rows.map((profile) => [
       profile.windowName,
       profile.dirId,
-      profile.projectId,
       profileSerial(profile),
       combined(stringField(profile, "coreType"), profile.coreVersion),
       combined(profile.os, profile.osVersion),
