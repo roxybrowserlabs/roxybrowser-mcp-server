@@ -137,7 +137,16 @@ export function formatProxies(page: Page<BrowserProxy>): string {
   return pagedTable(
     "Proxies",
     page,
-    ["ID", "Proxy", "Source", "Status", "Binds", "Note"],
+    [
+      "ID",
+      "Proxy",
+      "Country",
+      "ExpireDate",
+      "Source",
+      "Status",
+      "BoundProfileSerialNumbers",
+      "Note",
+    ],
     page.rows.map((proxy) => {
       const address = proxy.host
         ? `${proxy.protocol ? `${proxy.protocol} ` : ""}${proxy.host}${proxy.port ? `:${proxy.port}` : ""}`
@@ -145,9 +154,13 @@ export function formatProxies(page: Page<BrowserProxy>): string {
       return [
         proxy.id,
         address,
+        proxy.lastCountry,
+        proxy.expireDate,
         proxySource(proxy.dataType),
         proxyStatus(proxy.checkStatus),
-        proxy.bindCount,
+        Array.isArray(proxy.bindList) && proxy.bindList.length > 0
+          ? proxy.bindList.join(", ")
+          : undefined,
         truncateText(proxy.remark),
       ];
     }),

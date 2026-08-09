@@ -293,7 +293,6 @@ describe("MCP tool handlers", () => {
 
     assert.deepEqual(normalizeProxyListArgs({ source: "user", checkStatus: "passed" }), {
       proxyType: "0",
-      check_status: 1,
     });
     assert.deepEqual(
       normalizeProxyListArgs({
@@ -301,19 +300,17 @@ describe("MCP tool handlers", () => {
         type: "available",
         bindStatus: "bound",
         autoRenew: true,
-        checkStatus: "failed",
       }),
       {
         proxyType: "1",
         type: "available_list",
         proxyBindStatus: "1",
         proxyAutoRenew: "1",
-        check_status: 2,
       },
     );
     assert.deepEqual(
       normalizeProxyListArgs({ bindStatus: "unbound", autoRenew: false, checkStatus: "unknown" }),
-      { proxyBindStatus: "0", proxyAutoRenew: "0", check_status: 0 },
+      { proxyBindStatus: "0", proxyAutoRenew: "0" },
     );
     assert.deepEqual(normalizeProxyListArgs({ source: "all", bindStatus: "all" }), {});
 
@@ -507,6 +504,9 @@ describe("MCP tool handlers", () => {
           port: "1080",
           checkStatus: 1,
           bindCount: 2,
+          bindList: [11, 12],
+          lastCountry: "US",
+          expireDate: "2026-12-31",
           remark: longRemark,
         },
         { id: 2, dataType: "proxyModule", host: "127.0.0.1", checkStatus: 2 },
@@ -516,10 +516,14 @@ describe("MCP tool handlers", () => {
     });
     assert.match(
       proxies,
-      /\| 1 \| SOCKS5 proxy\.example:1080 \| store \| passed \| 2 \| 12345678901234567890\.\.\. \|/,
+      /\| 1 \| SOCKS5 proxy\.example:1080 \| US \| 2026-12-31 \| store \| passed \| 11, 12 \| 12345678901234567890\.\.\. \|/,
     );
-    assert.match(proxies, /\| 2 \| 127\.0\.0\.1 \| user \| failed \| - \| - \|/);
-    assert.match(proxies, /\| 3 \| HTTP \| custom \| unknown \| - \| - \|/);
+    assert.match(
+      proxies,
+      /\| ID \| Proxy \| Country \| ExpireDate \| Source \| Status \| BoundProfileSerialNumbers \| Note \|/,
+    );
+    assert.match(proxies, /\| 2 \| 127\.0\.0\.1 \| - \| - \| user \| failed \| - \| - \|/);
+    assert.match(proxies, /\| 3 \| HTTP \| - \| - \| custom \| unknown \| - \| - \|/);
 
     const proxy = formatProxy({
       id: 5,

@@ -27,14 +27,6 @@ export function normalizeProxyListArgs(args: Record<string, any>): ProxyListPara
       args.bindStatus === "bound" ? "1" : args.bindStatus === "unbound" ? "0" : undefined,
     proxyAutoRenew: args.autoRenew === undefined ? undefined : args.autoRenew ? "1" : "0",
     country: args.country,
-    check_status:
-      args.checkStatus === "passed"
-        ? 1
-        : args.checkStatus === "failed"
-          ? 2
-          : args.checkStatus === "unknown"
-            ? 0
-            : undefined,
     orderName: args.sortBy,
     orderType: args.sortOrder,
   });

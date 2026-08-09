@@ -155,7 +155,7 @@ function formatCreateResults(
 
 const paginationSchema = {
   page: { type: "number" },
-  pageSize: { type: "number" },
+  pageSize: { type: "number", maximum: 100 },
 };
 
 const profileCreateSchema = {
@@ -481,7 +481,6 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       bindStatus: { type: "string", enum: ["bound", "unbound", "all"] },
       autoRenew: { type: "boolean" },
       country: { type: "string" },
-      checkStatus: { type: "string", enum: ["passed", "failed", "unknown"] },
       sortBy: { type: "string" },
       sortOrder: { type: "string", enum: ["asc", "desc"] },
     }),

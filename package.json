@@ -77,7 +77,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@modelcontextprotocol/inspector": "2.0.0",
+    "@modelcontextprotocol/inspector": "2.1.0",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "4.1.10",
     "@voidzero-dev/vite-plus-core": "^0.2.6",

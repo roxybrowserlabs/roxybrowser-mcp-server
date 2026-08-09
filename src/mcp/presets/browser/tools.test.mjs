@@ -40,6 +40,10 @@ describe("3.0 MCP presets", () => {
       assert.ok(names.includes("roxy_profile_open"));
       assert.ok(names.includes("roxy_profile_update"));
       assert.ok(names.includes("roxy_profile_connection_info"));
+      for (const tool of result.tools) {
+        const pageSize = tool.inputSchema?.properties?.pageSize;
+        if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);
+      }
       const profileUpdate = result.tools.find((tool) => tool.name === "roxy_profile_update");
       const profileCreate = result.tools.find((tool) => tool.name === "roxy_profile_create");
       const proxyCreate = result.tools.find((tool) => tool.name === "roxy_proxy_create");
@@ -262,6 +266,10 @@ describe("3.0 MCP presets", () => {
       assert.ok(names.includes("roxy_platform_credential_list"));
       assert.ok(names.includes("roxy_platform_credential_delete"));
       assert.equal(names.includes("roxy_profile_list"), false);
+      for (const tool of tools.tools) {
+        const pageSize = tool.inputSchema?.properties?.pageSize;
+        if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);
+      }
 
       const result = await session.client.callTool({
         name: "roxy_account_list",

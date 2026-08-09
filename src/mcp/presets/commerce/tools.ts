@@ -46,7 +46,7 @@ const numberArray = { type: "array", items: { type: "number" } };
 
 const paginationSchema = {
   page: { type: "number" },
-  pageSize: { type: "number" },
+  pageSize: { type: "number", maximum: 100 },
 };
 
 const platformSchema = {

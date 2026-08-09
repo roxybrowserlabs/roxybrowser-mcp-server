@@ -231,8 +231,8 @@ importers:
         specifier: ^0.18.5
         version: 0.18.5
       '@modelcontextprotocol/inspector':
-        specifier: 2.0.0
-        version: 2.0.0(@arethetypeswrong/core@0.18.5)(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(@types/node@22.20.1)(express@5.2.1(supports-color@7.2.0))(publint@0.3.22)(supports-color@7.2.0)(typescript@7.0.2)
+        specifier: 2.1.0
+        version: 2.1.0(@arethetypeswrong/core@0.18.5)(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(@types/node@22.20.1)(express@5.2.1(supports-color@7.2.0))(publint@0.3.22)(supports-color@7.2.0)(typescript@7.0.2)
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.1
@@ -356,8 +356,8 @@ packages:
       react-dom:
         optional: true
 
-  '@modelcontextprotocol/inspector@2.0.0':
-    resolution: {integrity: sha512-uEoeEG7/+ZbrvccPF3EsgbfjcyJ3bWVJXT4pcZtpmDUhA0zdK4T4Tuj2oUphi2Huwl66LqVdo3Mx2PkS2SUHXA==}
+  '@modelcontextprotocol/inspector@2.1.0':
+    resolution: {integrity: sha512-Fp3kvgW5W6tcttErlYKy9iud6nE1oKUUB+qpFgh+ImfvYDJDgtGtx7IHJ+E6K1rXAerr9HQvYQenWrGP8lAqPQ==}
     engines: {node: '>=22.19.0'}
     hasBin: true
 
@@ -2662,7 +2662,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.8
 
-  '@modelcontextprotocol/inspector@2.0.0(@arethetypeswrong/core@0.18.5)(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(@types/node@22.20.1)(express@5.2.1(supports-color@7.2.0))(publint@0.3.22)(supports-color@7.2.0)(typescript@7.0.2)':
+  '@modelcontextprotocol/inspector@2.1.0(@arethetypeswrong/core@0.18.5)(@modelcontextprotocol/sdk@1.30.0(supports-color@7.2.0)(zod@4.4.3))(@types/node@22.20.1)(express@5.2.1(supports-color@7.2.0))(publint@0.3.22)(supports-color@7.2.0)(typescript@7.0.2)':
     dependencies:
       '@hono/node-server': 2.0.12(hono@4.12.32)
       '@modelcontextprotocol/client': 2.0.0-beta.5
