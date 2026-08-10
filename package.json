@@ -17,9 +17,7 @@
     "url": "git+https://github.com/roxybrowserlabs/roxybrowser-mcp-server.git"
   },
   "bin": {
-    "roxybrowser-mcp": "lib/cli/browser.js",
-    "roxybrowser-openapi-mcp": "lib/cli/browser.js",
-    "roxycommerce-mcp": "lib/cli/commerce.js"
+    "roxybrowser-openapi-mcp": "lib/cli.js"
   },
   "files": [
     "lib",
@@ -50,7 +48,7 @@
   },
   "scripts": {
     "build": "pnpm generate:api && vp pack",
-    "start": "node lib/cli/browser.js",
+    "start": "node lib/cli.js",
     "dev": "vp pack --watch",
     "check": "pnpm generate:api:check && vp check",
     "check:fix": "vp check --fix",

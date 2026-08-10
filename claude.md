@@ -39,8 +39,8 @@ ROXY_WORKSPACE_ID="19744"
 CLI options can override these values:
 
 ```bash
-roxybrowser-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
-roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Inspector 2.0 uses the checked-in `mcp.inspector.json` configuration and local `.env` values:

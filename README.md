@@ -15,13 +15,25 @@ pnpm add @roxybrowser/openapi
 Browser profile mode:
 
 ```bash
-roxybrowser-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+Run the published beta directly with `npx`:
+
+```bash
+npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Ecommerce account mode:
 
 ```bash
-roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+Run the ecommerce preset directly with `npx`:
+
+```bash
+npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Options:
@@ -32,6 +44,34 @@ Options:
 - `-t, --timeout <ms>`: request timeout. Default: `30000`
 
 Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`, and `ROXY_WORKSPACE_ID`.
+
+## Codex and Claude Code
+
+If you want to add this package as a published MCP server in Codex or Claude Code, point the client at the npm package entry.
+
+Codex:
+
+```bash
+codex mcp add roxybrowser \
+  --env ROXY_API_KEY=YOUR_API_KEY \
+  --env ROXY_API_HOST=http://127.0.0.1:50000 \
+  --env ROXY_TIMEOUT=30000 \
+  --env ROXY_WORKSPACE_ID=19744 \
+  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+```
+
+Claude Code:
+
+```bash
+claude mcp add roxybrowser \
+  -e ROXY_API_KEY=YOUR_API_KEY \
+  -e ROXY_API_HOST=http://127.0.0.1:50000 \
+  -e ROXY_TIMEOUT=30000 \
+  -e ROXY_WORKSPACE_ID=19744 \
+  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+```
+
+Use `--commerce` if you want the ecommerce preset.
 
 ## MCP Inspector 2.0
 

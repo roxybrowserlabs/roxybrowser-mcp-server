@@ -9,7 +9,7 @@ dotenv.config();
 export async function runBrowserCli(argv = process.argv): Promise<void> {
   const program = new Command();
   program
-    .name("roxybrowser-mcp")
+    .name("roxybrowser-openapi-mcp")
     .description("RoxyBrowser MCP Server - browser profile mode")
     .option(
       "-H, --api-host <url>",

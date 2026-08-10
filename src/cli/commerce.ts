@@ -9,7 +9,7 @@ dotenv.config();
 export async function runCommerceCli(argv = process.argv): Promise<void> {
   const program = new Command();
   program
-    .name("roxycommerce-mcp")
+    .name("roxybrowser-openapi-mcp")
     .description("RoxyBrowser MCP Server - ecommerce account mode")
     .option(
       "-H, --api-host <url>",

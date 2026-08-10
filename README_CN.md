@@ -15,13 +15,25 @@ pnpm add @roxybrowser/openapi
 浏览器 Profile 模式：
 
 ```bash
-roxybrowser-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+也可以直接用 `npx` 运行已发布的 beta 版本：
+
+```bash
+npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 电商账号模式：
 
 ```bash
-roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+电商模式也可以直接用 `npx` 运行：
+
+```bash
+npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 参数：
@@ -32,6 +44,34 @@ roxycommerce-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 - `-t, --timeout <ms>`：请求超时时间，默认 `30000`
 
 也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`、`ROXY_WORKSPACE_ID`。
+
+## Codex 和 Claude Code
+
+如果要把这个包作为正式发布的 MCP 服务添加到 Codex 或 Claude Code，直接指向 npm 包入口。
+
+Codex：
+
+```bash
+codex mcp add roxybrowser \
+  --env ROXY_API_KEY=YOUR_API_KEY \
+  --env ROXY_API_HOST=http://127.0.0.1:50000 \
+  --env ROXY_TIMEOUT=30000 \
+  --env ROXY_WORKSPACE_ID=19744 \
+  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+```
+
+Claude Code：
+
+```bash
+claude mcp add roxybrowser \
+  -e ROXY_API_KEY=YOUR_API_KEY \
+  -e ROXY_API_HOST=http://127.0.0.1:50000 \
+  -e ROXY_TIMEOUT=30000 \
+  -e ROXY_WORKSPACE_ID=19744 \
+  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+```
+
+如果要接入电商模式，在命令后加 `--commerce`。
 
 ## MCP Inspector 2.0
 
