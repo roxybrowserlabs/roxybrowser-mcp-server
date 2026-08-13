@@ -24,6 +24,26 @@ roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
+同一个 CLI 也可以快速调用 SDK 方法。每个方法参数都会优先按 JSON 解析，解析失败时按字符串传入：
+
+```bash
+npx -y @roxybrowser/openapi@beta sdk profiles.list '{"page":1,"pageSize":20}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+
+npx -y @roxybrowser/openapi@beta sdk profiles.open profile-1 '{"forceOpen":true}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+如果 RoxyBrowser 已经有接口，但 SDK 还没有封装，可以用 raw API 调试命令：
+
+```bash
+npx -y @roxybrowser/openapi@beta api POST /browser/new_feature '{"dirId":"profile-1"}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+raw `GET` 会把 JSON 参数作为 query params 发送，raw `POST` 会把 JSON 参数作为请求 body
+发送。配置了 `workspaceId` 时会默认注入到对象参数里；如果不想注入，添加 `--no-workspace`。
+
 电商账号模式：
 
 ```bash
@@ -34,6 +54,13 @@ roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 
 ```bash
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+SDK 调试命令也支持电商产品语义：
+
+```bash
+npx -y @roxybrowser/openapi@beta --commerce sdk accounts.list '{"page":1,"pageSize":20}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 参数：

@@ -24,6 +24,28 @@ Run the published beta directly with `npx`:
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
+Quick SDK calls are available from the same CLI. Each method argument is parsed as JSON when
+possible, otherwise it is passed as a string:
+
+```bash
+npx -y @roxybrowser/openapi@beta sdk profiles.list '{"page":1,"pageSize":20}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+
+npx -y @roxybrowser/openapi@beta sdk profiles.open profile-1 '{"forceOpen":true}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+For a RoxyBrowser endpoint that is not in the SDK yet, call the raw API debugger:
+
+```bash
+npx -y @roxybrowser/openapi@beta api POST /browser/new_feature '{"dirId":"profile-1"}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+Raw `GET` requests send JSON params as query parameters, and raw `POST` requests send JSON params
+as the request body. The configured `workspaceId` is injected into object params by default; add
+`--no-workspace` to disable that.
+
 Ecommerce account mode:
 
 ```bash
@@ -34,6 +56,13 @@ Run the ecommerce preset directly with `npx`:
 
 ```bash
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+The SDK debugger also supports ecommerce product names:
+
+```bash
+npx -y @roxybrowser/openapi@beta --commerce sdk accounts.list '{"page":1,"pageSize":20}' \
+  --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Options:

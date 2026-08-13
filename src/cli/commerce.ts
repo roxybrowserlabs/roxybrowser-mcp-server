@@ -3,46 +3,45 @@
 import { Command } from "commander";
 import dotenv from "dotenv";
 import { createRoxyCommerceMcpServer } from "../mcp/index.js";
+import {
+  addDebugCommands,
+  addRoxyOptions,
+  getRoxyCommandOptions,
+  resolveRoxyOptions,
+} from "./debug.js";
 
 dotenv.config();
 
 export async function runCommerceCli(argv = process.argv): Promise<void> {
+  let handledBySubcommand = false;
   const program = new Command();
-  program
+  addRoxyOptions(
+    program
     .name("roxybrowser-openapi-mcp")
-    .description("RoxyBrowser MCP Server - ecommerce account mode")
-    .option(
-      "-H, --api-host <url>",
-      "RoxyBrowser API base URL",
-      process.env.ROXY_API_HOST ?? "http://127.0.0.1:50000",
-    )
-    .option("-k, --api-key <key>", "API key", process.env.ROXY_API_KEY ?? "")
-    .option("-w, --workspace-id <id>", "Default workspace ID", (value) =>
-      Number.parseInt(value, 10),
-    )
-    .option(
-      "-t, --timeout <ms>",
-      "Request timeout in milliseconds",
-      (value) => Number.parseInt(value, 10),
-      process.env.ROXY_TIMEOUT ? Number(process.env.ROXY_TIMEOUT) : 30_000,
-    );
+      .description("RoxyBrowser MCP Server - ecommerce account mode"),
+  );
 
-  program.parse(argv);
-  const options = program.opts();
-  const workspaceId =
-    options.workspaceId ??
-    (process.env.ROXY_WORKSPACE_ID
-      ? Number.parseInt(process.env.ROXY_WORKSPACE_ID, 10)
-      : undefined);
-  await createRoxyCommerceMcpServer({
-    roxy: {
-      apiHost: options.apiHost,
-      apiKey: options.apiKey,
-      timeout: options.timeout,
-      workspaceId,
+  addDebugCommands(program, {
+    mode: "commerce",
+    markHandled: () => {
+      handledBySubcommand = true;
     },
+    getRoxyOptions: (overrides, sources) =>
+      resolveRoxyOptions(
+        getRoxyCommandOptions(program),
+        overrides,
+        sources,
+      ),
+  });
+
+  await program.parseAsync(argv);
+  if (handledBySubcommand) return;
+
+  const roxyOptions = resolveRoxyOptions(getRoxyCommandOptions(program));
+  await createRoxyCommerceMcpServer({
+    roxy: roxyOptions,
     context: {
-      workspaceId,
+      workspaceId: roxyOptions.workspaceId,
     },
   }).run();
 }

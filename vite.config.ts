@@ -49,11 +49,11 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["src/{api,sdk,domains,mcp}/**/*.test.mjs"],
+    include: ["src/{api,sdk,domains,mcp,cli}/**/*.test.mjs"],
     globalSetup: ["./support/build-for-tests.mjs"],
     coverage: {
       provider: "v8",
-      include: ["lib/{api,sdk,domains,mcp}/**/*.js"],
+      include: ["lib/{api,sdk,domains,mcp,cli}/**/*.js"],
       exclude: [
         "lib/**/index.js",
         "lib/**/types.js",
