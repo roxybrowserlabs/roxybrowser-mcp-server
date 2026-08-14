@@ -386,7 +386,7 @@ ${sourceSpecificLines.join('\n')}`
 
 class CreateProxies {
   name = 'roxy_create_proxies'
-  description = 'Batch create multiple proxy configurations'
+  description = 'Batch create multiple proxy configurations; protocol defaults to SOCKS5 when omitted'
   inputSchema = {
     type: 'object',
     properties: {
@@ -400,7 +400,11 @@ class CreateProxies {
         items: {
           type: 'object',
           properties: {
-            protocol: { type: 'string', enum: ['HTTP', 'HTTPS', 'SOCKS5', 'SSH'] },
+            protocol: {
+              type: 'string',
+              enum: ['HTTP', 'HTTPS', 'SOCKS5', 'SSH'],
+              description: 'Proxy protocol, defaults to SOCKS5 if omitted',
+            },
             host: { type: 'string' },
             port: { type: 'string' },
             proxyUserName: { type: 'string' },
@@ -410,7 +414,7 @@ class CreateProxies {
             refreshUrl: { type: 'string' },
             remark: { type: 'string' },
           },
-          required: ['protocol', 'host', 'port'],
+          required: ['host', 'port'],
         },
       },
     },
@@ -459,6 +463,7 @@ class CreateProxies {
     })
 
     normalizedProxyList.forEach((item: any) => {
+      item.protocol = item.protocol ? item.protocol : 'SOCKS5'
       item.ipType = item.ipType ? item.ipType : 'IPV4'
       item.checkChannel = item.checkChannel ? channelList.find((channel: any) => channel.label === item.checkChannel)?.value : null
     })

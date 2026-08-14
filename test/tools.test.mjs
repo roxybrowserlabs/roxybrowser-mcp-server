@@ -415,4 +415,27 @@ describe('tool handlers', () => {
       restoreFetch()
     }
   })
+
+  test('createProxies defaults omitted protocol to SOCKS5', async () => {
+    process.env.ROXY_API_HOST = 'http://127.0.0.1:50000'
+    process.env.ROXY_API_KEY = 'secret-token'
+
+    let requestBody
+    const restoreFetch = installFetchMock(async (_url, init) => {
+      requestBody = JSON.parse(init.body)
+      return createJsonResponse({ code: 0, msg: 'ok' })
+    })
+
+    try {
+      await createProxies.handle({
+        workspaceId: 7,
+        proxyList: [{ host: '5.6.7.8', port: '1080' }],
+      })
+
+      assert.equal(requestBody.proxyList[0].protocol, 'SOCKS5')
+    }
+    finally {
+      restoreFetch()
+    }
+  })
 })
