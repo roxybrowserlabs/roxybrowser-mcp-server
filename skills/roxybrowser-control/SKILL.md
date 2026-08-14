@@ -23,6 +23,10 @@ Use RoxyBrowser MCP as the source of truth for workspace, project, browser, prox
 - If `roxy_workspace_list` is visible, use it to discover `workspaceId` before workspace-scoped actions.
 - Never call delete tools unless the user explicitly asks.
 
+## Creation Defaults
+
+Creation tools for browsers, proxies, accounts, and other resources often define defaults for many optional fields. When the user has not specified an optional field, rely on the API default instead of asking follow-up questions just to fill it. After creation succeeds, tell the user which important fields were defaulted or left to the API defaults so they understand the final resource configuration.
+
 ## Common Workflows
 
 Read [workflows.md](references/workflows.md) for browser setup, proxy diagnosis, CDP handoff, and cleanup flows.

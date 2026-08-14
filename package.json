@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "3.0.1-beta.3",
+  "version": "3.0.1-beta.4",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "keywords": [
     "browser-automation",
@@ -70,17 +70,17 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "compare-versions": "^6.1.1",
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@modelcontextprotocol/inspector": "2.1.0",
-    "@types/node": "^22.0.0",
+    "@modelcontextprotocol/inspector": "2.2.0",
+    "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "4.1.10",
-    "@voidzero-dev/vite-plus-core": "^0.2.6",
-    "publint": "^0.3.22",
+    "@voidzero-dev/vite-plus-core": "^0.2.9",
+    "publint": "^0.3.23",
     "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"
@@ -93,12 +93,12 @@
     },
     "runtime": {
       "name": "node",
-      "version": "24.15.0",
+      "version": "24.19.0",
       "onFail": "download"
     }
   },
   "engines": {
-    "node": "^20.19.0 || ^22.18.0 || >=24.11.0"
+    "node": "^24.11.0"
   },
   "packageManager": "pnpm@11.18.0"
 }
