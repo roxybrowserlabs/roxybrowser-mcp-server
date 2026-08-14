@@ -223,6 +223,9 @@ importers:
       commander:
         specifier: ^14.0.3
         version: 14.0.3
+      compare-versions:
+        specifier: ^6.1.1
+        version: 6.1.1
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -1367,6 +1370,9 @@ packages:
   commander@14.0.3:
     resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
     engines: {node: '>=20'}
+
+  compare-versions@6.1.1:
+    resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
 
   content-disposition@1.1.0:
     resolution: {integrity: sha512-5jRCH9Z/+DRP7rkvY83B+yGIGX96OYdJmzngqnw2SBSxqCFPd0w2km3s5iawpGX8krnwSGmF0FW5Nhr0Hfai3g==}
@@ -3399,6 +3405,8 @@ snapshots:
   commander@13.1.0: {}
 
   commander@14.0.3: {}
+
+  compare-versions@6.1.1: {}
 
   content-disposition@1.1.0: {}
 

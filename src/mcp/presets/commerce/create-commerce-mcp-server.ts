@@ -1,5 +1,9 @@
 import { RoxyCommerceClient } from "../../../sdk/index.js";
-import { RoxyPresetMcpServer, type CreateMcpServerOptions } from "../../runtime/index.js";
+import {
+  RoxyPresetMcpServer,
+  withToolVersions,
+  type CreateMcpServerOptions,
+} from "../../runtime/index.js";
 import { COMMERCE_MCP_TOOLS } from "./tools.js";
 
 export function createRoxyCommerceMcpServer(
@@ -13,9 +17,11 @@ export function createRoxyCommerceMcpServer(
     {
       name: options.name ?? "roxycommerce-mcp",
       version: options.version,
+      roxyBrowserVersion: options.roxyBrowserVersion,
+      agentVersion: options.agentVersion,
       roxy: options.roxy,
       context: options.context,
-      tools: options.tools ?? COMMERCE_MCP_TOOLS,
+      tools: withToolVersions(options.tools ?? COMMERCE_MCP_TOOLS),
     },
     {
       commerce,

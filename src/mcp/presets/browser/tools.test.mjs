@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import { describe, test } from "vite-plus/test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "../../../../lib/index.js";
+import {
+  createRoxyBrowserMcpServer,
+  createRoxyCommerceMcpServer,
+  ROXY_OPENAPI_VERSION,
+} from "../../../../lib/index.js";
 import { RoxyPresetMcpServer } from "../../../../lib/mcp/runtime/index.js";
 import {
   createJsonResponse,
@@ -40,6 +44,12 @@ describe("3.0 MCP presets", () => {
       assert.ok(names.includes("roxy_profile_open"));
       assert.ok(names.includes("roxy_profile_update"));
       assert.ok(names.includes("roxy_profile_connection_info"));
+      const profileOpen = result.tools.find((tool) => tool.name === "roxy_profile_open");
+      assert.ok(profileOpen);
+      assert.equal(profileOpen._meta["roxybrowser/openapiPackageVersion"], ROXY_OPENAPI_VERSION);
+      assert.equal(profileOpen._meta["roxybrowser/operationId"], "browser.profile.open");
+      assert.equal(profileOpen._meta["roxybrowser/endpoint"], "POST /browser/open");
+      assert.equal(profileOpen._meta["roxybrowser/sinceRoxyBrowserVersion"], "3.0.0");
       for (const tool of result.tools) {
         const pageSize = tool.inputSchema?.properties?.pageSize;
         if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);
@@ -52,6 +62,11 @@ describe("3.0 MCP presets", () => {
       );
       assert.deepEqual(profileCreate.inputSchema.required, ["profiles"]);
       assert.deepEqual(proxyCreate.inputSchema.required, ["proxies", "checkChannel"]);
+      assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.required, [
+        "ipType",
+        "host",
+        "port",
+      ]);
       assert.deepEqual(accountCreate.inputSchema.required, ["accounts"]);
       assert.equal(profileCreate.inputSchema.properties.profiles.maxItems, 30);
       assert.equal(proxyCreate.inputSchema.properties.proxies.maxItems, 30);
@@ -154,6 +169,10 @@ describe("3.0 MCP presets", () => {
       assert.equal(createProperties.cookie.oneOf[1].additionalProperties, true);
       assert.equal(createProperties.cookie.oneOf[2].items.additionalProperties, true);
       assert.equal(proxyCreate.inputSchema.properties.protocol, undefined);
+      assert.equal(
+        proxyCreate.inputSchema.properties.proxies.items.properties.protocol.default,
+        "SOCKS5",
+      );
       assert.equal(accountCreate.inputSchema.properties.platformUrl, undefined);
       const profileGet = result.tools.find((tool) => tool.name === "roxy_profile_get");
       const profileDelete = result.tools.find((tool) => tool.name === "roxy_profile_delete");
@@ -233,6 +252,93 @@ describe("3.0 MCP presets", () => {
         result.tools.map((tool) => tool.name),
         ["custom_one"],
       );
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("runtime hides future tools and schema fields for older RoxyBrowser app versions", async () => {
+    const server = createRoxyBrowserMcpServer({
+      roxyBrowserVersion: "3.0.0",
+      tools: [
+        {
+          name: "roxy_profile_list",
+          operationId: "browser.profile.list",
+          endpoint: "GET /browser/list_v3",
+          description: "List profiles.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              page: { type: "number" },
+              projectName: { type: "string", sinceRoxyBrowserVersion: "4.0.4" },
+            },
+            required: ["page", "projectName"],
+          },
+          handler: async (_args, context) => `app ${context.roxyBrowserVersion}`,
+        },
+        {
+          name: "roxy_profile_open_many",
+          operationId: "browser.profile.openMany",
+          endpoint: "POST /browser/agent/open",
+          sinceRoxyBrowserVersion: "4.0.4",
+          description: "Open many profiles.",
+          inputSchema: { type: "object", properties: {} },
+          handler: async () => "opened",
+        },
+      ],
+    });
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      assert.deepEqual(
+        result.tools.map((tool) => tool.name),
+        ["roxy_profile_list"],
+      );
+      assert.deepEqual(result.tools[0].inputSchema.properties, { page: { type: "number" } });
+      assert.deepEqual(result.tools[0].inputSchema.required, ["page"]);
+      const call = await session.client.callTool({ name: "roxy_profile_list", arguments: {} });
+      assert.equal(getTextContent(call), "app 3.0.0");
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("runtime exposes future tools and schema fields when RoxyBrowser app version supports them", async () => {
+    const server = createRoxyBrowserMcpServer({
+      roxyBrowserVersion: "4.0.4",
+      tools: [
+        {
+          name: "roxy_profile_list",
+          operationId: "browser.profile.list",
+          description: "List profiles.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              projectName: { type: "string", sinceRoxyBrowserVersion: "4.0.4" },
+            },
+          },
+          handler: async () => "list",
+        },
+        {
+          name: "roxy_profile_open_many",
+          operationId: "browser.profile.openMany",
+          sinceRoxyBrowserVersion: "4.0.4",
+          description: "Open many profiles.",
+          inputSchema: { type: "object", properties: {} },
+          handler: async () => "opened",
+        },
+      ],
+    });
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      assert.deepEqual(
+        result.tools.map((tool) => tool.name),
+        ["roxy_profile_list", "roxy_profile_open_many"],
+      );
+      assert.deepEqual(result.tools[0].inputSchema.properties, {
+        projectName: { type: "string" },
+      });
     } finally {
       await session.close();
     }

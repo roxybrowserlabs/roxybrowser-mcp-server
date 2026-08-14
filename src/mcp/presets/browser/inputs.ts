@@ -39,6 +39,7 @@ export function normalizeProfileListArgs(args: Record<string, any>): ProfileList
     pageSize: args.pageSize,
     dirIds: args.dirIds?.join(","),
     projectIds: args.projectIds?.join(","),
+    projectName: args.projectName,
     windowName: args.name,
     sortNums: serialNumber,
     os: args.os,
@@ -206,7 +207,7 @@ export function normalizeProfileDeleteOptions(args: Record<string, any>): Profil
 
 export function normalizeProxyInput(args: Record<string, any>): ProxyInput {
   return removeUndefined({
-    protocol: args.protocol,
+    protocol: args.protocol ?? "SOCKS5",
     host: args.host,
     port: args.port,
     ipType: args.ipType ?? "IPV4",

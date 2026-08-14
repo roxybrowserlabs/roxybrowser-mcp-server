@@ -1,6 +1,11 @@
 import type { Command } from "commander";
 import { RoxyApiClient, type RoxyApiClientOptions } from "../api/index.js";
 import { RoxyBrowserClient, RoxyCommerceClient } from "../sdk/index.js";
+import {
+  getRoxyCapability,
+  isRoxyCapabilitySupported,
+  ROXY_OPENAPI_VERSION,
+} from "../version.js";
 
 export type DebugCliMode = "browser" | "commerce";
 
@@ -75,6 +80,27 @@ export function getRoxyCommandOptionSources(
 const BLOCKED_OPERATION_SEGMENTS = new Set(["__proto__", "prototype", "constructor"]);
 
 export function addDebugCommands(program: Command, options: DebugCliOptions): void {
+  program
+    .command("version")
+    .description("Print the @roxybrowser/openapi package version")
+    .action(() => {
+      options.markHandled();
+      printJsonResult({ packageVersion: ROXY_OPENAPI_VERSION });
+    });
+
+  program
+    .command("supports <operation> <roxyBrowserVersion>")
+    .description("Check whether an SDK/MCP operation exists in a RoxyBrowser app version")
+    .action((operation: string, roxyBrowserVersion: string) => {
+      options.markHandled();
+      printJsonResult({
+        operationId: operation,
+        roxyBrowserVersion,
+        supported: isRoxyCapabilitySupported(operation, roxyBrowserVersion),
+        capability: getRoxyCapability(operation) ?? null,
+      });
+    });
+
   addRoxyOptions(
     program
       .command("sdk <operation> [args...]")

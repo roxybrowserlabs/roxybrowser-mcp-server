@@ -1,5 +1,5 @@
 import { RoxyBrowserClient } from "../../../sdk/index.js";
-import { RoxyPresetMcpServer } from "../../runtime/index.js";
+import { RoxyPresetMcpServer, withToolVersions } from "../../runtime/index.js";
 import { BROWSER_MCP_TOOLS } from "./tools.js";
 import type { CreateMcpServerOptions } from "../../runtime/index.js";
 
@@ -38,9 +38,11 @@ export function createRoxyBrowserMcpServer(
     {
       name: options.name ?? "roxybrowser-mcp",
       version: options.version,
+      roxyBrowserVersion: options.roxyBrowserVersion,
+      agentVersion: options.agentVersion,
       roxy: options.roxy,
       context: options.context,
-      tools,
+      tools: withToolVersions(tools),
     },
     {
       browser,

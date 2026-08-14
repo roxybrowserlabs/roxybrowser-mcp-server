@@ -6,6 +6,7 @@ import {
   runSdkDebugCommand,
 } from "../../lib/cli/debug.js";
 import { runBrowserCli } from "../../lib/cli/browser.js";
+import { ROXY_OPENAPI_VERSION } from "../../lib/index.js";
 import { createJsonResponse, installFetchMock } from "../../support/helpers.mjs";
 
 function installRecorder(body = { code: 0, msg: "ok", data: { total: 0, rows: [] } }) {
@@ -159,6 +160,32 @@ describe("debug CLI helpers", () => {
     } finally {
       console.log = originalLog;
       restoreFetch();
+    }
+  });
+
+  test("prints version and operation support from the CLI", async () => {
+    const originalLog = console.log;
+    const output = [];
+    console.log = (value) => {
+      output.push(JSON.parse(value));
+    };
+    try {
+      await runBrowserCli(["node", "roxybrowser-openapi-mcp", "version"]);
+      await runBrowserCli([
+        "node",
+        "roxybrowser-openapi-mcp",
+        "supports",
+        "browser.profile.open",
+        "3.0.0",
+      ]);
+
+      assert.deepEqual(output[0], { packageVersion: ROXY_OPENAPI_VERSION });
+      assert.equal(output[1].operationId, "browser.profile.open");
+      assert.equal(output[1].roxyBrowserVersion, "3.0.0");
+      assert.equal(output[1].supported, true);
+      assert.equal(output[1].capability.sinceRoxyBrowserVersion, "3.0.0");
+    } finally {
+      console.log = originalLog;
     }
   });
 });

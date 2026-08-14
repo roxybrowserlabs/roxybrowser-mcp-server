@@ -1,5 +1,6 @@
 import type { McpTool } from "../../runtime/index.js";
 import { removeUndefined } from "../../../sdk/shared/normalize.js";
+import { ROXY_BROWSER_VERSION_4_0_4 } from "../../../version.js";
 import { markdownTable } from "../formatting.js";
 import {
   formatConnections,
@@ -229,7 +230,7 @@ Object.assign(profileUpdateSchema, {
 });
 
 const proxyInputSchema = {
-  protocol: { type: "string" },
+  protocol: { type: "string", default: "SOCKS5" },
   host: { type: "string" },
   port: { type: "string" },
   ipType: { type: "string" },
@@ -283,6 +284,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       ...paginationSchema,
       dirIds: stringArray,
       projectIds: numberArray,
+      projectName: { type: "string", sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4 },
       name: { type: "string" },
       serialNumber: {
         type: "string",
@@ -292,7 +294,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       os: { type: "string" },
     }),
     handler: async (args, context) =>
-      formatProfiles(await context.browser!.profiles.list(normalizeProfileListArgs(args))),
+      formatProfiles(
+        await context.browser!.profiles.list(normalizeProfileListArgs(args)),
+        context.roxyBrowserVersion,
+      ),
   },
   {
     name: "roxy_profile_get",
@@ -503,7 +508,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: arrayCreateSchema(
       proxyInputSchema,
       "proxies",
-      ["ipType", "protocol", "host", "port"],
+      ["ipType", "host", "port"],
       { checkChannel: { type: "string" } },
       ["checkChannel"],
     ),

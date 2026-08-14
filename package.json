@@ -71,6 +71,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "commander": "^14.0.3",
+    "compare-versions": "^6.1.1",
     "dotenv": "^17.4.2"
   },
   "devDependencies": {

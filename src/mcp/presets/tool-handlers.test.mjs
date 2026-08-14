@@ -333,6 +333,7 @@ describe("MCP tool handlers", () => {
         proxyPassword: "pass",
       },
     );
+    assert.equal(normalizeProxyInput({ host: "127.0.0.1", port: "1080" }).protocol, "SOCKS5");
     assert.equal(normalizeProxyInput({ ipType: "IPV6" }).ipType, "IPV6");
     assert.deepEqual(
       normalizePlatformAccountInput({
@@ -430,6 +431,19 @@ describe("MCP tool handlers", () => {
     assert.match(profiles, /\| - \| p2 \| ROX-13 \| 140 \| - \| - \|/);
     assert.match(profiles, /\| - \| p3 \| - \| - \| - \| - \|/);
     assert.doesNotMatch(profiles, /N\/A|Unknown/);
+
+    const futureProfiles = formatProfiles(
+      {
+        total: 1,
+        rows: [{ dirId: "p4", windowName: "Named", projectName: "Ops", projectId: 9 }],
+      },
+      "4.0.4",
+    );
+    assert.match(
+      futureProfiles,
+      /\| Name \| DirId \| SerialNumber \| Project \| Core \| OS \| Remark \|/,
+    );
+    assert.match(futureProfiles, /\| Named \| p4 \| - \| Ops \| - \| - \| - \|/);
 
     const platformAccounts = formatPlatformAccounts({
       total: 4,
@@ -584,25 +598,38 @@ describe("MCP tool handlers", () => {
     assert.match(channels, /\| IPRust \| https:\/\/iprust\.example \| url \|/);
     assert.match(channels, /\| - \| direct \| - \|/);
 
-    const accounts = formatCommerceAccounts({
-      total: 4,
-      rows: [
-        {
-          dirId: "a1",
-          windowName: "Store",
-          projectName: "Ops",
-          projectId: 3,
-          openStatus: true,
-        },
-        { dirId: "a2", projectName: "Named", openStatus: false },
-        { dirId: "a3", projectId: 4, openStatus: 1 },
-        { dirId: "a4", openStatus: 0 },
-      ],
-    });
+    const accounts = formatCommerceAccounts(
+      {
+        total: 4,
+        rows: [
+          {
+            dirId: "a1",
+            windowName: "Store",
+            projectName: "Ops",
+            projectId: 3,
+            openStatus: true,
+          },
+          { dirId: "a2", projectName: "Named", openStatus: false },
+          { dirId: "a3", projectId: 4, openStatus: 1 },
+          { dirId: "a4", openStatus: 0 },
+        ],
+      },
+      "4.0.4",
+    );
     assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
     assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
     assert.match(accounts, /\| - \| a3 \| 4 \| open \|/);
     assert.match(accounts, /\| - \| a4 \| - \| closed \|/);
+
+    const oldAccounts = formatCommerceAccounts(
+      {
+        total: 1,
+        rows: [{ dirId: "a5", windowName: "Store", projectName: "Ops", openStatus: true }],
+      },
+      "3.0.0",
+    );
+    assert.match(oldAccounts, /\| Name \| dirId \| Status \|/);
+    assert.match(oldAccounts, /\| Store \| a5 \| open \|/);
     assert.deepEqual(
       parseJsonBlock(formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark })),
       { dirId: "a5", windowRemark: unicodeRemark },
@@ -872,7 +899,7 @@ describe("MCP tool handlers", () => {
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
         {
           checkChannel: "http://iprust.io/ip.json",
-          proxies: [{ ipType: "IPV4", protocol: "SOCKS5", host: "127.0.0.1", port: "1080" }],
+          proxies: [{ ipType: "IPV4", host: "127.0.0.1", port: "1080" }],
         },
         context,
       ),
@@ -1448,7 +1475,6 @@ describe("MCP tool handlers", () => {
         {
           checkChannel: "http://iprust.io/ip.json",
           ipType: "IPV4",
-          protocol: "HTTP",
           host: "proxy.example.com",
           port: "8080",
         },
@@ -1532,6 +1558,13 @@ describe("MCP tool handlers", () => {
       forceOpen: true,
     });
     assert.equal(calls.find((call) => call[0] === "commerce.proxies.list")[1].proxyType, "1");
+    assert.deepEqual(calls.find((call) => call[0] === "commerce.proxies.create")[1], {
+      checkChannel: "http://iprust.io/ip.json",
+      ipType: "IPV4",
+      protocol: "SOCKS5",
+      host: "proxy.example.com",
+      port: "8080",
+    });
     assert.deepEqual(calls.find((call) => call[0] === "commerce.proxies.createMany")[1], {
       checkChannel: "http://iprust.io/ip.json",
       proxyList: [

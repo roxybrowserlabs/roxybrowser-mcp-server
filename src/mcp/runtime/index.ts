@@ -1,2 +1,2 @@
-export { RoxyPresetMcpServer } from "./create-server.js";
+export { RoxyPresetMcpServer, withToolVersions } from "./create-server.js";
 export type * from "./types.js";

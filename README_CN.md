@@ -44,6 +44,13 @@ npx -y @roxybrowser/openapi@beta api POST /browser/new_feature '{"dirId":"profil
 raw `GET` 会把 JSON 参数作为 query params 发送，raw `POST` 会把 JSON 参数作为请求 body
 发送。配置了 `workspaceId` 时会默认注入到对象参数里；如果不想注入，添加 `--no-workspace`。
 
+也可以直接从 CLI 查看包版本，并判断某个 operation 在指定 RoxyBrowser App 版本下是否可用：
+
+```bash
+npx -y @roxybrowser/openapi@beta version
+npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
+```
+
 电商账号模式：
 
 ```bash
@@ -190,6 +197,22 @@ const api = new RoxyApiClient({ apiKey: "YOUR_API_KEY", workspaceId: 19744 });
 const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 ```
 
+SDK 和 MCP 能力都按 RoxyBrowser App 版本标记。`ROXY_OPENAPI_VERSION` 是当前 npm 包版本，
+`supports()` 用来判断某个 operation 在指定 RoxyBrowser App 版本下是否存在：
+
+```ts
+import { RoxyBrowserClient, ROXY_OPENAPI_VERSION } from "@roxybrowser/openapi";
+
+const roxy = new RoxyBrowserClient({
+  apiKey: "YOUR_API_KEY",
+  roxyBrowserVersion: "4.0.4",
+});
+
+console.log(ROXY_OPENAPI_VERSION);
+console.log(roxy.getCapability("browser.profile.open"));
+console.log(roxy.supports("browser.profile.open"));
+```
+
 ## 嵌入式 MCP 使用
 
 ```ts
@@ -197,6 +220,7 @@ import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybr
 
 const browserServer = createRoxyBrowserMcpServer({
   timeout: 45_000,
+  roxyBrowserVersion: "4.0.4",
   includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
@@ -257,7 +281,9 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_platform_credential_update`
 - `roxy_platform_credential_delete`
 
-每个 MCP 工具都会保留稳定的 `operationId` 和底层 RoxyBrowser `endpoint` 作为排查 metadata。
+创建 MCP preset 时应设置当前 RoxyBrowser App 版本 `roxyBrowserVersion`，这样会隐藏高于该版本的工具和 schema 字段。每个 MCP
+工具都会在 `_meta` 中保留稳定的 `operationId`、底层 RoxyBrowser `endpoint`、包版本和 `sinceRoxyBrowserVersion`，
+方便客户端判断能力是否可用。
 
 创建类 MCP 工具使用同一个公开名称：单个创建直接传字段，批量创建传对应资源数组（`proxies`、`accounts` 或 `credentials`）。
 

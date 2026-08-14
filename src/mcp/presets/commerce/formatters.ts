@@ -1,5 +1,6 @@
 import type { CommerceAccount } from "../../../domains/commerce/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
+import { isVersionAtLeast, ROXY_BROWSER_VERSION_4_0_4 } from "../../../version.js";
 import { formatJsonDetail, pagedTable } from "../formatting.js";
 
 function projectValue(account: CommerceAccount): string {
@@ -15,17 +16,24 @@ function statusValue(status: CommerceAccount["openStatus"]): string {
   return "";
 }
 
-export function formatCommerceAccounts(page: Page<CommerceAccount>): string {
+export function formatCommerceAccounts(
+  page: Page<CommerceAccount>,
+  roxyBrowserVersion?: string,
+): string {
+  const showProject = Boolean(
+    roxyBrowserVersion &&
+      isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
+  );
+  const headers = showProject ? ["Name", "dirId", "Project", "Status"] : ["Name", "dirId", "Status"];
+  const rows = page.rows.map((account) => {
+    const base = [account.windowName, account.dirId, statusValue(account.openStatus)];
+    return showProject ? [base[0], base[1], projectValue(account), base[2]] : base;
+  });
   return pagedTable(
     "Accounts",
     page,
-    ["Name", "dirId", "Project", "Status"],
-    page.rows.map((account) => [
-      account.windowName,
-      account.dirId,
-      projectValue(account),
-      statusValue(account.openStatus),
-    ]),
+    headers,
+    rows,
     "No ecommerce accounts found.",
   );
 }

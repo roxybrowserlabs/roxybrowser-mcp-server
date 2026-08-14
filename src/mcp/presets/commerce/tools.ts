@@ -1,4 +1,5 @@
 import type { McpTool } from "../../runtime/index.js";
+import { ROXY_BROWSER_VERSION_4_0_4 } from "../../../version.js";
 import {
   formatConnections,
   formatDetectChannels,
@@ -61,7 +62,7 @@ const platformSchema = {
 };
 
 const proxyInputSchema = {
-  protocol: { type: "string" },
+  protocol: { type: "string", default: "SOCKS5" },
   host: { type: "string" },
   port: { type: "string" },
   ipType: { type: "string" },
@@ -90,10 +91,12 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
       ...paginationSchema,
       keyword: { type: "string" },
       projectIds: numberArray,
+      projectName: { type: "string", sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4 },
     }),
     handler: async (args, context) =>
       formatCommerceAccounts(
         await context.commerce!.accounts.list(normalizeCommerceAccountListArgs(args)),
+        context.roxyBrowserVersion,
       ),
   },
   {
@@ -224,9 +227,9 @@ export const COMMERCE_MCP_TOOLS: McpTool[] = [
     description: "Create one or more proxies. Use direct fields for one or proxies for a batch.",
     inputSchema: singleOrBatchCreateSchema(
       proxyInputSchema,
-      ["checkChannel", "ipType", "protocol", "host", "port"],
+      ["checkChannel", "ipType", "host", "port"],
       "proxies",
-      ["ipType", "protocol", "host", "port"],
+      ["ipType", "host", "port"],
       ["checkChannel"],
     ),
     handler: async (args, context) => {

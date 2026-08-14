@@ -46,6 +46,13 @@ Raw `GET` requests send JSON params as query parameters, and raw `POST` requests
 as the request body. The configured `workspaceId` is injected into object params by default; add
 `--no-workspace` to disable that.
 
+Check the package version and whether an operation exists for a RoxyBrowser app version:
+
+```bash
+npx -y @roxybrowser/openapi@beta version
+npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
+```
+
 Ecommerce account mode:
 
 ```bash
@@ -192,6 +199,22 @@ const api = new RoxyApiClient({ apiKey: "YOUR_API_KEY", workspaceId: 19744 });
 const raw = await api.proxy.listMerged({ page_index: 1, page_size: 20 });
 ```
 
+SDK and MCP capabilities are versioned against the RoxyBrowser app version. The package version is
+available as `ROXY_OPENAPI_VERSION`, while `supports()` checks a RoxyBrowser app version:
+
+```ts
+import { RoxyBrowserClient, ROXY_OPENAPI_VERSION } from "@roxybrowser/openapi";
+
+const roxy = new RoxyBrowserClient({
+  apiKey: "YOUR_API_KEY",
+  roxyBrowserVersion: "4.0.4",
+});
+
+console.log(ROXY_OPENAPI_VERSION);
+console.log(roxy.getCapability("browser.profile.open"));
+console.log(roxy.supports("browser.profile.open"));
+```
+
 ## Embedded MCP Usage
 
 ```ts
@@ -199,6 +222,7 @@ import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybr
 
 const browserServer = createRoxyBrowserMcpServer({
   timeout: 45_000,
+  roxyBrowserVersion: "4.0.4",
   includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
@@ -260,7 +284,10 @@ Ecommerce mode exposes 18 tools in account language over the same browser-profil
 - `roxy_platform_credential_update`
 - `roxy_platform_credential_delete`
 
-Each MCP tool keeps debug metadata with a stable `operationId` and the underlying RoxyBrowser endpoint.
+Set `roxyBrowserVersion` to the current RoxyBrowser app version when creating a preset. Tools and
+schema fields added after that app version are hidden.
+Each MCP tool keeps debug metadata with a stable `operationId`, the underlying RoxyBrowser endpoint,
+the package version, and `sinceRoxyBrowserVersion` in tool `_meta`.
 
 Create tools accept a resource array. Pass one item to create a single resource, or multiple items to
 create a batch. Browser profile, proxy, and platform-account tools use `profiles`, `proxies`, and

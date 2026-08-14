@@ -12,6 +12,7 @@ import type {
   Workspace,
 } from "../../../domains/browser/index.js";
 import type { Page } from "../../../sdk/shared/pagination.js";
+import { isVersionAtLeast, ROXY_BROWSER_VERSION_4_0_4 } from "../../../version.js";
 import { formatJsonDetail, markdownTable, pagedTable, truncateText } from "../formatting.js";
 
 function combined(name?: string, version?: string): string {
@@ -30,19 +31,42 @@ function stringField(value: Record<string, unknown>, name: string): string | und
   return typeof value[name] === "string" ? value[name] : undefined;
 }
 
-export function formatProfiles(page: Page<BrowserProfile>): string {
-  return pagedTable(
-    "Profiles",
-    page,
-    ["Name", "DirId", "SerialNumber", "Core", "OS", "Remark"],
-    page.rows.map((profile) => [
+export function formatProfiles(
+  page: Page<BrowserProfile>,
+  roxyBrowserVersion?: string,
+): string {
+  const showProject = Boolean(
+    roxyBrowserVersion &&
+      isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
+  );
+  const headers = showProject
+    ? ["Name", "DirId", "SerialNumber", "Project", "Core", "OS", "Remark"]
+    : ["Name", "DirId", "SerialNumber", "Core", "OS", "Remark"];
+  const rows = page.rows.map((profile) => {
+    const base = [
       profile.windowName,
       profile.dirId,
       profileSerial(profile),
       combined(stringField(profile, "coreType"), profile.coreVersion),
       combined(profile.os, profile.osVersion),
       truncateText(profile.windowRemark),
-    ]),
+    ];
+    return showProject
+      ? [
+          base[0],
+          base[1],
+          base[2],
+          profile.projectName ||
+            (profile.projectId !== undefined ? String(profile.projectId) : undefined),
+          ...base.slice(3),
+        ]
+      : base;
+  });
+  return pagedTable(
+    "Profiles",
+    page,
+    headers,
+    rows,
     "No profiles found.",
   );
 }
