@@ -54,23 +54,14 @@ describe("debug CLI helpers", () => {
     }
   });
 
-  test("calls ecommerce SDK operations through commerce product names", async () => {
-    const { calls, restoreFetch } = installRecorder({
-      code: 0,
-      msg: "ok",
-      data: { dirId: "account-1" },
-    });
-    try {
-      await runSdkDebugCommand("accounts.open", ["account-1"], {
+  test("keeps commerce SDK debug mode as an empty shell", async () => {
+    await assert.rejects(
+      runSdkDebugCommand("accounts.open", ["account-1"], {
         mode: "commerce",
         roxy: { apiKey: "secret-token", workspaceId: 88 },
-      });
-
-      assert.equal(calls[0].url.pathname, "/browser/open");
-      assert.deepEqual(calls[0].body, { dirId: "account-1", workspaceId: 88 });
-    } finally {
-      restoreFetch();
-    }
+      }),
+      /Unknown SDK operation/,
+    );
   });
 
   test("calls raw endpoints that are not modeled by the SDK", async () => {

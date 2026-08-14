@@ -51,23 +51,16 @@ npx -y @roxybrowser/openapi@beta version
 npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
 ```
 
-电商账号模式：
+电商账号模式目前只保留 preset 壳，暂不内置工具：
 
 ```bash
 roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
-电商模式也可以直接用 `npx` 运行：
+电商 preset 壳也可以直接用 `npx` 运行：
 
 ```bash
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
-SDK 调试命令也支持电商产品语义：
-
-```bash
-npx -y @roxybrowser/openapi@beta --commerce sdk accounts.list '{"page":1,"pageSize":20}' \
-  --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 参数：
@@ -183,10 +176,9 @@ const commerce = new RoxyCommerceClient({
   apiKey: "YOUR_API_KEY",
   workspaceId: 19744,
 });
-
-const accounts = await commerce.accounts.list({ windowName: "Amazon" });
-await commerce.accounts.open(accounts.rows[0].dirId);
 ```
+
+`RoxyCommerceClient` 目前只是产品壳。电商 SDK 方法和 MCP 工具会在后续任务中补齐。
 
 如果需要直接调用接近后端接口形态的能力，可以使用低层 `RoxyApiClient`：
 
@@ -260,32 +252,13 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-电商模式暴露 18 个 account 语言工具，底层仍然复用浏览器 profile 接口：
-
-- `roxy_account_list`
-- `roxy_account_get`
-- `roxy_account_create`
-- `roxy_account_update`
-- `roxy_account_open`
-- `roxy_account_close`
-- `roxy_account_delete`
-- `roxy_proxy_list`
-- `roxy_proxy_get`
-- `roxy_proxy_create`
-- `roxy_proxy_update`
-- `roxy_proxy_delete`
-- `roxy_proxy_detect`
-- `roxy_proxy_detect_channels`
-- `roxy_platform_credential_list`
-- `roxy_platform_credential_create`
-- `roxy_platform_credential_update`
-- `roxy_platform_credential_delete`
+电商模式目前是空 preset 壳，在后续设计电商工具集之前不暴露内置工具。
 
 创建 MCP preset 时应设置当前 RoxyBrowser App 版本 `roxyBrowserVersion`，这样会隐藏高于该版本的工具和 schema 字段。每个 MCP
 工具都会在 `_meta` 中保留稳定的 `operationId`、底层 RoxyBrowser `endpoint`、包版本和 `sinceRoxyBrowserVersion`，
 方便客户端判断能力是否可用。
 
-创建类 MCP 工具使用同一个公开名称：单个创建直接传字段，批量创建传对应资源数组（`proxies`、`accounts` 或 `credentials`）。
+创建类 MCP 工具使用同一个公开名称：单个创建直接传字段，批量创建传对应资源数组（`profiles`、`proxies` 或 `accounts`）。
 
 ## 架构
 
@@ -294,7 +267,7 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `src/api`：底层 RoxyBrowser HTTP API client
 - `src/sdk`：对外 SDK client
 - `src/domains/browser`：浏览器 profile、proxy、workspace、platform account 领域
-- `src/domains/commerce`：电商 account、proxy、platform credential 领域
+- `src/domains/commerce`：预留的电商领域骨架
 - `src/mcp/runtime`：可复用 MCP runtime
 - `src/mcp/presets/browser`：浏览器模式 MCP 预设
 - `src/mcp/presets/commerce`：电商模式 MCP 预设

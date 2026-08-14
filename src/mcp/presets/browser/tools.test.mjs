@@ -344,17 +344,7 @@ describe("3.0 MCP presets", () => {
     }
   });
 
-  test("commerce preset exposes account tools backed by browser endpoints", async () => {
-    const restoreFetch = installFetchMock(async () =>
-      createJsonResponse({
-        code: 0,
-        msg: "ok",
-        data: {
-          total: 1,
-          rows: [{ dirId: "account-1", windowName: "Amazon Store A", projectId: 3 }],
-        },
-      }),
-    );
+  test("commerce preset is an empty product shell by default", async () => {
     const server = createRoxyCommerceMcpServer({
       roxy: { apiKey: "secret-token", workspaceId: 77 },
     });
@@ -362,28 +352,8 @@ describe("3.0 MCP presets", () => {
 
     try {
       const tools = await session.client.listTools();
-      const names = tools.tools.map((tool) => tool.name);
-      assert.equal(names.length, 18);
-      assert.ok(names.includes("roxy_account_list"));
-      assert.ok(names.includes("roxy_account_update"));
-      assert.ok(names.includes("roxy_proxy_create"));
-      assert.equal(names.includes("roxy_proxy_create_many"), false);
-      assert.equal(names.includes("roxy_platform_credential_create_many"), false);
-      assert.ok(names.includes("roxy_platform_credential_list"));
-      assert.ok(names.includes("roxy_platform_credential_delete"));
-      assert.equal(names.includes("roxy_profile_list"), false);
-      for (const tool of tools.tools) {
-        const pageSize = tool.inputSchema?.properties?.pageSize;
-        if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);
-      }
-
-      const result = await session.client.callTool({
-        name: "roxy_account_list",
-        arguments: { keyword: "Amazon" },
-      });
-      assert.match(getTextContent(result), /Amazon Store A/);
+      assert.deepEqual(tools.tools, []);
     } finally {
-      restoreFetch();
       await session.close();
     }
   });

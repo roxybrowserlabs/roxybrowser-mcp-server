@@ -53,23 +53,16 @@ npx -y @roxybrowser/openapi@beta version
 npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
 ```
 
-Ecommerce account mode:
+Ecommerce account mode is available as a preset shell, but it does not expose built-in tools yet:
 
 ```bash
 roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
-Run the ecommerce preset directly with `npx`:
+Run the ecommerce preset shell directly with `npx`:
 
 ```bash
 npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
-The SDK debugger also supports ecommerce product names:
-
-```bash
-npx -y @roxybrowser/openapi@beta --commerce sdk accounts.list '{"page":1,"pageSize":20}' \
-  --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Options:
@@ -185,10 +178,10 @@ const commerce = new RoxyCommerceClient({
   apiKey: "YOUR_API_KEY",
   workspaceId: 19744,
 });
-
-const accounts = await commerce.accounts.list({ windowName: "Amazon" });
-await commerce.accounts.open(accounts.rows[0].dirId);
 ```
+
+`RoxyCommerceClient` is currently a product shell. Ecommerce SDK methods and MCP tools will be added
+in a later task.
 
 Low-level API access is available through `RoxyApiClient` when endpoint-shaped calls are needed:
 
@@ -263,26 +256,8 @@ when it is not (the additional tool is `roxy_workspace_list`):
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-Ecommerce mode exposes 18 tools in account language over the same browser-profile backend endpoints:
-
-- `roxy_account_list`
-- `roxy_account_get`
-- `roxy_account_create`
-- `roxy_account_update`
-- `roxy_account_open`
-- `roxy_account_close`
-- `roxy_account_delete`
-- `roxy_proxy_list`
-- `roxy_proxy_get`
-- `roxy_proxy_create`
-- `roxy_proxy_update`
-- `roxy_proxy_delete`
-- `roxy_proxy_detect`
-- `roxy_proxy_detect_channels`
-- `roxy_platform_credential_list`
-- `roxy_platform_credential_create`
-- `roxy_platform_credential_update`
-- `roxy_platform_credential_delete`
+Ecommerce mode is currently an empty preset shell. It exposes no built-in tools until the ecommerce
+toolset is designed in a later task.
 
 Set `roxyBrowserVersion` to the current RoxyBrowser app version when creating a preset. Tools and
 schema fields added after that app version are hidden.
@@ -291,7 +266,7 @@ the package version, and `sinceRoxyBrowserVersion` in tool `_meta`.
 
 Create tools accept a resource array. Pass one item to create a single resource, or multiple items to
 create a batch. Browser profile, proxy, and platform-account tools use `profiles`, `proxies`, and
-`accounts`; ecommerce tools use `accounts`, `proxies`, and `credentials`.
+`accounts`.
 
 ## Architecture
 
@@ -300,7 +275,7 @@ The 3.0 source tree is intentionally split:
 - `src/api`: raw RoxyBrowser HTTP API client.
 - `src/sdk`: public SDK clients.
 - `src/domains/browser`: browser profile, proxy, workspace, and platform account domains.
-- `src/domains/commerce`: ecommerce account, proxy, and platform credential domains.
+- `src/domains/commerce`: reserved ecommerce domain skeletons.
 - `src/mcp/runtime`: reusable MCP runtime.
 - `src/mcp/presets/browser`: browser-mode MCP preset.
 - `src/mcp/presets/commerce`: ecommerce-mode MCP preset.

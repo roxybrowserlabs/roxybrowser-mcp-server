@@ -104,7 +104,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
   addRoxyOptions(
     program
       .command("sdk <operation> [args...]")
-      .description("Call a browser or ecommerce SDK method and print the JSON result"),
+      .description("Call an SDK method and print the JSON result"),
   ).action(async function (this: Command, operation: string, args: string[]) {
     const command = this;
       options.markHandled();
