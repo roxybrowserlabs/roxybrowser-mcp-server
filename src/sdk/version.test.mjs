@@ -26,10 +26,12 @@ describe("versioned SDK capabilities", () => {
     assert.deepEqual(getRoxyCapability("browser.profile.open"), {
       operationId: "browser.profile.open",
       endpoint: "POST /browser/open",
-      sinceRoxyBrowserVersion: "3.0.0",
     });
-    assert.equal(isRoxyCapabilitySupported("browser.profile.open", "3.0.0"), true);
-    assert.equal(isRoxyCapabilitySupported("browser.profile.open", "2.9.9"), false);
+    assert.equal(isRoxyCapabilitySupported("browser.profile.open"), true);
+    assert.equal(isRoxyCapabilitySupported("browser.profile.open", "2.9.9"), true);
+    assert.equal(isRoxyCapabilitySupported("browser.profile.openMany"), false);
+    assert.equal(isRoxyCapabilitySupported("browser.profile.openMany", "4.0.3"), false);
+    assert.equal(isRoxyCapabilitySupported("browser.profile.openMany", "4.0.4"), true);
     assert.equal(isRoxyCapabilitySupported("browser.missing", "9.0.0"), false);
 
     const client = new RoxyBrowserClient({
@@ -37,8 +39,8 @@ describe("versioned SDK capabilities", () => {
       roxyBrowserVersion: "3.0.0",
     });
     assert.equal(client.supports("browser.profile.open"), true);
-    assert.equal(client.supports("browser.profile.open", "3.0.0"), true);
-    assert.equal(client.supports("browser.profile.open", "2.9.9"), false);
+    assert.equal(client.supports("browser.profile.open", "2.9.9"), true);
+    assert.equal(client.supports("browser.profile.openMany"), false);
   });
 
   test("uses compare-versions semantics for prerelease versions", () => {

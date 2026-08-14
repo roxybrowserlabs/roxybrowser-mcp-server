@@ -262,7 +262,8 @@ toolset is designed in a later task.
 Set `roxyBrowserVersion` to the current RoxyBrowser app version when creating a preset. Tools and
 schema fields added after that app version are hidden.
 Each MCP tool keeps debug metadata with a stable `operationId`, the underlying RoxyBrowser endpoint,
-the package version, and `sinceRoxyBrowserVersion` in tool `_meta`.
+the package version, and `sinceRoxyBrowserVersion` in tool `_meta` only when that tool has an app
+version requirement. Unmarked tools and schema fields are available for all RoxyBrowser app versions.
 
 Create tools accept a resource array. Pass one item to create a single resource, or multiple items to
 create a batch. Browser profile, proxy, and platform-account tools use `profiles`, `proxies`, and

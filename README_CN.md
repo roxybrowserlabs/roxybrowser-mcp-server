@@ -255,8 +255,8 @@ const commerceServer = createRoxyCommerceMcpServer({
 电商模式目前是空 preset 壳，在后续设计电商工具集之前不暴露内置工具。
 
 创建 MCP preset 时应设置当前 RoxyBrowser App 版本 `roxyBrowserVersion`，这样会隐藏高于该版本的工具和 schema 字段。每个 MCP
-工具都会在 `_meta` 中保留稳定的 `operationId`、底层 RoxyBrowser `endpoint`、包版本和 `sinceRoxyBrowserVersion`，
-方便客户端判断能力是否可用。
+工具都会在 `_meta` 中保留稳定的 `operationId`、底层 RoxyBrowser `endpoint` 和包版本；只有存在 App 版本门槛的工具才会额外带
+`sinceRoxyBrowserVersion`。未标版本的工具和 schema 字段默认所有 RoxyBrowser App 版本可用。
 
 创建类 MCP 工具使用同一个公开名称：单个创建直接传字段，批量创建传对应资源数组（`profiles`、`proxies` 或 `accounts`）。
 

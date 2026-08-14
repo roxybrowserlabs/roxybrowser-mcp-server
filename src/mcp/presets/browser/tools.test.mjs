@@ -49,7 +49,7 @@ describe("3.0 MCP presets", () => {
       assert.equal(profileOpen._meta["roxybrowser/openapiPackageVersion"], ROXY_OPENAPI_VERSION);
       assert.equal(profileOpen._meta["roxybrowser/operationId"], "browser.profile.open");
       assert.equal(profileOpen._meta["roxybrowser/endpoint"], "POST /browser/open");
-      assert.equal(profileOpen._meta["roxybrowser/sinceRoxyBrowserVersion"], "3.0.0");
+      assert.equal("roxybrowser/sinceRoxyBrowserVersion" in profileOpen._meta, false);
       for (const tool of result.tools) {
         const pageSize = tool.inputSchema?.properties?.pageSize;
         if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);

@@ -53,6 +53,6 @@ export class RoxyBrowserClient extends GeneratedRoxyBrowserClient {
   }
 
   supports(operationId: string, roxyBrowserVersion = this.roxyBrowserVersion): boolean {
-    return Boolean(roxyBrowserVersion && isRoxyCapabilitySupported(operationId, roxyBrowserVersion));
+    return isRoxyCapabilitySupported(operationId, roxyBrowserVersion);
   }
 }

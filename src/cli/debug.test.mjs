@@ -174,7 +174,7 @@ describe("debug CLI helpers", () => {
       assert.equal(output[1].operationId, "browser.profile.open");
       assert.equal(output[1].roxyBrowserVersion, "3.0.0");
       assert.equal(output[1].supported, true);
-      assert.equal(output[1].capability.sinceRoxyBrowserVersion, "3.0.0");
+      assert.equal("sinceRoxyBrowserVersion" in output[1].capability, false);
     } finally {
       console.log = originalLog;
     }
