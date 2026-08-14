@@ -7,7 +7,6 @@ import {
   ROXY_CAPABILITIES,
   ROXY_OPENAPI_VERSION,
   RoxyBrowserClient,
-  RoxyCommerceClient,
 } from "../../lib/index.js";
 
 describe("versioned SDK capabilities", () => {
@@ -16,19 +15,11 @@ describe("versioned SDK capabilities", () => {
       apiKey: "secret-token",
       roxyBrowserVersion: "4.0.4",
     });
-    const commerce = new RoxyCommerceClient({
-      apiKey: "secret-token",
-      roxyBrowserVersion: "4.0.4",
-    });
 
     assert.equal(browser.version, ROXY_OPENAPI_VERSION);
     assert.equal(RoxyBrowserClient.version, ROXY_OPENAPI_VERSION);
-    assert.equal(commerce.version, ROXY_OPENAPI_VERSION);
-    assert.equal(RoxyCommerceClient.version, ROXY_OPENAPI_VERSION);
     assert.equal(browser.capabilities, ROXY_CAPABILITIES);
-    assert.equal(commerce.capabilities, ROXY_CAPABILITIES);
     assert.equal(browser.roxyBrowserVersion, "4.0.4");
-    assert.equal(commerce.roxyBrowserVersion, "4.0.4");
   });
 
   test("checks whether an operation exists for a given version", () => {
