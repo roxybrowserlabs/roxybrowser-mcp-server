@@ -53,7 +53,7 @@ export default defineConfig({
     globalSetup: ["./support/build-for-tests.mjs"],
     coverage: {
       provider: "v8",
-      include: ["lib/{api,sdk,domains,mcp,cli}/**/*.js"],
+      include: ["lib/{api,sdk,domains,mcp}/**/*.js"],
       exclude: [
         "lib/**/index.js",
         "lib/**/types.js",

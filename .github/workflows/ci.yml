@@ -18,6 +18,6 @@ jobs:
           node-version: "24.15.0"
           cache: true
       - run: vp install --frozen-lockfile
-      - run: vp check
+      - run: vpr check
       - run: vp test run --coverage
       - run: vp pack

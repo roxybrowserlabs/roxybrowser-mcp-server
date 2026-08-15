@@ -368,6 +368,19 @@ describe("MCP tool handlers", () => {
     assert.deepEqual(normalizeCommerceAccountInput({ name: "Store" }), {
       windowName: "Store",
     });
+    assert.deepEqual(normalizeCommerceAccountInput({ name: "Store", platform: [] }), {
+      windowName: "Store",
+    });
+    assert.deepEqual(
+      normalizeCommerceAccountInput({
+        name: "Store",
+        platform: { url: 123, username: "seller", password: false },
+      }),
+      {
+        windowName: "Store",
+        windowPlatformList: [{ platformUserName: "seller" }],
+      },
+    );
   });
 
   test("MCP output formatters keep lists compact and details complete", () => {

@@ -21,21 +21,16 @@ export function formatCommerceAccounts(
   roxyBrowserVersion?: string,
 ): string {
   const showProject = Boolean(
-    roxyBrowserVersion &&
-      isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
+    roxyBrowserVersion && isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
   );
-  const headers = showProject ? ["Name", "dirId", "Project", "Status"] : ["Name", "dirId", "Status"];
+  const headers = showProject
+    ? ["Name", "dirId", "Project", "Status"]
+    : ["Name", "dirId", "Status"];
   const rows = page.rows.map((account) => {
     const base = [account.windowName, account.dirId, statusValue(account.openStatus)];
     return showProject ? [base[0], base[1], projectValue(account), base[2]] : base;
   });
-  return pagedTable(
-    "Accounts",
-    page,
-    headers,
-    rows,
-    "No ecommerce accounts found.",
-  );
+  return pagedTable("Accounts", page, headers, rows, "No ecommerce accounts found.");
 }
 
 export function formatCommerceAccount(account: CommerceAccount): string {
