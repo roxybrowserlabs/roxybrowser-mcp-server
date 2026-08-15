@@ -3,10 +3,7 @@ import { compareVersions, validate } from "compare-versions";
 import { ROXY_BROWSER_VERSION_4_0_4 } from "./roxy-browser-versions.js";
 
 export const ROXY_OPENAPI_VERSION = packageJson.version;
-export {
-  ROXY_BROWSER_VERSION_3_0_0,
-  ROXY_BROWSER_VERSION_4_0_4,
-} from "./roxy-browser-versions.js";
+export { ROXY_BROWSER_VERSION_3_0_0, ROXY_BROWSER_VERSION_4_0_4 } from "./roxy-browser-versions.js";
 
 export interface RoxyCapability {
   operationId: string;
@@ -136,8 +133,7 @@ export function isRoxyCapabilitySupported(
   if (!capability) return false;
   if (!capability.sinceRoxyBrowserVersion) return true;
   return Boolean(
-    roxyBrowserVersion &&
-      isVersionAtLeast(roxyBrowserVersion, capability.sinceRoxyBrowserVersion),
+    roxyBrowserVersion && isVersionAtLeast(roxyBrowserVersion, capability.sinceRoxyBrowserVersion),
   );
 }
 

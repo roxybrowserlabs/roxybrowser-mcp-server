@@ -31,13 +31,9 @@ function stringField(value: Record<string, unknown>, name: string): string | und
   return typeof value[name] === "string" ? value[name] : undefined;
 }
 
-export function formatProfiles(
-  page: Page<BrowserProfile>,
-  roxyBrowserVersion?: string,
-): string {
+export function formatProfiles(page: Page<BrowserProfile>, roxyBrowserVersion?: string): string {
   const showProject = Boolean(
-    roxyBrowserVersion &&
-      isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
+    roxyBrowserVersion && isVersionAtLeast(roxyBrowserVersion, ROXY_BROWSER_VERSION_4_0_4),
   );
   const headers = showProject
     ? ["Name", "DirId", "SerialNumber", "Project", "Core", "OS", "Remark"]
@@ -62,13 +58,7 @@ export function formatProfiles(
         ]
       : base;
   });
-  return pagedTable(
-    "Profiles",
-    page,
-    headers,
-    rows,
-    "No profiles found.",
-  );
+  return pagedTable("Profiles", page, headers, rows, "No profiles found.");
 }
 
 export function formatProfile(profile: BrowserProfile): string {

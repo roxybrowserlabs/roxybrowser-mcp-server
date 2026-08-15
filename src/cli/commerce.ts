@@ -17,7 +17,7 @@ export async function runCommerceCli(argv = process.argv): Promise<void> {
   const program = new Command();
   addRoxyOptions(
     program
-    .name("roxybrowser-openapi-mcp")
+      .name("roxybrowser-openapi-mcp")
       .description("RoxyBrowser MCP Server - ecommerce account mode"),
   );
 
@@ -27,11 +27,7 @@ export async function runCommerceCli(argv = process.argv): Promise<void> {
       handledBySubcommand = true;
     },
     getRoxyOptions: (overrides, sources) =>
-      resolveRoxyOptions(
-        getRoxyCommandOptions(program),
-        overrides,
-        sources,
-      ),
+      resolveRoxyOptions(getRoxyCommandOptions(program), overrides, sources),
   });
 
   await program.parseAsync(argv);

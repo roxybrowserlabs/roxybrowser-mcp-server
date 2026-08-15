@@ -86,8 +86,7 @@ export function withToolVersions<TTool extends McpTool>(tools: TTool[]): TTool[]
   return tools.map((tool) => ({
     ...tool,
     sinceRoxyBrowserVersion:
-      tool.sinceRoxyBrowserVersion ??
-      getRoxyCapability(tool.operationId)?.sinceRoxyBrowserVersion,
+      tool.sinceRoxyBrowserVersion ?? getRoxyCapability(tool.operationId)?.sinceRoxyBrowserVersion,
   }));
 }
 

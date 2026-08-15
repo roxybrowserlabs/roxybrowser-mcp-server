@@ -1,10 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "vite-plus/test";
-import {
-  parseCliValue,
-  runApiDebugCommand,
-  runSdkDebugCommand,
-} from "../../lib/cli/debug.js";
+import { parseCliValue, runApiDebugCommand, runSdkDebugCommand } from "../../lib/cli/debug.js";
 import { runBrowserCli } from "../../lib/cli/browser.js";
 import { ROXY_OPENAPI_VERSION } from "../../lib/index.js";
 import { createJsonResponse, installFetchMock } from "../../support/helpers.mjs";
@@ -37,10 +33,14 @@ describe("debug CLI helpers", () => {
       data: { dirId: "profile-1", ws: "ws://127.0.0.1/devtools/browser/1" },
     });
     try {
-      const result = await runSdkDebugCommand("profiles.open", ["profile-1", '{"forceOpen":true}'], {
-        mode: "browser",
-        roxy: { apiKey: "secret-token", workspaceId: 77 },
-      });
+      const result = await runSdkDebugCommand(
+        "profiles.open",
+        ["profile-1", '{"forceOpen":true}'],
+        {
+          mode: "browser",
+          roxy: { apiKey: "secret-token", workspaceId: 77 },
+        },
+      );
 
       assert.equal(calls[0].url.pathname, "/browser/open");
       assert.deepEqual(calls[0].body, {
@@ -90,12 +90,18 @@ describe("debug CLI helpers", () => {
   test("supports GET raw endpoints without workspace injection", async () => {
     const { calls, restoreFetch } = installRecorder();
     try {
-      await runApiDebugCommand("GET", "/custom/list", '{"page_index":1}', {
-        apiKey: "secret-token",
-        workspaceId: 99,
-      }, {
-        injectWorkspace: false,
-      });
+      await runApiDebugCommand(
+        "GET",
+        "/custom/list",
+        '{"page_index":1}',
+        {
+          apiKey: "secret-token",
+          workspaceId: 99,
+        },
+        {
+          injectWorkspace: false,
+        },
+      );
 
       assert.equal(calls[0].url.toString(), "http://127.0.0.1:50000/custom/list?page_index=1");
       assert.equal(calls[0].options.method, "GET");

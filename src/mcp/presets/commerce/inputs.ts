@@ -15,17 +15,18 @@ export function normalizeCommerceAccountListArgs(
 
 export function normalizeCommerceAccountInput(args: Record<string, any>): CommerceAccountInput {
   const p = args.platform;
-  const platformAccounts = p != null && typeof p === 'object' && !Array.isArray(p)
-    ? [
-        {
-          platformUrl: typeof p.url === 'string' ? p.url : undefined,
-          username: typeof p.username === 'string' ? p.username : undefined,
-          password: typeof p.password === 'string' ? p.password : undefined,
-          twoFactorKey: typeof p.twoFactorKey === 'string' ? p.twoFactorKey : undefined,
-          remarks: typeof p.remarks === 'string' ? p.remarks : undefined,
-        },
-      ]
-    : undefined;
+  const platformAccounts =
+    p != null && typeof p === "object" && !Array.isArray(p)
+      ? [
+          {
+            platformUrl: typeof p.url === "string" ? p.url : undefined,
+            username: typeof p.username === "string" ? p.username : undefined,
+            password: typeof p.password === "string" ? p.password : undefined,
+            twoFactorKey: typeof p.twoFactorKey === "string" ? p.twoFactorKey : undefined,
+            remarks: typeof p.remarks === "string" ? p.remarks : undefined,
+          },
+        ]
+      : undefined;
 
   return normalizeProfileInput({
     ...args,

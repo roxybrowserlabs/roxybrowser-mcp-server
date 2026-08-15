@@ -1,11 +1,7 @@
 import type { Command } from "commander";
 import { RoxyApiClient, type RoxyApiClientOptions } from "../api/index.js";
 import { RoxyBrowserClient, RoxyCommerceClient } from "../sdk/index.js";
-import {
-  getRoxyCapability,
-  isRoxyCapabilitySupported,
-  ROXY_OPENAPI_VERSION,
-} from "../version.js";
+import { getRoxyCapability, isRoxyCapabilitySupported, ROXY_OPENAPI_VERSION } from "../version.js";
 
 export type DebugCliMode = "browser" | "commerce";
 
@@ -107,37 +103,42 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
       .description("Call an SDK method and print the JSON result"),
   ).action(async function (this: Command, operation: string, args: string[]) {
     const command = this;
-      options.markHandled();
-      const result = await runSdkDebugCommand(operation, args, {
-        mode: options.mode,
-        roxy: options.getRoxyOptions(
-          getRoxyCommandOptions(command),
-          getRoxyCommandOptionSources(command),
-        ),
-      });
-      printJsonResult(result);
+    options.markHandled();
+    const result = await runSdkDebugCommand(operation, args, {
+      mode: options.mode,
+      roxy: options.getRoxyOptions(
+        getRoxyCommandOptions(command),
+        getRoxyCommandOptionSources(command),
+      ),
     });
+    printJsonResult(result);
+  });
 
   addRoxyOptions(
     program
       .command("api <method> <path> [params]")
       .description("Call a raw RoxyBrowser endpoint and print the JSON result")
       .option("--no-workspace", "Do not inject the configured workspaceId into object params"),
-  ).action(async function (this: Command, method: string, path: string, params: string | undefined) {
-      const command = this;
-      options.markHandled();
-      const commandOptions = command.opts();
-      const result = await runApiDebugCommand(
-        method,
-        path,
-        params,
-        options.getRoxyOptions(commandOptions, getRoxyCommandOptionSources(command)),
-        {
-          injectWorkspace: commandOptions.workspace,
-        },
-      );
-      printJsonResult(result);
-    });
+  ).action(async function (
+    this: Command,
+    method: string,
+    path: string,
+    params: string | undefined,
+  ) {
+    const command = this;
+    options.markHandled();
+    const commandOptions = command.opts();
+    const result = await runApiDebugCommand(
+      method,
+      path,
+      params,
+      options.getRoxyOptions(commandOptions, getRoxyCommandOptionSources(command)),
+      {
+        injectWorkspace: commandOptions.workspace,
+      },
+    );
+    printJsonResult(result);
+  });
 }
 
 export function addRoxyOptions<TCommand extends Command>(command: TCommand): TCommand {
