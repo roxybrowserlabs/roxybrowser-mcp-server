@@ -332,7 +332,6 @@ roxy_profile_randomize_fingerprint
 roxy_profile_clear_local_cache
 roxy_profile_clear_server_cache
 roxy_proxy_list
-roxy_proxy_get
 roxy_proxy_create
 roxy_proxy_update
 roxy_proxy_delete
@@ -355,7 +354,6 @@ roxy_account_open
 roxy_account_close
 roxy_account_delete
 roxy_proxy_list
-roxy_proxy_get
 roxy_proxy_create
 roxy_proxy_update
 roxy_proxy_delete

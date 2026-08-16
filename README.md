@@ -245,7 +245,6 @@ when it is not (the additional tool is `roxy_workspace_list`):
 - `roxy_profile_clear_local_cache`
 - `roxy_profile_clear_server_cache`
 - `roxy_proxy_list`
-- `roxy_proxy_get`
 - `roxy_proxy_create`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`

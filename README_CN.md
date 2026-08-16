@@ -224,7 +224,7 @@ const commerceServer = createRoxyCommerceMcpServer({
 
 ## 对外 MCP 工具名
 
-浏览器模式暴露 25 个 profile 语言工具：
+浏览器模式暴露 24 个 profile 语言工具：
 
 - `roxy_workspace_list`
 - `roxy_project_list`
@@ -241,7 +241,6 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_profile_clear_local_cache`
 - `roxy_profile_clear_server_cache`
 - `roxy_proxy_list`
-- `roxy_proxy_get`
 - `roxy_proxy_create`
 - `roxy_proxy_update`
 - `roxy_proxy_delete`

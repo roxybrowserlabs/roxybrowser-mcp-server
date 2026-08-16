@@ -492,14 +492,14 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     handler: async (args, context) =>
       formatProxies(await context.browser!.proxies.list(normalizeProxyListArgs(args))),
   },
-  {
-    name: "roxy_proxy_get",
-    operationId: "browser.proxy.get",
-    endpoint: "GET /proxy/detail",
-    description: "Get one proxy.",
-    inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-    handler: async (args, context) => formatProxy(await context.browser!.proxies.get(args.id)),
-  },
+  // {
+  //   name: "roxy_proxy_get",
+  //   operationId: "browser.proxy.get",
+  //   endpoint: "GET /proxy/detail",
+  //   description: "Get one proxy.",
+  //   inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
+  //   handler: async (args, context) => formatProxy(await context.browser!.proxies.get(args.id)),
+  // },
   {
     name: "roxy_proxy_create",
     operationId: "browser.proxy.create",
