@@ -26,6 +26,17 @@ import {
 } from "./inputs.js";
 
 const MAX_CREATE_ITEMS = 30;
+const READ_ONLY_ANNOTATIONS = { readOnlyHint: true, openWorldHint: true };
+const ADDITIVE_ANNOTATIONS = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  openWorldHint: true,
+};
+const DESTRUCTIVE_ANNOTATIONS = {
+  readOnlyHint: false,
+  destructiveHint: true,
+  openWorldHint: true,
+};
 
 const objectSchema = (properties: Record<string, unknown>, required: string[] = []) => ({
   type: "object",
@@ -256,6 +267,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/workspace",
     description: "List RoxyBrowser workspaces.",
     inputSchema: objectSchema(paginationSchema),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) =>
       formatWorkspaces(await context.browser!.workspaces.list(args)),
   },
@@ -265,6 +277,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /project/list",
     description: "List projects in the configured workspace.",
     inputSchema: objectSchema(paginationSchema),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) => formatProjects(await context.browser!.projects.list(args)),
   },
   {
@@ -273,6 +286,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/label",
     description: "List browser labels.",
     inputSchema: objectSchema({}),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (_args, context) => formatLabels(await context.browser!.labels.list()),
   },
   {
@@ -293,6 +307,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       },
       os: { type: "string" },
     }),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) =>
       formatProfiles(
         await context.browser!.profiles.list(normalizeProfileListArgs(args)),
@@ -305,6 +320,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/detail",
     description: "Get one browser profile details.",
     inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) =>
       formatProfile(await context.browser!.profiles.get(args.dirId)),
   },
@@ -314,6 +330,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /browser/create",
     description: "Create one or more browser profiles.",
     inputSchema: arrayCreateSchema(profileCreateSchema, "profiles"),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       assertCreateLimit(args.profiles, "browser profiles");
       const results: CreateItemResult[] = [];
@@ -365,6 +382,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       },
       ["dirId"],
     ),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       const { dirId, ...patch } = args;
       const normalized = normalizeProfileUpdateInputWithWarnings(patch);
@@ -389,6 +407,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       },
       ["dirId"],
     ),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       const opened = await context.browser!.profiles.open(
         args.dirId,
@@ -403,6 +422,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /browser/close",
     description: "Close a browser profile.",
     inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.profiles.close(args.dirId);
       return `Closed profile ${args.dirId}.`;
@@ -420,6 +440,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       },
       ["dirIds"],
     ),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.profiles.delete(args.dirIds, normalizeProfileDeleteOptions(args));
       return `Deleted ${args.dirIds.length} profile(s).`;
@@ -431,6 +452,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /browser/connection_info",
     description: "Get CDP or BiDi connection information for opened browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) => {
       return formatConnections(await context.browser!.profiles.connectionInfo(args.dirIds));
     },
@@ -441,6 +463,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /browser/random_env",
     description: "Randomize a browser profile fingerprint.",
     inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.profiles.randomizeFingerprint(args.dirId);
       return `Randomized fingerprint for profile ${args.dirId}.`;
@@ -455,6 +478,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       { dirIds: stringArray, type: { type: "string", enum: ["partial", "all", "cloud"] } },
       ["dirIds"],
     ),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.profiles.clearLocalCache(
         args.dirIds,
@@ -469,6 +493,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /browser/clear_server_cache",
     description: "Clear server cache for browser profiles.",
     inputSchema: objectSchema({ dirIds: stringArray }, ["dirIds"]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.profiles.clearServerCache(args.dirIds);
       return `Cleared server cache for ${args.dirIds.length} profile(s).`;
@@ -489,17 +514,10 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       sortBy: { type: "string" },
       sortOrder: { type: "string", enum: ["asc", "desc"] },
     }),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) =>
       formatProxies(await context.browser!.proxies.list(normalizeProxyListArgs(args))),
   },
-  // {
-  //   name: "roxy_proxy_get",
-  //   operationId: "browser.proxy.get",
-  //   endpoint: "GET /proxy/detail",
-  //   description: "Get one proxy.",
-  //   inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
-  //   handler: async (args, context) => formatProxy(await context.browser!.proxies.get(args.id)),
-  // },
   {
     name: "roxy_proxy_create",
     operationId: "browser.proxy.create",
@@ -512,6 +530,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       { checkChannel: { type: "string" } },
       ["checkChannel"],
     ),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       assertCreateLimit(args.proxies, "proxies");
       const results: CreateItemResult[] = [];
@@ -554,6 +573,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       "host",
       "port",
     ]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       const { id, ...input } = args;
       await context.browser!.proxies.update(id, normalizeProxyInput(input));
@@ -566,6 +586,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/delete",
     description: "Delete proxies.",
     inputSchema: objectSchema({ ids: numberArray }, ["ids"]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.proxies.delete(args.ids);
       return `Deleted ${args.ids.length} proxy/proxies.`;
@@ -577,6 +598,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
     inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.proxies.detect(args.id);
       return `Detected proxy ${args.id}.`;
@@ -588,6 +610,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /proxy/detect_channel",
     description: "List proxy detect channels.",
     inputSchema: objectSchema({}),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (_args, context) =>
       formatDetectChannels(await context.browser!.proxies.detectChannels()),
   },
@@ -597,6 +620,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "GET /account/list",
     description: "List platform accounts.",
     inputSchema: objectSchema(paginationSchema),
+    annotations: READ_ONLY_ANNOTATIONS,
     handler: async (args, context) =>
       formatPlatformAccounts(await context.browser!.platformAccounts.list(args)),
   },
@@ -606,6 +630,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /account/create | POST /account/batch_create",
     description: "Create one or more platform accounts.",
     inputSchema: arrayCreateSchema(platformAccountInputSchema, "accounts", ["platformUrl"]),
+    annotations: ADDITIVE_ANNOTATIONS,
     handler: async (args, context) => {
       assertCreateLimit(args.accounts, "platform accounts");
       const results: CreateItemResult[] = [];
@@ -642,6 +667,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
       "id",
       "platformUrl",
     ]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       const { id, ...patch } = args;
       await context.browser!.platformAccounts.update(id, normalizePlatformAccountInput(patch));
@@ -654,6 +680,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     endpoint: "POST /account/delete",
     description: "Delete platform accounts.",
     inputSchema: objectSchema({ ids: numberArray }, ["ids"]),
+    annotations: DESTRUCTIVE_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.platformAccounts.delete(args.ids);
       return `Deleted ${args.ids.length} platform account(s).`;

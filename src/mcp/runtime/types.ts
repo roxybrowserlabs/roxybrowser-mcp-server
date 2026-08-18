@@ -10,10 +10,19 @@ export interface McpContext {
   agentVersion?: string;
 }
 
+export interface ToolAnnotations {
+  title?: string;
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint?: boolean;
+}
+
 export interface McpTool {
   name: string;
   description: string;
   inputSchema: Record<string, unknown>;
+  annotations?: ToolAnnotations;
   operationId: string;
   endpoint?: string;
   sinceRoxyBrowserVersion?: string;

@@ -44,6 +44,7 @@ export class RoxyPresetMcpServer {
         name: tool.name,
         description: tool.description,
         inputSchema: filterSchemaByVersion(tool.inputSchema, this.roxyBrowserVersion),
+        ...(tool.annotations ? { annotations: tool.annotations } : {}),
         _meta: {
           "roxybrowser/openapiPackageVersion": ROXY_OPENAPI_VERSION,
           "roxybrowser/operationId": tool.operationId,

@@ -905,10 +905,6 @@ describe("MCP tool handlers", () => {
       /SOCKS5/,
     );
     assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_get").handler({ id: 1 }, context),
-      /SOCKS5/,
-    );
-    assert.match(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_proxy_create").handler(
         {
           checkChannel: "http://iprust.io/ip.json",
