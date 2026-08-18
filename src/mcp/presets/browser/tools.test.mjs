@@ -50,26 +50,23 @@ describe("3.0 MCP presets", () => {
       assert.equal(profileOpen._meta["roxybrowser/operationId"], "browser.profile.open");
       assert.equal(profileOpen._meta["roxybrowser/endpoint"], "POST /browser/open");
       assert.equal("roxybrowser/sinceRoxyBrowserVersion" in profileOpen._meta, false);
-      assert.deepEqual(
-        result.tools.find((tool) => tool.name === "roxy_project_list").annotations,
-        { readOnlyHint: true, openWorldHint: true },
-      );
-      assert.deepEqual(
-        result.tools.find((tool) => tool.name === "roxy_profile_create").annotations,
-        { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
-      );
-      assert.deepEqual(
-        result.tools.find((tool) => tool.name === "roxy_profile_update").annotations,
-        { readOnlyHint: false, destructiveHint: true, openWorldHint: true },
-      );
-      assert.deepEqual(
-        result.tools.find((tool) => tool.name === "roxy_profile_delete").annotations,
-        { readOnlyHint: false, destructiveHint: true, openWorldHint: true },
-      );
-      assert.deepEqual(
-        result.tools.find((tool) => tool.name === "roxy_profile_connection_info").annotations,
-        { readOnlyHint: true, openWorldHint: true },
-      );
+      const noApprovalAnnotations = {
+        readOnlyHint: true,
+        destructiveHint: false,
+        openWorldHint: false,
+      };
+      const deleteApprovalAnnotations = {
+        readOnlyHint: false,
+        destructiveHint: true,
+        openWorldHint: false,
+      };
+      for (const tool of result.tools) {
+        assert.deepEqual(
+          tool.annotations,
+          tool.name.endsWith("_delete") ? deleteApprovalAnnotations : noApprovalAnnotations,
+          `${tool.name} annotations`,
+        );
+      }
       for (const tool of result.tools) {
         const pageSize = tool.inputSchema?.properties?.pageSize;
         if (pageSize) assert.equal(pageSize.maximum, 100, `${tool.name} pageSize limit`);
