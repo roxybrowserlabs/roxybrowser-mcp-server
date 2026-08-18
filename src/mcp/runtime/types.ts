@@ -18,10 +18,19 @@ export interface ToolAnnotations {
   openWorldHint?: boolean;
 }
 
+export interface ToolIcon {
+  src: string;
+  mimeType?: string;
+  sizes?: string[];
+  theme?: "light" | "dark";
+}
+
 export interface McpTool {
   name: string;
+  title?: string;
   description: string;
   inputSchema: Record<string, unknown>;
+  icons?: ToolIcon[];
   annotations?: ToolAnnotations;
   operationId: string;
   endpoint?: string;

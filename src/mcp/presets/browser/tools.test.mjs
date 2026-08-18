@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "vite-plus/test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { ResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import {
   createRoxyBrowserMcpServer,
   createRoxyCommerceMcpServer,
@@ -24,6 +25,19 @@ async function connect(server) {
       await Promise.all([clientTransport.close(), serverTransport.close()]);
     },
   };
+}
+
+async function rawRequest(server, request) {
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  const response = new Promise((resolve) => {
+    clientTransport.onmessage = resolve;
+  });
+  await server.connect(serverTransport);
+  await clientTransport.start();
+  await clientTransport.send(request);
+  const message = await response;
+  await Promise.all([clientTransport.close(), serverTransport.close()]);
+  return message;
 }
 
 describe("3.0 MCP presets", () => {
@@ -313,7 +327,10 @@ describe("3.0 MCP presets", () => {
       );
       assert.deepEqual(result.tools[0].inputSchema.properties, { page: { type: "number" } });
       assert.deepEqual(result.tools[0].inputSchema.required, ["page"]);
-      const call = await session.client.callTool({ name: "roxy_profile_list", arguments: {} });
+      const call = await session.client.callTool({
+        name: "roxy_profile_list",
+        arguments: { page: 1 },
+      });
       assert.equal(getTextContent(call), "app 3.0.0");
     } finally {
       await session.close();
@@ -385,16 +402,19 @@ describe("3.0 MCP presets", () => {
     const session = await connect(server);
 
     try {
-      const unknown = await session.client.callTool({
-        name: "roxy_missing_tool",
-        arguments: {},
-      });
-      assert.match(getTextContent(unknown), /Unknown tool: roxy_missing_tool/);
+      await assert.rejects(
+        session.client.callTool({
+          name: "roxy_missing_tool",
+          arguments: {},
+        }),
+        /Unknown tool: roxy_missing_tool/,
+      );
 
       const failed = await session.client.callTool({
         name: "roxy_profile_get",
-        arguments: { id: "missing" },
+        arguments: { dirId: "missing" },
       });
+      assert.equal(failed.isError, true);
       assert.match(getTextContent(failed), /fetch failed|Profile not found|API key/i);
     } finally {
       restoreFetch();
@@ -434,6 +454,251 @@ describe("3.0 MCP presets", () => {
     } finally {
       await session.close();
     }
+  });
+
+  test("runtime validates every published tool contract and exposes server metadata", async () => {
+    const server = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "secret-token", workspaceId: 77 },
+    });
+    const session = await connect(server);
+
+    try {
+      const result = await session.client.listTools();
+      assert.equal(result.resultType, "complete");
+      assert.equal(result.tools.length, 23);
+      assert.ok(result._meta["io.modelcontextprotocol/serverInfo"]);
+      const names = new Set();
+      for (const tool of result.tools) {
+        assert.match(tool.name, /^[A-Za-z0-9_.-]{1,128}$/);
+        assert.ok(tool.description?.trim());
+        assert.equal(tool.inputSchema.type, "object");
+        assert.ok(!names.has(tool.name));
+        names.add(tool.name);
+      }
+
+      const modern = await session.client.request(
+        {
+          method: "server/discover",
+          params: {
+            _meta: {
+              "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+              "io.modelcontextprotocol/clientCapabilities": {},
+            },
+          },
+        },
+        ResultSchema,
+      );
+      assert.deepEqual(modern.supportedVersions, ["2026-07-28", "2025-11-25"]);
+      assert.deepEqual(modern.capabilities, { tools: {} });
+      assert.ok(modern._meta["io.modelcontextprotocol/serverInfo"]);
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("runtime reports schema validation failures as tool errors", async () => {
+    let called = false;
+    const server = new RoxyPresetMcpServer(
+      {
+        name: "validation-roxy-mcp",
+        tools: [
+          {
+            name: "roxy_requires_id",
+            operationId: "custom.requiresId",
+            description: "Requires an identifier.",
+            inputSchema: {
+              type: "object",
+              properties: { id: { type: "string" } },
+              required: ["id"],
+            },
+            handler: async () => {
+              called = true;
+              return "ok";
+            },
+          },
+        ],
+      },
+      {},
+    );
+    const session = await connect(server);
+    try {
+      const result = await session.client.callTool({
+        name: "roxy_requires_id",
+        arguments: {},
+      });
+      assert.equal(result.resultType, "complete");
+      assert.equal(result.isError, true);
+      assert.match(getTextContent(result), /required property 'id'/);
+      assert.equal(called, false);
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("runtime validates primitive, array, object, enum, and union schema branches", async () => {
+    const calls = [];
+    const server = new RoxyPresetMcpServer(
+      {
+        name: "schema-roxy-mcp",
+        tools: [
+          {
+            name: "roxy_schema_probe",
+            operationId: "custom.schemaProbe",
+            description: "Exercises schema validation.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                text: { type: "string", minLength: 2, enum: ["ok"] },
+                count: { type: "number" },
+                whole: { type: "integer" },
+                enabled: { type: "boolean" },
+                values: {
+                  type: "array",
+                  minItems: 1,
+                  maxItems: 2,
+                  items: { type: "integer" },
+                },
+                nested: {
+                  type: "object",
+                  properties: { flag: { type: "boolean" } },
+                  additionalProperties: false,
+                },
+                union: {
+                  oneOf: [{ type: "string" }, { type: "object", properties: {} }],
+                },
+              },
+              required: ["text", "count", "whole", "enabled", "values"],
+            },
+            handler: async (args) => {
+              calls.push(args);
+              return "ok";
+            },
+          },
+        ],
+      },
+      {},
+    );
+    const session = await connect(server);
+    try {
+      const valid = await session.client.callTool({
+        name: "roxy_schema_probe",
+        arguments: {
+          text: "ok",
+          count: 1.5,
+          whole: 2,
+          enabled: true,
+          values: [1],
+          nested: { flag: false },
+          union: {},
+        },
+      });
+      assert.equal(getTextContent(valid), "ok");
+
+      const invalid = await session.client.callTool({
+        name: "roxy_schema_probe",
+        arguments: {
+          text: "x",
+          count: "bad",
+          whole: 1.2,
+          enabled: "yes",
+          values: [1, 2, 3, "bad"],
+          nested: { extra: true },
+          union: 3,
+        },
+      });
+      assert.equal(invalid.isError, true);
+      assert.match(getTextContent(invalid), /text|count|whole|enabled|values|nested|union/);
+      assert.equal(calls.length, 1);
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("runtime rejects malformed modern metadata and invalid catalogs", async () => {
+    const server = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "secret-token", workspaceId: 77 },
+    });
+    const missingMeta = await rawRequest(server, {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/list",
+      params: {},
+    });
+    assert.equal(missingMeta.error.code, -32602);
+
+    const unsupported = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "secret-token", workspaceId: 77 },
+    });
+    const unsupportedResponse = await rawRequest(unsupported, {
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/list",
+      params: {
+        _meta: {
+          "io.modelcontextprotocol/protocolVersion": "1900-01-01",
+          "io.modelcontextprotocol/clientCapabilities": {},
+        },
+      },
+    });
+    assert.equal(unsupportedResponse.error.code, -32022);
+
+    const pingServer = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "secret-token", workspaceId: 77 },
+    });
+    const ping = await rawRequest(pingServer, {
+      jsonrpc: "2.0",
+      id: 3,
+      method: "ping",
+      params: {
+        _meta: {
+          "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+          "io.modelcontextprotocol/clientCapabilities": {},
+        },
+      },
+    });
+    assert.equal(ping.result.resultType, "complete");
+    assert.ok(ping.result._meta["io.modelcontextprotocol/serverInfo"]);
+
+    const tool = {
+      operationId: "custom.invalid",
+      description: "Invalid",
+      inputSchema: { type: "object", properties: {} },
+      handler: async () => "ok",
+    };
+    assert.throws(
+      () => new RoxyPresetMcpServer({ name: "x", tools: [{ ...tool, name: "bad name" }] }, {}),
+      /Invalid MCP tool name/,
+    );
+    assert.throws(
+      () =>
+        new RoxyPresetMcpServer(
+          {
+            name: "x",
+            tools: [
+              { ...tool, name: "one" },
+              { ...tool, name: "one" },
+            ],
+          },
+          {},
+        ),
+      /Duplicate MCP tool name/,
+    );
+    assert.throws(
+      () =>
+        new RoxyPresetMcpServer(
+          { name: "x", tools: [{ ...tool, name: "empty", description: " " }] },
+          {},
+        ),
+      /non-empty description/,
+    );
+    assert.throws(
+      () =>
+        new RoxyPresetMcpServer(
+          { name: "x", tools: [{ ...tool, name: "wrong", inputSchema: { type: "string" } }] },
+          {},
+        ),
+      /object inputSchema/,
+    );
   });
 
   test("preset factories support default options and custom tool catalogs", async () => {
