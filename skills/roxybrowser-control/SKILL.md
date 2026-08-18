@@ -13,8 +13,8 @@ Use RoxyBrowser MCP as the source of truth for workspace, project, browser, prox
 
 - If `roxy_workspace_list` is available and the workspace is unclear, call it before choosing IDs.
 - If `roxy_project_list` is available, the MCP server is bound to a workspace; use it for project discovery.
-- For browser automation, list or create a browser profile, then call `roxy_browser_open` to get the CDP/Bidi endpoint.
-- For proxy availability, call `roxy_proxy_detect`; `roxy_proxy_list` and `roxy_proxy_detail` show historical check data.
+- For browser automation, list or create a browser profile, then call `roxy_profile_open` to get the CDP/Bidi endpoint.
+- For proxy availability, call `roxy_proxy_detect`; `roxy_proxy_list` shows historical check data.
 
 ## Context Rules
 
@@ -41,11 +41,11 @@ Read [workflows.md](references/workflows.md) for browser setup, proxy diagnosis,
 - Fingerprint interface language values: [fingerprint-interface-languages.md](references/fingerprint-interface-languages.md)
 - Fingerprint timezone values: [fingerprint-timezones.md](references/fingerprint-timezones.md)
 - Proxy availability and historical status rules: [proxy-guidance.md](references/proxy-guidance.md)
-- Current 2.0 tool names: [tool-reference.md](references/tool-reference.md)
+- Current tool names: [tool-reference.md](references/tool-reference.md)
 
 ## Critical Mistakes To Avoid
 
-- Do not say a proxy is currently unusable based only on `roxy_proxy_list` or `roxy_proxy_detail`.
+- Do not say a proxy is currently unusable based only on `roxy_proxy_list`.
 - Do not use `roxy_workspace_list` as a project-list substitute; use `roxy_project_list` when the workspace is fixed.
-- Do not assume a browser is controllable until `roxy_browser_open` returns a CDP/Bidi WebSocket endpoint.
+- Do not assume a browser is controllable until `roxy_profile_open` returns a CDP/Bidi WebSocket endpoint.
 - Do not delete browsers, proxies, or accounts as cleanup unless requested.

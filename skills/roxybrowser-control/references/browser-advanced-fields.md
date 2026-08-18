@@ -1,6 +1,6 @@
 # Browser Advanced Fields
 
-Use these fields only when the user explicitly asks to bind platform accounts or proxy settings during `roxy_browser_create` or `roxy_browser_update`. For ordinary browser creation and editing, omit `windowPlatformList` and `proxyInfo`.
+Use these fields only when the user explicitly asks to bind platform accounts or proxy settings during `roxy_profile_create` or `roxy_profile_update`. For ordinary browser creation and editing, omit `windowPlatformList` and `proxyInfo`.
 
 The MCP tool schema intentionally keeps these fields compact. Read this reference only when a request needs these advanced objects.
 
@@ -10,7 +10,7 @@ The MCP tool schema intentionally keeps these fields compact. Read this referenc
 
 | Field              | Type   | Values | Description                                                                                                                                   |
 | ------------------ | ------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`               | number | -      | Platform account ID from `roxy_account_list`. When provided, use it to bind an existing account and omit the other account credential fields. |
+| `id`               | number | -      | Platform account ID from `roxy_platform_account_list`. When provided, use it to bind an existing account and omit the other account credential fields. |
 | `platformUrl`      | string | -      | Platform URL.                                                                                                                                 |
 | `platformUserName` | string | -      | Platform username.                                                                                                                            |
 | `platformPassword` | string | -      | Platform password.                                                                                                                            |

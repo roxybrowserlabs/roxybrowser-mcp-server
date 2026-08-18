@@ -2,7 +2,7 @@
 
 Use `fingerInfo` only when the user explicitly asks to customize browser fingerprint behavior, such as language, timezone, geolocation, WebRTC, Canvas, WebGL, resolution, sync, cache, or hardware settings. For ordinary browser creation and editing, omit `fingerInfo`.
 
-Both `roxy_browser_create` and `roxy_browser_update` accept `fingerInfo` as an object. The MCP tool schema intentionally does not expand these fields to keep common create/update calls focused.
+Both `roxy_profile_create` and `roxy_profile_update` accept `fingerInfo` as an object. The MCP tool schema intentionally does not expand these fields to keep common create/update calls focused.
 
 For appendix values referenced by language, display language, timezone, and resolution fields, read [fingerprint-languages.md](fingerprint-languages.md), [fingerprint-interface-languages.md](fingerprint-interface-languages.md), [fingerprint-timezones.md](fingerprint-timezones.md), or [fingerprint-resolutions.md](fingerprint-resolutions.md).
 
