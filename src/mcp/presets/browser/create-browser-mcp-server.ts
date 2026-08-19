@@ -39,7 +39,6 @@ export function createRoxyBrowserMcpServer(
       name: options.name ?? "roxybrowser-mcp",
       version: options.version,
       roxyBrowserVersion: options.roxyBrowserVersion,
-      agentVersion: options.agentVersion,
       roxy: options.roxy,
       context: options.context,
       tools: withToolVersions(tools),

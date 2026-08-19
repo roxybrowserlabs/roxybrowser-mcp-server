@@ -6,8 +6,6 @@ export interface McpContext {
   commerce?: RoxyCommerceClient;
   workspaceId?: number;
   roxyBrowserVersion?: string;
-  /** @deprecated Use roxyBrowserVersion. */
-  agentVersion?: string;
 }
 
 export interface ToolAnnotations {
@@ -43,8 +41,6 @@ export interface CreateMcpServerOptions {
   version?: string;
   /** Hide tools and schema fields added after this RoxyBrowser app version. */
   roxyBrowserVersion?: string;
-  /** @deprecated Use roxyBrowserVersion. */
-  agentVersion?: string;
   roxy?: RoxyApiClientOptions;
   context?: {
     workspaceId?: number;

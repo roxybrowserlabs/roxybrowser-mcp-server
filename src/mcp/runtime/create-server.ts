@@ -45,15 +45,10 @@ export class RoxyPresetMcpServer {
   private readonly serverInfo: { name: string; version: string };
 
   constructor(options: CreateMcpServerOptions, context: McpContext) {
-    this.roxyBrowserVersion =
-      options.roxyBrowserVersion ??
-      options.agentVersion ??
-      context.roxyBrowserVersion ??
-      context.agentVersion;
+    this.roxyBrowserVersion = options.roxyBrowserVersion ?? context.roxyBrowserVersion;
     this.context = {
       ...context,
       roxyBrowserVersion: this.roxyBrowserVersion,
-      agentVersion: this.roxyBrowserVersion,
     };
     const tools = filterToolsByVersion(options.tools, this.roxyBrowserVersion);
     assertToolCatalog(tools, this.roxyBrowserVersion);

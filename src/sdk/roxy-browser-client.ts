@@ -18,8 +18,6 @@ import {
 export interface RoxyBrowserClientOptions extends RoxyApiClientOptions {
   /** Current RoxyBrowser app version used for capability checks. */
   roxyBrowserVersion?: string;
-  /** @deprecated Use roxyBrowserVersion. */
-  agentVersion?: string;
 }
 
 export class RoxyBrowserClient extends GeneratedRoxyBrowserClient {
@@ -39,7 +37,7 @@ export class RoxyBrowserClient extends GeneratedRoxyBrowserClient {
   constructor(options: RoxyBrowserClientOptions = {}) {
     const api = new RoxyApiClient(options);
     super(api);
-    this.roxyBrowserVersion = options.roxyBrowserVersion ?? options.agentVersion;
+    this.roxyBrowserVersion = options.roxyBrowserVersion;
     this.workspaces = new WorkspaceDomain(this.api);
     this.projects = new ProjectDomain(this.api);
     this.profiles = new ProfileDomain(this.api);
