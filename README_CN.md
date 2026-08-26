@@ -21,23 +21,32 @@ roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 也可以直接用 `npx` 运行已发布的 beta 版本：
 
 ```bash
-npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+CLI 可以直接查看可用 MCP 工具和单个工具的参数 schema：
+
+```bash
+npx -y @roxybrowser/openapi help
+npx -y @roxybrowser/openapi help tools
+npx -y @roxybrowser/openapi help roxy_profile_create
+npx -y @roxybrowser/openapi call roxy_profile_list '{"page":1,"pageSize":20}' --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 同一个 CLI 也可以快速调用 SDK 方法。每个方法参数都会优先按 JSON 解析，解析失败时按字符串传入：
 
 ```bash
-npx -y @roxybrowser/openapi@beta sdk profiles.list '{"page":1,"pageSize":20}' \
+npx -y @roxybrowser/openapi sdk profiles.list '{"page":1,"pageSize":20}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 
-npx -y @roxybrowser/openapi@beta sdk profiles.open profile-1 '{"forceOpen":true}' \
+npx -y @roxybrowser/openapi sdk profiles.open profile-1 '{"forceOpen":true}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 如果 RoxyBrowser 已经有接口，但 SDK 还没有封装，可以用 raw API 调试命令：
 
 ```bash
-npx -y @roxybrowser/openapi@beta api POST /browser/new_feature '{"dirId":"profile-1"}' \
+npx -y @roxybrowser/openapi api POST /browser/new_feature '{"dirId":"profile-1"}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
@@ -47,8 +56,8 @@ raw `GET` 会把 JSON 参数作为 query params 发送，raw `POST` 会把 JSON 
 也可以直接从 CLI 查看包版本，并判断某个 operation 在指定 RoxyBrowser App 版本下是否可用：
 
 ```bash
-npx -y @roxybrowser/openapi@beta version
-npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
+npx -y @roxybrowser/openapi version
+npx -y @roxybrowser/openapi supports browser.profile.open 4.0.4
 ```
 
 电商账号模式目前只保留 preset 壳，暂不内置工具：
@@ -60,7 +69,7 @@ roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 电商 preset 壳也可以直接用 `npx` 运行：
 
 ```bash
-npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 参数：
@@ -84,7 +93,7 @@ codex mcp add roxybrowser \
   --env ROXY_API_HOST=http://127.0.0.1:50000 \
   --env ROXY_TIMEOUT=30000 \
   --env ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
 ```
 
 Claude Code：
@@ -95,7 +104,7 @@ claude mcp add roxybrowser \
   -e ROXY_API_HOST=http://127.0.0.1:50000 \
   -e ROXY_TIMEOUT=30000 \
   -e ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
 ```
 
 如果要接入电商模式，在命令后加 `--commerce`。

@@ -21,24 +21,33 @@ roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 Run the published beta directly with `npx`:
 
 ```bash
-npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+```
+
+Use the CLI to inspect available MCP tools and one tool's input schema:
+
+```bash
+npx -y @roxybrowser/openapi help
+npx -y @roxybrowser/openapi help tools
+npx -y @roxybrowser/openapi help roxy_profile_create
+npx -y @roxybrowser/openapi call roxy_profile_list '{"page":1,"pageSize":20}' --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Quick SDK calls are available from the same CLI. Each method argument is parsed as JSON when
 possible, otherwise it is passed as a string:
 
 ```bash
-npx -y @roxybrowser/openapi@beta sdk profiles.list '{"page":1,"pageSize":20}' \
+npx -y @roxybrowser/openapi sdk profiles.list '{"page":1,"pageSize":20}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 
-npx -y @roxybrowser/openapi@beta sdk profiles.open profile-1 '{"forceOpen":true}' \
+npx -y @roxybrowser/openapi sdk profiles.open profile-1 '{"forceOpen":true}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 For a RoxyBrowser endpoint that is not in the SDK yet, call the raw API debugger:
 
 ```bash
-npx -y @roxybrowser/openapi@beta api POST /browser/new_feature '{"dirId":"profile-1"}' \
+npx -y @roxybrowser/openapi api POST /browser/new_feature '{"dirId":"profile-1"}' \
   --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
@@ -49,8 +58,8 @@ as the request body. The configured `workspaceId` is injected into object params
 Check the package version and whether an operation exists for a RoxyBrowser app version:
 
 ```bash
-npx -y @roxybrowser/openapi@beta version
-npx -y @roxybrowser/openapi@beta supports browser.profile.open 4.0.4
+npx -y @roxybrowser/openapi version
+npx -y @roxybrowser/openapi supports browser.profile.open 4.0.4
 ```
 
 Ecommerce account mode is available as a preset shell, but it does not expose built-in tools yet:
@@ -62,7 +71,7 @@ roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 Run the ecommerce preset shell directly with `npx`:
 
 ```bash
-npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Options:
@@ -86,7 +95,7 @@ codex mcp add roxybrowser \
   --env ROXY_API_HOST=http://127.0.0.1:50000 \
   --env ROXY_TIMEOUT=30000 \
   --env ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
 ```
 
 Claude Code:
@@ -97,7 +106,7 @@ claude mcp add roxybrowser \
   -e ROXY_API_HOST=http://127.0.0.1:50000 \
   -e ROXY_TIMEOUT=30000 \
   -e ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi@beta roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
 ```
 
 Use `--commerce` if you want the ecommerce preset.

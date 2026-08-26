@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, test } from "vite-plus/test";
-import { parseCliValue, runApiDebugCommand, runSdkDebugCommand } from "../../lib/cli/debug.js";
+import {
+  parseCliValue,
+  runApiDebugCommand,
+  runSdkDebugCommand,
+  runToolDebugCommand,
+} from "../../lib/cli/debug.js";
 import { runBrowserCli } from "../../lib/cli/browser.js";
 import { ROXY_OPENAPI_VERSION } from "../../lib/index.js";
 import { createJsonResponse, installFetchMock } from "../../support/helpers.mjs";
@@ -87,6 +92,24 @@ describe("debug CLI helpers", () => {
     }
   });
 
+  test("calls browser MCP tools by public tool name", async () => {
+    const { calls, restoreFetch } = installRecorder();
+    try {
+      const result = await runToolDebugCommand("roxy_profile_list", '{"page":1,"pageSize":20}', {
+        apiKey: "secret-token",
+        workspaceId: 123,
+      });
+
+      assert.equal(calls[0].url.pathname, "/browser/list_v3");
+      assert.equal(calls[0].url.searchParams.get("page_index"), "1");
+      assert.equal(calls[0].url.searchParams.get("page_size"), "20");
+      assert.equal(calls[0].url.searchParams.get("workspaceId"), "123");
+      assert.match(result, /No profiles found/);
+    } finally {
+      restoreFetch();
+    }
+  });
+
   test("supports GET raw endpoints without workspace injection", async () => {
     const { calls, restoreFetch } = installRecorder();
     try {
@@ -160,6 +183,36 @@ describe("debug CLI helpers", () => {
     }
   });
 
+  test("parses connection options after the call subcommand", async () => {
+    const { calls, restoreFetch } = installRecorder();
+    const originalLog = console.log;
+    const output = [];
+    console.log = (value) => {
+      output.push(value);
+    };
+    try {
+      await runBrowserCli([
+        "node",
+        "roxybrowser-openapi-mcp",
+        "call",
+        "roxy_profile_list",
+        '{"page":1}',
+        "--api-key",
+        "secret-token",
+        "--workspace-id",
+        "456",
+      ]);
+
+      assert.equal(calls[0].url.pathname, "/browser/list_v3");
+      assert.equal(calls[0].url.searchParams.get("page_index"), "1");
+      assert.equal(calls[0].url.searchParams.get("workspaceId"), "456");
+      assert.match(output[0], /No profiles found/);
+    } finally {
+      console.log = originalLog;
+      restoreFetch();
+    }
+  });
+
   test("prints version and operation support from the CLI", async () => {
     const originalLog = console.log;
     const output = [];
@@ -181,6 +234,44 @@ describe("debug CLI helpers", () => {
       assert.equal(output[1].roxyBrowserVersion, "3.0.0");
       assert.equal(output[1].supported, true);
       assert.equal("sinceRoxyBrowserVersion" in output[1].capability, false);
+    } finally {
+      console.log = originalLog;
+    }
+  });
+
+  test("prints CLI and browser MCP tool help", async () => {
+    const originalLog = console.log;
+    const output = [];
+    console.log = (value) => {
+      output.push(value);
+    };
+    try {
+      await runBrowserCli(["node", "roxybrowser-openapi-mcp", "help"]);
+      await runBrowserCli(["node", "roxybrowser-openapi-mcp", "help", "tools"]);
+      await runBrowserCli(["node", "roxybrowser-openapi-mcp", "help", "roxy_profile_open"]);
+      await runBrowserCli(["node", "roxybrowser-openapi-mcp", "help", "roxy_profile_list"]);
+
+      assert.match(output[0], /Usage: roxybrowser-openapi-mcp/);
+      assert.match(output[0], /help \[target\]/);
+      assert.match(output[0], /help tools/);
+      assert.match(output[0], /call <tool-name> '<args-json>'/);
+      assert.doesNotMatch(output[0], /Examples:/);
+      assert.doesNotMatch(output[0], /node lib\/cli\.js/);
+
+      assert.match(output[1], /Browser MCP tools:/);
+      assert.match(output[1], /- roxy_profile_create/);
+      assert.match(output[1], /required: profiles/);
+      assert.match(output[1], /schema: help roxy_profile_create/);
+      assert.match(output[1], /call: call roxy_profile_create '<args-json>'/);
+
+      const openHelp = JSON.parse(output[2]);
+      assert.equal(openHelp.operationId, "browser.profile.open");
+      assert.deepEqual(openHelp.inputSchema.required, ["dirId"]);
+      assert.equal(openHelp.inputSchema.properties.dirId.type, "string");
+
+      const filteredListHelp = JSON.parse(output[3]);
+      assert.equal(filteredListHelp.name, "roxy_profile_list");
+      assert.equal(filteredListHelp.inputSchema.properties.projectName.type, "string");
     } finally {
       console.log = originalLog;
     }

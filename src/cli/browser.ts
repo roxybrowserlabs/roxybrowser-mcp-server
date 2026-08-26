@@ -10,7 +10,7 @@ import {
   resolveRoxyOptions,
 } from "./debug.js";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 export async function runBrowserCli(argv = process.argv): Promise<void> {
   let handledBySubcommand = false;

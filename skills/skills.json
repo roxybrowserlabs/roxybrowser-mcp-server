@@ -6,6 +6,11 @@
       "name": "roxybrowser-control",
       "description": "Use when controlling RoxyBrowser through MCP tools, managing browser profiles, proxies, accounts, workspaces, projects, CDP/Bidi endpoints, or diagnosing RoxyBrowser automation setup.",
       "path": "skills/roxybrowser-control/SKILL.md"
+    },
+    {
+      "name": "roxybrowser-openapi-cli",
+      "description": "Use when an agent must run the published @roxybrowser/openapi CLI from a shell to discover and call RoxyBrowser browser tools. Not for repository development or MCP host configuration.",
+      "path": "skills/roxybrowser-openapi-cli/SKILL.md"
     }
   ]
 }
