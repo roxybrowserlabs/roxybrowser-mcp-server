@@ -1,18 +1,14 @@
 import type { Command } from "commander";
 import { RoxyApiClient, type RoxyApiClientOptions } from "../api/index.js";
 import { BROWSER_MCP_TOOLS } from "../mcp/presets/browser/index.js";
-import { RoxyBrowserClient, RoxyCommerceClient } from "../sdk/index.js";
+import { RoxyBrowserClient } from "../sdk/index.js";
 import { getRoxyCapability, isRoxyCapabilitySupported, ROXY_OPENAPI_VERSION } from "../version.js";
 
-export type DebugCliMode = "browser" | "commerce";
-
 export interface DebugCliOptions {
-  mode: DebugCliMode;
   getRoxyOptions: (
     overrides?: RoxyDebugCommandOptions,
     sources?: Partial<Record<keyof RoxyDebugCommandOptions, string | undefined>>,
   ) => RoxyApiClientOptions;
-  markHandled: () => void;
 }
 
 interface ApiDebugOptions {
@@ -83,7 +79,6 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
     .command("help [target]")
     .description("Print CLI usage, MCP tool list, or one MCP tool input schema")
     .action((target: string | undefined) => {
-      options.markHandled();
       printHelpResult(program, target);
     });
 
@@ -91,7 +86,6 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
     .command("version")
     .description("Print the @roxybrowser/openapi package version")
     .action(() => {
-      options.markHandled();
       printJsonResult({ packageVersion: ROXY_OPENAPI_VERSION });
     });
 
@@ -99,7 +93,6 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
     .command("supports <operation> <roxyBrowserVersion>")
     .description("Check whether an SDK/MCP operation exists in a RoxyBrowser app version")
     .action((operation: string, roxyBrowserVersion: string) => {
-      options.markHandled();
       printJsonResult({
         operationId: operation,
         roxyBrowserVersion,
@@ -114,14 +107,10 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
       .description("Call a browser MCP tool by name and print its text result"),
   ).action(async function (this: Command, toolName: string, args: string | undefined) {
     const command = this;
-    options.markHandled();
     const result = await runToolDebugCommand(
       toolName,
       args,
-      options.getRoxyOptions(
-        getRoxyCommandOptions(command),
-        getRoxyCommandOptionSources(command),
-      ),
+      options.getRoxyOptions(getRoxyCommandOptions(command), getRoxyCommandOptionSources(command)),
     );
     console.log(result);
   });
@@ -132,9 +121,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
       .description("Call an SDK method and print the JSON result"),
   ).action(async function (this: Command, operation: string, args: string[]) {
     const command = this;
-    options.markHandled();
     const result = await runSdkDebugCommand(operation, args, {
-      mode: options.mode,
       roxy: options.getRoxyOptions(
         getRoxyCommandOptions(command),
         getRoxyCommandOptionSources(command),
@@ -155,7 +142,6 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
     params: string | undefined,
   ) {
     const command = this;
-    options.markHandled();
     const commandOptions = command.opts();
     const result = await runApiDebugCommand(
       method,
@@ -192,12 +178,9 @@ export function addRoxyOptions<TCommand extends Command>(command: TCommand): TCo
 export async function runSdkDebugCommand(
   operation: string,
   rawArgs: string[],
-  options: { mode: DebugCliMode; roxy: RoxyApiClientOptions },
+  options: { roxy: RoxyApiClientOptions },
 ): Promise<unknown> {
-  const client =
-    options.mode === "commerce"
-      ? new RoxyCommerceClient(options.roxy)
-      : new RoxyBrowserClient(options.roxy);
+  const client = new RoxyBrowserClient(options.roxy);
   const { target, method } = resolveSdkOperation(client, operation);
   return await method.apply(target, rawArgs.map(parseCliValue));
 }
@@ -284,7 +267,7 @@ function injectDefaultWorkspace(
 }
 
 function resolveSdkOperation(
-  client: RoxyBrowserClient | RoxyCommerceClient,
+  client: RoxyBrowserClient,
   operation: string,
 ): { target: unknown; method: (...args: unknown[]) => Promise<unknown> | unknown } {
   const segments = operation.split(".");

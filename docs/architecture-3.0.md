@@ -9,19 +9,15 @@ The immediate goals are:
 - Use one low-level HTTP/OpenAPI client for all requests.
 - Expose clean SDKs whose methods do not look like backend endpoints.
 - Keep SDK method names, MCP tool names, and backend endpoints separate.
-- Support multiple MCP product shapes from the same API client.
-- Support the standard RoxyBrowser model and the ecommerce model, where the same underlying browser-window APIs are presented as ecommerce accounts.
+- Support the standard RoxyBrowser product shape through one MCP preset.
 - Target 90% or higher unit-test coverage for the rewritten layers.
 
 ## Layering
 
 ```mermaid
 flowchart TD
-  A["CLI: roxybrowser-mcp"] --> B["MCP Preset: Browser Mode"]
-  C["CLI: roxycommerce-mcp"] --> D["MCP Preset: Ecommerce Mode"]
-
+  A["CLI: roxybrowser-openapi-mcp"] --> B["MCP Preset: Browser Mode"]
   B --> E["MCP Runtime"]
-  D --> E
 
   E --> F["Tool Catalog"]
   F --> G["Use Cases / Formatters"]
@@ -32,10 +28,7 @@ flowchart TD
   J --> K["RoxyBrowser Local API"]
 
   H --> L["Browser Domain: profiles, proxies, platformAccounts"]
-  H --> M["Ecommerce Domain: accounts, proxies, platformCredentials"]
-
   L --> I
-  M --> I
 ```
 
 ## Directory Structure
@@ -52,7 +45,6 @@ src/
   sdk/
     index.ts
     roxy-browser-client.ts
-    roxy-commerce-client.ts
     shared/
       ids.ts
       normalize.ts
@@ -67,13 +59,6 @@ src/
       proxies.ts
       types.ts
       workspaces.ts
-    commerce/
-      accounts.ts
-      index.ts
-      platform-credentials.ts
-      proxies.ts
-      types.ts
-
   mcp/
     runtime/
       create-server.ts
@@ -87,16 +72,8 @@ src/
         inputs.ts
         index.ts
         tools.ts
-      commerce/
-        create-commerce-mcp-server.ts
-        formatters.ts
-        inputs.ts
-        index.ts
-        tools.ts
-
   cli/
     browser.ts
-    commerce.ts
 
   index.ts
 ```
@@ -115,8 +92,8 @@ Each MCP tool should carry debug metadata:
 
 ```ts
 {
-  name: 'roxy_account_open',
-  operationId: 'commerce.account.open',
+  name: 'roxy_profile_open',
+  operationId: 'browser.profile.open',
   endpoint: 'POST /browser/open',
 }
 ```
@@ -124,8 +101,8 @@ Each MCP tool should carry debug metadata:
 This makes incident debugging explicit:
 
 ```txt
-tool: roxy_account_open
-operation: commerce.account.open
+tool: roxy_profile_open
+operation: browser.profile.open
 endpoint: POST /browser/open
 dirId: xxx
 ```
@@ -226,46 +203,6 @@ roxy.platformAccounts.delete(ids)
 roxy.labels.list()
 ```
 
-## Ecommerce SDK
-
-The ecommerce SDK exposes ecommerce account language while using the same underlying browser profile APIs.
-
-```ts
-import { RoxyCommerceClient } from "@roxybrowser/openapi";
-
-const commerce = new RoxyCommerceClient({
-  apiKey: "xxxx",
-  baseUrl: "http://127.0.0.1:50000",
-  workspaceId: 19744,
-});
-
-const accounts = await commerce.accounts.list({
-  page: 1,
-  pageSize: 20,
-  windowName: "shop-a",
-});
-
-const account = await commerce.accounts.create({
-  windowName: "Amazon Store A",
-  projectId: 1,
-  defaultOpenUrl: ["https://sellercentral.amazon.com"],
-  windowPlatformList: [
-    {
-      platformUrl: "https://sellercentral.amazon.com",
-      platformUserName: "seller@example.com",
-      platformPassword: "xxxx",
-    },
-  ],
-  proxyInfo: { moduleId: 395935, proxyMethod: "choose" },
-});
-
-const session = await commerce.accounts.open(account.dirId, {
-  forceOpen: true,
-});
-
-await commerce.accounts.close(account.dirId);
-```
-
 ## Parameter Style
 
 SDK and domain data keep the field names documented by the RoxyBrowser API. They do not
@@ -343,28 +280,6 @@ roxy_platform_account_update
 roxy_platform_account_delete
 ```
 
-Ecommerce mode exposes 18 tools:
-
-```txt
-roxy_account_list
-roxy_account_get
-roxy_account_create
-roxy_account_update
-roxy_account_open
-roxy_account_close
-roxy_account_delete
-roxy_proxy_list
-roxy_proxy_create
-roxy_proxy_update
-roxy_proxy_delete
-roxy_proxy_detect
-roxy_proxy_detect_channels
-roxy_platform_credential_list
-roxy_platform_credential_create
-roxy_platform_credential_update
-roxy_platform_credential_delete
-```
-
 ## Rewrite Order
 
 1. Create `src/api` and move the raw HTTP client there as `RoxyApiClient`.
@@ -372,8 +287,6 @@ roxy_platform_credential_delete
 3. Create `src/domains/browser/*` and cover profiles, proxies, platform accounts, labels, and workspaces.
 4. Keep only the rewritten API, SDK, domain, MCP, and CLI layers.
 5. Rewrite `src/mcp/presets/browser/tools.ts`.
-6. Create `src/sdk/RoxyCommerceClient`.
-7. Create `src/mcp/presets/commerce/tools.ts`.
-8. Add separate CLI entries for browser and commerce MCPs.
-9. Add colocated unit tests and coverage reporting.
-10. Keep the package, README, examples, and tests aligned to the 3.0 surface only.
+6. Add the browser MCP CLI entry.
+7. Add colocated unit tests and coverage reporting.
+8. Keep the package, README, examples, and tests aligned to the 3.0 surface only.

@@ -12,17 +12,20 @@ pnpm add @roxybrowser/openapi
 
 ## CLI 使用
 
-浏览器 Profile 模式：
+启动浏览器 MCP 服务：
 
 ```bash
 roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
-也可以直接用 `npx` 运行已发布的 beta 版本：
+也可以直接用 `npx` 运行已发布的包：
 
 ```bash
-npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
+
+该包只暴露一个可执行入口，`npx` 会自动解析。不要在包名后再追加
+`roxybrowser-openapi-mcp`。
 
 CLI 可以直接查看可用 MCP 工具和单个工具的参数 schema：
 
@@ -60,18 +63,6 @@ npx -y @roxybrowser/openapi version
 npx -y @roxybrowser/openapi supports browser.profile.open 4.0.4
 ```
 
-电商账号模式目前只保留 preset 壳，暂不内置工具：
-
-```bash
-roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
-电商 preset 壳也可以直接用 `npx` 运行：
-
-```bash
-npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
 参数：
 
 - `-H, --api-host <url>`：RoxyBrowser API 地址，默认 `http://127.0.0.1:50000`
@@ -93,7 +84,7 @@ codex mcp add roxybrowser \
   --env ROXY_API_HOST=http://127.0.0.1:50000 \
   --env ROXY_TIMEOUT=30000 \
   --env ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi
 ```
 
 Claude Code：
@@ -104,14 +95,12 @@ claude mcp add roxybrowser \
   -e ROXY_API_HOST=http://127.0.0.1:50000 \
   -e ROXY_TIMEOUT=30000 \
   -e ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi
 ```
-
-如果要接入电商模式，在命令后加 `--commerce`。
 
 ## MCP Inspector 2.0
 
-仓库已经提供 Inspector 2.0 的双服务配置。启动前复制本地环境变量模板，并填写 RoxyBrowser 凭据：
+仓库已经提供浏览器 stdio preset 的 Inspector 2.0 配置。启动前复制本地环境变量模板，并填写 RoxyBrowser 凭据：
 
 ```bash
 cp .env.example .env
@@ -124,7 +113,7 @@ ROXY_TIMEOUT=30000
 ROXY_WORKSPACE_ID=19744
 ```
 
-`.env` 已被 Git 忽略。提交到仓库的 `mcp.inspector.json` 不包含凭据，会通过构建后的 `lib` 入口启动 `roxybrowser` 和 `roxycommerce` 两个 stdio 服务。
+`.env` 已被 Git 忽略。提交到仓库的 `mcp.inspector.json` 不包含凭据，会通过构建后的 `lib` 入口启动 `roxybrowser` stdio 服务。
 
 启动 Web Inspector，然后在 Servers 页面选择需要测试的服务：
 
@@ -142,7 +131,6 @@ pnpm inspect:tui
 
 ```bash
 pnpm inspect:cli:browser
-pnpm inspect:cli:commerce
 ```
 
 如需直接调用工具，先构建，再从同一份配置中选择服务：
@@ -176,19 +164,6 @@ const profiles = await roxy.profiles.list({
 const opened = await roxy.profiles.open(profiles.rows[0].dirId, { forceOpen: true });
 ```
 
-电商产品 SDK：
-
-```ts
-import { RoxyCommerceClient } from "@roxybrowser/openapi";
-
-const commerce = new RoxyCommerceClient({
-  apiKey: "YOUR_API_KEY",
-  workspaceId: 19744,
-});
-```
-
-`RoxyCommerceClient` 目前只是产品壳。电商 SDK 方法和 MCP 工具会在后续任务中补齐。
-
 如果需要直接调用接近后端接口形态的能力，可以使用低层 `RoxyApiClient`：
 
 ```ts
@@ -217,7 +192,7 @@ console.log(roxy.supports("browser.profile.open"));
 ## 嵌入式 MCP 使用
 
 ```ts
-import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
+import { createRoxyBrowserMcpServer } from "@roxybrowser/openapi";
 
 const browserServer = createRoxyBrowserMcpServer({
   timeout: 45_000,
@@ -225,15 +200,11 @@ const browserServer = createRoxyBrowserMcpServer({
   includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
-
-const commerceServer = createRoxyCommerceMcpServer({
-  roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
-});
 ```
 
 ## 对外 MCP 工具名
 
-浏览器模式暴露 24 个 profile 语言工具：
+浏览器 preset 暴露 24 个 profile 语言工具：
 
 - `roxy_workspace_list`
 - `roxy_project_list`
@@ -260,8 +231,6 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-电商模式目前是空 preset 壳，在后续设计电商工具集之前不暴露内置工具。
-
 创建 MCP preset 时应设置当前 RoxyBrowser App 版本 `roxyBrowserVersion`，这样会隐藏高于该版本的工具和 schema 字段。每个 MCP
 工具都会在 `_meta` 中保留稳定的 `operationId`、底层 RoxyBrowser `endpoint` 和包版本；只有存在 App 版本门槛的工具才会额外带
 `sinceRoxyBrowserVersion`。未标版本的工具和 schema 字段默认所有 RoxyBrowser App 版本可用。
@@ -275,11 +244,9 @@ const commerceServer = createRoxyCommerceMcpServer({
 - `src/api`：底层 RoxyBrowser HTTP API client
 - `src/sdk`：对外 SDK client
 - `src/domains/browser`：浏览器 profile、proxy、workspace、platform account 领域
-- `src/domains/commerce`：预留的电商领域骨架
 - `src/mcp/runtime`：可复用 MCP runtime
 - `src/mcp/presets/browser`：浏览器模式 MCP 预设
-- `src/mcp/presets/commerce`：电商模式 MCP 预设
-- `src/cli`：不同产品形态的 CLI 入口
+- `src/cli`：CLI 实现
 
 完整设计见 [docs/architecture-3.0.md](docs/architecture-3.0.md)。
 

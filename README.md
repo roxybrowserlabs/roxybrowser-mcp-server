@@ -2,7 +2,7 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-RoxyBrowser OpenAPI 3.0 is a breaking rewrite of the MCP and SDK package. It separates the raw RoxyBrowser local API client from product SDKs and MCP presets, so backend endpoint names, SDK operation names, and public MCP tool names are no longer coupled.
+RoxyBrowser OpenAPI 3.0 is a breaking rewrite of the MCP and SDK package. It separates the raw RoxyBrowser local API client from the product SDK and MCP preset, so backend endpoint names, SDK operation names, and public MCP tool names are no longer coupled.
 
 ## Install
 
@@ -12,17 +12,20 @@ pnpm add @roxybrowser/openapi
 
 ## CLI Usage
 
-Browser profile mode:
+Start the browser MCP server:
 
 ```bash
 roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
-Run the published beta directly with `npx`:
+Run the published package directly with `npx`:
 
 ```bash
-npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+npx -y @roxybrowser/openapi --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
+
+The package exposes a single executable, so `npx` resolves it automatically. Do not append
+`roxybrowser-openapi-mcp` after the package name.
 
 Use the CLI to inspect available MCP tools and one tool's input schema:
 
@@ -62,18 +65,6 @@ npx -y @roxybrowser/openapi version
 npx -y @roxybrowser/openapi supports browser.profile.open 4.0.4
 ```
 
-Ecommerce account mode is available as a preset shell, but it does not expose built-in tools yet:
-
-```bash
-roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
-Run the ecommerce preset shell directly with `npx`:
-
-```bash
-npx -y @roxybrowser/openapi roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
-```
-
 Options:
 
 - `-H, --api-host <url>`: RoxyBrowser API base URL. Default: `http://127.0.0.1:50000`
@@ -95,7 +86,7 @@ codex mcp add roxybrowser \
   --env ROXY_API_HOST=http://127.0.0.1:50000 \
   --env ROXY_TIMEOUT=30000 \
   --env ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi
 ```
 
 Claude Code:
@@ -106,14 +97,12 @@ claude mcp add roxybrowser \
   -e ROXY_API_HOST=http://127.0.0.1:50000 \
   -e ROXY_TIMEOUT=30000 \
   -e ROXY_WORKSPACE_ID=19744 \
-  -- npx -y @roxybrowser/openapi roxybrowser-openapi-mcp
+  -- npx -y @roxybrowser/openapi
 ```
-
-Use `--commerce` if you want the ecommerce preset.
 
 ## MCP Inspector 2.0
 
-The repository includes an Inspector 2.0 server configuration for both stdio presets. Copy the local environment template and provide your RoxyBrowser credentials before starting the Inspector:
+The repository includes an Inspector 2.0 server configuration for the browser stdio preset. Copy the local environment template and provide your RoxyBrowser credentials before starting the Inspector:
 
 ```bash
 cp .env.example .env
@@ -126,9 +115,9 @@ ROXY_TIMEOUT=30000
 ROXY_WORKSPACE_ID=19744
 ```
 
-`.env` is ignored by Git. The checked-in `mcp.inspector.json` contains no credentials and starts both `roxybrowser` and `roxycommerce` from the built `lib` entries.
+`.env` is ignored by Git. The checked-in `mcp.inspector.json` contains no credentials and starts `roxybrowser` from the built `lib` entry.
 
-Start the Web Inspector and select either server from the Servers screen:
+Start the Web Inspector and select the server from the Servers screen:
 
 ```bash
 pnpm inspect
@@ -144,7 +133,6 @@ Run non-interactive tool-list smoke tests:
 
 ```bash
 pnpm inspect:cli:browser
-pnpm inspect:cli:commerce
 ```
 
 For a direct CLI call, build first and select a server from the shared configuration:
@@ -178,20 +166,6 @@ const profiles = await roxy.profiles.list({
 const opened = await roxy.profiles.open(profiles.rows[0].dirId, { forceOpen: true });
 ```
 
-Ecommerce product SDK:
-
-```ts
-import { RoxyCommerceClient } from "@roxybrowser/openapi";
-
-const commerce = new RoxyCommerceClient({
-  apiKey: "YOUR_API_KEY",
-  workspaceId: 19744,
-});
-```
-
-`RoxyCommerceClient` is currently a product shell. Ecommerce SDK methods and MCP tools will be added
-in a later task.
-
 Low-level API access is available through `RoxyApiClient` when endpoint-shaped calls are needed:
 
 ```ts
@@ -220,7 +194,7 @@ console.log(roxy.supports("browser.profile.open"));
 ## Embedded MCP Usage
 
 ```ts
-import { createRoxyBrowserMcpServer, createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
+import { createRoxyBrowserMcpServer } from "@roxybrowser/openapi";
 
 const browserServer = createRoxyBrowserMcpServer({
   timeout: 45_000,
@@ -228,15 +202,11 @@ const browserServer = createRoxyBrowserMcpServer({
   includeTools: ["roxy_profile_list", "roxy_profile_get", "roxy_profile_open"],
   roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
 });
-
-const commerceServer = createRoxyCommerceMcpServer({
-  roxy: { apiKey: "YOUR_API_KEY", workspaceId: 19744 },
-});
 ```
 
 ## Public MCP Tool Names
 
-Browser mode exposes 24 tools in profile language when a workspace is configured, or 25 tools
+The browser preset exposes 24 tools in profile language when a workspace is configured, or 25 tools
 when it is not (the additional tool is `roxy_workspace_list`):
 
 - `roxy_workspace_list`
@@ -264,9 +234,6 @@ when it is not (the additional tool is `roxy_workspace_list`):
 - `roxy_platform_account_update`
 - `roxy_platform_account_delete`
 
-Ecommerce mode is currently an empty preset shell. It exposes no built-in tools until the ecommerce
-toolset is designed in a later task.
-
 Set `roxyBrowserVersion` to the current RoxyBrowser app version when creating a preset. Tools and
 schema fields added after that app version are hidden.
 Each MCP tool keeps debug metadata with a stable `operationId`, the underlying RoxyBrowser endpoint,
@@ -284,11 +251,9 @@ The 3.0 source tree is intentionally split:
 - `src/api`: raw RoxyBrowser HTTP API client.
 - `src/sdk`: public SDK clients.
 - `src/domains/browser`: browser profile, proxy, workspace, and platform account domains.
-- `src/domains/commerce`: reserved ecommerce domain skeletons.
 - `src/mcp/runtime`: reusable MCP runtime.
 - `src/mcp/presets/browser`: browser-mode MCP preset.
-- `src/mcp/presets/commerce`: ecommerce-mode MCP preset.
-- `src/cli`: product-specific CLI entries.
+- `src/cli`: CLI implementation.
 
 See [docs/architecture-3.0.md](docs/architecture-3.0.md) for the full design.
 

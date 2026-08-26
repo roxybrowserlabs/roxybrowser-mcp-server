@@ -42,7 +42,6 @@ describe("debug CLI helpers", () => {
         "profiles.open",
         ["profile-1", '{"forceOpen":true}'],
         {
-          mode: "browser",
           roxy: { apiKey: "secret-token", workspaceId: 77 },
         },
       );
@@ -57,16 +56,6 @@ describe("debug CLI helpers", () => {
     } finally {
       restoreFetch();
     }
-  });
-
-  test("keeps commerce SDK debug mode as an empty shell", async () => {
-    await assert.rejects(
-      runSdkDebugCommand("accounts.open", ["account-1"], {
-        mode: "commerce",
-        roxy: { apiKey: "secret-token", workspaceId: 88 },
-      }),
-      /Unknown SDK operation/,
-    );
   });
 
   test("calls raw endpoints that are not modeled by the SDK", async () => {
@@ -136,14 +125,12 @@ describe("debug CLI helpers", () => {
   test("rejects unsafe or unknown SDK operation paths", async () => {
     await assert.rejects(
       runSdkDebugCommand("__proto__.toString", [], {
-        mode: "browser",
         roxy: { apiKey: "secret-token" },
       }),
       /Invalid SDK operation path/,
     );
     await assert.rejects(
       runSdkDebugCommand("profiles.missing", [], {
-        mode: "browser",
         roxy: { apiKey: "secret-token" },
       }),
       /Unknown SDK operation/,

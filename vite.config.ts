@@ -54,12 +54,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["lib/{api,sdk,domains,mcp}/**/*.js"],
-      exclude: [
-        "lib/**/index.js",
-        "lib/**/types.js",
-        "lib/domains/commerce/platform-credentials.js",
-        "lib/domains/commerce/proxies.js",
-      ],
+      exclude: ["lib/**/index.js", "lib/**/types.js"],
       reporter: ["text", "html", "lcov"],
       thresholds: {
         lines: 90,

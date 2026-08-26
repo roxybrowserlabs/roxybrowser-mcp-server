@@ -3,11 +3,7 @@ import { describe, test } from "vite-plus/test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { ResultSchema } from "@modelcontextprotocol/sdk/types.js";
-import {
-  createRoxyBrowserMcpServer,
-  createRoxyCommerceMcpServer,
-  ROXY_OPENAPI_VERSION,
-} from "../../../../lib/index.js";
+import { createRoxyBrowserMcpServer, ROXY_OPENAPI_VERSION } from "../../../../lib/index.js";
 import { RoxyPresetMcpServer } from "../../../../lib/mcp/runtime/index.js";
 import {
   createJsonResponse,
@@ -378,20 +374,6 @@ describe("3.0 MCP presets", () => {
     }
   });
 
-  test("commerce preset is an empty product shell by default", async () => {
-    const server = createRoxyCommerceMcpServer({
-      roxy: { apiKey: "secret-token", workspaceId: 77 },
-    });
-    const session = await connect(server);
-
-    try {
-      const tools = await session.client.listTools();
-      assert.deepEqual(tools.tools, []);
-    } finally {
-      await session.close();
-    }
-  });
-
   test("runtime formats unknown tools and handler errors as text responses", async () => {
     const restoreFetch = installFetchMock(async () =>
       createJsonResponse({ code: 0, msg: "ok", data: { total: 0, rows: [] } }),
@@ -701,35 +683,14 @@ describe("3.0 MCP presets", () => {
     );
   });
 
-  test("preset factories support default options and custom tool catalogs", async () => {
+  test("browser preset factory supports default options", async () => {
     const browserSession = await connect(createRoxyBrowserMcpServer());
-    const commerceSession = await connect(
-      createRoxyCommerceMcpServer({
-        context: { workspaceId: 77 },
-        tools: [
-          {
-            name: "roxy_custom_ok",
-            operationId: "custom.ok",
-            endpoint: "GET /custom/ok",
-            description: "Custom ok tool.",
-            inputSchema: { type: "object", properties: {} },
-            handler: async () => "ok",
-          },
-        ],
-      }),
-    );
 
     try {
       const browserTools = await browserSession.client.listTools();
-      const commerceTools = await commerceSession.client.listTools();
       assert.ok(browserTools.tools.some((tool) => tool.name === "roxy_profile_list"));
-      assert.deepEqual(
-        commerceTools.tools.map((tool) => tool.name),
-        ["roxy_custom_ok"],
-      );
     } finally {
       await browserSession.close();
-      await commerceSession.close();
     }
   });
 });

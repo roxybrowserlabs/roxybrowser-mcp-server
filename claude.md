@@ -8,8 +8,7 @@ RoxyBrowser OpenAPI 3.0 is a breaking rewrite. The project exposes:
 
 - a raw HTTP API client for RoxyBrowser local endpoints,
 - browser-product SDK methods in profile/proxy/platform-account language,
-- ecommerce-product SDK methods in account/proxy/platform-credential language,
-- separate MCP presets and CLI entries for browser mode and ecommerce mode.
+- a browser MCP preset and CLI entry.
 
 Keep changes inside the rewritten 3.0 layers. Do not introduce parallel compatibility layers or endpoint-shaped MCP modules.
 
@@ -40,7 +39,6 @@ CLI options can override these values:
 
 ```bash
 roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
-roxybrowser-openapi-mcp --commerce --api-key "YOUR_API_KEY" --workspace-id 19744
 ```
 
 Inspector 2.0 uses the checked-in `mcp.inspector.json` configuration and local `.env` values:
@@ -49,7 +47,6 @@ Inspector 2.0 uses the checked-in `mcp.inspector.json` configuration and local `
 pnpm inspect
 pnpm inspect:tui
 pnpm inspect:cli:browser
-pnpm inspect:cli:commerce
 ```
 
 ## Source Layout
@@ -66,7 +63,6 @@ src/
   sdk/
     index.ts
     roxy-browser-client.ts
-    roxy-commerce-client.ts
     shared/
       ids.ts
       normalize.ts
@@ -81,13 +77,6 @@ src/
       proxies.ts
       types.ts
       workspaces.ts
-    commerce/
-      accounts.ts
-      index.ts
-      platform-credentials.ts
-      proxies.ts
-      types.ts
-
   mcp/
     runtime/
       create-server.ts
@@ -101,16 +90,8 @@ src/
         inputs.ts
         index.ts
         tools.ts
-      commerce/
-        create-commerce-mcp-server.ts
-        formatters.ts
-        inputs.ts
-        index.ts
-        tools.ts
-
   cli/
     browser.ts
-    commerce.ts
 
   cli.ts
   index.ts
@@ -123,7 +104,6 @@ Keep these names distinct:
 - Backend endpoint: `POST /browser/open`
 - SDK operation: `roxy.profiles.open(dirId, options)`
 - Browser MCP tool: `roxy_profile_open`
-- Ecommerce MCP tool: `roxy_account_open`
 
 Only `src/api` should contain raw endpoint paths such as `/browser/open` or `/proxy/list_merged`, except for MCP tool metadata that records the endpoint for debugging.
 
@@ -158,29 +138,12 @@ await roxy.proxies.list({ proxyType: "0" });
 await roxy.platformAccounts.list();
 ```
 
-## Ecommerce SDK
-
-Use `RoxyCommerceClient` for ecommerce-product workflows. Ecommerce accounts are backed by browser profile endpoints internally.
-
-```ts
-const commerce = new RoxyCommerceClient({ apiKey, workspaceId });
-
-await commerce.accounts.list({ windowName: "Amazon" });
-await commerce.accounts.open("account-1");
-```
-
 ## MCP Presets
 
-Browser mode:
+Browser preset:
 
 ```ts
 import { createRoxyBrowserMcpServer } from "@roxybrowser/openapi";
-```
-
-Commerce mode:
-
-```ts
-import { createRoxyCommerceMcpServer } from "@roxybrowser/openapi";
 ```
 
 Each MCP tool definition includes:

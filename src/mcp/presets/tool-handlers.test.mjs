@@ -23,16 +23,7 @@ import {
   normalizeProxyInput,
   normalizeProxyListArgs,
 } from "../../../lib/mcp/presets/browser/inputs.js";
-import {
-  formatCommerceAccount,
-  formatCommerceAccounts,
-} from "../../../lib/mcp/presets/commerce/formatters.js";
-import {
-  normalizeCommerceAccountInput,
-  normalizeCommerceAccountListArgs,
-} from "../../../lib/mcp/presets/commerce/inputs.js";
 import { BROWSER_MCP_TOOLS } from "../../../lib/mcp/presets/browser/tools.js";
-import { COMMERCE_MCP_TOOLS } from "../../../lib/mcp/presets/commerce/tools.js";
 
 function toolByName(tools, name) {
   const tool = tools.find((candidate) => candidate.name === name);
@@ -48,7 +39,6 @@ function parseJsonBlock(value) {
 
 describe("MCP tool handlers", () => {
   const longRemark = "12345678901234567890overflow";
-  const unicodeRemark = "1234567890123456789😀overflow";
 
   test("MCP input adapters convert friendly fields to API fields", () => {
     assert.deepEqual(
@@ -351,36 +341,6 @@ describe("MCP tool handlers", () => {
         platformRemarks: "memo",
       },
     );
-
-    assert.deepEqual(normalizeCommerceAccountListArgs({ keyword: "Amazon" }), {
-      windowName: "Amazon",
-    });
-    assert.deepEqual(
-      normalizeCommerceAccountInput({
-        name: "Store",
-        platform: { url: "https://example.com", username: "seller" },
-      }),
-      {
-        windowName: "Store",
-        windowPlatformList: [{ platformUrl: "https://example.com", platformUserName: "seller" }],
-      },
-    );
-    assert.deepEqual(normalizeCommerceAccountInput({ name: "Store" }), {
-      windowName: "Store",
-    });
-    assert.deepEqual(normalizeCommerceAccountInput({ name: "Store", platform: [] }), {
-      windowName: "Store",
-    });
-    assert.deepEqual(
-      normalizeCommerceAccountInput({
-        name: "Store",
-        platform: { url: 123, username: "seller", password: false },
-      }),
-      {
-        windowName: "Store",
-        windowPlatformList: [{ platformUserName: "seller" }],
-      },
-    );
   });
 
   test("MCP output formatters keep lists compact and details complete", () => {
@@ -610,43 +570,6 @@ describe("MCP tool handlers", () => {
     ]);
     assert.match(channels, /\| IPRust \| https:\/\/iprust\.example \| url \|/);
     assert.match(channels, /\| - \| direct \| - \|/);
-
-    const accounts = formatCommerceAccounts(
-      {
-        total: 4,
-        rows: [
-          {
-            dirId: "a1",
-            windowName: "Store",
-            projectName: "Ops",
-            projectId: 3,
-            openStatus: true,
-          },
-          { dirId: "a2", projectName: "Named", openStatus: false },
-          { dirId: "a3", projectId: 4, openStatus: 1 },
-          { dirId: "a4", openStatus: 0 },
-        ],
-      },
-      "4.0.4",
-    );
-    assert.match(accounts, /\| Store \| a1 \| Ops \(3\) \| open \|/);
-    assert.match(accounts, /\| - \| a2 \| Named \| closed \|/);
-    assert.match(accounts, /\| - \| a3 \| 4 \| open \|/);
-    assert.match(accounts, /\| - \| a4 \| - \| closed \|/);
-
-    const oldAccounts = formatCommerceAccounts(
-      {
-        total: 1,
-        rows: [{ dirId: "a5", windowName: "Store", projectName: "Ops", openStatus: true }],
-      },
-      "3.0.0",
-    );
-    assert.match(oldAccounts, /\| Name \| dirId \| Status \|/);
-    assert.match(oldAccounts, /\| Store \| a5 \| open \|/);
-    assert.deepEqual(
-      parseJsonBlock(formatCommerceAccount({ dirId: "a5", windowRemark: unicodeRemark })),
-      { dirId: "a5", windowRemark: unicodeRemark },
-    );
   });
 
   test("browser preset handlers use SDK operations and stable debug metadata", async () => {
@@ -1235,13 +1158,6 @@ describe("MCP tool handlers", () => {
         osVersion: "11",
       },
     );
-    assert.deepEqual(
-      parseJsonBlock(
-        formatCommerceAccount({ dirId: "account-rich", windowName: "Store A", projectId: 9 }),
-      ),
-      { dirId: "account-rich", windowName: "Store A", projectId: 9 },
-    );
-
     const browserContext = {
       browser: {
         workspaces: { list: async () => ({ total: 0, rows: [] }) },
@@ -1289,10 +1205,6 @@ describe("MCP tool handlers", () => {
     );
   });
 
-  test("commerce preset tool catalog is intentionally empty", () => {
-    assert.deepEqual(COMMERCE_MCP_TOOLS, []);
-  });
-
   test("formatters use empty and fallback labels consistently", () => {
     assert.equal(
       formatProfiles({ total: 0, rows: [] }),
@@ -1313,12 +1225,5 @@ describe("MCP tool handlers", () => {
       formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }),
       "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform URL | Note |\n| --- | --- | --- | --- |\n| 1 | - | - | - |",
     );
-    assert.equal(
-      formatCommerceAccounts({ total: 0, rows: [] }),
-      "Accounts: 0 total | page 1/1 | pageSize 15\nNo ecommerce accounts found.",
-    );
-    assert.deepEqual(parseJsonBlock(formatCommerceAccount({ dirId: "account-1" })), {
-      dirId: "account-1",
-    });
   });
 });

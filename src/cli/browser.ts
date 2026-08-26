@@ -13,33 +13,28 @@ import {
 dotenv.config({ quiet: true });
 
 export async function runBrowserCli(argv = process.argv): Promise<void> {
-  let handledBySubcommand = false;
   const program = new Command();
   addRoxyOptions(
     program
       .name("roxybrowser-openapi-mcp")
-      .description("RoxyBrowser MCP Server - browser profile mode"),
+      .description("RoxyBrowser MCP Server - browser profile mode")
+      .action(async () => {
+        const roxyOptions = resolveRoxyOptions(getRoxyCommandOptions(program));
+        await createRoxyBrowserMcpServer({
+          roxy: roxyOptions,
+          context: {
+            workspaceId: roxyOptions.workspaceId,
+          },
+        }).run();
+      }),
   );
 
   addDebugCommands(program, {
-    mode: "browser",
-    markHandled: () => {
-      handledBySubcommand = true;
-    },
     getRoxyOptions: (overrides, sources) =>
       resolveRoxyOptions(getRoxyCommandOptions(program), overrides, sources),
   });
 
   await program.parseAsync(argv);
-  if (handledBySubcommand) return;
-
-  const roxyOptions = resolveRoxyOptions(getRoxyCommandOptions(program));
-  await createRoxyBrowserMcpServer({
-    roxy: roxyOptions,
-    context: {
-      workspaceId: roxyOptions.workspaceId,
-    },
-  }).run();
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,9 +1,8 @@
 import type { RoxyApiClientOptions } from "../../api/index.js";
-import type { RoxyBrowserClient, RoxyCommerceClient } from "../../sdk/index.js";
+import type { RoxyBrowserClient } from "../../sdk/index.js";
 
 export interface McpContext {
   browser?: RoxyBrowserClient;
-  commerce?: RoxyCommerceClient;
   workspaceId?: number;
   roxyBrowserVersion?: string;
 }
