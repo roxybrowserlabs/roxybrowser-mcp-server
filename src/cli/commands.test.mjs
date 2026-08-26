@@ -1,11 +1,15 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, test } from "vite-plus/test";
 import {
   parseCliValue,
-  runApiDebugCommand,
-  runSdkDebugCommand,
-  runToolDebugCommand,
-} from "../../lib/cli/debug.js";
+  runApiCommand,
+  runSdkCommand,
+  runToolCommand,
+} from "../../lib/cli/commands.js";
+import { loadCodexOAuthOptions, resolveRoxyOptions } from "../../lib/cli/options.js";
 import { runBrowserCli } from "../../lib/cli/browser.js";
 import { ROXY_OPENAPI_VERSION } from "../../lib/index.js";
 import { createJsonResponse, installFetchMock } from "../../support/helpers.mjs";
@@ -23,7 +27,96 @@ function installRecorder(body = { code: 0, msg: "ok", data: { total: 0, rows: []
   return { calls, restoreFetch };
 }
 
-describe("debug CLI helpers", () => {
+describe("CLI commands", () => {
+  test("loads connection defaults from codex oauth state", () => {
+    const directory = mkdtempSync(join(tmpdir(), "roxy-cli-"));
+    const filePath = join(directory, "codex-oauth.json");
+    writeFileSync(
+      filePath,
+      JSON.stringify({
+        apiKey: "oauth-token",
+        apiHost: "http://oauth-host",
+        workspaceId: "42",
+        timeout: "1234",
+      }),
+    );
+
+    assert.deepEqual(loadCodexOAuthOptions(filePath), {
+      apiKey: "oauth-token",
+      apiHost: "http://oauth-host",
+      workspaceId: 42,
+      timeout: 1234,
+    });
+  });
+
+  test("prefers explicit CLI values over environment and oauth state", () => {
+    const original = {
+      apiKey: process.env.ROXY_API_KEY,
+      apiHost: process.env.ROXY_API_HOST,
+      workspaceId: process.env.ROXY_WORKSPACE_ID,
+      timeout: process.env.ROXY_TIMEOUT,
+    };
+    process.env.ROXY_API_KEY = "environment-token";
+    process.env.ROXY_API_HOST = "http://environment-host";
+    process.env.ROXY_WORKSPACE_ID = "20";
+    process.env.ROXY_TIMEOUT = "2000";
+    try {
+      const resolved = resolveRoxyOptions({
+        apiKey: "cli-token",
+        apiHost: "http://cli-host",
+        workspaceId: 10,
+        timeout: 1000,
+      });
+      assert.deepEqual(resolved, {
+        apiKey: "cli-token",
+        apiHost: "http://cli-host",
+        workspaceId: 10,
+        timeout: 1000,
+      });
+    } finally {
+      for (const [key, value] of Object.entries({
+        ROXY_API_KEY: original.apiKey,
+        ROXY_API_HOST: original.apiHost,
+        ROXY_WORKSPACE_ID: original.workspaceId,
+        ROXY_TIMEOUT: original.timeout,
+      })) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+
+  test("falls back when command options are undefined", () => {
+    const original = {
+      apiKey: process.env.ROXY_API_KEY,
+      apiHost: process.env.ROXY_API_HOST,
+      workspaceId: process.env.ROXY_WORKSPACE_ID,
+      timeout: process.env.ROXY_TIMEOUT,
+    };
+    process.env.ROXY_API_KEY = "environment-token";
+    process.env.ROXY_API_HOST = "http://environment-host";
+    process.env.ROXY_WORKSPACE_ID = "20";
+    process.env.ROXY_TIMEOUT = "2000";
+    try {
+      assert.deepEqual(resolveRoxyOptions({ apiKey: undefined, apiHost: undefined }), {
+        apiKey: "environment-token",
+        apiHost: "http://environment-host",
+        workspaceId: 20,
+        timeout: 2000,
+      });
+    } finally {
+      for (const [key, value] of Object.entries({
+        ROXY_API_KEY: original.apiKey,
+        ROXY_API_HOST: original.apiHost,
+        ROXY_WORKSPACE_ID: original.workspaceId,
+        ROXY_TIMEOUT: original.timeout,
+      })) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+
   test("parses JSON values and leaves plain strings unchanged", () => {
     assert.deepEqual(parseCliValue('{"page":1}'), { page: 1 });
     assert.deepEqual(parseCliValue("[1,2]"), [1, 2]);
@@ -38,7 +131,7 @@ describe("debug CLI helpers", () => {
       data: { dirId: "profile-1", ws: "ws://127.0.0.1/devtools/browser/1" },
     });
     try {
-      const result = await runSdkDebugCommand(
+      const result = await runSdkCommand(
         "profiles.open",
         ["profile-1", '{"forceOpen":true}'],
         {
@@ -65,7 +158,7 @@ describe("debug CLI helpers", () => {
       data: { enabled: true },
     });
     try {
-      const result = await runApiDebugCommand(
+      const result = await runApiCommand(
         "POST",
         "/browser/new_feature",
         '{"dirId":"profile-1"}',
@@ -84,7 +177,7 @@ describe("debug CLI helpers", () => {
   test("calls browser MCP tools by public tool name", async () => {
     const { calls, restoreFetch } = installRecorder();
     try {
-      const result = await runToolDebugCommand("roxy_profile_list", '{"page":1,"pageSize":20}', {
+      const result = await runToolCommand("roxy_profile_list", '{"page":1,"pageSize":20}', {
         apiKey: "secret-token",
         workspaceId: 123,
       });
@@ -102,7 +195,7 @@ describe("debug CLI helpers", () => {
   test("supports GET raw endpoints without workspace injection", async () => {
     const { calls, restoreFetch } = installRecorder();
     try {
-      await runApiDebugCommand(
+      await runApiCommand(
         "GET",
         "/custom/list",
         '{"page_index":1}',
@@ -124,13 +217,13 @@ describe("debug CLI helpers", () => {
 
   test("rejects unsafe or unknown SDK operation paths", async () => {
     await assert.rejects(
-      runSdkDebugCommand("__proto__.toString", [], {
+      runSdkCommand("__proto__.toString", [], {
         roxy: { apiKey: "secret-token" },
       }),
       /Invalid SDK operation path/,
     );
     await assert.rejects(
-      runSdkDebugCommand("profiles.missing", [], {
+      runSdkCommand("profiles.missing", [], {
         roxy: { apiKey: "secret-token" },
       }),
       /Unknown SDK operation/,

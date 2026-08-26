@@ -3,12 +3,8 @@
 import { Command } from "commander";
 import dotenv from "dotenv";
 import { createRoxyBrowserMcpServer } from "../mcp/index.js";
-import {
-  addDebugCommands,
-  addRoxyOptions,
-  getRoxyCommandOptions,
-  resolveRoxyOptions,
-} from "./debug.js";
+import { addCliCommands } from "./commands.js";
+import { addRoxyOptions, getRoxyCommandOptions, resolveRoxyOptions } from "./options.js";
 
 dotenv.config({ quiet: true });
 
@@ -29,7 +25,7 @@ export async function runBrowserCli(argv = process.argv): Promise<void> {
       }),
   );
 
-  addDebugCommands(program, {
+  addCliCommands(program, {
     getRoxyOptions: (overrides, sources) =>
       resolveRoxyOptions(getRoxyCommandOptions(program), overrides, sources),
   });

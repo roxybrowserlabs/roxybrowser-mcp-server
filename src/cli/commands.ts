@@ -3,76 +3,27 @@ import { RoxyApiClient, type RoxyApiClientOptions } from "../api/index.js";
 import { BROWSER_MCP_TOOLS } from "../mcp/presets/browser/index.js";
 import { RoxyBrowserClient } from "../sdk/index.js";
 import { getRoxyCapability, isRoxyCapabilitySupported, ROXY_OPENAPI_VERSION } from "../version.js";
+import {
+  addRoxyOptions,
+  getRoxyCommandOptionSources,
+  getRoxyCommandOptions,
+  type RoxyCommandOptions,
+} from "./options.js";
 
-export interface DebugCliOptions {
+export interface CliCommandOptions {
   getRoxyOptions: (
-    overrides?: RoxyDebugCommandOptions,
-    sources?: Partial<Record<keyof RoxyDebugCommandOptions, string | undefined>>,
+    overrides?: RoxyCommandOptions,
+    sources?: Partial<Record<keyof RoxyCommandOptions, string | undefined>>,
   ) => RoxyApiClientOptions;
 }
 
-interface ApiDebugOptions {
+interface ApiCommandOptions {
   injectWorkspace?: boolean;
-}
-
-export interface RoxyDebugCommandOptions {
-  apiHost?: string;
-  apiKey?: string;
-  workspaceId?: number;
-  timeout?: number;
-}
-
-export function resolveRoxyOptions(
-  base: RoxyDebugCommandOptions,
-  overrides: RoxyDebugCommandOptions | undefined = {},
-  sources?: Partial<Record<keyof RoxyDebugCommandOptions, string | undefined>>,
-): RoxyApiClientOptions {
-  const merged: RoxyDebugCommandOptions = { ...base };
-  for (const key of ["apiHost", "apiKey", "workspaceId", "timeout"] as const) {
-    if (sources && sources[key] !== "cli") continue;
-    if (overrides[key] !== undefined) {
-      merged[key] = overrides[key] as never;
-    }
-  }
-
-  const workspaceId =
-    merged.workspaceId ??
-    (process.env.ROXY_WORKSPACE_ID
-      ? Number.parseInt(process.env.ROXY_WORKSPACE_ID, 10)
-      : undefined);
-
-  return {
-    apiHost: merged.apiHost,
-    apiKey: merged.apiKey,
-    timeout: merged.timeout,
-    workspaceId,
-  };
-}
-
-export function getRoxyCommandOptions(command: Command): RoxyDebugCommandOptions {
-  const options = command.opts();
-  return {
-    apiHost: options.apiHost,
-    apiKey: options.apiKey,
-    workspaceId: options.workspaceId,
-    timeout: options.timeout,
-  };
-}
-
-export function getRoxyCommandOptionSources(
-  command: Command,
-): Partial<Record<keyof RoxyDebugCommandOptions, string | undefined>> {
-  return {
-    apiHost: command.getOptionValueSource("apiHost"),
-    apiKey: command.getOptionValueSource("apiKey"),
-    workspaceId: command.getOptionValueSource("workspaceId"),
-    timeout: command.getOptionValueSource("timeout"),
-  };
 }
 
 const BLOCKED_OPERATION_SEGMENTS = new Set(["__proto__", "prototype", "constructor"]);
 
-export function addDebugCommands(program: Command, options: DebugCliOptions): void {
+export function addCliCommands(program: Command, options: CliCommandOptions): void {
   program.addHelpCommand(false);
 
   program
@@ -107,7 +58,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
       .description("Call a browser MCP tool by name and print its text result"),
   ).action(async function (this: Command, toolName: string, args: string | undefined) {
     const command = this;
-    const result = await runToolDebugCommand(
+    const result = await runToolCommand(
       toolName,
       args,
       options.getRoxyOptions(getRoxyCommandOptions(command), getRoxyCommandOptionSources(command)),
@@ -121,7 +72,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
       .description("Call an SDK method and print the JSON result"),
   ).action(async function (this: Command, operation: string, args: string[]) {
     const command = this;
-    const result = await runSdkDebugCommand(operation, args, {
+    const result = await runSdkCommand(operation, args, {
       roxy: options.getRoxyOptions(
         getRoxyCommandOptions(command),
         getRoxyCommandOptionSources(command),
@@ -143,7 +94,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
   ) {
     const command = this;
     const commandOptions = command.opts();
-    const result = await runApiDebugCommand(
+    const result = await runApiCommand(
       method,
       path,
       params,
@@ -156,26 +107,7 @@ export function addDebugCommands(program: Command, options: DebugCliOptions): vo
   });
 }
 
-export function addRoxyOptions<TCommand extends Command>(command: TCommand): TCommand {
-  return command
-    .option(
-      "-H, --api-host <url>",
-      "RoxyBrowser API base URL",
-      process.env.ROXY_API_HOST ?? "http://127.0.0.1:50000",
-    )
-    .option("-k, --api-key <key>", "API key", process.env.ROXY_API_KEY ?? "")
-    .option("-w, --workspace-id <id>", "Default workspace ID", (value) =>
-      Number.parseInt(value, 10),
-    )
-    .option(
-      "-t, --timeout <ms>",
-      "Request timeout in milliseconds",
-      (value) => Number.parseInt(value, 10),
-      process.env.ROXY_TIMEOUT ? Number(process.env.ROXY_TIMEOUT) : 30_000,
-    ) as TCommand;
-}
-
-export async function runSdkDebugCommand(
+export async function runSdkCommand(
   operation: string,
   rawArgs: string[],
   options: { roxy: RoxyApiClientOptions },
@@ -185,12 +117,12 @@ export async function runSdkDebugCommand(
   return await method.apply(target, rawArgs.map(parseCliValue));
 }
 
-export async function runApiDebugCommand(
+export async function runApiCommand(
   method: string,
   path: string,
   rawParams: string | undefined,
   roxy: RoxyApiClientOptions,
-  options: ApiDebugOptions = {},
+  options: ApiCommandOptions = {},
 ): Promise<unknown> {
   const normalizedMethod = method.toUpperCase();
   if (normalizedMethod !== "GET" && normalizedMethod !== "POST") {
@@ -209,7 +141,7 @@ export async function runApiDebugCommand(
   });
 }
 
-export async function runToolDebugCommand(
+export async function runToolCommand(
   toolName: string,
   rawArgs: string | undefined,
   roxy: RoxyApiClientOptions,
@@ -255,7 +187,7 @@ function parseObjectParams(rawParams: string | undefined, label: string): object
 function injectDefaultWorkspace(
   params: object | undefined,
   workspaceId: number | undefined,
-  options: ApiDebugOptions,
+  options: ApiCommandOptions,
 ): object | undefined {
   if (options.injectWorkspace === false || workspaceId === undefined) return params;
 
