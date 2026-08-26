@@ -49,6 +49,52 @@ describe("CLI commands", () => {
     });
   });
 
+  test("uses codex oauth state when connection environment variables are unset", () => {
+    const directory = mkdtempSync(join(tmpdir(), "roxy-cli-"));
+    const filePath = join(directory, "codex-oauth.json");
+    writeFileSync(
+      filePath,
+      JSON.stringify({
+        apiKey: "oauth-token",
+        apiHost: "http://oauth-host",
+        workspaceId: "42",
+        timeout: "1234",
+      }),
+    );
+
+    const original = {
+      configPath: process.env.ROXY_CODEX_CONFIG_PATH,
+      apiKey: process.env.ROXY_API_KEY,
+      apiHost: process.env.ROXY_API_HOST,
+      workspaceId: process.env.ROXY_WORKSPACE_ID,
+      timeout: process.env.ROXY_TIMEOUT,
+    };
+    process.env.ROXY_CODEX_CONFIG_PATH = filePath;
+    delete process.env.ROXY_API_KEY;
+    delete process.env.ROXY_API_HOST;
+    delete process.env.ROXY_WORKSPACE_ID;
+    delete process.env.ROXY_TIMEOUT;
+    try {
+      assert.deepEqual(resolveRoxyOptions({}), {
+        apiKey: "oauth-token",
+        apiHost: "http://oauth-host",
+        workspaceId: 42,
+        timeout: 1234,
+      });
+    } finally {
+      for (const [key, value] of Object.entries({
+        ROXY_CODEX_CONFIG_PATH: original.configPath,
+        ROXY_API_KEY: original.apiKey,
+        ROXY_API_HOST: original.apiHost,
+        ROXY_WORKSPACE_ID: original.workspaceId,
+        ROXY_TIMEOUT: original.timeout,
+      })) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+
   test("prefers explicit CLI values over environment and oauth state", () => {
     const original = {
       apiKey: process.env.ROXY_API_KEY,

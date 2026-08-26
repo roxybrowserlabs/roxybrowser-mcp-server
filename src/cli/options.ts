@@ -16,7 +16,8 @@ const DEFAULT_TIMEOUT = 30_000;
 
 /** Load connection defaults saved by the Roxy Agent/Codex integration. */
 export function loadCodexOAuthOptions(
-  filePath = join(homedir(), ".roxy-agent", "state", "codex-oauth.json"),
+  filePath = process.env.ROXY_CODEX_CONFIG_PATH?.trim() ||
+    join(homedir(), ".roxy-agent", "state", "codex-oauth.json"),
 ): RoxyCommandOptions {
   try {
     const parsed: unknown = JSON.parse(readFileSync(filePath, "utf8"));
@@ -66,12 +67,10 @@ export function resolveRoxyOptions(
   const merged: RoxyCommandOptions = {
     apiHost: DEFAULT_API_HOST,
     timeout: DEFAULT_TIMEOUT,
-    ...loadCodexOAuthOptions(),
-    ...loadEnvironmentOptions(),
   };
-  for (const key of ["apiHost", "apiKey", "workspaceId", "timeout"] as const) {
-    if (base[key] !== undefined) merged[key] = base[key] as never;
-  }
+  mergeDefinedOptions(merged, loadCodexOAuthOptions());
+  mergeDefinedOptions(merged, loadEnvironmentOptions());
+  mergeDefinedOptions(merged, base);
   for (const key of ["apiHost", "apiKey", "workspaceId", "timeout"] as const) {
     if (sources && sources[key] !== "cli") continue;
     if (overrides[key] !== undefined) merged[key] = overrides[key] as never;
@@ -83,6 +82,12 @@ export function resolveRoxyOptions(
     timeout: merged.timeout,
     workspaceId: merged.workspaceId,
   };
+}
+
+function mergeDefinedOptions(target: RoxyCommandOptions, source: RoxyCommandOptions): void {
+  for (const key of ["apiHost", "apiKey", "workspaceId", "timeout"] as const) {
+    if (source[key] !== undefined) target[key] = source[key] as never;
+  }
 }
 
 export function getRoxyCommandOptions(command: Command): RoxyCommandOptions {
