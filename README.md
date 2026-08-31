@@ -69,10 +69,10 @@ Options:
 
 - `-H, --api-host <url>`: RoxyBrowser API base URL. Default: `http://127.0.0.1:50000`
 - `-k, --api-key <key>`: RoxyBrowser API key.
-- `-w, --workspace-id <id>`: default workspace ID injected into workspace-scoped requests.
+- `-w, --workspace-id <id>`: optional default workspace ID injected into workspace-scoped requests. If omitted, use `roxy_workspace_list` and pass `workspaceId` per tool call.
 - `-t, --timeout <ms>`: request timeout. Default: `30000`
 
-Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`, and `ROXY_WORKSPACE_ID`.
+Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`, and the optional `ROXY_WORKSPACE_ID`.
 
 ## Codex and Claude Code
 

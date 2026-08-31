@@ -19,7 +19,7 @@ Use RoxyBrowser MCP as the source of truth for workspace, project, browser, prox
 ## Context Rules
 
 - Fixed workspace mode hides `roxy_workspace_list` and exposes `roxy_project_list`.
-- In fixed workspace mode, workspace-scoped tools may not expose `workspaceId`; do not ask the user for it.
+- In fixed workspace mode, workspace-scoped tools use the configured workspace by default; an optional `workspaceId` can override it for a single call.
 - If `roxy_workspace_list` is visible, use it to discover `workspaceId` before workspace-scoped actions.
 - Never call delete tools unless the user explicitly asks.
 

@@ -16,11 +16,12 @@ export function createRoxyBrowserMcpServer(
   options: CreateRoxyBrowserMcpServerOptions = {},
 ): RoxyPresetMcpServer {
   const workspaceId = options.roxy?.workspaceId ?? options.context?.workspaceId;
-  const browser = new RoxyBrowserClient({
+  const browserOptions = {
     ...options.roxy,
     timeout: options.timeout ?? options.roxy?.timeout,
     workspaceId,
-  });
+  };
+  const browser = new RoxyBrowserClient(browserOptions);
   let tools = options.tools
     ? options.tools
     : workspaceId === undefined
@@ -33,6 +34,13 @@ export function createRoxyBrowserMcpServer(
   if (options.excludeTools) {
     const excluded = new Set(options.excludeTools);
     tools = tools.filter((tool) => !excluded.has(tool.name));
+  }
+  // A configured workspace is only a default. Allow callers to select another
+  // workspace per request without requiring ROXY_WORKSPACE_ID at startup.
+  if (!options.tools) {
+    tools = tools.map((tool) =>
+      tool.name === "roxy_workspace_list" ? tool : withWorkspaceOverride(tool, browserOptions),
+    );
   }
   return new RoxyPresetMcpServer(
     {
@@ -48,4 +56,42 @@ export function createRoxyBrowserMcpServer(
       workspaceId,
     },
   );
+}
+
+function withWorkspaceOverride(
+  tool: (typeof BROWSER_MCP_TOOLS)[number],
+  browserOptions: ConstructorParameters<typeof RoxyBrowserClient>[0],
+) {
+  const schema = tool.inputSchema as Record<string, unknown>;
+  const properties = schema.properties;
+  if (!properties || typeof properties !== "object" || Array.isArray(properties)) return tool;
+
+  return {
+    ...tool,
+    inputSchema: {
+      ...schema,
+      properties: {
+        ...(properties as Record<string, unknown>),
+        workspaceId: {
+          type: "number",
+          description: "Workspace ID. Defaults to the configured workspace when omitted.",
+        },
+      },
+    },
+    handler: async (args: Record<string, any>, context: any) => {
+      const requestedWorkspaceId = args.workspaceId;
+      if (requestedWorkspaceId === undefined || requestedWorkspaceId === context.workspaceId) {
+        return tool.handler(args, context);
+      }
+      const requestBrowser = new RoxyBrowserClient({
+        ...browserOptions,
+        workspaceId: requestedWorkspaceId,
+      });
+      return tool.handler(args, {
+        ...context,
+        browser: requestBrowser,
+        workspaceId: requestedWorkspaceId,
+      });
+    },
+  };
 }

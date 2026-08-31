@@ -151,11 +151,14 @@ export async function runToolCommand(
     throw new Error(`Unknown MCP tool: ${toolName}. Use "help tools" to list tools.`);
   }
 
-  const args = parseObjectParams(rawArgs, "MCP tool args") ?? {};
-  const browser = new RoxyBrowserClient(roxy);
+  const args =
+    (parseObjectParams(rawArgs, "MCP tool args") as Record<string, any> | undefined) ?? {};
+  const requestedWorkspaceId =
+    typeof args.workspaceId === "number" ? args.workspaceId : roxy.workspaceId;
+  const browser = new RoxyBrowserClient({ ...roxy, workspaceId: requestedWorkspaceId });
   return await tool.handler(args, {
     browser,
-    workspaceId: roxy.workspaceId,
+    workspaceId: requestedWorkspaceId,
   });
 }
 

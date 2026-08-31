@@ -147,8 +147,14 @@ describe("3.0 MCP presets", () => {
       const createProperties = profileCreate.inputSchema.properties.profiles.items.properties;
       const { dirId: _dirId, ...updateProperties } = profileUpdate.inputSchema.properties;
       const { browserCore: _createBrowserCore, ...sharedCreateProperties } = createProperties;
-      const { coreVersion, ...sharedUpdateProperties } = updateProperties;
-      assert.deepEqual(sharedUpdateProperties, sharedCreateProperties);
+      const {
+        coreVersion,
+        workspaceId: _updateWorkspaceId,
+        ...sharedUpdateProperties
+      } = updateProperties;
+      const { workspaceId: _createWorkspaceId, ...sharedCreatePropertiesWithoutWorkspace } =
+        sharedCreateProperties;
+      assert.deepEqual(sharedUpdateProperties, sharedCreatePropertiesWithoutWorkspace);
       assert.equal(profileUpdate.inputSchema.properties.core, undefined);
       assert.equal(profileUpdate.inputSchema.properties.os.type, "string");
       assert.deepEqual(profileUpdate.inputSchema.properties.os.enum, osSchema.enum);
@@ -225,7 +231,31 @@ describe("3.0 MCP presets", () => {
     try {
       const result = await session.client.listTools();
       assert.ok(result.tools.some((tool) => tool.name === "roxy_workspace_list"));
+      const profileList = result.tools.find((tool) => tool.name === "roxy_profile_list");
+      assert.deepEqual(profileList.inputSchema.properties.workspaceId, {
+        type: "number",
+        description: "Workspace ID. Defaults to the configured workspace when omitted.",
+      });
     } finally {
+      await session.close();
+    }
+  });
+
+  test("workspaceId can be supplied per MCP request when no default is configured", async () => {
+    const restoreFetch = installFetchMock(async (url) => {
+      assert.equal(new URL(url).searchParams.get("workspaceId"), "123");
+      return createJsonResponse({ code: 0, msg: "ok", data: { total: 0, rows: [] } });
+    });
+    const server = createRoxyBrowserMcpServer({ roxy: { apiKey: "secret-token" } });
+    const session = await connect(server);
+    try {
+      const result = await session.client.callTool({
+        name: "roxy_profile_list",
+        arguments: { workspaceId: 123 },
+      });
+      assert.notEqual(result.isError, true);
+    } finally {
+      restoreFetch();
       await session.close();
     }
   });

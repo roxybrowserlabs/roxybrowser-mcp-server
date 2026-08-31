@@ -67,10 +67,10 @@ npx -y @roxybrowser/openapi supports browser.profile.open 4.0.4
 
 - `-H, --api-host <url>`：RoxyBrowser API 地址，默认 `http://127.0.0.1:50000`
 - `-k, --api-key <key>`：RoxyBrowser API Key
-- `-w, --workspace-id <id>`：默认 workspace ID，会注入到需要 workspace 的请求
+- `-w, --workspace-id <id>`：可选的默认 workspace ID，会注入到需要 workspace 的请求。不配置时先调用 `roxy_workspace_list`，再在工具调用中传入 `workspaceId`
 - `-t, --timeout <ms>`：请求超时时间，默认 `30000`
 
-也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`、`ROXY_WORKSPACE_ID`。
+也支持环境变量：`ROXY_API_HOST`、`ROXY_API_KEY`、`ROXY_TIMEOUT`，以及可选的 `ROXY_WORKSPACE_ID`。
 
 ## Codex 和 Claude Code
 

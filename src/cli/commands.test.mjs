@@ -177,13 +177,9 @@ describe("CLI commands", () => {
       data: { dirId: "profile-1", ws: "ws://127.0.0.1/devtools/browser/1" },
     });
     try {
-      const result = await runSdkCommand(
-        "profiles.open",
-        ["profile-1", '{"forceOpen":true}'],
-        {
-          roxy: { apiKey: "secret-token", workspaceId: 77 },
-        },
-      );
+      const result = await runSdkCommand("profiles.open", ["profile-1", '{"forceOpen":true}'], {
+        roxy: { apiKey: "secret-token", workspaceId: 77 },
+      });
 
       assert.equal(calls[0].url.pathname, "/browser/open");
       assert.deepEqual(calls[0].body, {
@@ -204,12 +200,10 @@ describe("CLI commands", () => {
       data: { enabled: true },
     });
     try {
-      const result = await runApiCommand(
-        "POST",
-        "/browser/new_feature",
-        '{"dirId":"profile-1"}',
-        { apiKey: "secret-token", workspaceId: 99 },
-      );
+      const result = await runApiCommand("POST", "/browser/new_feature", '{"dirId":"profile-1"}', {
+        apiKey: "secret-token",
+        workspaceId: 99,
+      });
 
       assert.equal(calls[0].url.pathname, "/browser/new_feature");
       assert.equal(calls[0].options.method, "POST");
@@ -233,6 +227,20 @@ describe("CLI commands", () => {
       assert.equal(calls[0].url.searchParams.get("page_size"), "20");
       assert.equal(calls[0].url.searchParams.get("workspaceId"), "123");
       assert.match(result, /No profiles found/);
+    } finally {
+      restoreFetch();
+    }
+  });
+
+  test("allows workspaceId to be supplied in CLI MCP tool args", async () => {
+    const { calls, restoreFetch } = installRecorder();
+    try {
+      await runToolCommand("roxy_profile_list", '{"workspaceId":456}', {
+        apiKey: "secret-token",
+      });
+
+      assert.equal(calls[0].url.pathname, "/browser/list_v3");
+      assert.equal(calls[0].url.searchParams.get("workspaceId"), "456");
     } finally {
       restoreFetch();
     }
