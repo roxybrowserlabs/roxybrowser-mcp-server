@@ -1,6 +1,11 @@
 minimumReleaseAge: 10080
 blockExoticSubdeps: true
 trustPolicy: no-downgrade
+# These transitive MCP Inspector dependencies are currently flagged by pnpm's
+# trust database despite being pinned by the published package metadata.
+trustPolicyExclude:
+  - chokidar@4.0.3
+  - pino@9.14.0
 
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.9
