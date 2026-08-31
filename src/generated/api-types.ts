@@ -34,12 +34,73 @@ export interface WorkspaceProject {
 }
 
 /**
+ * Workspace summary returned by the all-workspaces endpoint.
+ * @remarks 全部空间列表接口返回的空间摘要。
+ */
+export interface WorkspaceAllListRow {
+  /** Account email / 账号邮箱 */
+  email: string;
+  /** Workspace ID / 空间 ID */
+  id: number | string;
+  /** Maximum browser window count / 最大窗口数 */
+  maxWindowCount: number;
+  /** Workspace role / 空间角色 */
+  role: number;
+  /** Total member count / 成员总数 */
+  totalMemberCount: number;
+  /** Total browser window count / 窗口总数 */
+  totalWindowCount: number;
+  /** Used member count / 已用成员数 */
+  useMemberCount: number;
+  /** Used browser window count / 已用窗口数 */
+  useWindowCount: number;
+  /** Workspace name / 空间名称 */
+  workspaceName: string;
+  /** Workspace number / 空间编号 */
+  workspaceNo: string;
+}
+
+/**
+ * All workspaces returned by the API.
+ * @remarks API 返回的全部空间。
+ */
+export interface WorkspaceAllListData {
+  /** Total count / 总数 */
+  total: number;
+  /** Workspace summaries / 空间摘要列表 */
+  rows: Array<WorkspaceAllListRow>;
+}
+
+/**
+ * Raw response for all workspaces.
+ * @remarks 全部空间列表原始返回结果。
+ */
+export interface WorkspaceAllListResponse {
+  /** Status code, 0: Success, 500: Failure / 状态码，0：成功，500：失败 */
+  code: number;
+  data: WorkspaceAllListData;
+  /** Response message / 返回结果 */
+  msg: string;
+}
+
+/**
+ * All workspaces returned by RoxyBrowserClient.
+ * @remarks RoxyBrowserClient 返回的全部空间。
+ */
+export interface WorkspaceAllListResult {
+  /** Total count / 总数 */
+  total: number;
+  /** Workspace summaries / 空间摘要列表 */
+  rows: Array<WorkspaceAllListRow>;
+}
+
+/**
  * Team workspace returned by the API.
  * @remarks API 返回的团队工作区。
  */
 export interface RawWorkspace {
   /** Team ID / 团队ID */
-  id: number;
+  id: number | string;
   /** Team name / 团队名称 */
   workspaceName: string;
   /** Project details / 项目详细信息 */
@@ -93,6 +154,52 @@ export interface WorkspaceListResult {
   page: number;
   /** Number of rows per page / 每页条数 */
   pageSize: number;
+}
+
+/**
+ * Request for selecting another workspace.
+ * @remarks 切换到其他工作区的请求。
+ */
+export interface WorkspaceSelectRequest {
+  /** Target workspace ID / 目标工作区 ID */
+  workspaceId: number | string;
+  /** Force switching even when browser windows are open / 强制切换，即使仍有浏览器窗口打开 */
+  force?: boolean;
+}
+
+/**
+ * Selected workspace and its API key.
+ * @remarks 选中的工作区及其 APIKey。
+ */
+export interface WorkspaceSelection {
+  /** Workspace data returned by the switch operation / 切换操作返回的空间数据 */
+  workspace: { [key: string]: unknown };
+  /** API key for the selected workspace / 目标空间的 APIKey */
+  apiKey: string;
+}
+
+/**
+ * Raw response after selecting a workspace.
+ * @remarks 切换工作区后的原始返回结果。
+ */
+export interface WorkspaceSelectResponse {
+  /** Status code, 0: Success, 500: Failure / 状态码，0：成功，500：失败 */
+  code: number;
+  data: WorkspaceSelection;
+  /** Response message / 返回结果 */
+  msg: string;
+}
+
+/**
+ * Raw response for the workspace bound to the current API key.
+ * @remarks 当前 APIKey 所绑定工作区的原始返回结果。
+ */
+export interface WorkspaceActiveResponse {
+  /** Status code, 0: Success, 500: Failure / 状态码，0：成功，500：失败 */
+  code: number;
+  data: RawWorkspace;
+  /** Response message / 返回结果 */
+  msg: string;
 }
 
 /**

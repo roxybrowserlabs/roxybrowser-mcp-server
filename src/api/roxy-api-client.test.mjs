@@ -64,6 +64,49 @@ describe("RoxyApiClient", () => {
     }
   });
 
+  test("selects a workspace and gets the active workspace through raw APIs", async () => {
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calls.push({
+        url: new URL(url),
+        options,
+        body: options.body ? JSON.parse(options.body) : undefined,
+      });
+      if (new URL(url).pathname.endsWith("/select")) {
+        return createJsonResponse({
+          code: 0,
+          msg: "ok",
+          data: {
+            workspace: { id: 88, workspaceName: "Target", project_details: [] },
+            apiKey: "target-key",
+          },
+        });
+      }
+      return createJsonResponse({
+        code: 0,
+        msg: "ok",
+        data: { id: 88, workspaceName: "Target", project_details: [] },
+      });
+    });
+    try {
+      const api = new RoxyApiClient({ apiKey: "current-key", workspaceId: 77 });
+
+      const selected = await api.workspace.select({ workspaceId: "88", force: true });
+      const active = await api.workspace.getActive();
+
+      assert.equal(calls[0].url.pathname, "/browser/workspace/select");
+      assert.equal(calls[0].options.method, "POST");
+      assert.deepEqual(calls[0].body, { workspaceId: "88", force: true });
+      assert.equal(selected.data.apiKey, "target-key");
+      assert.equal(calls[1].url.pathname, "/browser/workspace/active");
+      assert.equal(calls[1].options.method, "GET");
+      assert.equal(calls[1].url.search, "");
+      assert.equal(active.data.id, 88);
+    } finally {
+      restoreFetch();
+    }
+  });
+
   test("throws typed config and HTTP errors", async () => {
     await assert.rejects(new RoxyApiClient().health(), (error) => {
       assert.ok(error instanceof RoxyApiConfigError);
@@ -98,7 +141,10 @@ describe("RoxyApiClient", () => {
     try {
       const api = new RoxyApiClient({ apiKey: "secret-token", workspaceId: 19744 });
 
+      await api.workspace.listAll();
       await api.workspace.list({ page_index: 1 });
+      await api.workspace.select({ workspaceId: 19744 });
+      await api.workspace.getActive();
       await api.workspace.projects({ page_index: 1 });
       await api.browser.detail({ dirId: "profile-1" });
       await api.browser.modify({ dirId: "profile-1", windowName: "Alpha" });
@@ -157,7 +203,10 @@ describe("RoxyApiClient", () => {
 
       const byPath = calls.map((call) => call.url.pathname);
       assert.deepEqual(byPath, [
+        "/workspace/list",
         "/browser/workspace",
+        "/browser/workspace/select",
+        "/browser/workspace/active",
         "/project/list",
         "/browser/detail",
         "/browser/mdf",

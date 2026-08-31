@@ -3,8 +3,10 @@ import type { RoxyBrowserClient } from "../../sdk/index.js";
 
 export interface McpContext {
   browser?: RoxyBrowserClient;
-  workspaceId?: number;
+  createBrowser?: (options: RoxyApiClientOptions) => RoxyBrowserClient;
+  workspaceId?: number | string;
   roxyBrowserVersion?: string;
+  initialize?: (context: McpContext) => Promise<void>;
 }
 
 export interface ToolAnnotations {
@@ -42,7 +44,7 @@ export interface CreateMcpServerOptions {
   roxyBrowserVersion?: string;
   roxy?: RoxyApiClientOptions;
   context?: {
-    workspaceId?: number;
+    workspaceId?: number | string;
   };
   tools: McpTool[];
 }

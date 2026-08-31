@@ -11,6 +11,7 @@ import {
   formatProfiles,
   formatProjects,
   formatProxies,
+  formatWorkspaceSummaries,
   formatWorkspaces,
 } from "./formatters.js";
 import {
@@ -260,6 +261,17 @@ const platformAccountInputSchema = {
 
 export const BROWSER_MCP_TOOLS: McpTool[] = [
   {
+    name: "roxy_workspace_list_all",
+    operationId: "browser.workspace.listAll",
+    endpoint: "GET /workspace/list",
+    description: "List all RoxyBrowser workspaces available to the current API key.",
+    inputSchema: objectSchema({}),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) =>
+      formatWorkspaceSummaries(await context.browser!.workspaces.listAll()),
+  },
+  {
     name: "roxy_workspace_list",
     operationId: "browser.workspace.list",
     endpoint: "GET /browser/workspace",
@@ -268,6 +280,61 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     annotations: NO_APPROVAL_ANNOTATIONS,
     handler: async (args, context) =>
       formatWorkspaces(await context.browser!.workspaces.list(args)),
+  },
+  {
+    name: "roxy_workspace_select",
+    operationId: "browser.workspace.select",
+    endpoint: "POST /browser/workspace/select",
+    description: "Switch this MCP session to another RoxyBrowser workspace.",
+    inputSchema: objectSchema(
+      {
+        workspaceId: { oneOf: [{ type: "number" }, { type: "string" }] },
+        force: {
+          type: "boolean",
+          default: false,
+          description: "Force switching even when browser windows are open.",
+        },
+      },
+      ["workspaceId"],
+    ),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (args, context) => {
+      if (!context.createBrowser) {
+        throw new Error("Workspace switching is unavailable in this context.");
+      }
+      const selection = await context.browser!.workspaces.select(args.workspaceId, args.force);
+      const returnedWorkspaceId = selection.workspace?.["id"];
+      const workspaceId =
+        typeof returnedWorkspaceId === "number" || typeof returnedWorkspaceId === "string"
+          ? returnedWorkspaceId
+          : args.workspaceId;
+      const browser = context.createBrowser({
+        apiKey: selection.apiKey,
+        workspaceId,
+      });
+      context.browser = browser;
+      context.workspaceId = workspaceId;
+      return `Selected workspace ${args.workspaceId}.`;
+    },
+  },
+  {
+    name: "roxy_workspace_get_active",
+    operationId: "browser.workspace.getActive",
+    endpoint: "GET /browser/workspace/active",
+    description: "Get the workspace bound to the current API key.",
+    inputSchema: objectSchema({}),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) => {
+      const workspace = await context.browser!.workspaces.getActive();
+      return `Active workspace:\n${formatWorkspaces({
+        total: 1,
+        rows: [workspace],
+        page: 1,
+        pageSize: 1,
+      })}`;
+    },
   },
   {
     name: "roxy_project_list",

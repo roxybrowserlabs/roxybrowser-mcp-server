@@ -46,8 +46,11 @@ describe("3.0 MCP presets", () => {
       const result = await session.client.listTools();
       const names = result.tools.map((tool) => tool.name);
 
-      assert.equal(names.length, 23);
-      assert.equal(names.includes("roxy_workspace_list"), false);
+      assert.equal(names.length, 27);
+      assert.ok(names.includes("roxy_workspace_list_all"));
+      assert.ok(names.includes("roxy_workspace_list"));
+      assert.ok(names.includes("roxy_workspace_select"));
+      assert.ok(names.includes("roxy_workspace_get_active"));
       assert.ok(names.includes("roxy_project_list"));
       assert.ok(names.includes("roxy_label_list"));
       assert.ok(names.includes("roxy_profile_list"));
@@ -83,11 +86,16 @@ describe("3.0 MCP presets", () => {
       }
       const profileUpdate = result.tools.find((tool) => tool.name === "roxy_profile_update");
       const profileCreate = result.tools.find((tool) => tool.name === "roxy_profile_create");
+      const workspaceSelect = result.tools.find((tool) => tool.name === "roxy_workspace_select");
+      const workspaceListAll = result.tools.find((tool) => tool.name === "roxy_workspace_list_all");
       const proxyCreate = result.tools.find((tool) => tool.name === "roxy_proxy_create");
       const accountCreate = result.tools.find(
         (tool) => tool.name === "roxy_platform_account_create",
       );
       assert.deepEqual(profileCreate.inputSchema.required, ["profiles"]);
+      assert.deepEqual(workspaceSelect.inputSchema.required, ["workspaceId"]);
+      assert.equal(workspaceSelect.inputSchema.properties.force.type, "boolean");
+      assert.equal(workspaceListAll.inputSchema.type, "object");
       assert.deepEqual(proxyCreate.inputSchema.required, ["proxies", "checkChannel"]);
       assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.required, [
         "ipType",
@@ -231,29 +239,167 @@ describe("3.0 MCP presets", () => {
     try {
       const result = await session.client.listTools();
       assert.ok(result.tools.some((tool) => tool.name === "roxy_workspace_list"));
+      assert.ok(result.tools.some((tool) => tool.name === "roxy_workspace_list_all"));
       const profileList = result.tools.find((tool) => tool.name === "roxy_profile_list");
-      assert.deepEqual(profileList.inputSchema.properties.workspaceId, {
-        type: "number",
-        description: "Workspace ID. Defaults to the configured workspace when omitted.",
-      });
+      assert.equal(profileList.inputSchema.properties.workspaceId, undefined);
     } finally {
       await session.close();
     }
   });
 
-  test("workspaceId can be supplied per MCP request when no default is configured", async () => {
-    const restoreFetch = installFetchMock(async (url) => {
-      assert.equal(new URL(url).searchParams.get("workspaceId"), "123");
-      return createJsonResponse({ code: 0, msg: "ok", data: { total: 0, rows: [] } });
+  test("lists all workspaces through the unscoped endpoint", async () => {
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      const parsedUrl = new URL(url);
+      calls.push({ url: parsedUrl, options });
+      if (parsedUrl.pathname === "/browser/workspace/active") {
+        return createJsonResponse({
+          code: 0,
+          msg: "ok",
+          data: { id: 77, workspaceName: "Current", project_details: [] },
+        });
+      }
+      return createJsonResponse({
+        code: 0,
+        msg: "ok",
+        data: {
+          total: 1,
+          rows: [
+            {
+              email: "owner@example.com",
+              id: "116613",
+              maxWindowCount: 5,
+              role: 3,
+              totalMemberCount: 100,
+              totalWindowCount: 505,
+              useMemberCount: 6,
+              useWindowCount: 49,
+              workspaceName: "All Workspace",
+              workspaceNo: "FKO0116613",
+            },
+          ],
+        },
+      });
     });
-    const server = createRoxyBrowserMcpServer({ roxy: { apiKey: "secret-token" } });
+    const server = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "current-key", workspaceId: 77 },
+    });
     const session = await connect(server);
     try {
       const result = await session.client.callTool({
-        name: "roxy_profile_list",
-        arguments: { workspaceId: 123 },
+        name: "roxy_workspace_list_all",
+        arguments: {},
       });
-      assert.notEqual(result.isError, true);
+      assert.equal(calls[1].url.pathname, "/workspace/list");
+      assert.equal(calls[1].url.search, "");
+      assert.equal(calls[1].options.headers.token, "current-key");
+      assert.match(getTextContent(result), /FKO0116613/);
+      assert.match(getTextContent(result), /6\/100/);
+    } finally {
+      restoreFetch();
+      await session.close();
+    }
+  });
+
+  test("browser tools do not expose workspaceId request parameters", async () => {
+    const server = createRoxyBrowserMcpServer({ roxy: { apiKey: "secret-token" } });
+    const session = await connect(server);
+    try {
+      const result = await session.client.listTools();
+      for (const tool of result.tools) {
+        if (tool.name !== "roxy_workspace_select") {
+          assert.equal(tool.inputSchema.properties?.workspaceId, undefined, tool.name);
+        }
+      }
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("workspace select replaces the MCP client without exposing the new API key", async () => {
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      const request = {
+        url: new URL(url),
+        token: options.headers.token,
+        body: options.body ? JSON.parse(options.body) : undefined,
+      };
+      calls.push(request);
+      if (request.url.pathname === "/browser/workspace/select") {
+        return createJsonResponse({
+          code: 0,
+          msg: "ok",
+          data: {
+            workspace: { id: "target-88", workspaceName: "Target", project_details: [] },
+            apiKey: "target-secret-key",
+          },
+        });
+      }
+      if (request.url.pathname === "/browser/workspace/active") {
+        return createJsonResponse({
+          code: 0,
+          msg: "ok",
+          data: { id: 88, workspaceName: "Target", project_details: [] },
+        });
+      }
+      return createJsonResponse({ code: 0, msg: "ok", data: { total: 0, rows: [] } });
+    });
+    const server = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "current-key", workspaceId: 77 },
+    });
+    const session = await connect(server);
+    try {
+      const selected = await session.client.callTool({
+        name: "roxy_workspace_select",
+        arguments: { workspaceId: 88, force: true },
+      });
+      assert.equal(calls[1].token, "current-key");
+      assert.deepEqual(calls[1].body, { workspaceId: 88, force: true });
+      assert.match(getTextContent(selected), /Selected workspace 88/);
+      assert.doesNotMatch(getTextContent(selected), /target-secret-key/);
+
+      const active = await session.client.callTool({
+        name: "roxy_workspace_get_active",
+        arguments: {},
+      });
+      assert.equal(calls[2].token, "target-secret-key");
+      assert.equal(calls[2].url.searchParams.has("workspaceId"), false);
+      assert.match(getTextContent(active), /Target/);
+
+      await session.client.callTool({ name: "roxy_profile_list", arguments: {} });
+      assert.equal(calls[3].token, "target-secret-key");
+      assert.equal(calls[3].url.searchParams.get("workspaceId"), "target-88");
+    } finally {
+      restoreFetch();
+      await session.close();
+    }
+  });
+
+  test("active workspace is initialized before the first MCP tool call", async () => {
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calls.push({ url: new URL(url), options });
+      assert.equal(options.headers.token, "current-key");
+      assert.equal(calls.at(-1).url.searchParams.has("workspaceId"), false);
+      return createJsonResponse({
+        code: 0,
+        msg: "ok",
+        data: { id: 77, workspaceName: "Current", project_details: [] },
+      });
+    });
+    const server = createRoxyBrowserMcpServer({
+      roxy: { apiKey: "current-key", workspaceId: 77 },
+    });
+    const session = await connect(server);
+    try {
+      const active = await session.client.callTool({
+        name: "roxy_workspace_get_active",
+        arguments: {},
+      });
+      assert.equal(calls.length, 2);
+      assert.equal(calls[0].url.pathname, "/browser/workspace/active");
+      assert.equal(calls[1].url.pathname, "/browser/workspace/active");
+      assert.match(getTextContent(active), /Current/);
     } finally {
       restoreFetch();
       await session.close();
@@ -358,6 +504,22 @@ describe("3.0 MCP presets", () => {
         arguments: { page: 1 },
       });
       assert.equal(getTextContent(call), "app 3.0.0");
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("browser preset hides workspace control additions before RoxyBrowser 4.0.4", async () => {
+    const server = createRoxyBrowserMcpServer({
+      roxyBrowserVersion: "4.0.3",
+      roxy: { apiKey: "secret-token", workspaceId: 77 },
+    });
+    const session = await connect(server);
+    try {
+      const names = (await session.client.listTools()).tools.map((tool) => tool.name);
+      assert.equal(names.includes("roxy_workspace_list_all"), false);
+      assert.equal(names.includes("roxy_workspace_select"), false);
+      assert.equal(names.includes("roxy_workspace_get_active"), false);
     } finally {
       await session.close();
     }
@@ -477,7 +639,7 @@ describe("3.0 MCP presets", () => {
     try {
       const result = await session.client.listTools();
       assert.equal(result.resultType, "complete");
-      assert.equal(result.tools.length, 23);
+      assert.equal(result.tools.length, 27);
       assert.ok(result._meta["io.modelcontextprotocol/serverInfo"]);
       const names = new Set();
       for (const tool of result.tools) {

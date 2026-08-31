@@ -64,7 +64,7 @@ describe("API artifact generation", () => {
       { cwd: process.cwd(), encoding: "utf8" },
     );
 
-    assert.match(result, /Checked 4 API artifacts for 29\/29 endpoints and 4\/4 catalogs/);
+    assert.match(result, /Checked 4 API artifacts for 32\/32 endpoints and 4\/4 catalogs/);
   });
 
   test("tracks the complete canonical API data", () => {
@@ -101,7 +101,10 @@ describe("API artifact generation", () => {
     assert.equal(spec.migration.expectedCatalogCount, 4);
     assert.deepEqual(spec.sections[0].endpointIds, ["health"]);
     assert.deepEqual(spec.sections[1].endpointIds, [
+      "workspace-list-all",
       "workspace-list",
+      "workspace-select",
+      "workspace-active",
       "browser-account-list",
       "label-list",
     ]);
@@ -222,6 +225,9 @@ describe("API artifact generation", () => {
     assert.equal(spec.schemas.ProfileFingerprintInput.properties.timeZone.catalogRef, "timeZone");
     assert.match(generatedEnglish, /GET \/health/);
     assert.match(generatedEnglish, /GET \/browser\/workspace/);
+    assert.match(generatedEnglish, /GET \/workspace\/list/);
+    assert.match(generatedEnglish, /POST \/browser\/workspace\/select/);
+    assert.match(generatedEnglish, /GET \/browser\/workspace\/active/);
     assert.match(generatedEnglish, /GET \/browser\/account/);
     assert.match(generatedEnglish, /GET \/browser\/label/);
     assert.match(generatedEnglish, /GET \/browser\/list_v3/);
@@ -359,7 +365,7 @@ describe("API artifact generation", () => {
     assert.match(generatedTypes, /export interface RawProxy/);
     assert.match(generatedTypes, /export type ProxyDataType = "proxyModule" \| "buyProxy"/);
     assert.match(generatedTypes, /@deprecated Deprecated API surface/);
-    assert.match(generatedEnglish, /Migrated 29\/29 endpoints and 4\/4 appendices/);
+    assert.match(generatedEnglish, /Migrated 32\/32 endpoints and 4\/4 appendices/);
     assert.match(generatedClient, /class GeneratedWorkspaceDomain/);
     assert.match(generatedClient, /listAvailable/);
     assert.match(generatedClient, /class GeneratedLabelDomain/);

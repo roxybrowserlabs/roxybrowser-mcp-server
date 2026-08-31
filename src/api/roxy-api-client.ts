@@ -69,9 +69,15 @@ import type {
   ProxyModifyResponse,
   RawLabel,
   RawProxy,
+  RawWorkspace,
+  WorkspaceAllListData,
+  WorkspaceAllListResponse,
+  WorkspaceActiveResponse,
   WorkspaceListData,
   WorkspaceListRequest,
   WorkspaceListResponse,
+  WorkspaceSelectRequest,
+  WorkspaceSelectResponse,
 } from "../generated/api-types.js";
 import type {
   PageData,
@@ -82,7 +88,7 @@ import type {
 } from "./types.js";
 
 type MaybeWorkspaceScoped<T extends object = Record<string, unknown>> = T extends unknown
-  ? Omit<T, "workspaceId"> & { workspaceId?: number }
+  ? Omit<T, "workspaceId"> & { workspaceId?: number | string }
   : never;
 
 export class RoxyApiClient {
@@ -108,12 +114,34 @@ export class RoxyApiClient {
 export class WorkspaceApi {
   constructor(private readonly transport: RoxyApiTransport) {}
 
+  listAll(): Promise<WorkspaceAllListResponse> {
+    return this.transport.request<WorkspaceAllListData>({
+      method: "GET",
+      path: "/workspace/list",
+    }) as Promise<WorkspaceAllListResponse>;
+  }
+
   list(params: WorkspaceListRequest = {}): Promise<WorkspaceListResponse> {
     return this.transport.request<WorkspaceListData>({
       method: "GET",
       path: "/browser/workspace",
       params,
     }) as Promise<WorkspaceListResponse>;
+  }
+
+  select(params: WorkspaceSelectRequest): Promise<WorkspaceSelectResponse> {
+    return this.transport.request({
+      method: "POST",
+      path: "/browser/workspace/select",
+      params,
+    }) as Promise<WorkspaceSelectResponse>;
+  }
+
+  getActive(): Promise<WorkspaceActiveResponse> {
+    return this.transport.request<RawWorkspace>({
+      method: "GET",
+      path: "/browser/workspace/active",
+    }) as Promise<WorkspaceActiveResponse>;
   }
 
   projects(

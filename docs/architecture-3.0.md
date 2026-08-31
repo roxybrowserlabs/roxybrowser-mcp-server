@@ -171,6 +171,9 @@ await roxy.profiles.delete([profile.dirId], { isSoftDelete: true });
 
 ```ts
 roxy.workspaces.list(params?)
+roxy.workspaces.listAll() // RoxyBrowser 4.0.4+
+roxy.workspaces.select(workspaceId, force?) // RoxyBrowser 4.0.4+
+roxy.workspaces.getActive() // RoxyBrowser 4.0.4+
 roxy.projects.list(params?)
 
 roxy.profiles.list(params?)
@@ -250,11 +253,16 @@ sortOrder -> orderType
 
 ## MCP Tool Names
 
-Browser mode exposes 24 tools when a workspace is configured, or 25 tools without a configured
-workspace. `roxy_workspace_list` is omitted when the workspace ID is already known:
+Browser mode exposes 27 tools. The server validates the configured API key and calls
+`roxy_workspace_get_active` during startup to discover and cache the active workspace ID. Ordinary
+MCP tools do not expose a `workspaceId` argument. `roxy_workspace_select` accepts the target ID and,
+after a successful switch, updates both the cached API key and workspace ID:
 
 ```txt
+roxy_workspace_list_all
 roxy_workspace_list
+roxy_workspace_select
+roxy_workspace_get_active
 roxy_project_list
 roxy_label_list
 roxy_profile_list
