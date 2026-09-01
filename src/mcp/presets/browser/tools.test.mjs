@@ -788,7 +788,7 @@ describe("3.0 MCP presets", () => {
     }
   });
 
-  test("runtime rejects malformed modern metadata and invalid catalogs", async () => {
+  test("runtime accepts legacy request metadata and rejects malformed modern metadata", async () => {
     const server = createRoxyBrowserMcpServer({
       roxy: { apiKey: "secret-token", workspaceId: 77 },
     });
@@ -799,6 +799,33 @@ describe("3.0 MCP presets", () => {
       params: {},
     });
     assert.equal(missingMeta.error.code, -32602);
+
+    const legacyServer = new RoxyPresetMcpServer(
+      {
+        name: "legacy-roxy-mcp",
+        tools: [
+          {
+            name: "roxy_legacy_probe",
+            operationId: "custom.legacyProbe",
+            description: "Confirms legacy clients can call tools.",
+            inputSchema: { type: "object", properties: {} },
+            handler: async () => "ok",
+          },
+        ],
+      },
+      {},
+    );
+    const legacyCall = await rawRequest(legacyServer, {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/call",
+      params: {
+        name: "roxy_legacy_probe",
+        arguments: {},
+        _meta: { progressToken: "claude-code-progress" },
+      },
+    });
+    assert.equal(legacyCall.result.content[0].text, "ok");
 
     const unsupported = createRoxyBrowserMcpServer({
       roxy: { apiKey: "secret-token", workspaceId: 77 },

@@ -38,7 +38,7 @@ ROXY_WORKSPACE_ID="19744"
 CLI options can override these values:
 
 ```bash
-roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id 19744
+roxybrowser-openapi-mcp --api-key "YOUR_API_KEY" --workspace-id YOUR_WORKSPACE_ID
 ```
 
 Inspector 2.0 uses the checked-in `mcp.inspector.json` configuration and local `.env` values:
@@ -116,7 +116,7 @@ import { RoxyApiClient } from "@roxybrowser/openapi";
 
 const api = new RoxyApiClient({
   apiKey: "YOUR_API_KEY",
-  workspaceId: 19744,
+  workspaceId: process.env.YOUR_WORKSPACE_ID,
 });
 
 await api.browser.open({ dirId: "profile-1" });
