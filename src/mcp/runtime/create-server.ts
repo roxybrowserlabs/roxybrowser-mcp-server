@@ -310,12 +310,16 @@ function assertRequestMetadata(
   server: Server,
 ) {
   const meta = request.params?._meta;
+  // Protocol version and capabilities are negotiated during initialize. Older
+  // clients, including Claude Code on the 2025-11-25 protocol, may send only
+  // progressToken here, so request metadata must remain optional.
   if (!meta) {
     if (server.getClientCapabilities()) return;
     throw new McpError(ErrorCode.InvalidParams, "Missing required MCP request metadata");
   }
   const protocolVersion = meta["io.modelcontextprotocol/protocolVersion"];
   const clientCapabilities = meta["io.modelcontextprotocol/clientCapabilities"];
+  if (protocolVersion === undefined && clientCapabilities === undefined) return;
   if (
     typeof protocolVersion !== "string" ||
     !clientCapabilities ||
