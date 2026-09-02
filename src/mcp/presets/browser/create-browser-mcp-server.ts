@@ -2,6 +2,7 @@ import { RoxyBrowserClient } from "../../../sdk/index.js";
 import { RoxyPresetMcpServer, withToolVersions } from "../../runtime/index.js";
 import { BROWSER_MCP_TOOLS } from "./tools.js";
 import type { CreateMcpServerOptions, McpContext } from "../../runtime/index.js";
+import { hostWithPort } from "./workspace-utils.js";
 
 export interface CreateRoxyBrowserMcpServerOptions extends Partial<CreateMcpServerOptions> {
   /** Roxy HTTP request timeout in milliseconds. Overrides roxy.timeout. */
@@ -20,6 +21,8 @@ export function createRoxyBrowserMcpServer(
     timeout: options.timeout ?? options.roxy?.timeout,
     workspaceId: undefined,
   };
+  const initialApiHost =
+    browserOptions.apiHost ?? browserOptions.baseUrl ?? "http://127.0.0.1:50000";
   const createBrowser = (overrides: ConstructorParameters<typeof RoxyBrowserClient>[0] = {}) =>
     new RoxyBrowserClient({ ...browserOptions, ...overrides });
   let tools = options.tools ? options.tools : BROWSER_MCP_TOOLS;
@@ -45,12 +48,23 @@ export function createRoxyBrowserMcpServer(
     {
       browser,
       createBrowser,
+      apiHost: initialApiHost,
       ...(shouldInitialize
         ? {
             initialize: async (context: McpContext) => {
               const active = await context.browser!.workspaces.getActive();
               context.workspaceId = active.id;
-              context.browser = createBrowser({ workspaceId: active.id });
+              const apiHost = hostWithPort(initialApiHost, active.port);
+              if (apiHost) {
+                context.apiHost = apiHost;
+                context.browser = createBrowser({
+                  workspaceId: active.id,
+                  apiHost,
+                  baseUrl: apiHost,
+                });
+              } else {
+                context.browser = createBrowser({ workspaceId: active.id });
+              }
             },
           }
         : {}),

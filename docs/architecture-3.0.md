@@ -259,8 +259,8 @@ MCP tools do not expose a `workspaceId` argument. `roxy_workspace_select` accept
 after a successful switch, updates both the cached API key and workspace ID:
 
 ```txt
-roxy_workspace_list_all
 roxy_workspace_list
+roxy_workspace_list_all (legacy alias)
 roxy_workspace_select
 roxy_workspace_get_active
 roxy_project_list

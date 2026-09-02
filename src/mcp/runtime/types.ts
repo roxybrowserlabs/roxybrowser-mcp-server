@@ -4,6 +4,7 @@ import type { RoxyBrowserClient } from "../../sdk/index.js";
 export interface McpContext {
   browser?: RoxyBrowserClient;
   createBrowser?: (options: RoxyApiClientOptions) => RoxyBrowserClient;
+  apiHost?: string;
   workspaceId?: number | string;
   roxyBrowserVersion?: string;
   initialize?: (context: McpContext) => Promise<void>;

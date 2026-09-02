@@ -88,6 +88,7 @@ describe("3.0 MCP presets", () => {
       const profileCreate = result.tools.find((tool) => tool.name === "roxy_profile_create");
       const workspaceSelect = result.tools.find((tool) => tool.name === "roxy_workspace_select");
       const workspaceListAll = result.tools.find((tool) => tool.name === "roxy_workspace_list_all");
+      const workspaceList = result.tools.find((tool) => tool.name === "roxy_workspace_list");
       const proxyCreate = result.tools.find((tool) => tool.name === "roxy_proxy_create");
       const accountCreate = result.tools.find(
         (tool) => tool.name === "roxy_platform_account_create",
@@ -96,6 +97,8 @@ describe("3.0 MCP presets", () => {
       assert.deepEqual(workspaceSelect.inputSchema.required, ["workspaceId"]);
       assert.equal(workspaceSelect.inputSchema.properties.force.type, "boolean");
       assert.equal(workspaceListAll.inputSchema.type, "object");
+      assert.equal(workspaceList._meta["roxybrowser/endpoint"], "GET /workspace/list");
+      assert.deepEqual(workspaceList.inputSchema.properties, {});
       assert.deepEqual(proxyCreate.inputSchema.required, ["proxies", "checkChannel"]);
       assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.required, [
         "ipType",
@@ -247,7 +250,7 @@ describe("3.0 MCP presets", () => {
     }
   });
 
-  test("lists all workspaces through the unscoped endpoint", async () => {
+  test("lists workspaces through the unscoped endpoint", async () => {
     const calls = [];
     const restoreFetch = installFetchMock(async (url, options) => {
       const parsedUrl = new URL(url);
@@ -287,7 +290,7 @@ describe("3.0 MCP presets", () => {
     const session = await connect(server);
     try {
       const result = await session.client.callTool({
-        name: "roxy_workspace_list_all",
+        name: "roxy_workspace_list",
         arguments: {},
       });
       assert.equal(calls[1].url.pathname, "/workspace/list");
@@ -316,7 +319,7 @@ describe("3.0 MCP presets", () => {
     }
   });
 
-  test("workspace select replaces the MCP client without exposing the new API key", async () => {
+  test("workspace select replaces the MCP client with the returned API key and port", async () => {
     const calls = [];
     const restoreFetch = installFetchMock(async (url, options) => {
       const request = {
@@ -332,6 +335,9 @@ describe("3.0 MCP presets", () => {
           data: {
             workspace: { id: "target-88", workspaceName: "Target", project_details: [] },
             apiKey: "target-secret-key",
+            port: 50001,
+            open: true,
+            apiRate: 50,
           },
         });
       }
@@ -339,7 +345,7 @@ describe("3.0 MCP presets", () => {
         return createJsonResponse({
           code: 0,
           msg: "ok",
-          data: { id: 88, workspaceName: "Target", project_details: [] },
+          data: { id: 88, workspaceName: "Target", project_details: [], port: 50001 },
         });
       }
       return createJsonResponse({ code: 0, msg: "ok", data: { total: 0, rows: [] } });
@@ -355,19 +361,26 @@ describe("3.0 MCP presets", () => {
       });
       assert.equal(calls[1].token, "current-key");
       assert.deepEqual(calls[1].body, { workspaceId: 88, force: true });
-      assert.match(getTextContent(selected), /Selected workspace 88/);
-      assert.doesNotMatch(getTextContent(selected), /target-secret-key/);
+      assert.match(getTextContent(selected), /Workspace switched successfully to Target/);
+      assert.match(getTextContent(selected), /target-secret-key/);
+      assert.match(getTextContent(selected), /127\.0\.0\.1:50001/);
+      assert.match(getTextContent(selected), /"open": true/);
+      assert.match(getTextContent(selected), /"apiRate": 50/);
 
       const active = await session.client.callTool({
         name: "roxy_workspace_get_active",
         arguments: {},
       });
       assert.equal(calls[2].token, "target-secret-key");
+      assert.equal(calls[2].url.origin, "http://127.0.0.1:50001");
       assert.equal(calls[2].url.searchParams.has("workspaceId"), false);
       assert.match(getTextContent(active), /Target/);
+      assert.match(getTextContent(active), /"port": 50001/);
+      assert.doesNotMatch(getTextContent(active), /project_details/);
 
       await session.client.callTool({ name: "roxy_profile_list", arguments: {} });
       assert.equal(calls[3].token, "target-secret-key");
+      assert.equal(calls[3].url.origin, "http://127.0.0.1:50001");
       assert.equal(calls[3].url.searchParams.get("workspaceId"), "target-88");
     } finally {
       restoreFetch();

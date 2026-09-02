@@ -246,6 +246,42 @@ describe("CLI commands", () => {
     }
   });
 
+  test("workspace select CLI output returns and uses the new credentials and host", async () => {
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      calls.push({
+        url: new URL(url),
+        token: options.headers.token,
+        body: options.body ? JSON.parse(options.body) : undefined,
+      });
+      return createJsonResponse({
+        code: 0,
+        msg: "ok",
+        data: {
+          workspace: { id: 20, workspaceName: "Target", project_details: [] },
+          apiKey: "new-api-key",
+          port: 50001,
+          open: true,
+          apiRate: 50,
+        },
+      });
+    });
+    try {
+      const result = await runToolCommand("roxy_workspace_select", '{"workspaceId":20}', {
+        apiHost: "http://127.0.0.1:50000",
+        apiKey: "old-api-key",
+      });
+
+      assert.equal(calls[0].url.pathname, "/browser/workspace/select");
+      assert.equal(calls[0].token, "old-api-key");
+      assert.match(result, /new-api-key/);
+      assert.match(result, /http:\/\/127\.0\.0\.1:50001/);
+      assert.match(result, /Use the new apiKey and apiHost/);
+    } finally {
+      restoreFetch();
+    }
+  });
+
   test("supports GET raw endpoints without workspace injection", async () => {
     const { calls, restoreFetch } = installRecorder();
     try {

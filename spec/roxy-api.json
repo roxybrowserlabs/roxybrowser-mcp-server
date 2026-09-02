@@ -2516,7 +2516,10 @@
                 "workspaceName": "Team A",
                 "project_details": []
               },
-              "apiKey": "target-workspace-api-key"
+              "apiKey": "target-workspace-api-key",
+              "port": 50001,
+              "open": true,
+              "apiRate": 50
             },
             "msg": "Success"
           }
@@ -2587,7 +2590,8 @@
             "data": {
               "id": 1,
               "workspaceName": "Team A",
-              "project_details": []
+              "project_details": [],
+              "port": 50001
             },
             "msg": "Success"
           }
@@ -3436,6 +3440,13 @@
           "items": {
             "$ref": "#/schemas/WorkspaceProject"
           }
+        },
+        "port": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI server listening port",
+            "zh": "OpenAPI 服务监听端口"
+          }
         }
       }
     },
@@ -3590,11 +3601,10 @@
         "en": "Selected workspace and its API key.",
         "zh": "选中的工作区及其 APIKey。"
       },
-      "required": ["workspace", "apiKey"],
+      "required": ["workspace", "apiKey", "port", "open", "apiRate"],
       "properties": {
         "workspace": {
-          "type": "object",
-          "additionalProperties": true,
+          "$ref": "#/schemas/RawWorkspace",
           "description": {
             "en": "Workspace data returned by the switch operation",
             "zh": "切换操作返回的空间数据"
@@ -3605,6 +3615,27 @@
           "description": {
             "en": "API key for the selected workspace",
             "zh": "目标空间的 APIKey"
+          }
+        },
+        "port": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI server listening port for the selected workspace",
+            "zh": "目标空间的 OpenAPI 服务监听端口"
+          }
+        },
+        "open": {
+          "type": "boolean",
+          "description": {
+            "en": "Whether the OpenAPI server is enabled",
+            "zh": "OpenAPI 服务是否开启"
+          }
+        },
+        "apiRate": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI request rate limit",
+            "zh": "OpenAPI 请求频率限制"
           }
         }
       }

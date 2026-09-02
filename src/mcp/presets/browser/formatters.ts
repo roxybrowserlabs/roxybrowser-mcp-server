@@ -3,6 +3,8 @@ import type {
   ProxyDetectChannel,
   RawLabel,
   RawProject,
+  RawWorkspace,
+  WorkspaceSelection,
   WorkspaceAllListResult,
 } from "../../../api/index.js";
 import type {
@@ -135,6 +137,35 @@ export function formatWorkspaceSummaries(result: WorkspaceAllListResult): string
     ]),
     "No workspaces found.",
   );
+}
+
+export function formatWorkspaceSelection(selection: WorkspaceSelection, apiHost?: string): string {
+  const workspace = selection.workspace;
+  return [
+    `Workspace switched successfully to ${workspace.workspaceName ?? workspace.id}.`,
+    formatJsonDetail({
+      workspaceId: workspace.id,
+      workspaceName: workspace.workspaceName,
+      apiKey: selection.apiKey,
+      apiHost,
+      port: selection.port,
+      open: selection.open,
+      apiRate: selection.apiRate,
+    }),
+    "Use the new apiKey and apiHost for all subsequent requests.",
+  ].join("\n");
+}
+
+export function formatActiveWorkspace(workspace: RawWorkspace, apiHost?: string): string {
+  return [
+    "Active workspace:",
+    formatJsonDetail({
+      workspaceId: workspace.id,
+      workspaceName: workspace.workspaceName,
+      apiHost,
+      port: workspace.port,
+    }),
+  ].join("\n");
 }
 
 export function formatProjects(page: Page<Project>): string {

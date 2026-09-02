@@ -1,6 +1,6 @@
 {
   "name": "@roxybrowser/openapi",
-  "version": "3.2.0-beta.1",
+  "version": "3.2.0-beta.3",
   "description": "MCP server for RoxyBrowser automation - manage browser instances and get CDP endpoints",
   "keywords": [
     "browser-automation",
@@ -64,8 +64,8 @@
     "skills:apply": "node support/sync-skills-metadata.mjs apply",
     "skills:check": "node support/sync-skills-metadata.mjs check",
     "skills:pull": "node support/sync-skills-metadata.mjs pull",
-    "publish:release": "pnpm clean && pnpm version patch --no-git-tag-version && pnpm build && pnpm publish",
-    "publish:beta": "pnpm version prerelease --preid=beta --no-git-tag-version && pnpm build && pnpm publish --tag beta"
+    "publish:release": "pnpm clean && pnpm version patch --no-git-tag-version && pnpm build && pnpm publish --no-git-checks",
+    "publish:beta": "pnpm version prerelease --preid=beta --no-git-tag-version && pnpm build && pnpm publish --tag beta --no-git-checks"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

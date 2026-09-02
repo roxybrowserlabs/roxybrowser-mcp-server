@@ -61,11 +61,14 @@ function createApiRecorder() {
         return ok({
           workspace: { id: params.workspaceId, workspaceName: "Selected", project_details: [] },
           apiKey: "selected-key",
+          port: 50001,
+          open: true,
+          apiRate: 50,
         });
       },
       getActive: async () => {
         calls.push(["workspace.getActive"]);
-        return ok({ id: 77, workspaceName: "Main Workspace", project_details: [] });
+        return ok({ id: 77, workspaceName: "Main Workspace", project_details: [], port: 50000 });
       },
       projects: async (params) => {
         calls.push(["workspace.projects", params]);
@@ -266,8 +269,12 @@ describe("browser domains", () => {
     assert.deepEqual(calls[0], ["workspace.select", { workspaceId: 88 }]);
     assert.equal(selected.apiKey, "selected-key");
     assert.equal(selected.workspace.id, 88);
+    assert.equal(selected.port, 50001);
+    assert.equal(selected.open, true);
+    assert.equal(selected.apiRate, 50);
     assert.deepEqual(calls[1], ["workspace.getActive"]);
     assert.equal(active.id, 77);
+    assert.equal(active.port, 50000);
   });
 
   test("lists all workspaces without pagination or workspace scoping", async () => {

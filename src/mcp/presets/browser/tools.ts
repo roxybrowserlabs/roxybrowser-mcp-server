@@ -12,7 +12,8 @@ import {
   formatProjects,
   formatProxies,
   formatWorkspaceSummaries,
-  formatWorkspaces,
+  formatWorkspaceSelection,
+  formatActiveWorkspace,
 } from "./formatters.js";
 import {
   normalizePlatformAccountInput,
@@ -24,6 +25,7 @@ import {
   normalizeProxyInput,
   normalizeProxyListArgs,
 } from "./inputs.js";
+import { hostWithPort } from "./workspace-utils.js";
 
 const MAX_CREATE_ITEMS = 30;
 const NO_APPROVAL_ANNOTATIONS = {
@@ -273,13 +275,14 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
   },
   {
     name: "roxy_workspace_list",
-    operationId: "browser.workspace.list",
-    endpoint: "GET /browser/workspace",
-    description: "List RoxyBrowser workspaces.",
-    inputSchema: objectSchema(paginationSchema),
+    operationId: "browser.workspace.listAll",
+    endpoint: "GET /workspace/list",
+    description: "List all RoxyBrowser workspaces available to the current API key.",
+    inputSchema: objectSchema({}),
     annotations: NO_APPROVAL_ANNOTATIONS,
-    handler: async (args, context) =>
-      formatWorkspaces(await context.browser!.workspaces.list(args)),
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) =>
+      formatWorkspaceSummaries(await context.browser!.workspaces.listAll()),
   },
   {
     name: "roxy_workspace_select",
@@ -309,13 +312,16 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
         typeof returnedWorkspaceId === "number" || typeof returnedWorkspaceId === "string"
           ? returnedWorkspaceId
           : args.workspaceId;
+      const apiHost = hostWithPort(context.apiHost, selection.port);
       const browser = context.createBrowser({
         apiKey: selection.apiKey,
         workspaceId,
+        ...(apiHost ? { apiHost, baseUrl: apiHost } : {}),
       });
       context.browser = browser;
+      if (apiHost) context.apiHost = apiHost;
       context.workspaceId = workspaceId;
-      return `Selected workspace ${args.workspaceId}.`;
+      return formatWorkspaceSelection(selection, apiHost);
     },
   },
   {
@@ -328,12 +334,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
     handler: async (_args, context) => {
       const workspace = await context.browser!.workspaces.getActive();
-      return `Active workspace:\n${formatWorkspaces({
-        total: 1,
-        rows: [workspace],
-        page: 1,
-        pageSize: 1,
-      })}`;
+      return formatActiveWorkspace(workspace, context.apiHost);
     },
   },
   {

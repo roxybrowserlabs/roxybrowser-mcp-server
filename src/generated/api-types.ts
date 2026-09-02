@@ -105,6 +105,8 @@ export interface RawWorkspace {
   workspaceName: string;
   /** Project details / 项目详细信息 */
   project_details: Array<WorkspaceProject>;
+  /** OpenAPI server listening port / OpenAPI 服务监听端口 */
+  port?: number;
 }
 
 /**
@@ -173,9 +175,15 @@ export interface WorkspaceSelectRequest {
  */
 export interface WorkspaceSelection {
   /** Workspace data returned by the switch operation / 切换操作返回的空间数据 */
-  workspace: { [key: string]: unknown };
+  workspace: RawWorkspace;
   /** API key for the selected workspace / 目标空间的 APIKey */
   apiKey: string;
+  /** OpenAPI server listening port for the selected workspace / 目标空间的 OpenAPI 服务监听端口 */
+  port: number;
+  /** Whether the OpenAPI server is enabled / OpenAPI 服务是否开启 */
+  open: boolean;
+  /** OpenAPI request rate limit / OpenAPI 请求频率限制 */
+  apiRate: number;
 }
 
 /**

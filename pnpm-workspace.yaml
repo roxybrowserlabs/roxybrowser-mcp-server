@@ -24,3 +24,5 @@ peerDependencyRules:
 allowBuilds:
   "@modelcontextprotocol/inspector": true
   esbuild: false
+
+gitChecks: false

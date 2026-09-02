@@ -79,13 +79,16 @@ describe("RoxyApiClient", () => {
           data: {
             workspace: { id: 88, workspaceName: "Target", project_details: [] },
             apiKey: "target-key",
+            port: 50001,
+            open: true,
+            apiRate: 50,
           },
         });
       }
       return createJsonResponse({
         code: 0,
         msg: "ok",
-        data: { id: 88, workspaceName: "Target", project_details: [] },
+        data: { id: 88, workspaceName: "Target", project_details: [], port: 50001 },
       });
     });
     try {
@@ -98,10 +101,14 @@ describe("RoxyApiClient", () => {
       assert.equal(calls[0].options.method, "POST");
       assert.deepEqual(calls[0].body, { workspaceId: "88", force: true });
       assert.equal(selected.data.apiKey, "target-key");
+      assert.equal(selected.data.port, 50001);
+      assert.equal(selected.data.open, true);
+      assert.equal(selected.data.apiRate, 50);
       assert.equal(calls[1].url.pathname, "/browser/workspace/active");
       assert.equal(calls[1].options.method, "GET");
       assert.equal(calls[1].url.search, "");
       assert.equal(active.data.id, 88);
+      assert.equal(active.data.port, 50001);
     } finally {
       restoreFetch();
     }

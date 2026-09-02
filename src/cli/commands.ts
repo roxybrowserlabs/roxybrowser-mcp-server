@@ -161,6 +161,7 @@ export async function runToolCommand(
   return await tool.handler(args, {
     browser,
     createBrowser: (options) => new RoxyBrowserClient({ ...roxy, ...options }),
+    apiHost: roxy.baseUrl ?? roxy.apiHost ?? "http://127.0.0.1:50000",
     workspaceId: requestedWorkspaceId,
   });
 }

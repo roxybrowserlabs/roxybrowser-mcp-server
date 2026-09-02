@@ -141,6 +141,7 @@ None
 | data.rows[].project_details               | List&lt;object&gt; | Project details                       |
 | data.rows[].project_details[].projectId   | int                | Project ID                            |
 | data.rows[].project_details[].projectName | string             | Project name                          |
+| data.rows[].port                          | int                | OpenAPI server listening port         |
 | msg                                       | string             | Response message                      |
 
 ### Select Active Workspace
@@ -176,19 +177,31 @@ When `force` is `false` or omitted, switching is rejected while browser windows 
       "workspaceName": "Team A",
       "project_details": []
     },
-    "apiKey": "target-workspace-api-key"
+    "apiKey": "target-workspace-api-key",
+    "port": 50001,
+    "open": true,
+    "apiRate": 50
   },
   "msg": "Success"
 }
 ```
 
-| Field Name     | Field Type | Description                                     |
-| -------------- | ---------- | ----------------------------------------------- |
-| code           | int        | Status code, 0: Success, 500: Failure           |
-| data           | object     | Selected workspace and its API key.             |
-| data.workspace | object     | Workspace data returned by the switch operation |
-| data.apiKey    | string     | API key for the selected workspace              |
-| msg            | string     | Response message                                |
+| Field Name                                   | Field Type         | Description                                              |
+| -------------------------------------------- | ------------------ | -------------------------------------------------------- |
+| code                                         | int                | Status code, 0: Success, 500: Failure                    |
+| data                                         | object             | Selected workspace and its API key.                      |
+| data.workspace                               | object             | Workspace data returned by the switch operation          |
+| data.workspace.id                            | int \| string      | Team ID                                                  |
+| data.workspace.workspaceName                 | string             | Team name                                                |
+| data.workspace.project_details               | List&lt;object&gt; | Project details                                          |
+| data.workspace.project_details[].projectId   | int                | Project ID                                               |
+| data.workspace.project_details[].projectName | string             | Project name                                             |
+| data.workspace.port                          | int                | OpenAPI server listening port                            |
+| data.apiKey                                  | string             | API key for the selected workspace                       |
+| data.port                                    | int                | OpenAPI server listening port for the selected workspace |
+| data.open                                    | boolean            | Whether the OpenAPI server is enabled                    |
+| data.apiRate                                 | int                | OpenAPI request rate limit                               |
+| msg                                          | string             | Response message                                         |
 
 ### Get Active Workspace
 
@@ -208,7 +221,8 @@ None
   "data": {
     "id": 1,
     "workspaceName": "Team A",
-    "project_details": []
+    "project_details": [],
+    "port": 50001
   },
   "msg": "Success"
 }
@@ -223,6 +237,7 @@ None
 | data.project_details               | List&lt;object&gt; | Project details                       |
 | data.project_details[].projectId   | int                | Project ID                            |
 | data.project_details[].projectName | string             | Project name                          |
+| data.port                          | int                | OpenAPI server listening port         |
 | msg                                | string             | Response message                      |
 
 ### Get Account List

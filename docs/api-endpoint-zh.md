@@ -141,6 +141,7 @@
 | data.rows[].project_details               | List&lt;object&gt; | 项目详细信息               |
 | data.rows[].project_details[].projectId   | int                | 项目编号                   |
 | data.rows[].project_details[].projectName | string             | 项目名称                   |
+| data.rows[].port                          | int                | OpenAPI 服务监听端口       |
 | msg                                       | string             | 返回结果                   |
 
 ### 切换当前空间
@@ -176,19 +177,31 @@
       "workspaceName": "Team A",
       "project_details": []
     },
-    "apiKey": "target-workspace-api-key"
+    "apiKey": "target-workspace-api-key",
+    "port": 50001,
+    "open": true,
+    "apiRate": 50
   },
   "msg": "Success"
 }
 ```
 
-| 字段名称       | 字段类型 | 描述                       |
-| -------------- | -------- | -------------------------- |
-| code           | int      | 状态码，0：成功，500：失败 |
-| data           | object   | 选中的工作区及其 APIKey。  |
-| data.workspace | object   | 切换操作返回的空间数据     |
-| data.apiKey    | string   | 目标空间的 APIKey          |
-| msg            | string   | 返回结果                   |
+| 字段名称                                     | 字段类型           | 描述                            |
+| -------------------------------------------- | ------------------ | ------------------------------- |
+| code                                         | int                | 状态码，0：成功，500：失败      |
+| data                                         | object             | 选中的工作区及其 APIKey。       |
+| data.workspace                               | object             | 切换操作返回的空间数据          |
+| data.workspace.id                            | int \| string      | 团队ID                          |
+| data.workspace.workspaceName                 | string             | 团队名称                        |
+| data.workspace.project_details               | List&lt;object&gt; | 项目详细信息                    |
+| data.workspace.project_details[].projectId   | int                | 项目编号                        |
+| data.workspace.project_details[].projectName | string             | 项目名称                        |
+| data.workspace.port                          | int                | OpenAPI 服务监听端口            |
+| data.apiKey                                  | string             | 目标空间的 APIKey               |
+| data.port                                    | int                | 目标空间的 OpenAPI 服务监听端口 |
+| data.open                                    | boolean            | OpenAPI 服务是否开启            |
+| data.apiRate                                 | int                | OpenAPI 请求频率限制            |
+| msg                                          | string             | 返回结果                        |
 
 ### 获取当前空间
 
@@ -208,7 +221,8 @@
   "data": {
     "id": 1,
     "workspaceName": "Team A",
-    "project_details": []
+    "project_details": [],
+    "port": 50001
   },
   "msg": "Success"
 }
@@ -223,6 +237,7 @@
 | data.project_details               | List&lt;object&gt; | 项目详细信息               |
 | data.project_details[].projectId   | int                | 项目编号                   |
 | data.project_details[].projectName | string             | 项目名称                   |
+| data.port                          | int                | OpenAPI 服务监听端口       |
 | msg                                | string             | 返回结果                   |
 
 ### 获取账号列表
