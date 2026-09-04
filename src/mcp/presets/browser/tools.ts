@@ -242,10 +242,10 @@ Object.assign(profileUpdateSchema, {
 });
 
 const proxyInputSchema = {
-  protocol: { type: "string", default: "SOCKS5" },
+  protocol: { type: "string", enum: ["HTTP", "HTTPS", "SOCKS5"], default: "SOCKS5" },
   host: { type: "string" },
   port: { type: "string" },
-  ipType: { type: "string" },
+  ipType: { type: "string", enum: ["IPV4", "IPV6"] },
   checkChannel: { type: "string" },
   username: { type: "string" },
   password: { type: "string" },
@@ -623,7 +623,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
           });
         }
       }
-      return formatCreateResults("Proxy", results);
+      const text = formatCreateResults("Proxy", results);
+      if (results.every((result) => result.status === "failed")) throw new Error(text);
+      return text;
     },
   },
   {

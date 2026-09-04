@@ -3,7 +3,11 @@ import { describe, test } from "vite-plus/test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { ResultSchema } from "@modelcontextprotocol/sdk/types.js";
-import { createRoxyBrowserMcpServer, ROXY_OPENAPI_VERSION } from "../../../../lib/index.js";
+import {
+  BROWSER_MCP_TOOLS,
+  createRoxyBrowserMcpServer,
+  ROXY_OPENAPI_VERSION,
+} from "../../../../lib/index.js";
 import { RoxyPresetMcpServer } from "../../../../lib/mcp/runtime/index.js";
 import {
   createJsonResponse,
@@ -217,6 +221,14 @@ describe("3.0 MCP presets", () => {
         proxyCreate.inputSchema.properties.proxies.items.properties.protocol.default,
         "SOCKS5",
       );
+      assert.deepEqual(
+        proxyCreate.inputSchema.properties.proxies.items.properties.protocol.enum,
+        ["HTTP", "HTTPS", "SOCKS5"],
+      );
+      assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.properties.ipType.enum, [
+        "IPV4",
+        "IPV6",
+      ]);
       assert.equal(accountCreate.inputSchema.properties.platformUrl, undefined);
       const profileGet = result.tools.find((tool) => tool.name === "roxy_profile_get");
       const profileDelete = result.tools.find((tool) => tool.name === "roxy_profile_delete");
@@ -605,6 +617,41 @@ describe("3.0 MCP presets", () => {
       assert.match(getTextContent(failed), /fetch failed|Profile not found|API key/i);
     } finally {
       restoreFetch();
+      await session.close();
+    }
+  });
+
+  test("proxy creation reports complete backend failure as an MCP tool error", async () => {
+    const proxyCreate = BROWSER_MCP_TOOLS.find((tool) => tool.name === "roxy_proxy_create");
+    assert.ok(proxyCreate);
+    const server = new RoxyPresetMcpServer(
+      {
+        name: "proxy-create-failure-test",
+        tools: [proxyCreate],
+      },
+      {
+        browser: {
+          proxies: {
+            createWithResult: async () => {
+              throw new Error("参数错误");
+            },
+          },
+        },
+      },
+    );
+    const session = await connect(server);
+    try {
+      const failed = await session.client.callTool({
+        name: "roxy_proxy_create",
+        arguments: {
+          checkChannel: "http://ip123.in/ip.json",
+          proxies: [{ ipType: "IPV4", host: "127.0.0.1", port: "9" }],
+        },
+      });
+      assert.equal(failed.isError, true);
+      assert.match(getTextContent(failed), /1 requested \| 0 succeeded \| 1 failed/);
+      assert.match(getTextContent(failed), /参数错误/);
+    } finally {
       await session.close();
     }
   });
