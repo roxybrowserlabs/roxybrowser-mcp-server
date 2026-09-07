@@ -16,6 +16,21 @@ export const ROXY_CAPABILITIES = {
     operationId: "browser.workspace.list",
     endpoint: "GET /browser/workspace",
   },
+  "browser.workspace.listAll": {
+    operationId: "browser.workspace.listAll",
+    endpoint: "GET /workspace/list",
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+  },
+  "browser.workspace.select": {
+    operationId: "browser.workspace.select",
+    endpoint: "POST /browser/workspace/select",
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+  },
+  "browser.workspace.getActive": {
+    operationId: "browser.workspace.getActive",
+    endpoint: "GET /browser/workspace/active",
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+  },
   "browser.project.list": {
     operationId: "browser.project.list",
     endpoint: "GET /project/list",

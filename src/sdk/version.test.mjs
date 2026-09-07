@@ -32,6 +32,10 @@ describe("versioned SDK capabilities", () => {
     assert.equal(isRoxyCapabilitySupported("browser.profile.openMany"), false);
     assert.equal(isRoxyCapabilitySupported("browser.profile.openMany", "4.0.3"), false);
     assert.equal(isRoxyCapabilitySupported("browser.profile.openMany", "4.0.4"), true);
+    assert.equal(isRoxyCapabilitySupported("browser.workspace.listAll", "4.0.3"), false);
+    assert.equal(isRoxyCapabilitySupported("browser.workspace.listAll", "4.0.4"), true);
+    assert.equal(isRoxyCapabilitySupported("browser.workspace.select", "4.0.4"), true);
+    assert.equal(isRoxyCapabilitySupported("browser.workspace.getActive", "4.0.4"), true);
     assert.equal(isRoxyCapabilitySupported("browser.missing", "9.0.0"), false);
 
     const client = new RoxyBrowserClient({

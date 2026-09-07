@@ -3,6 +3,9 @@ import type {
   ProxyDetectChannel,
   RawLabel,
   RawProject,
+  RawWorkspace,
+  WorkspaceSelection,
+  WorkspaceAllListResult,
 } from "../../../api/index.js";
 import type {
   BrowserProfile,
@@ -107,6 +110,62 @@ export function formatWorkspaces(page: Page<Workspace>): string {
     }),
     "No workspaces found.",
   );
+}
+
+export function formatWorkspaceSummaries(result: WorkspaceAllListResult): string {
+  return pagedTable(
+    "All workspaces",
+    {
+      total: result.total,
+      rows: result.rows,
+      page: 1,
+      pageSize: Math.max(result.rows.length, 1),
+    },
+    ["ID", "Workspace", "WorkspaceNo", "Email", "Role", "Members", "Windows"],
+    result.rows.map((workspace) => [
+      workspace.id,
+      workspace.workspaceName,
+      workspace.workspaceNo,
+      workspace.email,
+      workspace.role,
+      workspace.useMemberCount !== undefined && workspace.totalMemberCount !== undefined
+        ? `${workspace.useMemberCount}/${workspace.totalMemberCount}`
+        : undefined,
+      workspace.useWindowCount !== undefined && workspace.totalWindowCount !== undefined
+        ? `${workspace.useWindowCount}/${workspace.totalWindowCount}`
+        : undefined,
+    ]),
+    "No workspaces found.",
+  );
+}
+
+export function formatWorkspaceSelection(selection: WorkspaceSelection, apiHost?: string): string {
+  const workspace = selection.workspace;
+  return [
+    `Workspace switched successfully to ${workspace.workspaceName ?? workspace.id}.`,
+    formatJsonDetail({
+      workspaceId: workspace.id,
+      workspaceName: workspace.workspaceName,
+      apiKey: selection.apiKey,
+      apiHost,
+      port: selection.port,
+      open: selection.open,
+      apiRate: selection.apiRate,
+    }),
+    "Use the new apiKey and apiHost for all subsequent requests.",
+  ].join("\n");
+}
+
+export function formatActiveWorkspace(workspace: RawWorkspace, apiHost?: string): string {
+  return [
+    "Active workspace:",
+    formatJsonDetail({
+      workspaceId: workspace.id,
+      workspaceName: workspace.workspaceName,
+      apiHost,
+      port: workspace.port,
+    }),
+  ].join("\n");
 }
 
 export function formatProjects(page: Page<Project>): string {

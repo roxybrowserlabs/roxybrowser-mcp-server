@@ -18,6 +18,26 @@ function createApiRecorder() {
   const calls = [];
   const api = {
     workspace: {
+      listAll: async () => {
+        calls.push(["workspace.listAll"]);
+        return ok({
+          total: 1,
+          rows: [
+            {
+              id: "116613",
+              email: "owner@example.com",
+              maxWindowCount: 5,
+              role: 3,
+              totalMemberCount: 100,
+              totalWindowCount: 505,
+              useMemberCount: 6,
+              useWindowCount: 49,
+              workspaceName: "All Workspace",
+              workspaceNo: "FKO0116613",
+            },
+          ],
+        });
+      },
       list: async (params) => {
         calls.push(["workspace.list", params]);
         return ok({
@@ -35,6 +55,20 @@ function createApiRecorder() {
             },
           ],
         });
+      },
+      select: async (params) => {
+        calls.push(["workspace.select", params]);
+        return ok({
+          workspace: { id: params.workspaceId, workspaceName: "Selected", project_details: [] },
+          apiKey: "selected-key",
+          port: 50001,
+          open: true,
+          apiRate: 50,
+        });
+      },
+      getActive: async () => {
+        calls.push(["workspace.getActive"]);
+        return ok({ id: 77, workspaceName: "Main Workspace", project_details: [], port: 50000 });
       },
       projects: async (params) => {
         calls.push(["workspace.projects", params]);
@@ -223,6 +257,34 @@ describe("browser domains", () => {
     assert.deepEqual(workspaces.rows[0].project_details, [{ projectId: 3, projectName: "Ops" }]);
     assert.deepEqual(workspaces.rows[1].project_details, [{ id: 4, name: "Fallback Ops" }, {}]);
     assert.deepEqual(projects.rows, [{ id: 4, name: "Fallback Project" }]);
+  });
+
+  test("selects a workspace and returns the current active workspace", async () => {
+    const { api, calls } = createApiRecorder();
+    const workspaces = new WorkspaceDomain(api);
+
+    const selected = await workspaces.select(88);
+    const active = await workspaces.getActive();
+
+    assert.deepEqual(calls[0], ["workspace.select", { workspaceId: 88 }]);
+    assert.equal(selected.apiKey, "selected-key");
+    assert.equal(selected.workspace.id, 88);
+    assert.equal(selected.port, 50001);
+    assert.equal(selected.open, true);
+    assert.equal(selected.apiRate, 50);
+    assert.deepEqual(calls[1], ["workspace.getActive"]);
+    assert.equal(active.id, 77);
+    assert.equal(active.port, 50000);
+  });
+
+  test("lists all workspaces without pagination or workspace scoping", async () => {
+    const { api, calls } = createApiRecorder();
+    const result = await new WorkspaceDomain(api).listAll();
+
+    assert.deepEqual(calls[0], ["workspace.listAll"]);
+    assert.equal(result.total, 1);
+    assert.equal(result.rows[0].id, "116613");
+    assert.equal(result.rows[0].workspaceNo, "FKO0116613");
   });
 
   test("maps profile operations to browser endpoints", async () => {

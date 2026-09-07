@@ -154,10 +154,14 @@ export async function runToolCommand(
   const args =
     (parseObjectParams(rawArgs, "MCP tool args") as Record<string, any> | undefined) ?? {};
   const requestedWorkspaceId =
-    typeof args.workspaceId === "number" ? args.workspaceId : roxy.workspaceId;
+    typeof args.workspaceId === "number" || typeof args.workspaceId === "string"
+      ? args.workspaceId
+      : roxy.workspaceId;
   const browser = new RoxyBrowserClient({ ...roxy, workspaceId: requestedWorkspaceId });
   return await tool.handler(args, {
     browser,
+    createBrowser: (options) => new RoxyBrowserClient({ ...roxy, ...options }),
+    apiHost: roxy.baseUrl ?? roxy.apiHost ?? "http://127.0.0.1:50000",
     workspaceId: requestedWorkspaceId,
   });
 }
@@ -189,7 +193,7 @@ function parseObjectParams(rawParams: string | undefined, label: string): object
 
 function injectDefaultWorkspace(
   params: object | undefined,
-  workspaceId: number | undefined,
+  workspaceId: number | string | undefined,
   options: ApiCommandOptions,
 ): object | undefined {
   if (options.injectWorkspace === false || workspaceId === undefined) return params;

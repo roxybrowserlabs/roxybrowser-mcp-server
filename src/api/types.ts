@@ -5,7 +5,7 @@ export interface RoxyApiClientOptions {
   apikey?: string;
   baseUrl?: string;
   apiHost?: string;
-  workspaceId?: number;
+  workspaceId?: number | string;
   timeout?: number;
   fetch?: typeof fetch;
 }

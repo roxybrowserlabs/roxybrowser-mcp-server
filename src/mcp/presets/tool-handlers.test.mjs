@@ -577,6 +577,19 @@ describe("MCP tool handlers", () => {
     const context = {
       browser: {
         workspaces: {
+          listAll: async () => {
+            calls.push(["workspaces.listAll"]);
+            return {
+              total: 1,
+              rows: [
+                {
+                  id: 77,
+                  workspaceName: "Default workspace",
+                  workspaceNo: "DEFAULT",
+                },
+              ],
+            };
+          },
           list: async (args) => {
             calls.push(["workspaces.list", args]);
             return { total: 1, rows: [{ id: 77, workspaceName: "Default workspace" }] };
@@ -736,7 +749,7 @@ describe("MCP tool handlers", () => {
     assert.equal(toolByName(BROWSER_MCP_TOOLS, "roxy_profile_open").endpoint, "POST /browser/open");
 
     assert.match(
-      await toolByName(BROWSER_MCP_TOOLS, "roxy_workspace_list").handler({ page: 1 }, context),
+      await toolByName(BROWSER_MCP_TOOLS, "roxy_workspace_list").handler({}, context),
       /Default workspace/,
     );
     assert.match(
@@ -1160,7 +1173,10 @@ describe("MCP tool handlers", () => {
     );
     const browserContext = {
       browser: {
-        workspaces: { list: async () => ({ total: 0, rows: [] }) },
+        workspaces: {
+          listAll: async () => ({ total: 0, rows: [] }),
+          list: async () => ({ total: 0, rows: [] }),
+        },
         projects: { list: async () => ({ total: 0, rows: [] }) },
         labels: { list: async () => [] },
         profiles: {
@@ -1175,7 +1191,7 @@ describe("MCP tool handlers", () => {
 
     assert.equal(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_workspace_list").handler({}, browserContext),
-      "Workspaces: 0 total | page 1/1 | pageSize 15\nNo workspaces found.",
+      "All workspaces: 0 total | page 1/1 | pageSize 1\nNo workspaces found.",
     );
     assert.equal(
       await toolByName(BROWSER_MCP_TOOLS, "roxy_project_list").handler({}, browserContext),

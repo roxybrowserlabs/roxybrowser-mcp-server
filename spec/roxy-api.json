@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "migration": {
     "complete": true,
-    "expectedEndpointCount": 29,
+    "expectedEndpointCount": 32,
     "expectedCatalogCount": 4
   },
   "document": {
@@ -105,7 +105,14 @@
         "en": "Team Project API",
         "zh": "团队项目接口"
       },
-      "endpointIds": ["workspace-list", "browser-account-list", "label-list"]
+      "endpointIds": [
+        "workspace-list-all",
+        "workspace-list",
+        "workspace-select",
+        "workspace-active",
+        "browser-account-list",
+        "label-list"
+      ]
     },
     {
       "id": "browser-profiles",
@@ -161,6 +168,66 @@
     }
   ],
   "endpoints": [
+    {
+      "id": "workspace-list-all",
+      "title": {
+        "en": "Get All Workspaces",
+        "zh": "获取全部空间列表"
+      },
+      "http": {
+        "method": "GET",
+        "path": "/workspace/list"
+      },
+      "request": null,
+      "response": {
+        "schema": {
+          "$ref": "#/schemas/WorkspaceAllListResponse"
+        },
+        "examples": {
+          "shared": {
+            "code": 0,
+            "data": {
+              "total": 1,
+              "rows": [
+                {
+                  "email": "z_anbin@163.com",
+                  "id": "116613",
+                  "maxWindowCount": 5,
+                  "role": 3,
+                  "totalMemberCount": 100,
+                  "totalWindowCount": 505,
+                  "useMemberCount": 6,
+                  "useWindowCount": 49,
+                  "workspaceName": "anbin's Team",
+                  "workspaceNo": "FKO0116613"
+                }
+              ]
+            },
+            "msg": "Success"
+          }
+        }
+      },
+      "clients": {
+        "raw": {
+          "target": "workspace",
+          "method": "listAll"
+        },
+        "browser": {
+          "target": "workspaces",
+          "method": "listAll",
+          "parameters": [],
+          "returnType": {
+            "$ref": "#/schemas/WorkspaceAllListResult"
+          },
+          "implementation": {
+            "kind": "rawDelegate",
+            "call": ["workspace", "listAll"],
+            "arguments": [],
+            "result": "data"
+          }
+        }
+      }
+    },
     {
       "id": "account-delete",
       "title": {
@@ -2404,6 +2471,154 @@
       }
     },
     {
+      "id": "workspace-select",
+      "title": {
+        "en": "Select Active Workspace",
+        "zh": "切换当前空间"
+      },
+      "http": {
+        "method": "POST",
+        "path": "/browser/workspace/select"
+      },
+      "request": {
+        "schema": {
+          "$ref": "#/schemas/WorkspaceSelectRequest"
+        },
+        "examples": {
+          "shared": {
+            "workspaceId": 1,
+            "force": true
+          }
+        },
+        "notes": [
+          {
+            "title": {
+              "en": "Force behavior",
+              "zh": "force 规则"
+            },
+            "body": {
+              "en": "When `force` is `false` or omitted, switching is rejected while browser windows are open. When `force` is `true`, the workspace is switched regardless of open browser windows.",
+              "zh": "`force` 为 `false` 或省略时，如果有浏览器窗口打开则拒绝切换；`force` 为 `true` 时忽略浏览器窗口状态并直接切换。"
+            }
+          }
+        ]
+      },
+      "response": {
+        "schema": {
+          "$ref": "#/schemas/WorkspaceSelectResponse"
+        },
+        "examples": {
+          "shared": {
+            "code": 0,
+            "data": {
+              "workspace": {
+                "id": 1,
+                "workspaceName": "Team A",
+                "project_details": []
+              },
+              "apiKey": "target-workspace-api-key",
+              "port": 50001,
+              "open": true,
+              "apiRate": 50
+            },
+            "msg": "Success"
+          }
+        }
+      },
+      "clients": {
+        "raw": {
+          "target": "workspace",
+          "method": "select"
+        },
+        "browser": {
+          "target": "workspaces",
+          "method": "select",
+          "parameters": [
+            {
+              "name": "workspaceId",
+              "schema": {
+                "oneOf": [{ "type": "integer" }, { "type": "string" }]
+              }
+            },
+            {
+              "name": "force",
+              "optional": true,
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          ],
+          "returnType": {
+            "$ref": "#/schemas/WorkspaceSelection"
+          },
+          "implementation": {
+            "kind": "rawDelegate",
+            "call": ["workspace", "select"],
+            "arguments": [
+              {
+                "kind": "mappedObject",
+                "omitUndefined": true,
+                "mappings": [
+                  { "name": "workspaceId", "parameter": "workspaceId" },
+                  { "name": "force", "parameter": "force" }
+                ]
+              }
+            ],
+            "result": "data"
+          }
+        }
+      }
+    },
+    {
+      "id": "workspace-active",
+      "title": {
+        "en": "Get Active Workspace",
+        "zh": "获取当前空间"
+      },
+      "http": {
+        "method": "GET",
+        "path": "/browser/workspace/active"
+      },
+      "request": null,
+      "response": {
+        "schema": {
+          "$ref": "#/schemas/WorkspaceActiveResponse"
+        },
+        "examples": {
+          "shared": {
+            "code": 0,
+            "data": {
+              "id": 1,
+              "workspaceName": "Team A",
+              "project_details": [],
+              "port": 50001
+            },
+            "msg": "Success"
+          }
+        }
+      },
+      "clients": {
+        "raw": {
+          "target": "workspace",
+          "method": "getActive"
+        },
+        "browser": {
+          "target": "workspaces",
+          "method": "getActive",
+          "parameters": [],
+          "returnType": {
+            "$ref": "#/schemas/RawWorkspace"
+          },
+          "implementation": {
+            "kind": "rawDelegate",
+            "call": ["workspace", "getActive"],
+            "arguments": [],
+            "result": "data"
+          }
+        }
+      }
+    },
+    {
       "id": "browser-account-list",
       "title": {
         "en": "Get Account List",
@@ -3022,6 +3237,178 @@
         }
       }
     },
+    "WorkspaceAllListRow": {
+      "type": "object",
+      "description": {
+        "en": "Workspace summary returned by the all-workspaces endpoint.",
+        "zh": "全部空间列表接口返回的空间摘要。"
+      },
+      "required": [
+        "email",
+        "id",
+        "maxWindowCount",
+        "role",
+        "totalMemberCount",
+        "totalWindowCount",
+        "useMemberCount",
+        "useWindowCount",
+        "workspaceName",
+        "workspaceNo"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": {
+            "en": "Account email",
+            "zh": "账号邮箱"
+          }
+        },
+        "id": {
+          "oneOf": [{ "type": "integer" }, { "type": "string" }],
+          "description": {
+            "en": "Workspace ID",
+            "zh": "空间 ID"
+          }
+        },
+        "maxWindowCount": {
+          "type": "integer",
+          "description": {
+            "en": "Maximum browser window count",
+            "zh": "最大窗口数"
+          }
+        },
+        "role": {
+          "type": "integer",
+          "description": {
+            "en": "Workspace role",
+            "zh": "空间角色"
+          }
+        },
+        "totalMemberCount": {
+          "type": "integer",
+          "description": {
+            "en": "Total member count",
+            "zh": "成员总数"
+          }
+        },
+        "totalWindowCount": {
+          "type": "integer",
+          "description": {
+            "en": "Total browser window count",
+            "zh": "窗口总数"
+          }
+        },
+        "useMemberCount": {
+          "type": "integer",
+          "description": {
+            "en": "Used member count",
+            "zh": "已用成员数"
+          }
+        },
+        "useWindowCount": {
+          "type": "integer",
+          "description": {
+            "en": "Used browser window count",
+            "zh": "已用窗口数"
+          }
+        },
+        "workspaceName": {
+          "type": "string",
+          "description": {
+            "en": "Workspace name",
+            "zh": "空间名称"
+          }
+        },
+        "workspaceNo": {
+          "type": "string",
+          "description": {
+            "en": "Workspace number",
+            "zh": "空间编号"
+          }
+        }
+      }
+    },
+    "WorkspaceAllListData": {
+      "type": "object",
+      "description": {
+        "en": "All workspaces returned by the API.",
+        "zh": "API 返回的全部空间。"
+      },
+      "required": ["total", "rows"],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "description": {
+            "en": "Total count",
+            "zh": "总数"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "description": {
+            "en": "Workspace summaries",
+            "zh": "空间摘要列表"
+          },
+          "items": {
+            "$ref": "#/schemas/WorkspaceAllListRow"
+          }
+        }
+      }
+    },
+    "WorkspaceAllListResponse": {
+      "type": "object",
+      "description": {
+        "en": "Raw response for all workspaces.",
+        "zh": "全部空间列表原始返回结果。"
+      },
+      "required": ["code", "data", "msg"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": {
+            "en": "Status code, 0: Success, 500: Failure",
+            "zh": "状态码，0：成功，500：失败"
+          }
+        },
+        "data": {
+          "$ref": "#/schemas/WorkspaceAllListData"
+        },
+        "msg": {
+          "type": "string",
+          "description": {
+            "en": "Response message",
+            "zh": "返回结果"
+          }
+        }
+      }
+    },
+    "WorkspaceAllListResult": {
+      "type": "object",
+      "description": {
+        "en": "All workspaces returned by RoxyBrowserClient.",
+        "zh": "RoxyBrowserClient 返回的全部空间。"
+      },
+      "required": ["total", "rows"],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "description": {
+            "en": "Total count",
+            "zh": "总数"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "description": {
+            "en": "Workspace summaries",
+            "zh": "空间摘要列表"
+          },
+          "items": {
+            "$ref": "#/schemas/WorkspaceAllListRow"
+          }
+        }
+      }
+    },
     "RawWorkspace": {
       "type": "object",
       "description": {
@@ -3031,7 +3418,7 @@
       "required": ["id", "workspaceName", "project_details"],
       "properties": {
         "id": {
-          "type": "integer",
+          "oneOf": [{ "type": "integer" }, { "type": "string" }],
           "description": {
             "en": "Team ID",
             "zh": "团队ID"
@@ -3052,6 +3439,13 @@
           },
           "items": {
             "$ref": "#/schemas/WorkspaceProject"
+          }
+        },
+        "port": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI server listening port",
+            "zh": "OpenAPI 服务监听端口"
           }
         }
       }
@@ -3172,6 +3566,130 @@
           "description": {
             "en": "Number of rows per page",
             "zh": "每页条数"
+          }
+        }
+      }
+    },
+    "WorkspaceSelectRequest": {
+      "type": "object",
+      "description": {
+        "en": "Request for selecting another workspace.",
+        "zh": "切换到其他工作区的请求。"
+      },
+      "required": ["workspaceId"],
+      "properties": {
+        "workspaceId": {
+          "oneOf": [{ "type": "integer" }, { "type": "string" }],
+          "description": {
+            "en": "Target workspace ID",
+            "zh": "目标工作区 ID"
+          }
+        },
+        "force": {
+          "type": "boolean",
+          "default": false,
+          "description": {
+            "en": "Force switching even when browser windows are open",
+            "zh": "强制切换，即使仍有浏览器窗口打开"
+          }
+        }
+      }
+    },
+    "WorkspaceSelection": {
+      "type": "object",
+      "description": {
+        "en": "Selected workspace and its API key.",
+        "zh": "选中的工作区及其 APIKey。"
+      },
+      "required": ["workspace", "apiKey", "port", "open", "apiRate"],
+      "properties": {
+        "workspace": {
+          "$ref": "#/schemas/RawWorkspace",
+          "description": {
+            "en": "Workspace data returned by the switch operation",
+            "zh": "切换操作返回的空间数据"
+          }
+        },
+        "apiKey": {
+          "type": "string",
+          "description": {
+            "en": "API key for the selected workspace",
+            "zh": "目标空间的 APIKey"
+          }
+        },
+        "port": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI server listening port for the selected workspace",
+            "zh": "目标空间的 OpenAPI 服务监听端口"
+          }
+        },
+        "open": {
+          "type": "boolean",
+          "description": {
+            "en": "Whether the OpenAPI server is enabled",
+            "zh": "OpenAPI 服务是否开启"
+          }
+        },
+        "apiRate": {
+          "type": "integer",
+          "description": {
+            "en": "OpenAPI request rate limit",
+            "zh": "OpenAPI 请求频率限制"
+          }
+        }
+      }
+    },
+    "WorkspaceSelectResponse": {
+      "type": "object",
+      "description": {
+        "en": "Raw response after selecting a workspace.",
+        "zh": "切换工作区后的原始返回结果。"
+      },
+      "required": ["code", "data", "msg"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": {
+            "en": "Status code, 0: Success, 500: Failure",
+            "zh": "状态码，0：成功，500：失败"
+          }
+        },
+        "data": {
+          "$ref": "#/schemas/WorkspaceSelection"
+        },
+        "msg": {
+          "type": "string",
+          "description": {
+            "en": "Response message",
+            "zh": "返回结果"
+          }
+        }
+      }
+    },
+    "WorkspaceActiveResponse": {
+      "type": "object",
+      "description": {
+        "en": "Raw response for the workspace bound to the current API key.",
+        "zh": "当前 APIKey 所绑定工作区的原始返回结果。"
+      },
+      "required": ["code", "data", "msg"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": {
+            "en": "Status code, 0: Success, 500: Failure",
+            "zh": "状态码，0：成功，500：失败"
+          }
+        },
+        "data": {
+          "$ref": "#/schemas/RawWorkspace"
+        },
+        "msg": {
+          "type": "string",
+          "description": {
+            "en": "Response message",
+            "zh": "返回结果"
           }
         }
       }

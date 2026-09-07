@@ -25,8 +25,11 @@ import type {
   ProxyListResult,
   ProxyUpdateInput,
   RawBrowserProfileDetail,
+  RawWorkspace,
+  WorkspaceAllListResult,
   WorkspaceListParams,
   WorkspaceListResult,
+  WorkspaceSelection,
 } from "./api-types.js";
 import type { RoxyApiClient } from "../api/roxy-api-client.js";
 import { asArray } from "../sdk/shared/ids.js";
@@ -46,9 +49,21 @@ export class GeneratedRoxyBrowserClient {
 export class GeneratedWorkspaceDomain {
   constructor(protected readonly api: RoxyApiClient) {}
 
+  async listAll(): Promise<WorkspaceAllListResult> {
+    return unwrapData(await this.api.workspace.listAll());
+  }
+
   async list(params: WorkspaceListParams = {}): Promise<WorkspaceListResult> {
     const data = unwrapData(await this.api.workspace.list(toPageRequest(params)));
     return toPage(data, params);
+  }
+
+  async select(workspaceId: number | string, force?: boolean): Promise<WorkspaceSelection> {
+    return unwrapData(await this.api.workspace.select(removeUndefined({ workspaceId, force })));
+  }
+
+  async getActive(): Promise<RawWorkspace> {
+    return unwrapData(await this.api.workspace.getActive());
   }
 }
 

@@ -287,7 +287,7 @@ function typescriptType(node) {
     if (node.additionalProperties) {
       const valueType =
         node.additionalProperties === true ? "unknown" : typescriptType(node.additionalProperties);
-      members.push(`[key: string]: ${valueType};`);
+      members.push(`[key: string]: ${valueType}`);
     }
     const objectType = members.length === 0 ? "Record<string, never>" : `{ ${members.join(" ")} }`;
     return node.extends ? `${typescriptType(node.extends)} & ${objectType}` : objectType;

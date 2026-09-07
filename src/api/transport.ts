@@ -10,7 +10,7 @@ export interface TransportRequest {
 export class RoxyApiTransport {
   readonly apiKey: string;
   readonly baseUrl: string;
-  readonly workspaceId?: number;
+  readonly workspaceId?: number | string;
   readonly timeout: number;
 
   private readonly fetchImpl: typeof fetch;
@@ -78,9 +78,9 @@ export function appendQuery(url: URL, params?: object): void {
 
 export function withDefaultWorkspace<T extends object>(
   params: T | undefined,
-  workspaceId?: number,
+  workspaceId?: number | string,
 ): T {
-  const normalized = { ...params } as T & { workspaceId?: number | null };
+  const normalized = { ...params } as T & { workspaceId?: number | string | null };
   if (
     (normalized.workspaceId === undefined || normalized.workspaceId === null) &&
     workspaceId !== undefined

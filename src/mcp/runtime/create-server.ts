@@ -43,6 +43,7 @@ export class RoxyPresetMcpServer {
   private readonly context: McpContext;
   private readonly roxyBrowserVersion?: string;
   private readonly serverInfo: { name: string; version: string };
+  private initializationPromise?: Promise<void>;
 
   constructor(options: CreateMcpServerOptions, context: McpContext) {
     this.roxyBrowserVersion = options.roxyBrowserVersion ?? context.roxyBrowserVersion;
@@ -124,6 +125,7 @@ export class RoxyPresetMcpServer {
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
       assertRequestMetadata(request, this.server);
+      await this.initialize();
       const tool = this.tools.get(request.params.name);
       if (!tool) {
         throw new McpError(ErrorCode.InvalidParams, `Unknown tool: ${request.params.name}`);
@@ -161,7 +163,12 @@ export class RoxyPresetMcpServer {
   }
 
   run(): Promise<void> {
-    return this.connect(new StdioServerTransport());
+    return this.initialize().then(() => this.connect(new StdioServerTransport()));
+  }
+
+  private initialize(): Promise<void> {
+    this.initializationPromise ??= this.context.initialize?.(this.context) ?? Promise.resolve();
+    return this.initializationPromise;
   }
 }
 

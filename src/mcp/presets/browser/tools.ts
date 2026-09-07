@@ -11,7 +11,9 @@ import {
   formatProfiles,
   formatProjects,
   formatProxies,
-  formatWorkspaces,
+  formatWorkspaceSummaries,
+  formatWorkspaceSelection,
+  formatActiveWorkspace,
 } from "./formatters.js";
 import {
   normalizePlatformAccountInput,
@@ -23,6 +25,7 @@ import {
   normalizeProxyInput,
   normalizeProxyListArgs,
 } from "./inputs.js";
+import { hostWithPort } from "./workspace-utils.js";
 
 const MAX_CREATE_ITEMS = 30;
 const NO_APPROVAL_ANNOTATIONS = {
@@ -239,10 +242,10 @@ Object.assign(profileUpdateSchema, {
 });
 
 const proxyInputSchema = {
-  protocol: { type: "string", default: "SOCKS5" },
+  protocol: { type: "string", enum: ["HTTP", "HTTPS", "SOCKS5"], default: "SOCKS5" },
   host: { type: "string" },
   port: { type: "string" },
-  ipType: { type: "string" },
+  ipType: { type: "string", enum: ["IPV4", "IPV6"] },
   checkChannel: { type: "string" },
   username: { type: "string" },
   password: { type: "string" },
@@ -260,14 +263,79 @@ const platformAccountInputSchema = {
 
 export const BROWSER_MCP_TOOLS: McpTool[] = [
   {
-    name: "roxy_workspace_list",
-    operationId: "browser.workspace.list",
-    endpoint: "GET /browser/workspace",
-    description: "List RoxyBrowser workspaces.",
-    inputSchema: objectSchema(paginationSchema),
+    name: "roxy_workspace_list_all",
+    operationId: "browser.workspace.listAll",
+    endpoint: "GET /workspace/list",
+    description: "List all RoxyBrowser workspaces available to the current API key.",
+    inputSchema: objectSchema({}),
     annotations: NO_APPROVAL_ANNOTATIONS,
-    handler: async (args, context) =>
-      formatWorkspaces(await context.browser!.workspaces.list(args)),
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) =>
+      formatWorkspaceSummaries(await context.browser!.workspaces.listAll()),
+  },
+  {
+    name: "roxy_workspace_list",
+    operationId: "browser.workspace.listAll",
+    endpoint: "GET /workspace/list",
+    description: "List all RoxyBrowser workspaces available to the current API key.",
+    inputSchema: objectSchema({}),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) =>
+      formatWorkspaceSummaries(await context.browser!.workspaces.listAll()),
+  },
+  {
+    name: "roxy_workspace_select",
+    operationId: "browser.workspace.select",
+    endpoint: "POST /browser/workspace/select",
+    description: "Switch this MCP session to another RoxyBrowser workspace.",
+    inputSchema: objectSchema(
+      {
+        workspaceId: { oneOf: [{ type: "number" }, { type: "string" }] },
+        force: {
+          type: "boolean",
+          default: false,
+          description: "Force switching even when browser windows are open.",
+        },
+      },
+      ["workspaceId"],
+    ),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (args, context) => {
+      if (!context.createBrowser) {
+        throw new Error("Workspace switching is unavailable in this context.");
+      }
+      const selection = await context.browser!.workspaces.select(args.workspaceId, args.force);
+      const returnedWorkspaceId = selection.workspace?.["id"];
+      const workspaceId =
+        typeof returnedWorkspaceId === "number" || typeof returnedWorkspaceId === "string"
+          ? returnedWorkspaceId
+          : args.workspaceId;
+      const apiHost = hostWithPort(context.apiHost, selection.port);
+      const browser = context.createBrowser({
+        apiKey: selection.apiKey,
+        workspaceId,
+        ...(apiHost ? { apiHost, baseUrl: apiHost } : {}),
+      });
+      context.browser = browser;
+      if (apiHost) context.apiHost = apiHost;
+      context.workspaceId = workspaceId;
+      return formatWorkspaceSelection(selection, apiHost);
+    },
+  },
+  {
+    name: "roxy_workspace_get_active",
+    operationId: "browser.workspace.getActive",
+    endpoint: "GET /browser/workspace/active",
+    description: "Get the workspace bound to the current API key.",
+    inputSchema: objectSchema({}),
+    annotations: NO_APPROVAL_ANNOTATIONS,
+    sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4,
+    handler: async (_args, context) => {
+      const workspace = await context.browser!.workspaces.getActive();
+      return formatActiveWorkspace(workspace, context.apiHost);
+    },
   },
   {
     name: "roxy_project_list",
@@ -555,7 +623,9 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
           });
         }
       }
-      return formatCreateResults("Proxy", results);
+      const text = formatCreateResults("Proxy", results);
+      if (results.every((result) => result.status === "failed")) throw new Error(text);
+      return text;
     },
   },
   {

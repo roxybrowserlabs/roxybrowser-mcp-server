@@ -69,7 +69,7 @@ Options:
 
 - `-H, --api-host <url>`: RoxyBrowser API base URL. Default: `http://127.0.0.1:50000`
 - `-k, --api-key <key>`: RoxyBrowser API key.
-- `-w, --workspace-id <id>`: optional default workspace ID injected into workspace-scoped requests. If omitted, use `roxy_workspace_list` and pass `workspaceId` per tool call.
+- `-w, --workspace-id <id>`: optional default workspace ID for SDK and raw API CLI calls. The browser MCP server validates the API key and discovers the active workspace at startup; ordinary MCP tools do not accept `workspaceId`.
 - `-t, --timeout <ms>`: request timeout. Default: `30000`
 
 Environment variables are also supported: `ROXY_API_HOST`, `ROXY_API_KEY`, `ROXY_TIMEOUT`, and the optional `ROXY_WORKSPACE_ID`.
@@ -206,10 +206,18 @@ const browserServer = createRoxyBrowserMcpServer({
 
 ## Public MCP Tool Names
 
-The browser preset exposes 24 tools in profile language when a workspace is configured, or 25 tools
-when it is not (the additional tool is `roxy_workspace_list`):
+The browser preset exposes 27 tools in profile language. On startup it calls
+`roxy_workspace_get_active` with the configured API key, caches the returned workspace ID, and uses
+that ID for workspace-scoped requests. Ordinary MCP tools do not expose a `workspaceId` argument.
+`roxy_workspace_select` is the exception because it requires the target workspace ID; after a
+successful switch it replaces the cached API key, API host, and workspace ID for subsequent calls.
+Its result includes the new API key, host, port, OpenAPI status, and API rate limit, and instructs
+the caller to use the new credentials because requests with the previous connection will fail.
 
-- `roxy_workspace_list`
+- `roxy_workspace_list` (RoxyBrowser 4.0.4+; lists all workspaces through `/workspace/list`)
+- `roxy_workspace_list_all` (legacy alias; RoxyBrowser 4.0.4+)
+- `roxy_workspace_select` (RoxyBrowser 4.0.4+)
+- `roxy_workspace_get_active` (RoxyBrowser 4.0.4+)
 - `roxy_project_list`
 - `roxy_label_list`
 - `roxy_profile_list`
