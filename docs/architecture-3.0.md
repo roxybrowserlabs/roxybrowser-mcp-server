@@ -217,9 +217,10 @@ calling the SDK. Output formatters select and combine related API fields and tra
 enums for LLM context efficiency. Paginated list results use Markdown tables with `total`, current
 and total pages, `pageSize`, and `nextPage` when available. Missing table cells render as `-`;
 list remark fields are limited to 20 characters with `...` appended when truncated. Single-resource
-detail results use formatted JSON with the API's original fields and nesting, recursively omitting
-passwords and cookies while returning 2FA keys unchanged. The underlying SDK/domain data remains
-API-shaped.
+detail results use formatted JSON with the API's original fields and nesting, including platform
+account usernames, `platformPassword`, and 2FA keys for automated login. Cookies and other password
+fields remain omitted. Platform account lists also include passwords and 2FA keys without
+truncation. The underlying SDK/domain data remains API-shaped.
 
 ```ts
 type Pagination = {

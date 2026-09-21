@@ -343,6 +343,45 @@ describe("MCP tool handlers", () => {
     );
   });
 
+  test("login credentials reach agents through account list and profile detail tools", async () => {
+    const account = {
+      id: 7,
+      platformUrl: "https://example.com/login",
+      platformUserName: "automation@example.com",
+      platformPassword: "full-password-longer-than-twenty-characters",
+      platformEfa: "full-2fa-key-longer-than-twenty-characters",
+      platformCookies: [{ name: "session", value: "cookie-value" }],
+    };
+    const profile = { dirId: "profile-login", windowPlatformList: [account] };
+    const originalProfile = structuredClone(profile);
+    const context = {
+      browser: {
+        profiles: { get: async () => profile },
+        platformAccounts: {
+          list: async () => ({ total: 2, page: 1, pageSize: 1, rows: [account] }),
+        },
+      },
+    };
+    const list = await toolByName(BROWSER_MCP_TOOLS, "roxy_platform_account_list").handler(
+      { page: 1, pageSize: 1 },
+      context,
+    );
+    assert.match(list, /page 1\/2 \| pageSize 1 \| nextPage 2/);
+    for (const value of [account.platformUserName, account.platformPassword, account.platformEfa]) {
+      assert.ok(list.includes(value));
+    }
+    assert.ok(!list.includes("cookie-value"));
+    const detail = parseJsonBlock(
+      await toolByName(BROWSER_MCP_TOOLS, "roxy_profile_get").handler(
+        { dirId: profile.dirId },
+        context,
+      ),
+    );
+    const { platformCookies: _cookies, ...expectedAccount } = account;
+    assert.deepEqual(detail.windowPlatformList, [expectedAccount]);
+    assert.deepEqual(profile, originalProfile);
+  });
+
   test("MCP output formatters keep lists compact and details complete", () => {
     const profile = formatProfile({
       dirId: "profile-1",
@@ -378,9 +417,9 @@ describe("MCP tool handlers", () => {
     assert.equal(profileDetail.twoFactorKey, "otp-root");
     assert.deepEqual(profileDetail.proxyInfo, { host: "proxy.example" });
     assert.deepEqual(profileDetail.windowPlatformList, [
-      { platformUserName: "seller", platformEfa: "otp" },
+      { platformUserName: "seller", platformPassword: "secret", platformEfa: "otp" },
     ]);
-    assert.doesNotMatch(profile, /cookie|password|secret/i);
+    assert.doesNotMatch(profile, /cookie|proxyPassword/i);
 
     const profiles = formatProfiles({
       total: 3,
@@ -425,6 +464,8 @@ describe("MCP tool handlers", () => {
           id: 1,
           platformUserName: "seller",
           platformName: "Amazon",
+          platformPassword: "password-longer-than-twenty-characters",
+          platformEfa: "2fa-key-longer-than-twenty-characters",
           platformUrl: "https://amazon.example",
           platformRemarks: longRemark,
         },
@@ -435,10 +476,10 @@ describe("MCP tool handlers", () => {
     });
     assert.match(
       platformAccounts,
-      /\| 1 \| seller \| https:\/\/amazon\.example \| 12345678901234567890\.\.\. \|/,
+      /\| 1 \| seller \| password-longer-than-twenty-characters \| 2fa-key-longer-than-twenty-characters \| https:\/\/amazon\.example \| 12345678901234567890\.\.\. \|/,
     );
-    assert.match(platformAccounts, /\| 2 \| - \| - \| - \|/);
-    assert.match(platformAccounts, /\| 3 \| - \| https:\/\/etsy\.example \| - \|/);
+    assert.match(platformAccounts, /\| 2 \| - \| - \| - \| - \| - \|/);
+    assert.match(platformAccounts, /\| 3 \| - \| - \| - \| https:\/\/etsy\.example \| - \|/);
     assert.doesNotMatch(platformAccounts, /eBay/);
 
     assert.match(
@@ -1239,7 +1280,7 @@ describe("MCP tool handlers", () => {
     );
     assert.equal(
       formatPlatformAccounts({ total: 1, rows: [{ id: 1 }] }),
-      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Platform URL | Note |\n| --- | --- | --- | --- |\n| 1 | - | - | - |",
+      "Platform accounts: 1 total | page 1/1 | pageSize 1\n| ID | Username | Password | 2FA | Platform URL | Note |\n| --- | --- | --- | --- | --- | --- |\n| 1 | - | - | - | - | - |",
     );
   });
 });

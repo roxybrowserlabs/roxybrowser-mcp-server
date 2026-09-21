@@ -166,7 +166,9 @@ renamed models, nested view models, or `raw` wrappers. MCP is the only semantic 
   such as `Unnamed`, `Unknown`, and `N/A`;
 - list remark and note fields show at most 20 characters and append `...` when truncated;
 - single-resource detail formatters return formatted JSON with the API's original fields and
-  nesting, while recursively omitting passwords and cookies. 2FA keys are returned unchanged.
+  nesting, including platform account usernames, `platformPassword`, and 2FA keys for automated
+  login. Cookies and other password fields remain omitted. Platform account lists also include
+  passwords and 2FA keys without truncation.
 
 ## Testing Guidance
 

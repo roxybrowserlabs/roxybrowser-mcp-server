@@ -7,7 +7,6 @@ const sensitiveJsonKeys = new Set([
   "cookies",
   "password",
   "platformcookies",
-  "platformpassword",
   "proxypassword",
 ]);
 

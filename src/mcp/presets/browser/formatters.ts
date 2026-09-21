@@ -76,10 +76,12 @@ export function formatPlatformAccounts(
   return pagedTable(
     label,
     page,
-    ["ID", "Username", "Platform URL", "Note"],
+    ["ID", "Username", "Password", "2FA", "Platform URL", "Note"],
     page.rows.map((account) => [
       account.id,
       account.platformUserName,
+      account.platformPassword,
+      account.platformEfa,
       account.platformUrl,
       truncateText(account.platformRemarks),
     ]),

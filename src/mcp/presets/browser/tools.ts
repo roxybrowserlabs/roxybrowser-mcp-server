@@ -384,7 +384,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_profile_get",
     operationId: "browser.profile.get",
     endpoint: "GET /browser/detail",
-    description: "Get one browser profile details.",
+    description:
+      "Get one browser profile details, including platform account usernames, passwords, and 2FA keys for automated login.",
     inputSchema: objectSchema({ dirId: { type: "string" } }, ["dirId"]),
     annotations: NO_APPROVAL_ANNOTATIONS,
     handler: async (args, context) =>
@@ -686,7 +687,8 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     name: "roxy_platform_account_list",
     operationId: "browser.platformAccount.list",
     endpoint: "GET /account/list",
-    description: "List platform accounts.",
+    description:
+      "List platform accounts, including usernames, passwords, and 2FA keys for automated login.",
     inputSchema: objectSchema(paginationSchema),
     annotations: NO_APPROVAL_ANNOTATIONS,
     handler: async (args, context) =>
