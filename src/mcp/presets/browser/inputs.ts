@@ -161,7 +161,7 @@ function normalizeProfileCookieInput(
 
 function normalizeProfileProxyInput(
   proxyInfo: Record<string, any> | undefined,
-  legacyProxyId: number | undefined,
+  legacyProxyId: string | number | undefined,
 ) {
   const id = proxyInfo?.id ?? legacyProxyId;
   if (id !== undefined) {

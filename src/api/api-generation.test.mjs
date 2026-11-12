@@ -394,11 +394,11 @@ describe("API artifact generation", () => {
     assert.match(generatedClient, /this\.api\.proxy\.create\(input\)/);
     assert.match(generatedClient, /async createMany\(input: ProxyBatchCreateInput\)/);
     assert.match(generatedClient, /this\.api\.proxy\.batchCreate\(input\)/);
-    assert.match(generatedClient, /async detect\(id: number\): Promise<void>/);
+    assert.match(generatedClient, /async detect\(id: number \| string\): Promise<void>/);
     assert.match(generatedClient, /this\.api\.proxy\.detect\(\{ id \}\)/);
-    assert.match(generatedClient, /async update\(id: number, input: ProxyUpdateInput\)/);
+    assert.match(generatedClient, /async update\(id: number \| string, input: ProxyUpdateInput\)/);
     assert.match(generatedClient, /this\.api\.proxy\.modify\(\{ \.\.\.input, id \}\)/);
-    assert.match(generatedClient, /async delete\(ids: Array<number>\): Promise<void>/);
+    assert.match(generatedClient, /async delete\(ids: Array<number \| string>\): Promise<void>/);
     assert.match(generatedClient, /this\.api\.proxy\.delete\(\{ ids \}\)/);
     assert.match(generatedClient, /async list\(params: ProxyListParams = \{\}\)/);
     assert.match(
@@ -422,7 +422,7 @@ describe("API artifact generation", () => {
     assert.match(generatedClient, /batchCreate\(\{ accountList: inputs \}\)/);
     assert.match(
       generatedClient,
-      /async update\(id: number, input: PlatformAccountUpdateInput\): Promise<void>/,
+      /async update\(id: number \| string, input: PlatformAccountUpdateInput\): Promise<void>/,
     );
     assert.match(generatedClient, /account\.modify\(removeUndefined\(\{ \.\.\.input, id \}\)\)/);
     assert.match(generatedClient, /this\.api\.account\.delete\(\{ ids \}\)/);

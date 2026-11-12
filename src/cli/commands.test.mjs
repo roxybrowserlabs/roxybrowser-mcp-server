@@ -28,6 +28,45 @@ function installRecorder(body = { code: 0, msg: "ok", data: { total: 0, rows: []
 }
 
 describe("CLI commands", () => {
+  test("preserves large workspace IDs from oauth state, environment and CLI options", async () => {
+    const id = "27723547651002369";
+    const directory = mkdtempSync(join(tmpdir(), "roxy-cli-"));
+    const filePath = join(directory, "codex-oauth.json");
+    writeFileSync(filePath, JSON.stringify({ workspaceId: id }));
+    assert.equal(loadCodexOAuthOptions(filePath).workspaceId, id);
+
+    const originalWorkspaceId = process.env.ROXY_WORKSPACE_ID;
+    const originalLog = console.log;
+    const { calls, restoreFetch } = installRecorder();
+    console.log = () => {};
+    try {
+      process.env.ROXY_WORKSPACE_ID = id;
+      const options = resolveRoxyOptions({ apiKey: "test-key" });
+      assert.equal(options.workspaceId, id);
+      await runApiCommand("POST", "/proxy/delete", '{"ids":["27723547651002369"]}', options);
+      assert.deepEqual(calls[0].body, { workspaceId: id, ids: [id] });
+
+      delete process.env.ROXY_WORKSPACE_ID;
+      await runBrowserCli([
+        "node",
+        "roxybrowser-openapi-mcp",
+        "call",
+        "roxy_proxy_delete",
+        JSON.stringify({ ids: [id] }),
+        "--api-key",
+        "test-key",
+        "--workspace-id",
+        id,
+      ]);
+      assert.deepEqual(calls[1].body, { workspaceId: id, ids: [id] });
+    } finally {
+      if (originalWorkspaceId === undefined) delete process.env.ROXY_WORKSPACE_ID;
+      else process.env.ROXY_WORKSPACE_ID = originalWorkspaceId;
+      console.log = originalLog;
+      restoreFetch();
+    }
+  });
+
   test("loads connection defaults from codex oauth state", () => {
     const directory = mkdtempSync(join(tmpdir(), "roxy-cli-"));
     const filePath = join(directory, "codex-oauth.json");
@@ -44,7 +83,7 @@ describe("CLI commands", () => {
     assert.deepEqual(loadCodexOAuthOptions(filePath), {
       apiKey: "oauth-token",
       apiHost: "http://oauth-host",
-      workspaceId: 42,
+      workspaceId: "42",
       timeout: 1234,
     });
   });
@@ -78,7 +117,7 @@ describe("CLI commands", () => {
       assert.deepEqual(resolveRoxyOptions({}), {
         apiKey: "oauth-token",
         apiHost: "http://oauth-host",
-        workspaceId: 42,
+        workspaceId: "42",
         timeout: 1234,
       });
     } finally {
@@ -147,7 +186,7 @@ describe("CLI commands", () => {
       assert.deepEqual(resolveRoxyOptions({ apiKey: undefined, apiHost: undefined }), {
         apiKey: "environment-token",
         apiHost: "http://environment-host",
-        workspaceId: 20,
+        workspaceId: "20",
         timeout: 2000,
       });
     } finally {

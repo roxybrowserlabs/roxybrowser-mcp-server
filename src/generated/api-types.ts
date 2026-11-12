@@ -216,9 +216,9 @@ export interface WorkspaceActiveResponse {
  */
 export interface BrowserAccountListRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Account library ID / 账号库id */
-  accountId?: number;
+  accountId?: number | string;
   /** Page index / 分页索引 */
   page_index?: number;
   /** Page size / 分页条数 */
@@ -301,7 +301,7 @@ export interface BrowserAccountListResponse {
  */
 export interface AvailablePlatformAccountListParams {
   /** Account library ID / 账号库id */
-  accountId?: number;
+  accountId?: number | string;
   /** One-based page number / 从 1 开始的页码 */
   page?: number;
   /** Number of rows per page / 每页条数 */
@@ -329,7 +329,7 @@ export interface AvailablePlatformAccountListResult {
  */
 export interface AccountListRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Page index / 分页索引 */
   page_index?: number;
   /** Page size / 分页条数 */
@@ -408,7 +408,7 @@ export interface PlatformAccountInput {
  */
 export interface AccountCreateRequest extends PlatformAccountInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -438,7 +438,7 @@ export interface AccountCreateResponse {
  */
 export interface AccountBatchCreateRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Platform accounts to create / 待创建的平台账号列表 */
   accountList: Array<PlatformAccountInput>;
 }
@@ -466,9 +466,9 @@ export type PlatformAccountUpdateInput = PlatformAccountInput;
  */
 export interface AccountModifyRequest extends PlatformAccountInput {
   /** Team ID / 团队 id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Platform account ID / 平台账号 id */
-  id: number;
+  id: number | string;
 }
 
 /**
@@ -488,9 +488,9 @@ export interface AccountModifyResponse {
  */
 export interface AccountDeleteRequest {
   /** Team ID / 团队 id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Platform account IDs / 平台账号 id 列表 */
-  ids: Array<number>;
+  ids: Array<number | string>;
 }
 
 /**
@@ -599,7 +599,7 @@ export type BrowserOsVersion =
  */
 export interface ProfileListRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Comma-separated browser profile IDs / 浏览器窗口id，多个以英文逗号分隔 */
   dirIds?: string;
   /** Browser profile name / 浏览器窗口名称 */
@@ -739,7 +739,7 @@ export type ProfileProxyProtocol = "" | "noproxy" | "HTTP" | "HTTPS" | "SOCKS5";
  */
 export interface ProfileDetailRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID / 浏览器窗口id */
   dirId: string;
 }
@@ -945,7 +945,7 @@ export type ProfileNetworkSpeed = "slow-2G" | "2g" | "3g" | "4g";
  */
 export interface ProfilePlatformAccountInput {
   /** Platform account ID / 平台账号id */
-  id?: number;
+  id?: number | string;
   /** Platform account URL / 平台账号URL */
   platformUrl?: string;
   /** Platform username / 平台账号 */
@@ -965,7 +965,7 @@ export interface ProfilePlatformAccountInput {
  */
 export interface ProfileCreateProxyInput {
   /** Proxy ID; 0 means no proxy / 代理id；0 表示不使用代理 */
-  moduleId?: number;
+  moduleId?: number | string;
   proxyMethod?: ProfileProxyMethod;
   proxyCategory?: ProfileProxyCategory;
   ipType?: ProfileIpType;
@@ -1166,7 +1166,7 @@ export interface ProfileCreateInput {
   cookie?: Array<PlatformCookie>;
   searchEngine?: BrowserSearchEngine;
   /** Tag IDs from the label list endpoint / 标签列表接口返回的标签ID列表 */
-  labelIds?: Array<number>;
+  labelIds?: Array<number | string>;
   /** Platform accounts attached to the browser profile / 绑定到浏览器窗口的平台账号 */
   windowPlatformList?: Array<ProfilePlatformAccountInput>;
   /** Browser tabs opened by default / 默认打开的浏览器标签页 */
@@ -1174,7 +1174,7 @@ export interface ProfileCreateInput {
   /** Browser profile remark / 浏览器窗口备注 */
   windowRemark?: string;
   /** Project ID / 项目ID */
-  projectId?: number;
+  projectId?: number | string;
   proxyInfo?: ProfileCreateProxyInput;
   fingerInfo?: ProfileFingerprintInput;
   [key: string]: unknown;
@@ -1227,7 +1227,7 @@ export interface ProxyInput {
  */
 export interface ProxyCreateRequest extends ProxyInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -1281,7 +1281,7 @@ export interface ProxyBatchCreateInput {
  */
 export interface ProxyBatchCreateRequest extends ProxyBatchCreateInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -1301,9 +1301,9 @@ export interface ProxyBatchCreateResponse {
  */
 export interface ProxyDetectRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Proxy ID / 代理 id */
-  id: number;
+  id: number | string;
 }
 
 /**
@@ -1329,9 +1329,9 @@ export type ProxyUpdateInput = ProxyInput;
  */
 export interface ProxyModifyRequest extends ProxyInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Proxy ID / 代理 id */
-  id: number;
+  id: number | string;
 }
 
 /**
@@ -1351,9 +1351,9 @@ export interface ProxyModifyResponse {
  */
 export interface ProxyDeleteRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Proxy IDs / 代理 id 列表 */
-  ids: Array<number>;
+  ids: Array<number | string>;
 }
 
 /**
@@ -1381,7 +1381,7 @@ export type PurchasedProxyQueryType = 0 | 1;
  */
 export interface PurchasedProxyListRequest {
   /** Team ID, obtained from /browser/workspace / 团队id，通过 /browser/workspace 获取 */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Page index / 分页索引 */
   page_index?: number;
   /** Page size / 分页条数 */
@@ -1484,7 +1484,7 @@ export type ProxyDataType = "proxyModule" | "buyProxy";
  */
 export interface ProxyListMergedRequest {
   /** Team ID / 团队 id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Query type, for example: available_list / 查询类型，例如：available_list */
   type?: string;
   /** Page index / 分页索引 */
@@ -1691,7 +1691,7 @@ export interface ProxyListResult {
  */
 export interface ProxyLegacyListRequest {
   /** Team ID, obtained from /browser/workspace / 团队id，通过 /browser/workspace 获取 */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Page index / 分页索引 */
   page_index?: number;
   /** Page size / 分页条数 */
@@ -1775,7 +1775,7 @@ export interface ProxyLegacyListResponse {
  */
 export interface ProxyDetectChannelRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -1867,7 +1867,7 @@ export interface ProfileConnectionInfoResponse {
  */
 export interface ProfileClearServerCacheRequest {
   /** Team ID, obtained from /browser/workspace / 团队id，通过 /browser/workspace 获取 */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID list / 浏览器窗口id列表 */
   dirIds: Array<string>;
 }
@@ -1899,7 +1899,7 @@ export interface ProfileClearLocalCacheLocalRequest {
   /** Clear type: partial clears all local cache files except extension data; all clears every local cache file. Both retain login state, browser fingerprint information, and IP. cloud clears local and server cookies and all cache; synchronized tabs and browser login states become invalid. / 清除类型：partial 清除扩展数据以外的所有本地缓存文件；all 清除所有本地缓存文件。两者均不会使登录状态失效，也不会清理窗口指纹信息和 IP。cloud 清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效。 */
   type?: "partial" | "all";
   /** Team ID / 团队id */
-  workspaceId?: number;
+  workspaceId?: number | string;
 }
 
 /**
@@ -1912,7 +1912,7 @@ export interface ProfileClearLocalCacheCloudRequest {
   /** Clear type: partial clears all local cache files except extension data; all clears every local cache file. Both retain login state, browser fingerprint information, and IP. cloud clears local and server cookies and all cache; synchronized tabs and browser login states become invalid. / 清除类型：partial 清除扩展数据以外的所有本地缓存文件；all 清除所有本地缓存文件。两者均不会使登录状态失效，也不会清理窗口指纹信息和 IP。cloud 清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效。 */
   type: "cloud";
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -1961,7 +1961,7 @@ export interface ProfileOpenOptions {
  */
 export interface ProfileOpenRequest extends ProfileOpenOptions {
   /** Team ID, obtained from /browser/workspace / 团队id，通过 /browser/workspace 获取 */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID / 浏览器窗口id */
   dirId: string;
 }
@@ -2033,7 +2033,7 @@ export interface ProfileCloseResponse {
  */
 export interface ProfileRandomizeFingerprintRequest {
   /** Team ID, obtained from /browser/workspace / 团队id，通过 /browser/workspace 获取 */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID / 浏览器窗口id */
   dirId: string;
 }
@@ -2064,7 +2064,7 @@ export interface ProfileDeleteOptions {
  */
 export interface ProfileDeleteRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID list / 浏览器窗口id列表 */
   dirIds: Array<string>;
   /** Move browser profiles to the recycle bin / 软删除到回收站 */
@@ -2099,7 +2099,7 @@ export interface ProfileUpdateInput {
   cookie?: Array<PlatformCookie>;
   searchEngine?: BrowserSearchEngine;
   /** Tag IDs from the label list endpoint / 标签列表接口返回的标签ID列表 */
-  labelIds?: Array<number>;
+  labelIds?: Array<number | string>;
   /** Platform accounts attached to the browser profile / 绑定到浏览器窗口的平台账号 */
   windowPlatformList?: Array<ProfilePlatformAccountInput>;
   /** Browser tabs opened by default / 默认打开的浏览器标签页 */
@@ -2107,7 +2107,7 @@ export interface ProfileUpdateInput {
   /** Browser profile remark / 浏览器窗口备注 */
   windowRemark?: string;
   /** Project ID / 项目ID */
-  projectId?: number;
+  projectId?: number | string;
   proxyInfo?: ProfileCreateProxyInput;
   fingerInfo?: ProfileFingerprintInput;
   [key: string]: unknown;
@@ -2119,7 +2119,7 @@ export interface ProfileUpdateInput {
  */
 export interface ProfileModifyRequest extends ProfileUpdateInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
   /** Browser profile ID / 浏览器窗口id */
   dirId: string;
 }
@@ -2141,7 +2141,7 @@ export interface ProfileModifyResponse {
  */
 export interface ProfileCreateRequest extends ProfileCreateInput {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**
@@ -2171,7 +2171,7 @@ export interface ProfileCreateResponse {
  */
 export interface LabelListRequest {
   /** Team ID / 团队id */
-  workspaceId: number;
+  workspaceId: number | string;
 }
 
 /**

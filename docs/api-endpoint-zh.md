@@ -255,12 +255,12 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述     |
-| ----------- | ------ | -------- | ------ | -------- |
-| workspaceId | 是     | int      | -      | 团队id   |
-| accountId   | 否     | int      | 1      | 账号库id |
-| page_index  | 否     | int      | 1      | 分页索引 |
-| page_size   | 否     | int      | 15     | 分页条数 |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述     |
+| ----------- | ------ | ------------- | ------ | -------- |
+| workspaceId | 是     | int \| string | -      | 团队id   |
+| accountId   | 否     | int \| string | 1      | 账号库id |
+| page_index  | 否     | int           | 1      | 分页索引 |
+| page_size   | 否     | int           | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -327,9 +327,9 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述   |
-| ----------- | ------ | -------- | ------ | ------ |
-| workspaceId | 是     | int      | -      | 团队id |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述   |
+| ----------- | ------ | ------------- | ------ | ------ |
+| workspaceId | 是     | int \| string | -      | 团队id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -380,7 +380,7 @@
 
 | 参数名称     | 必需项 | 参数类型                                    | 默认值 | 描述                             |
 | ------------ | ------ | ------------------------------------------- | ------ | -------------------------------- |
-| workspaceId  | 是     | int                                         | -      | 团队id                           |
+| workspaceId  | 是     | int \| string                               | -      | 团队id                           |
 | dirIds       | 否     | string                                      | -      | 浏览器窗口id，多个以英文逗号分隔 |
 | windowName   | 否     | string                                      | -      | 浏览器窗口名称                   |
 | sortNums     | 否     | string                                      | -      | 窗口序号，多个以英文逗号分隔     |
@@ -449,10 +449,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述         |
-| ----------- | ------ | -------- | ------ | ------------ |
-| workspaceId | 是     | int      | -      | 团队id       |
-| dirId       | 是     | string   | -      | 浏览器窗口id |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述         |
+| ----------- | ------ | ------------- | ------ | ------------ |
+| workspaceId | 是     | int \| string | -      | 团队id       |
+| dirId       | 是     | string        | -      | 浏览器窗口id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -730,7 +730,7 @@
 
 | 参数名称                              | 必需项 | 参数类型                                                                                                                                                                                                                                                                                                                                                                                                                               | 默认值  | 描述                                                              |
 | ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------- |
-| workspaceId                           | 是     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 团队id                                                            |
+| workspaceId                           | 是     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 团队id                                                            |
 | windowName                            | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口名称                                                    |
 | coreVersion                           | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | 浏览器内核版本，例如 138、137、136、135、133、130、125、117、109  |
 | useLatestCore                         | 否     | 0 \| 1                                                                                                                                                                                                                                                                                                                                                                                                                                 | 0       | 浏览器窗口是否始终使用最新内核版本                                |
@@ -742,9 +742,9 @@
 | cookie[].value                        | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 值                                                         |
 | cookie[].domain                       | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 域名                                                       |
 | searchEngine                          | 否     | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | 浏览器窗口搜索引擎。                                              |
-| labelIds                              | 否     | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | 标签列表接口返回的标签ID列表                                      |
+| labelIds                              | 否     | List&lt;int \| string&gt;                                                                                                                                                                                                                                                                                                                                                                                                              | -       | 标签列表接口返回的标签ID列表                                      |
 | windowPlatformList                    | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 绑定到浏览器窗口的平台账号                                        |
-| windowPlatformList[].id               | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 平台账号id                                                        |
+| windowPlatformList[].id               | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 平台账号id                                                        |
 | windowPlatformList[].platformUrl      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号URL                                                       |
 | windowPlatformList[].platformUserName | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号                                                          |
 | windowPlatformList[].platformPassword | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台密码                                                          |
@@ -752,9 +752,9 @@
 | windowPlatformList[].platformRemarks  | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台备注                                                          |
 | defaultOpenUrl                        | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 默认打开的浏览器标签页                                            |
 | windowRemark                          | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口备注                                                    |
-| projectId                             | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 项目ID                                                            |
+| projectId                             | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 项目ID                                                            |
 | proxyInfo                             | 否     | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 创建浏览器窗口时使用的代理配置。                                  |
-| proxyInfo.moduleId                    | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 0       | 代理id；0 表示不使用代理                                          |
+| proxyInfo.moduleId                    | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | 0       | 代理id；0 表示不使用代理                                          |
 | proxyInfo.proxyMethod                 | 否     | custom \| choose \| api                                                                                                                                                                                                                                                                                                                                                                                                                | custom  | 代理方式：custom（自定义）、choose（导入的IP）或 api（API接入）。 |
 | proxyInfo.proxyCategory               | 否     | noproxy \| HTTP \| HTTPS \| SOCKS5 \| SSH                                                                                                                                                                                                                                                                                                                                                                                              | noproxy | 代理类型。                                                        |
 | proxyInfo.ipType                      | 否     | IPV4 \| IPV6                                                                                                                                                                                                                                                                                                                                                                                                                           | IPV4    | 网络协议版本。                                                    |
@@ -945,7 +945,7 @@
 
 | 参数名称                              | 必需项 | 参数类型                                                                                                                                                                                                                                                                                                                                                                                                                               | 默认值  | 描述                                                              |
 | ------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------- |
-| workspaceId                           | 是     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 团队id                                                            |
+| workspaceId                           | 是     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 团队id                                                            |
 | dirId                                 | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口id                                                      |
 | windowName                            | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口名称                                                    |
 | coreVersion                           | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | 浏览器内核版本，例如 138、137、136、135、133、130、125、117、109  |
@@ -957,9 +957,9 @@
 | cookie[].value                        | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 值                                                         |
 | cookie[].domain                       | 是     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie 域名                                                       |
 | searchEngine                          | 否     | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | 浏览器窗口搜索引擎。                                              |
-| labelIds                              | 否     | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | 标签列表接口返回的标签ID列表                                      |
+| labelIds                              | 否     | List&lt;int \| string&gt;                                                                                                                                                                                                                                                                                                                                                                                                              | -       | 标签列表接口返回的标签ID列表                                      |
 | windowPlatformList                    | 否     | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 绑定到浏览器窗口的平台账号                                        |
-| windowPlatformList[].id               | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 平台账号id                                                        |
+| windowPlatformList[].id               | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 平台账号id                                                        |
 | windowPlatformList[].platformUrl      | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号URL                                                       |
 | windowPlatformList[].platformUserName | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台账号                                                          |
 | windowPlatformList[].platformPassword | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台密码                                                          |
@@ -967,9 +967,9 @@
 | windowPlatformList[].platformRemarks  | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 平台备注                                                          |
 | defaultOpenUrl                        | 否     | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | 默认打开的浏览器标签页                                            |
 | windowRemark                          | 否     | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 浏览器窗口备注                                                    |
-| projectId                             | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | 项目ID                                                            |
+| projectId                             | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | 项目ID                                                            |
 | proxyInfo                             | 否     | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | 创建浏览器窗口时使用的代理配置。                                  |
-| proxyInfo.moduleId                    | 否     | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 0       | 代理id；0 表示不使用代理                                          |
+| proxyInfo.moduleId                    | 否     | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | 0       | 代理id；0 表示不使用代理                                          |
 | proxyInfo.proxyMethod                 | 否     | custom \| choose \| api                                                                                                                                                                                                                                                                                                                                                                                                                | custom  | 代理方式：custom（自定义）、choose（导入的IP）或 api（API接入）。 |
 | proxyInfo.proxyCategory               | 否     | noproxy \| HTTP \| HTTPS \| SOCKS5 \| SSH                                                                                                                                                                                                                                                                                                                                                                                              | noproxy | 代理类型。                                                        |
 | proxyInfo.ipType                      | 否     | IPV4 \| IPV6                                                                                                                                                                                                                                                                                                                                                                                                                           | IPV4    | 网络协议版本。                                                    |
@@ -1102,7 +1102,7 @@
 
 | 参数名称     | 必需项 | 参数类型           | 默认值 | 描述             |
 | ------------ | ------ | ------------------ | ------ | ---------------- |
-| workspaceId  | 是     | int                | -      | 团队id           |
+| workspaceId  | 是     | int \| string      | -      | 团队id           |
 | dirIds       | 是     | List&lt;string&gt; | -      | 浏览器窗口id列表 |
 | isSoftDelete | 否     | boolean            | true   | 软删除到回收站   |
 
@@ -1141,7 +1141,7 @@
 
 | 参数名称    | 必需项 | 参数类型           | 默认值 | 描述                                         |
 | ----------- | ------ | ------------------ | ------ | -------------------------------------------- |
-| workspaceId | 是     | int                | -      | 团队id，通过 /browser/workspace 获取         |
+| workspaceId | 是     | int \| string      | -      | 团队id，通过 /browser/workspace 获取         |
 | dirId       | 是     | string             | -      | 浏览器窗口id                                 |
 | forceOpen   | 否     | boolean            | -      | 是否强制打开浏览器窗口                       |
 | args        | 否     | List&lt;string&gt; | -      | 浏览器启动参数                               |
@@ -1245,10 +1245,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述                                 |
-| ----------- | ------ | -------- | ------ | ------------------------------------ |
-| workspaceId | 是     | int      | -      | 团队id，通过 /browser/workspace 获取 |
-| dirId       | 是     | string   | -      | 浏览器窗口id                         |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述                                 |
+| ----------- | ------ | ------------- | ------ | ------------------------------------ |
+| workspaceId | 是     | int \| string | -      | 团队id，通过 /browser/workspace 获取 |
+| dirId       | 是     | string        | -      | 浏览器窗口id                         |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1286,7 +1286,7 @@
 | ----------- | -------------------- | ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | dirIds      | 是                   | List&lt;string&gt;      | -      | 浏览器窗口id列表                                                                                                                                                                                                              |
 | type        | 否                   | partial \| all \| cloud | all    | 清除类型：partial 清除扩展数据以外的所有本地缓存文件；all 清除所有本地缓存文件。两者均不会使登录状态失效，也不会清理窗口指纹信息和 IP。cloud 清除本地及云端的 Cookie 和全部缓存，同步的标签页和浏览器相关登录状态会全部失效。 |
-| workspaceId | type 为 cloud 时必传 | int                     | -      | 团队id                                                                                                                                                                                                                        |
+| workspaceId | type 为 cloud 时必传 | int \| string           | -      | 团队id                                                                                                                                                                                                                        |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1321,7 +1321,7 @@
 
 | 参数名称    | 必需项 | 参数类型           | 默认值 | 描述                                 |
 | ----------- | ------ | ------------------ | ------ | ------------------------------------ |
-| workspaceId | 是     | int                | -      | 团队id，通过 /browser/workspace 获取 |
+| workspaceId | 是     | int \| string      | -      | 团队id，通过 /browser/workspace 获取 |
 | dirIds      | 是     | List&lt;string&gt; | -      | 浏览器窗口id列表                     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
@@ -1416,9 +1416,9 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述   |
-| ----------- | ------ | -------- | ------ | ------ |
-| workspaceId | 是     | int      | -      | 团队id |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述   |
+| ----------- | ------ | ------------- | ------ | ------ |
+| workspaceId | 是     | int \| string | -      | 团队id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1463,11 +1463,11 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述                                 |
-| ----------- | ------ | -------- | ------ | ------------------------------------ |
-| workspaceId | 是     | int      | -      | 团队id，通过 /browser/workspace 获取 |
-| page_index  | 否     | int      | 1      | 分页索引                             |
-| page_size   | 否     | int      | 15     | 分页条数                             |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述                                 |
+| ----------- | ------ | ------------- | ------ | ------------------------------------ |
+| workspaceId | 是     | int \| string | -      | 团队id，通过 /browser/workspace 获取 |
+| page_index  | 否     | int           | 1      | 分页索引                             |
+| page_size   | 否     | int           | 15     | 分页条数                             |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1553,7 +1553,7 @@
 
 | 参数名称        | 必需项 | 参数类型      | 默认值 | 描述                                       |
 | --------------- | ------ | ------------- | ------ | ------------------------------------------ |
-| workspaceId     | 是     | int           | -      | 团队 id                                    |
+| workspaceId     | 是     | int \| string | -      | 团队 id                                    |
 | type            | 否     | string        | -      | 查询类型，例如：available_list             |
 | page_index      | 否     | int \| string | 1      | 分页索引                                   |
 | page_size       | 否     | int \| string | 15     | 分页条数                                   |
@@ -1714,7 +1714,7 @@
 
 | 参数名称      | 必需项 | 参数类型                | 默认值 | 描述                                      |
 | ------------- | ------ | ----------------------- | ------ | ----------------------------------------- |
-| workspaceId   | 是     | int                     | -      | 团队id                                    |
+| workspaceId   | 是     | int \| string           | -      | 团队id                                    |
 | checkChannel  | 是     | string                  | -      | 通过 /proxy/detect_channel 获取的查询渠道 |
 | ipType        | 是     | IPV4 \| IPV6            | -      | 代理的网络协议版本。                      |
 | protocol      | 是     | HTTP \| HTTPS \| SOCKS5 | -      | 连接代理使用的协议。                      |
@@ -1767,7 +1767,7 @@
 
 | 参数名称                  | 必需项 | 参数类型                | 默认值 | 描述                                          |
 | ------------------------- | ------ | ----------------------- | ------ | --------------------------------------------- |
-| workspaceId               | 是     | int                     | -      | 团队id                                        |
+| workspaceId               | 是     | int \| string           | -      | 团队id                                        |
 | checkChannel              | 是     | string                  | -      | 通过 /proxy/detect_channel 获取的默认查询渠道 |
 | proxyList                 | 是     | List&lt;object&gt;      | -      | 待创建的代理列表                              |
 | proxyList[].checkChannel  | 否     | string                  | -      | 单项查询渠道；省略时使用外层 checkChannel     |
@@ -1807,10 +1807,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述    |
-| ----------- | ------ | -------- | ------ | ------- |
-| workspaceId | 是     | int      | -      | 团队id  |
-| id          | 是     | int      | -      | 代理 id |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述    |
+| ----------- | ------ | ------------- | ------ | ------- |
+| workspaceId | 是     | int \| string | -      | 团队id  |
+| id          | 是     | int \| string | -      | 代理 id |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1850,8 +1850,8 @@
 
 | 参数名称      | 必需项 | 参数类型                | 默认值 | 描述                                      |
 | ------------- | ------ | ----------------------- | ------ | ----------------------------------------- |
-| workspaceId   | 是     | int                     | -      | 团队id                                    |
-| id            | 是     | int                     | -      | 代理 id                                   |
+| workspaceId   | 是     | int \| string           | -      | 团队id                                    |
+| id            | 是     | int \| string           | -      | 代理 id                                   |
 | checkChannel  | 是     | string                  | -      | 通过 /proxy/detect_channel 获取的查询渠道 |
 | ipType        | 是     | IPV4 \| IPV6            | -      | 代理的网络协议版本。                      |
 | protocol      | 是     | HTTP \| HTTPS \| SOCKS5 | -      | 连接代理使用的协议。                      |
@@ -1889,10 +1889,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型        | 默认值 | 描述         |
-| ----------- | ------ | --------------- | ------ | ------------ |
-| workspaceId | 是     | int             | -      | 团队id       |
-| ids         | 是     | List&lt;int&gt; | -      | 代理 id 列表 |
+| 参数名称    | 必需项 | 参数类型                  | 默认值 | 描述         |
+| ----------- | ------ | ------------------------- | ------ | ------------ |
+| workspaceId | 是     | int \| string             | -      | 团队id       |
+| ids         | 是     | List&lt;int \| string&gt; | -      | 代理 id 列表 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -1927,12 +1927,12 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述                                           |
-| ----------- | ------ | -------- | ------ | ---------------------------------------------- |
-| workspaceId | 是     | int      | -      | 团队id，通过 /browser/workspace 获取           |
-| page_index  | 否     | int      | 1      | 分页索引                                       |
-| page_size   | 否     | int      | 15     | 分页条数                                       |
-| type        | 否     | 0 \| 1   | 0      | 已购代理查询类型：0 查询全部，1 查询可用代理。 |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述                                           |
+| ----------- | ------ | ------------- | ------ | ---------------------------------------------- |
+| workspaceId | 是     | int \| string | -      | 团队id，通过 /browser/workspace 获取           |
+| page_index  | 否     | int           | 1      | 分页索引                                       |
+| page_size   | 否     | int           | 15     | 分页条数                                       |
+| type        | 否     | 0 \| 1        | 0      | 已购代理查询类型：0 查询全部，1 查询可用代理。 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2018,11 +2018,11 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型 | 默认值 | 描述     |
-| ----------- | ------ | -------- | ------ | -------- |
-| workspaceId | 是     | int      | -      | 团队id   |
-| page_index  | 否     | int      | 1      | 分页索引 |
-| page_size   | 否     | int      | 15     | 分页条数 |
+| 参数名称    | 必需项 | 参数类型      | 默认值 | 描述     |
+| ----------- | ------ | ------------- | ------ | -------- |
+| workspaceId | 是     | int \| string | -      | 团队id   |
+| page_index  | 否     | int           | 1      | 分页索引 |
+| page_size   | 否     | int           | 15     | 分页条数 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2092,14 +2092,14 @@
 }
 ```
 
-| 参数名称         | 必需项 | 参数类型 | 默认值 | 描述     |
-| ---------------- | ------ | -------- | ------ | -------- |
-| workspaceId      | 是     | int      | -      | 团队id   |
-| platformUrl      | 是     | string   | -      | 平台 URL |
-| platformUserName | 否     | string   | -      | 平台账号 |
-| platformPassword | 否     | string   | -      | 平台密码 |
-| platformEfa      | 否     | string   | -      | 2FA密钥  |
-| platformRemarks  | 否     | string   | -      | 备注     |
+| 参数名称         | 必需项 | 参数类型      | 默认值 | 描述     |
+| ---------------- | ------ | ------------- | ------ | -------- |
+| workspaceId      | 是     | int \| string | -      | 团队id   |
+| platformUrl      | 是     | string        | -      | 平台 URL |
+| platformUserName | 否     | string        | -      | 平台账号 |
+| platformPassword | 否     | string        | -      | 平台密码 |
+| platformEfa      | 否     | string        | -      | 2FA密钥  |
+| platformRemarks  | 否     | string        | -      | 备注     |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2143,7 +2143,7 @@
 
 | 参数名称                       | 必需项 | 参数类型           | 默认值 | 描述                 |
 | ------------------------------ | ------ | ------------------ | ------ | -------------------- |
-| workspaceId                    | 是     | int                | -      | 团队id               |
+| workspaceId                    | 是     | int \| string      | -      | 团队id               |
 | accountList                    | 是     | List&lt;object&gt; | -      | 待创建的平台账号列表 |
 | accountList[].platformUrl      | 是     | string             | -      | 平台 URL             |
 | accountList[].platformUserName | 否     | string             | -      | 平台账号             |
@@ -2183,15 +2183,15 @@
 }
 ```
 
-| 参数名称         | 必需项 | 参数类型 | 默认值 | 描述        |
-| ---------------- | ------ | -------- | ------ | ----------- |
-| workspaceId      | 是     | int      | -      | 团队 id     |
-| id               | 是     | int      | -      | 平台账号 id |
-| platformUrl      | 是     | string   | -      | 平台 URL    |
-| platformUserName | 否     | string   | -      | 平台账号    |
-| platformPassword | 否     | string   | -      | 平台密码    |
-| platformEfa      | 否     | string   | -      | 2FA密钥     |
-| platformRemarks  | 否     | string   | -      | 备注        |
+| 参数名称         | 必需项 | 参数类型      | 默认值 | 描述        |
+| ---------------- | ------ | ------------- | ------ | ----------- |
+| workspaceId      | 是     | int \| string | -      | 团队 id     |
+| id               | 是     | int \| string | -      | 平台账号 id |
+| platformUrl      | 是     | string        | -      | 平台 URL    |
+| platformUserName | 否     | string        | -      | 平台账号    |
+| platformPassword | 否     | string        | -      | 平台密码    |
+| platformEfa      | 否     | string        | -      | 2FA密钥     |
+| platformRemarks  | 否     | string        | -      | 备注        |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 
@@ -2220,10 +2220,10 @@
 }
 ```
 
-| 参数名称    | 必需项 | 参数类型        | 默认值 | 描述             |
-| ----------- | ------ | --------------- | ------ | ---------------- |
-| workspaceId | 是     | int             | -      | 团队 id          |
-| ids         | 是     | List&lt;int&gt; | -      | 平台账号 id 列表 |
+| 参数名称    | 必需项 | 参数类型                  | 默认值 | 描述             |
+| ----------- | ------ | ------------------------- | ------ | ---------------- |
+| workspaceId | 是     | int \| string             | -      | 团队 id          |
+| ids         | 是     | List&lt;int \| string&gt; | -      | 平台账号 id 列表 |
 
 <p style="font-weight: 600"> <span class="order">2</span> 返回结果</p>
 

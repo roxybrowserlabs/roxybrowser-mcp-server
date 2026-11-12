@@ -302,7 +302,7 @@ export class ProxyApi {
   }
 
   detail(
-    params: MaybeWorkspaceScoped<{ workspaceId: number; id: number }>,
+    params: MaybeWorkspaceScoped<{ workspaceId: number | string; id: number | string }>,
   ): Promise<RoxyApiResponse<RawProxy | PageData<RawProxy>>> {
     return this.transport.request({
       method: "GET",

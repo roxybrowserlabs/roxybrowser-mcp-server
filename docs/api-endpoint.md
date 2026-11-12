@@ -255,12 +255,12 @@ None
 }
 ```
 
-| Parameter   | Required | Type | Default | Description        |
-| ----------- | -------- | ---- | ------- | ------------------ |
-| workspaceId | Yes      | int  | -       | Team ID            |
-| accountId   | No       | int  | 1       | Account library ID |
-| page_index  | No       | int  | 1       | Page index         |
-| page_size   | No       | int  | 15      | Page size          |
+| Parameter   | Required | Type          | Default | Description        |
+| ----------- | -------- | ------------- | ------- | ------------------ |
+| workspaceId | Yes      | int \| string | -       | Team ID            |
+| accountId   | No       | int \| string | 1       | Account library ID |
+| page_index  | No       | int           | 1       | Page index         |
+| page_size   | No       | int           | 15      | Page size          |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -327,9 +327,9 @@ None
 }
 ```
 
-| Parameter   | Required | Type | Default | Description |
-| ----------- | -------- | ---- | ------- | ----------- |
-| workspaceId | Yes      | int  | -       | Team ID     |
+| Parameter   | Required | Type          | Default | Description |
+| ----------- | -------- | ------------- | ------- | ----------- |
+| workspaceId | Yes      | int \| string | -       | Team ID     |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -380,7 +380,7 @@ None
 
 | Parameter    | Required | Type                                        | Default | Description                              |
 | ------------ | -------- | ------------------------------------------- | ------- | ---------------------------------------- |
-| workspaceId  | Yes      | int                                         | -       | Team ID                                  |
+| workspaceId  | Yes      | int \| string                               | -       | Team ID                                  |
 | dirIds       | No       | string                                      | -       | Comma-separated browser profile IDs      |
 | windowName   | No       | string                                      | -       | Browser profile name                     |
 | sortNums     | No       | string                                      | -       | Comma-separated profile sequence numbers |
@@ -449,10 +449,10 @@ None
 }
 ```
 
-| Parameter   | Required | Type   | Default | Description        |
-| ----------- | -------- | ------ | ------- | ------------------ |
-| workspaceId | Yes      | int    | -       | Team ID            |
-| dirId       | Yes      | string | -       | Browser profile ID |
+| Parameter   | Required | Type          | Default | Description        |
+| ----------- | -------- | ------------- | ------- | ------------------ |
+| workspaceId | Yes      | int \| string | -       | Team ID            |
+| dirId       | Yes      | string        | -       | Browser profile ID |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -730,7 +730,7 @@ None
 
 | Parameter                             | Required | Type                                                                                                                                                                                                                                                                                                                                                                                                                                   | Default | Description                                                                                 |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| workspaceId                           | Yes      | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Team ID                                                                                     |
+| workspaceId                           | Yes      | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Team ID                                                                                     |
 | windowName                            | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile name                                                                        |
 | coreVersion                           | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | Browser core version; examples include 138, 137, 136, 135, 133, 130, 125, 117, and 109      |
 | useLatestCore                         | No       | 0 \| 1                                                                                                                                                                                                                                                                                                                                                                                                                                 | 0       | Whether the browser profile should always use the latest core version                       |
@@ -742,9 +742,9 @@ None
 | cookie[].value                        | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie value                                                                                |
 | cookie[].domain                       | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie domain                                                                               |
 | searchEngine                          | No       | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | Browser profile search engine.                                                              |
-| labelIds                              | No       | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | Tag IDs from the label list endpoint                                                        |
+| labelIds                              | No       | List&lt;int \| string&gt;                                                                                                                                                                                                                                                                                                                                                                                                              | -       | Tag IDs from the label list endpoint                                                        |
 | windowPlatformList                    | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Platform accounts attached to the browser profile                                           |
-| windowPlatformList[].id               | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Platform account ID                                                                         |
+| windowPlatformList[].id               | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Platform account ID                                                                         |
 | windowPlatformList[].platformUrl      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform account URL                                                                        |
 | windowPlatformList[].platformUserName | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform username                                                                           |
 | windowPlatformList[].platformPassword | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform password                                                                           |
@@ -752,9 +752,9 @@ None
 | windowPlatformList[].platformRemarks  | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform remark                                                                             |
 | defaultOpenUrl                        | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Browser tabs opened by default                                                              |
 | windowRemark                          | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile remark                                                                      |
-| projectId                             | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Project ID                                                                                  |
+| projectId                             | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Project ID                                                                                  |
 | proxyInfo                             | No       | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Proxy configuration used while creating a browser profile.                                  |
-| proxyInfo.moduleId                    | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 0       | Proxy ID; 0 means no proxy                                                                  |
+| proxyInfo.moduleId                    | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | 0       | Proxy ID; 0 means no proxy                                                                  |
 | proxyInfo.proxyMethod                 | No       | custom \| choose \| api                                                                                                                                                                                                                                                                                                                                                                                                                | custom  | Proxy selection method: custom (manual), choose (imported proxy), or api (API integration). |
 | proxyInfo.proxyCategory               | No       | noproxy \| HTTP \| HTTPS \| SOCKS5 \| SSH                                                                                                                                                                                                                                                                                                                                                                                              | noproxy | Proxy category.                                                                             |
 | proxyInfo.ipType                      | No       | IPV4 \| IPV6                                                                                                                                                                                                                                                                                                                                                                                                                           | IPV4    | Network protocol version.                                                                   |
@@ -945,7 +945,7 @@ None
 
 | Parameter                             | Required | Type                                                                                                                                                                                                                                                                                                                                                                                                                                   | Default | Description                                                                                 |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| workspaceId                           | Yes      | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Team ID                                                                                     |
+| workspaceId                           | Yes      | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Team ID                                                                                     |
 | dirId                                 | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile ID                                                                          |
 | windowName                            | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile name                                                                        |
 | coreVersion                           | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | Latest  | Browser core version; examples include 138, 137, 136, 135, 133, 130, 125, 117, and 109      |
@@ -957,9 +957,9 @@ None
 | cookie[].value                        | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie value                                                                                |
 | cookie[].domain                       | Yes      | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Cookie domain                                                                               |
 | searchEngine                          | No       | Google \| Microsoft Bing \| Yahoo \| Yandex \| DuckDuckGo                                                                                                                                                                                                                                                                                                                                                                              | Google  | Browser profile search engine.                                                              |
-| labelIds                              | No       | List&lt;int&gt;                                                                                                                                                                                                                                                                                                                                                                                                                        | -       | Tag IDs from the label list endpoint                                                        |
+| labelIds                              | No       | List&lt;int \| string&gt;                                                                                                                                                                                                                                                                                                                                                                                                              | -       | Tag IDs from the label list endpoint                                                        |
 | windowPlatformList                    | No       | List&lt;object&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Platform accounts attached to the browser profile                                           |
-| windowPlatformList[].id               | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Platform account ID                                                                         |
+| windowPlatformList[].id               | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Platform account ID                                                                         |
 | windowPlatformList[].platformUrl      | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform account URL                                                                        |
 | windowPlatformList[].platformUserName | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform username                                                                           |
 | windowPlatformList[].platformPassword | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform password                                                                           |
@@ -967,9 +967,9 @@ None
 | windowPlatformList[].platformRemarks  | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Platform remark                                                                             |
 | defaultOpenUrl                        | No       | List&lt;string&gt;                                                                                                                                                                                                                                                                                                                                                                                                                     | -       | Browser tabs opened by default                                                              |
 | windowRemark                          | No       | string                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Browser profile remark                                                                      |
-| projectId                             | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | -       | Project ID                                                                                  |
+| projectId                             | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | -       | Project ID                                                                                  |
 | proxyInfo                             | No       | object                                                                                                                                                                                                                                                                                                                                                                                                                                 | -       | Proxy configuration used while creating a browser profile.                                  |
-| proxyInfo.moduleId                    | No       | int                                                                                                                                                                                                                                                                                                                                                                                                                                    | 0       | Proxy ID; 0 means no proxy                                                                  |
+| proxyInfo.moduleId                    | No       | int \| string                                                                                                                                                                                                                                                                                                                                                                                                                          | 0       | Proxy ID; 0 means no proxy                                                                  |
 | proxyInfo.proxyMethod                 | No       | custom \| choose \| api                                                                                                                                                                                                                                                                                                                                                                                                                | custom  | Proxy selection method: custom (manual), choose (imported proxy), or api (API integration). |
 | proxyInfo.proxyCategory               | No       | noproxy \| HTTP \| HTTPS \| SOCKS5 \| SSH                                                                                                                                                                                                                                                                                                                                                                                              | noproxy | Proxy category.                                                                             |
 | proxyInfo.ipType                      | No       | IPV4 \| IPV6                                                                                                                                                                                                                                                                                                                                                                                                                           | IPV4    | Network protocol version.                                                                   |
@@ -1102,7 +1102,7 @@ None
 
 | Parameter    | Required | Type               | Default | Description                              |
 | ------------ | -------- | ------------------ | ------- | ---------------------------------------- |
-| workspaceId  | Yes      | int                | -       | Team ID                                  |
+| workspaceId  | Yes      | int \| string      | -       | Team ID                                  |
 | dirIds       | Yes      | List&lt;string&gt; | -       | Browser profile ID list                  |
 | isSoftDelete | No       | boolean            | true    | Move browser profiles to the recycle bin |
 
@@ -1141,7 +1141,7 @@ None
 
 | Parameter   | Required | Type               | Default | Description                                                           |
 | ----------- | -------- | ------------------ | ------- | --------------------------------------------------------------------- |
-| workspaceId | Yes      | int                | -       | Team ID, obtained from /browser/workspace                             |
+| workspaceId | Yes      | int \| string      | -       | Team ID, obtained from /browser/workspace                             |
 | dirId       | Yes      | string             | -       | Browser profile ID                                                    |
 | forceOpen   | No       | boolean            | -       | Force the browser profile to open                                     |
 | args        | No       | List&lt;string&gt; | -       | Browser startup parameters                                            |
@@ -1245,10 +1245,10 @@ The browser currently does not support headless mode; passing `--headless` does 
 }
 ```
 
-| Parameter   | Required | Type   | Default | Description                               |
-| ----------- | -------- | ------ | ------- | ----------------------------------------- |
-| workspaceId | Yes      | int    | -       | Team ID, obtained from /browser/workspace |
-| dirId       | Yes      | string | -       | Browser profile ID                        |
+| Parameter   | Required | Type          | Default | Description                               |
+| ----------- | -------- | ------------- | ------- | ----------------------------------------- |
+| workspaceId | Yes      | int \| string | -       | Team ID, obtained from /browser/workspace |
+| dirId       | Yes      | string        | -       | Browser profile ID                        |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1286,7 +1286,7 @@ The browser currently does not support headless mode; passing `--headless` does 
 | ----------- | --------------------------- | ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | dirIds      | Yes                         | List&lt;string&gt;      | -       | Browser profile ID list                                                                                                                                                                                                                                                                      |
 | type        | No                          | partial \| all \| cloud | all     | Clear type: partial clears all local cache files except extension data; all clears every local cache file. Both retain login state, browser fingerprint information, and IP. cloud clears local and server cookies and all cache; synchronized tabs and browser login states become invalid. |
-| workspaceId | Required when type is cloud | int                     | -       | Team ID                                                                                                                                                                                                                                                                                      |
+| workspaceId | Required when type is cloud | int \| string           | -       | Team ID                                                                                                                                                                                                                                                                                      |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1321,7 +1321,7 @@ The browser currently does not support headless mode; passing `--headless` does 
 
 | Parameter   | Required | Type               | Default | Description                               |
 | ----------- | -------- | ------------------ | ------- | ----------------------------------------- |
-| workspaceId | Yes      | int                | -       | Team ID, obtained from /browser/workspace |
+| workspaceId | Yes      | int \| string      | -       | Team ID, obtained from /browser/workspace |
 | dirIds      | Yes      | List&lt;string&gt; | -       | Browser profile ID list                   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
@@ -1416,9 +1416,9 @@ The browser currently does not support headless mode; passing `--headless` does 
 }
 ```
 
-| Parameter   | Required | Type | Default | Description |
-| ----------- | -------- | ---- | ------- | ----------- |
-| workspaceId | Yes      | int  | -       | Team ID     |
+| Parameter   | Required | Type          | Default | Description |
+| ----------- | -------- | ------------- | ------- | ----------- |
+| workspaceId | Yes      | int \| string | -       | Team ID     |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1463,11 +1463,11 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type | Default | Description                               |
-| ----------- | -------- | ---- | ------- | ----------------------------------------- |
-| workspaceId | Yes      | int  | -       | Team ID, obtained from /browser/workspace |
-| page_index  | No       | int  | 1       | Page index                                |
-| page_size   | No       | int  | 15      | Page size                                 |
+| Parameter   | Required | Type          | Default | Description                               |
+| ----------- | -------- | ------------- | ------- | ----------------------------------------- |
+| workspaceId | Yes      | int \| string | -       | Team ID, obtained from /browser/workspace |
+| page_index  | No       | int           | 1       | Page index                                |
+| page_size   | No       | int           | 15      | Page size                                 |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1553,7 +1553,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 
 | Parameter       | Required | Type          | Default | Description                                                 |
 | --------------- | -------- | ------------- | ------- | ----------------------------------------------------------- |
-| workspaceId     | Yes      | int           | -       | Team ID                                                     |
+| workspaceId     | Yes      | int \| string | -       | Team ID                                                     |
 | type            | No       | string        | -       | Query type, for example: available_list                     |
 | page_index      | No       | int \| string | 1       | Page index                                                  |
 | page_size       | No       | int \| string | 15      | Page size                                                   |
@@ -1714,7 +1714,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 
 | Parameter     | Required | Type                    | Default | Description                                       |
 | ------------- | -------- | ----------------------- | ------- | ------------------------------------------------- |
-| workspaceId   | Yes      | int                     | -       | Team ID                                           |
+| workspaceId   | Yes      | int \| string           | -       | Team ID                                           |
 | checkChannel  | Yes      | string                  | -       | Check channel obtained from /proxy/detect_channel |
 | ipType        | Yes      | IPV4 \| IPV6            | -       | Network protocol version for a proxy.             |
 | protocol      | Yes      | HTTP \| HTTPS \| SOCKS5 | -       | Protocol used to connect to a proxy.              |
@@ -1767,7 +1767,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 
 | Parameter                 | Required | Type                    | Default | Description                                                              |
 | ------------------------- | -------- | ----------------------- | ------- | ------------------------------------------------------------------------ |
-| workspaceId               | Yes      | int                     | -       | Team ID                                                                  |
+| workspaceId               | Yes      | int \| string           | -       | Team ID                                                                  |
 | checkChannel              | Yes      | string                  | -       | Default check channel obtained from /proxy/detect_channel                |
 | proxyList                 | Yes      | List&lt;object&gt;      | -       | Proxies to create                                                        |
 | proxyList[].checkChannel  | No       | string                  | -       | Item-specific check channel; the outer checkChannel is used when omitted |
@@ -1807,10 +1807,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type | Default | Description |
-| ----------- | -------- | ---- | ------- | ----------- |
-| workspaceId | Yes      | int  | -       | Team ID     |
-| id          | Yes      | int  | -       | Proxy ID    |
+| Parameter   | Required | Type          | Default | Description |
+| ----------- | -------- | ------------- | ------- | ----------- |
+| workspaceId | Yes      | int \| string | -       | Team ID     |
+| id          | Yes      | int \| string | -       | Proxy ID    |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1850,8 +1850,8 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 
 | Parameter     | Required | Type                    | Default | Description                                       |
 | ------------- | -------- | ----------------------- | ------- | ------------------------------------------------- |
-| workspaceId   | Yes      | int                     | -       | Team ID                                           |
-| id            | Yes      | int                     | -       | Proxy ID                                          |
+| workspaceId   | Yes      | int \| string           | -       | Team ID                                           |
+| id            | Yes      | int \| string           | -       | Proxy ID                                          |
 | checkChannel  | Yes      | string                  | -       | Check channel obtained from /proxy/detect_channel |
 | ipType        | Yes      | IPV4 \| IPV6            | -       | Network protocol version for a proxy.             |
 | protocol      | Yes      | HTTP \| HTTPS \| SOCKS5 | -       | Protocol used to connect to a proxy.              |
@@ -1889,10 +1889,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type            | Default | Description |
-| ----------- | -------- | --------------- | ------- | ----------- |
-| workspaceId | Yes      | int             | -       | Team ID     |
-| ids         | Yes      | List&lt;int&gt; | -       | Proxy IDs   |
+| Parameter   | Required | Type                      | Default | Description |
+| ----------- | -------- | ------------------------- | ------- | ----------- |
+| workspaceId | Yes      | int \| string             | -       | Team ID     |
+| ids         | Yes      | List&lt;int \| string&gt; | -       | Proxy IDs   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -1927,12 +1927,12 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type   | Default | Description                                                                        |
-| ----------- | -------- | ------ | ------- | ---------------------------------------------------------------------------------- |
-| workspaceId | Yes      | int    | -       | Team ID, obtained from /browser/workspace                                          |
-| page_index  | No       | int    | 1       | Page index                                                                         |
-| page_size   | No       | int    | 15      | Page size                                                                          |
-| type        | No       | 0 \| 1 | 0       | Purchased proxy query type: 0 queries all proxies and 1 queries available proxies. |
+| Parameter   | Required | Type          | Default | Description                                                                        |
+| ----------- | -------- | ------------- | ------- | ---------------------------------------------------------------------------------- |
+| workspaceId | Yes      | int \| string | -       | Team ID, obtained from /browser/workspace                                          |
+| page_index  | No       | int           | 1       | Page index                                                                         |
+| page_size   | No       | int           | 15      | Page size                                                                          |
+| type        | No       | 0 \| 1        | 0       | Purchased proxy query type: 0 queries all proxies and 1 queries available proxies. |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2018,11 +2018,11 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type | Default | Description |
-| ----------- | -------- | ---- | ------- | ----------- |
-| workspaceId | Yes      | int  | -       | Team ID     |
-| page_index  | No       | int  | 1       | Page index  |
-| page_size   | No       | int  | 15      | Page size   |
+| Parameter   | Required | Type          | Default | Description |
+| ----------- | -------- | ------------- | ------- | ----------- |
+| workspaceId | Yes      | int \| string | -       | Team ID     |
+| page_index  | No       | int           | 1       | Page index  |
+| page_size   | No       | int           | 15      | Page size   |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2092,14 +2092,14 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter        | Required | Type   | Default | Description       |
-| ---------------- | -------- | ------ | ------- | ----------------- |
-| workspaceId      | Yes      | int    | -       | Team ID           |
-| platformUrl      | Yes      | string | -       | Platform URL      |
-| platformUserName | No       | string | -       | Platform account  |
-| platformPassword | No       | string | -       | Platform password |
-| platformEfa      | No       | string | -       | 2FA key           |
-| platformRemarks  | No       | string | -       | Remarks           |
+| Parameter        | Required | Type          | Default | Description       |
+| ---------------- | -------- | ------------- | ------- | ----------------- |
+| workspaceId      | Yes      | int \| string | -       | Team ID           |
+| platformUrl      | Yes      | string        | -       | Platform URL      |
+| platformUserName | No       | string        | -       | Platform account  |
+| platformPassword | No       | string        | -       | Platform password |
+| platformEfa      | No       | string        | -       | 2FA key           |
+| platformRemarks  | No       | string        | -       | Remarks           |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2143,7 +2143,7 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 
 | Parameter                      | Required | Type               | Default | Description                 |
 | ------------------------------ | -------- | ------------------ | ------- | --------------------------- |
-| workspaceId                    | Yes      | int                | -       | Team ID                     |
+| workspaceId                    | Yes      | int \| string      | -       | Team ID                     |
 | accountList                    | Yes      | List&lt;object&gt; | -       | Platform accounts to create |
 | accountList[].platformUrl      | Yes      | string             | -       | Platform URL                |
 | accountList[].platformUserName | No       | string             | -       | Platform account            |
@@ -2183,15 +2183,15 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter        | Required | Type   | Default | Description         |
-| ---------------- | -------- | ------ | ------- | ------------------- |
-| workspaceId      | Yes      | int    | -       | Team ID             |
-| id               | Yes      | int    | -       | Platform account ID |
-| platformUrl      | Yes      | string | -       | Platform URL        |
-| platformUserName | No       | string | -       | Platform account    |
-| platformPassword | No       | string | -       | Platform password   |
-| platformEfa      | No       | string | -       | 2FA key             |
-| platformRemarks  | No       | string | -       | Remarks             |
+| Parameter        | Required | Type          | Default | Description         |
+| ---------------- | -------- | ------------- | ------- | ------------------- |
+| workspaceId      | Yes      | int \| string | -       | Team ID             |
+| id               | Yes      | int \| string | -       | Platform account ID |
+| platformUrl      | Yes      | string        | -       | Platform URL        |
+| platformUserName | No       | string        | -       | Platform account    |
+| platformPassword | No       | string        | -       | Platform password   |
+| platformEfa      | No       | string        | -       | 2FA key             |
+| platformRemarks  | No       | string        | -       | Remarks             |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 
@@ -2220,10 +2220,10 @@ This endpoint is deprecated and will be removed in a future release. Use [`GET /
 }
 ```
 
-| Parameter   | Required | Type            | Default | Description          |
-| ----------- | -------- | --------------- | ------- | -------------------- |
-| workspaceId | Yes      | int             | -       | Team ID              |
-| ids         | Yes      | List&lt;int&gt; | -       | Platform account IDs |
+| Parameter   | Required | Type                      | Default | Description          |
+| ----------- | -------- | ------------------------- | ------- | -------------------- |
+| workspaceId | Yes      | int \| string             | -       | Team ID              |
+| ids         | Yes      | List&lt;int \| string&gt; | -       | Platform account IDs |
 
 <p style="font-weight: 600"> <span class="order">2</span> Response</p>
 

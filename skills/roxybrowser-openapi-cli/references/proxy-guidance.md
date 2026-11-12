@@ -6,7 +6,7 @@
 
 To judge current availability:
 
-1. Call `roxy_proxy_list` to find the numeric proxy ID.
+1. Call `roxy_proxy_list` to find the string proxy ID.
 2. Call `roxy_proxy_detect` with that ID.
 3. Call `roxy_proxy_list` again and locate the same ID for the refreshed record.
 4. Only then describe current usability. `roxy_proxy_detect` itself returns a completion message, not the refreshed status.

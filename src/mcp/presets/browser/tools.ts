@@ -66,7 +66,6 @@ const arrayCreateSchema = (
 });
 
 const stringArray = { type: "array", items: { type: "string" } };
-const numberArray = { type: "array", items: { type: "number" } };
 const browserCores = [
   "Chrome Latest",
   "Chrome 150",
@@ -173,7 +172,7 @@ const paginationSchema = {
 
 const profileCreateSchema = {
   name: { type: "string" },
-  projectId: { type: "number" },
+  projectId: { type: "string" },
   cookie: {
     description:
       "Cookies as JSON, Netscape, Name=Value text, one Cookie object, or an array of Cookie objects.",
@@ -196,21 +195,21 @@ const profileCreateSchema = {
     type: "string",
     enum: ["Google", "Microsoft Bing", "Yahoo", "Yandex", "DuckDuckGo"],
   },
-  labelIds: numberArray,
+  labelIds: stringArray,
   platformAccounts: {
     type: "array",
-    description: 'Bind existing platform accounts, for example [{"id": 123}].',
+    description: 'Bind existing platform accounts, for example [{"id": "123"}].',
     items: {
       type: "object",
-      properties: { id: { type: "number" } },
+      properties: { id: { type: "string" } },
       additionalProperties: true,
     },
   },
   proxyInfo: {
     type: "object",
-    properties: { id: { type: "number" } },
+    properties: { id: { type: "string" } },
     additionalProperties: true,
-    description: 'Bind an existing proxy, for example {"id": 123}.',
+    description: 'Bind an existing proxy, for example {"id": "123"}.',
   },
   fingerInfo: {
     type: "object",
@@ -291,7 +290,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     description: "Switch this MCP session to another RoxyBrowser workspace.",
     inputSchema: objectSchema(
       {
-        workspaceId: { oneOf: [{ type: "number" }, { type: "string" }] },
+        workspaceId: { type: "string" },
         force: {
           type: "boolean",
           default: false,
@@ -363,7 +362,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     inputSchema: objectSchema({
       ...paginationSchema,
       dirIds: stringArray,
-      projectIds: numberArray,
+      projectIds: stringArray,
       projectName: { type: "string", sinceRoxyBrowserVersion: ROXY_BROWSER_VERSION_4_0_4 },
       name: { type: "string" },
       serialNumber: {
@@ -634,7 +633,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.proxy.update",
     endpoint: "POST /proxy/modify",
     description: "Update a proxy.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...proxyInputSchema }, [
+    inputSchema: objectSchema({ id: { type: "string" }, ...proxyInputSchema }, [
       "id",
       "checkChannel",
       "ipType",
@@ -654,7 +653,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.proxy.delete",
     endpoint: "POST /proxy/delete",
     description: "Delete proxies.",
-    inputSchema: objectSchema({ ids: numberArray }, ["ids"]),
+    inputSchema: objectSchema({ ids: stringArray }, ["ids"]),
     annotations: DELETE_APPROVAL_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.proxies.delete(args.ids);
@@ -666,7 +665,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.proxy.detect",
     endpoint: "POST /proxy/detect",
     description: "Detect a proxy.",
-    inputSchema: objectSchema({ id: { type: "number" } }, ["id"]),
+    inputSchema: objectSchema({ id: { type: "string" } }, ["id"]),
     annotations: NO_APPROVAL_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.proxies.detect(args.id);
@@ -733,7 +732,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.platformAccount.update",
     endpoint: "POST /account/modify",
     description: "Update a platform account.",
-    inputSchema: objectSchema({ id: { type: "number" }, ...platformAccountInputSchema }, [
+    inputSchema: objectSchema({ id: { type: "string" }, ...platformAccountInputSchema }, [
       "id",
       "platformUrl",
     ]),
@@ -749,7 +748,7 @@ export const BROWSER_MCP_TOOLS: McpTool[] = [
     operationId: "browser.platformAccount.delete",
     endpoint: "POST /account/delete",
     description: "Delete platform accounts.",
-    inputSchema: objectSchema({ ids: numberArray }, ["ids"]),
+    inputSchema: objectSchema({ ids: stringArray }, ["ids"]),
     annotations: DELETE_APPROVAL_ANNOTATIONS,
     handler: async (args, context) => {
       await context.browser!.platformAccounts.delete(args.ids);

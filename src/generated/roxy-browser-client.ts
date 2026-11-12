@@ -159,15 +159,15 @@ export class GeneratedProfileDomain {
 export class GeneratedProxyDomain {
   constructor(protected readonly api: RoxyApiClient) {}
 
-  async delete(ids: Array<number>): Promise<void> {
+  async delete(ids: Array<number | string>): Promise<void> {
     ensureSuccess(await this.api.proxy.delete({ ids }));
   }
 
-  async update(id: number, input: ProxyUpdateInput): Promise<void> {
+  async update(id: number | string, input: ProxyUpdateInput): Promise<void> {
     ensureSuccess(await this.api.proxy.modify({ ...input, id }));
   }
 
-  async detect(id: number): Promise<void> {
+  async detect(id: number | string): Promise<void> {
     ensureSuccess(await this.api.proxy.detect({ id }));
   }
 
@@ -192,11 +192,11 @@ export class GeneratedProxyDomain {
 export class GeneratedPlatformAccountDomain {
   constructor(protected readonly api: RoxyApiClient) {}
 
-  async delete(ids: Array<number>): Promise<void> {
+  async delete(ids: Array<number | string>): Promise<void> {
     ensureSuccess(await this.api.account.delete({ ids }));
   }
 
-  async update(id: number, input: PlatformAccountUpdateInput): Promise<void> {
+  async update(id: number | string, input: PlatformAccountUpdateInput): Promise<void> {
     ensureSuccess(await this.api.account.modify(removeUndefined({ ...input, id })));
   }
 

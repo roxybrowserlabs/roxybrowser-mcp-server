@@ -7,7 +7,7 @@ import type { RoxyApiClientOptions } from "../api/index.js";
 export interface RoxyCommandOptions {
   apiHost?: string;
   apiKey?: string;
-  workspaceId?: number;
+  workspaceId?: string | number;
   timeout?: number;
 }
 
@@ -27,7 +27,7 @@ export function loadCodexOAuthOptions(
     return {
       apiKey: readString(values.apiKey),
       apiHost: readString(values.apiHost),
-      workspaceId: readNumber(values.workspaceId),
+      workspaceId: readWorkspaceId(values.workspaceId),
       timeout: readNumber(values.timeout),
     };
   } catch {
@@ -38,6 +38,12 @@ export function loadCodexOAuthOptions(
 
 function readString(value: unknown): string | undefined {
   return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function readWorkspaceId(value: unknown): string | undefined {
+  if (typeof value === "string") return value.trim() || undefined;
+  if (typeof value === "number" && Number.isSafeInteger(value)) return String(value);
+  return undefined;
 }
 
 function readNumber(value: unknown): number | undefined {
@@ -54,7 +60,7 @@ function loadEnvironmentOptions(): RoxyCommandOptions {
   return {
     apiHost: readString(process.env.ROXY_API_HOST),
     apiKey: readString(process.env.ROXY_API_KEY),
-    workspaceId: readNumber(process.env.ROXY_WORKSPACE_ID),
+    workspaceId: readWorkspaceId(process.env.ROXY_WORKSPACE_ID),
     timeout: readNumber(process.env.ROXY_TIMEOUT),
   };
 }
@@ -115,9 +121,7 @@ export function addRoxyOptions<TCommand extends Command>(command: TCommand): TCo
   return command
     .option("-H, --api-host <url>", "RoxyBrowser API base URL")
     .option("-k, --api-key <key>", "API key")
-    .option("-w, --workspace-id <id>", "Default workspace ID", (value) =>
-      Number.parseInt(value, 10),
-    )
+    .option("-w, --workspace-id <id>", "Default workspace ID")
     .option("-t, --timeout <ms>", "Request timeout in milliseconds", (value) =>
       Number.parseInt(value, 10),
     ) as TCommand;

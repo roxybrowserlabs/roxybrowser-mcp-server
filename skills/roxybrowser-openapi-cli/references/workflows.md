@@ -16,7 +16,7 @@ Tool names below are passed after `npx -y @roxybrowser/openapi call`. Use `help 
 ## Create Browser With Proxy
 
 1. Call `roxy_proxy_list` to find candidates.
-2. Call `roxy_proxy_detect` with the selected numeric proxy ID.
+2. Call `roxy_proxy_detect` with the selected string proxy ID.
 3. Call `roxy_proxy_list` again to inspect the refreshed status.
 4. Call `roxy_profile_create` with one or more items in `profiles`; bind the proxy through `proxyInfo.id`.
 5. Call `roxy_profile_open` with the returned `dirId`.

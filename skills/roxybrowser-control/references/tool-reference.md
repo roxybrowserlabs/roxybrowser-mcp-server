@@ -1,5 +1,7 @@
 # Tool Reference
 
+所有 ID 参数及 ID 数组元素都必须使用字符串，例如 `{"ids":["27723547651002369"]}`，避免大整数精度丢失。
+
 ## Workspace, Project, And Labels
 
 - `roxy_workspace_list`: list workspaces and their project summaries when no workspace is fixed.

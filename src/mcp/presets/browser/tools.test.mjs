@@ -41,6 +41,137 @@ async function rawRequest(server, request) {
 }
 
 describe("3.0 MCP presets", () => {
+  test("all MCP identifiers are declared as strings", async () => {
+    const session = await connect(createRoxyBrowserMcpServer());
+    try {
+      const { tools } = await session.client.listTools();
+      function check(schema, path) {
+        for (const [name, property] of Object.entries(schema.properties ?? {})) {
+          const fieldPath = `${path}.${name}`;
+          if (/^(?:id|.*Id|ids|.*Ids)$/.test(name)) {
+            assert.deepEqual(
+              property,
+              name.endsWith("s")
+                ? { type: "array", items: { type: "string" } }
+                : { type: "string" },
+              fieldPath,
+            );
+          }
+          check(property, fieldPath);
+        }
+        if (schema.items) check(schema.items, `${path}[]`);
+      }
+      for (const tool of tools) check(tool.inputSchema, tool.name);
+    } finally {
+      await session.close();
+    }
+  });
+
+  test("large string IDs survive MCP validation, adapters and HTTP serialization", async () => {
+    const id = "27723547651002369";
+    const calls = [];
+    const restoreFetch = installFetchMock(async (url, options) => {
+      const pathname = new URL(url).pathname;
+      calls.push({ url: new URL(url), body: options.body ? JSON.parse(options.body) : undefined });
+      if (pathname === "/browser/workspace/active") {
+        return createJsonResponse({ code: 0, data: { id, workspaceName: "Current" } });
+      }
+      if (pathname === "/browser/workspace/select") {
+        return createJsonResponse({
+          code: 0,
+          data: { workspace: { id }, apiKey: "selected-key", port: 50000 },
+        });
+      }
+      return createJsonResponse({ code: 0, data: { dirId: "profile-1", total: 0, rows: [] } });
+    });
+    const session = await connect(createRoxyBrowserMcpServer({ roxy: { apiKey: "test-key" } }));
+    const profile = {
+      projectId: id,
+      labelIds: [id],
+      platformAccounts: [{ id }],
+      proxyInfo: { id },
+    };
+    const profileBody = {
+      projectId: id,
+      labelIds: [id],
+      windowPlatformList: [{ id }],
+      proxyInfo: { moduleId: id, proxyMethod: "choose" },
+    };
+    const proxy = {
+      checkChannel: "ip-api",
+      ipType: "IPV4",
+      protocol: "SOCKS5",
+      host: "localhost",
+      port: "1080",
+    };
+    const cases = [
+      ["roxy_profile_create", { profiles: [profile] }, "/browser/create", profileBody],
+      [
+        "roxy_profile_update",
+        { dirId: "profile-1", ...profile },
+        "/browser/mdf",
+        { dirId: "profile-1", ...profileBody },
+      ],
+      ["roxy_profile_list", { projectIds: [id] }, "/browser/list_v3"],
+      ["roxy_proxy_detect", { id }, "/proxy/detect", { id }],
+      ["roxy_proxy_update", { id, ...proxy }, "/proxy/modify", { id, ...proxy }],
+      ["roxy_proxy_delete", { ids: [id] }, "/proxy/delete", { ids: [id] }],
+      [
+        "roxy_platform_account_update",
+        { id, platformUrl: "https://example.com" },
+        "/account/modify",
+        { id, platformUrl: "https://example.com" },
+      ],
+      ["roxy_platform_account_delete", { ids: [id] }, "/account/delete", { ids: [id] }],
+      [
+        "roxy_workspace_select",
+        { workspaceId: id },
+        "/browser/workspace/select",
+        { workspaceId: id },
+      ],
+    ];
+    try {
+      for (const [name, args, path, body] of cases) {
+        const result = await session.client.callTool({ name, arguments: args });
+        assert.notEqual(result.isError, true, getTextContent(result));
+        const request = calls.at(-1);
+        assert.equal(request.url.pathname, path, name);
+        if (body) assert.deepEqual(request.body, { workspaceId: id, ...body }, name);
+        else {
+          assert.equal(request.url.searchParams.get("projectIds"), id);
+          assert.equal(request.url.searchParams.get("workspaceId"), id);
+        }
+      }
+
+      const invalidCases = [
+        ["roxy_profile_create", { profiles: [{ projectId: 1 }] }],
+        ["roxy_profile_create", { profiles: [{ labelIds: [1] }] }],
+        ["roxy_profile_create", { profiles: [{ platformAccounts: [{ id: 1 }] }] }],
+        ["roxy_profile_create", { profiles: [{ proxyInfo: { id: 1 } }] }],
+        ["roxy_profile_update", { dirId: "profile-1", projectId: 1 }],
+        ["roxy_profile_update", { dirId: "profile-1", labelIds: [1] }],
+        ["roxy_profile_update", { dirId: "profile-1", platformAccounts: [{ id: 1 }] }],
+        ["roxy_profile_update", { dirId: "profile-1", proxyInfo: { id: 1 } }],
+        ["roxy_profile_list", { projectIds: [1] }],
+        ["roxy_proxy_detect", { id: 1 }],
+        ["roxy_proxy_update", { id: 1, ...proxy }],
+        ["roxy_proxy_delete", { ids: [1] }],
+        ["roxy_platform_account_update", { id: 1, platformUrl: "https://example.com" }],
+        ["roxy_platform_account_delete", { ids: [1] }],
+        ["roxy_workspace_select", { workspaceId: 1 }],
+      ];
+      const requestCount = calls.length;
+      for (const [name, args] of invalidCases) {
+        const result = await session.client.callTool({ name, arguments: args });
+        assert.equal(result.isError, true, name);
+      }
+      assert.equal(calls.length, requestCount);
+    } finally {
+      restoreFetch();
+      await session.close();
+    }
+  });
+
   test("browser preset exposes profile tools instead of raw endpoint names", async () => {
     const server = createRoxyBrowserMcpServer({
       roxy: { apiKey: "secret-token", workspaceId: 77 },
@@ -192,10 +323,10 @@ describe("3.0 MCP presets", () => {
         "109",
       ]);
       assert.deepEqual(createProperties.platformAccounts.items.properties, {
-        id: { type: "number" },
+        id: { type: "string" },
       });
       assert.equal(createProperties.platformAccounts.items.additionalProperties, true);
-      assert.deepEqual(createProperties.proxyInfo.properties, { id: { type: "number" } });
+      assert.deepEqual(createProperties.proxyInfo.properties, { id: { type: "string" } });
       assert.equal(createProperties.proxyInfo.additionalProperties, true);
       assert.equal(createProperties.fingerInfo.properties, undefined);
       assert.equal(createProperties.fingerInfo.additionalProperties, true);
@@ -208,7 +339,7 @@ describe("3.0 MCP presets", () => {
       ]);
       assert.deepEqual(createProperties.labelIds, {
         type: "array",
-        items: { type: "number" },
+        items: { type: "string" },
       });
       assert.deepEqual(
         createProperties.cookie.oneOf.map((schema) => schema.type),
@@ -221,10 +352,11 @@ describe("3.0 MCP presets", () => {
         proxyCreate.inputSchema.properties.proxies.items.properties.protocol.default,
         "SOCKS5",
       );
-      assert.deepEqual(
-        proxyCreate.inputSchema.properties.proxies.items.properties.protocol.enum,
-        ["HTTP", "HTTPS", "SOCKS5"],
-      );
+      assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.properties.protocol.enum, [
+        "HTTP",
+        "HTTPS",
+        "SOCKS5",
+      ]);
       assert.deepEqual(proxyCreate.inputSchema.properties.proxies.items.properties.ipType.enum, [
         "IPV4",
         "IPV6",
@@ -369,10 +501,10 @@ describe("3.0 MCP presets", () => {
     try {
       const selected = await session.client.callTool({
         name: "roxy_workspace_select",
-        arguments: { workspaceId: 88, force: true },
+        arguments: { workspaceId: "88", force: true },
       });
       assert.equal(calls[1].token, "current-key");
-      assert.deepEqual(calls[1].body, { workspaceId: 88, force: true });
+      assert.deepEqual(calls[1].body, { workspaceId: "88", force: true });
       assert.match(getTextContent(selected), /Workspace switched successfully to Target/);
       assert.match(getTextContent(selected), /target-secret-key/);
       assert.match(getTextContent(selected), /127\.0\.0\.1:50001/);

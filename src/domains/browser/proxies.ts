@@ -9,7 +9,7 @@ export class ProxyDomain extends GeneratedProxyDomain {
     return { message: response.msg };
   }
 
-  async get(id: number) {
+  async get(id: string | number) {
     const data = unwrapData(await this.api.proxy.detail({ id }));
     const proxy = Array.isArray((data as any).rows) ? (data as any).rows[0] : (data as RawProxy);
     if (!proxy) throw new Error(`Proxy not found: ${id}`);
